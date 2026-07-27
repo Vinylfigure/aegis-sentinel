@@ -1,0 +1,6 @@
+# Personal Claude Code config (never share)
+.claude/settings.local.json
+
+# Runtime hook artifacts (per-session, regenerated)
+.claude/memory/.session-signals
+.claude/memory/.nudged-*

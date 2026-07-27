@@ -1,0 +1,17 @@
+name: verify
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  hook-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run hook fixture tests
+        run: |
+          git config user.email "ci@janus.local"
+          git config user.name "janus-ci"
+          ./scripts/test-hooks.sh
