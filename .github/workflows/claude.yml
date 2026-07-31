@@ -54,14 +54,10 @@ jobs:
           # --max-turns is the runaway bound, not the effort budget; per-order
           # effort budgets live in the work-order spec.
           #
-          # --allowedTools is the BOOTSTRAP TIER. Without it the action can run
-          # no shell command at all ("Claude does not have access to execute
-          # arbitrary Bash commands by default"), which is why this repo's
-          # first dispatch shipped a Python scaffold it never executed and no
-          # verify run behind it. Bare `Bash` is unrestricted — equivalent to
-          # Bash(*) — and is deliberate here only because a bootstrap cannot
-          # enumerate its stack's commands before choosing the stack.
-          # NARROWING TRIGGER: the PR that bootstraps this repo must replace it
-          # with the post-bootstrap tier, e.g.
-          #   --allowedTools "Bash(scripts/verify.sh:*),Bash(git:*),Bash(pytest:*),Bash(ruff:*)"
-          claude_args: --max-turns 50 --allowedTools "Bash"
+          # --allowedTools is the POST-BOOTSTRAP TIER: Python (pip, ruff,
+          # pytest) plus verify.sh and git. Narrowed from the bootstrap-tier
+          # bare `Bash` (equivalent to Bash(*)) once the stack was chosen —
+          # see the bootstrap PR that replaced the janus:bootstrap sentinel
+          # blocks in scripts/verify.sh. A future stack change re-widens this
+          # only for the duration of that one bootstrap run.
+          claude_args: --max-turns 50 --allowedTools "Bash(scripts/verify.sh:*),Bash(scripts/test-hooks.sh:*),Bash(git:*),Bash(pytest:*),Bash(ruff:*),Bash(pip:*),Bash(pip3:*)"

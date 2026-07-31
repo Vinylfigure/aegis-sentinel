@@ -20,8 +20,9 @@ already shows earns nothing.
 ## Project facts
 
 <!-- janus:facts:start -->
-- App stack: NOT BOOTSTRAPPED — run /bootstrap to specialize this scaffold.
-- Template plumbing is wired: `scripts/verify.sh quick|full` (full runs the hook fixture suite `scripts/test-hooks.sh`; CI runs it on every PR).
+- App stack: Python 3.12, pip, ruff (lint+format), pytest; src-layout package `aegis_sentinel` under `src/`.
+- Verify: `scripts/verify.sh quick <file>` (ruff check+format on the file) or `full` (fixture suite + ruff + pytest project-wide); CI runs `scripts/test-hooks.sh` on every PR.
+- Setup: `pip install -e '.[dev]'` (editable install, pulls in ruff + pytest for dev).
 <!-- janus:facts:end -->
 
 ## Learned rules
