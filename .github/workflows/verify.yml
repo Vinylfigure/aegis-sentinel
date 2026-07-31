@@ -6,12 +6,22 @@ on:
   pull_request:
 
 jobs:
-  hook-tests:
+  verify:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Run hook fixture tests
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install the project with dev extras
+        run: pip install -e '.[dev]'
+      # The full suite, not just the scaffold half. Running test-hooks.sh
+      # directly here is what made this repo's CI a false-comfort signal: it
+      # proved template plumbing while `scripts/verify.sh full` — which also
+      # runs ruff and pytest — went unexercised. CI must run the same entry
+      # point a developer runs.
+      - name: Run the full verify suite
         run: |
           git config user.email "ci@janus.local"
           git config user.name "janus-ci"
-          ./scripts/test-hooks.sh
+          ./scripts/verify.sh full
