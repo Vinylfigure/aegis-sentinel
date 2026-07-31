@@ -10,9 +10,9 @@
 #   with useful output on failure (the agent sees stderr and iterates).
 # - `full` is the closed loop for /verify-loop and the verifier agent: exit 0
 #   means the project is genuinely healthy.
-# - Until /bootstrap runs, quick checks only the scaffold's own plumbing
-#   (*.sh syntax, *.json validity) and full runs the fixture suite; app code
-#   passes untouched, so the template stays quiet out of the box.
+# - Bootstrapped to Python (ruff + pytest): quick lints/format-checks the
+#   changed file, full runs the scaffold fixture suite plus lint, format
+#   check, and tests across the project.
 set -uo pipefail
 
 MODE="${1:-full}"
@@ -21,24 +21,24 @@ FILE="${2:-}"
 case "$MODE" in
   quick)
     # janus:bootstrap:quick:start
-    # Template plumbing checks. /bootstrap replaces this block with the
-    # project's real per-file checks (budget: <10s), e.g.:
-    #   *.py) ruff check "$FILE" && ruff format --check "$FILE" ;;
-    #   *.ts|*.tsx) npx eslint "$FILE" && npx tsc --noEmit ;;
-    # Keep the *.sh/*.json arms — hook scripts exist in every child.
+    # Python (ruff lint + format check) per file; *.sh/*.json arms are the
+    # template's own plumbing and stay wired for every child.
     case "$FILE" in
       *.sh) bash -n "$FILE" ;;
       *.json) if command -v jq >/dev/null 2>&1; then jq . "$FILE" >/dev/null; fi ;;
+      *.py) ruff check "$FILE" && ruff format --check "$FILE" ;;
       *) exit 0 ;;
     esac
     # janus:bootstrap:quick:end
     ;;
   full)
     # janus:bootstrap:full:start
-    # Template plumbing suite. /bootstrap replaces this block with the
-    # project's real suite (lint all, typecheck, tests, build), e.g.:
-    #   ruff check . && pytest
-    "$(dirname "$0")/test-hooks.sh"
+    # Scaffold plumbing fixtures, then the real Python suite: lint, format
+    # check, tests.
+    "$(dirname "$0")/test-hooks.sh" \
+      && ruff check . \
+      && ruff format --check . \
+      && pytest
     # janus:bootstrap:full:end
     ;;
   *)

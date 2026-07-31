@@ -4,3 +4,8 @@
 # Runtime hook artifacts (per-session, regenerated)
 .claude/memory/.session-signals
 .claude/memory/.nudged-*
+
+# Python
+__pycache__/
+*.egg-info/
+.pytest_cache/
