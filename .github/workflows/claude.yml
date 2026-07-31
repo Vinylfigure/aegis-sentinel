@@ -54,14 +54,20 @@ jobs:
           # --max-turns is the runaway bound, not the effort budget; per-order
           # effort budgets live in the work-order spec.
           #
-          # --allowedTools is the BOOTSTRAP TIER. Without it the action can run
-          # no shell command at all ("Claude does not have access to execute
-          # arbitrary Bash commands by default"), which is why this repo's
-          # first dispatch shipped a Python scaffold it never executed and no
-          # verify run behind it. Bare `Bash` is unrestricted — equivalent to
-          # Bash(*) — and is deliberate here only because a bootstrap cannot
-          # enumerate its stack's commands before choosing the stack.
-          # NARROWING TRIGGER: the PR that bootstraps this repo must replace it
-          # with the post-bootstrap tier, e.g.
-          #   --allowedTools "Bash(scripts/verify.sh:*),Bash(git:*),Bash(pytest:*),Bash(ruff:*)"
-          claude_args: --max-turns 50 --allowedTools "Bash"
+          # --allowedTools is the POST-BOOTSTRAP TIER, narrowed 2026-07-31
+          # when this repo was bootstrapped to Python (ruff + pytest).
+          #
+          # Narrowed by the operator, not the child: a dispatched agent cannot
+          # edit this file at all. GitHub rejects it with "refusing to allow a
+          # GitHub App to create or update workflow ... without workflows
+          # permission" — the action's token holds no `workflows` scope, so
+          # this is a repo-permission wall, not a tool-allowlist one. Any
+          # future narrowing is an operator-session job.
+          #
+          # Runners are named with their inner command rather than granted
+          # wholesale: a rule like Bash(pip:*) or Bash(python3:*) executes
+          # whatever follows it, which is an arbitrary-execution grant wearing
+          # a narrow costume. Both `scripts/verify.sh` and `./scripts/verify.sh`
+          # are listed because `:*` is a trailing wildcard, not a path
+          # normalizer.
+          claude_args: --max-turns 50 --allowedTools "Bash(./scripts/verify.sh:*),Bash(scripts/verify.sh:*),Bash(bash scripts/verify.sh:*),Bash(./scripts/test-hooks.sh:*),Bash(scripts/test-hooks.sh:*),Bash(git status:*),Bash(git diff:*),Bash(git add:*),Bash(git checkout:*),Bash(git log:*),Bash(pip install -e .[dev]),Bash(ruff:*),Bash(pytest:*)"
