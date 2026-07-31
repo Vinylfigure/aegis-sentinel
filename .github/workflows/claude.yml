@@ -10,6 +10,14 @@ on:
   pull_request_review:
     types: [submitted]
 
+# Two @claude events on one issue never run simultaneously. This is a collision
+# control, not a dedup control — a duplicate event still queues and runs after
+# the first finishes. Dedup is handled one layer up by the
+# `overlord-work-order:` body-line check at dispatch time.
+concurrency:
+  group: claude-${{ github.event.issue.number || github.event.pull_request.number }}
+  cancel-in-progress: false
+
 jobs:
   claude:
     if: |
@@ -18,6 +26,10 @@ jobs:
       (github.event_name == 'pull_request_review_comment' && contains(github.event.comment.body, '@claude')) ||
       (github.event_name == 'pull_request_review' && contains(github.event.review.body, '@claude'))
     runs-on: ubuntu-latest
+    # The primary cost bound. A stuck agent otherwise runs to GitHub's 6-hour
+    # default, burning the shared subscription quota that also feeds live
+    # sessions.
+    timeout-minutes: 30
     permissions:
       contents: write
       pull-requests: write
@@ -28,10 +40,28 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 1
-      # Floating major includes the >= v1.0.94 bot-trigger security fix,
-      # required because the overlord's dispatch issues arrive from a bot.
-      # Subscription auth: generate with `claude setup-token` locally, store
-      # as the CLAUDE_CODE_OAUTH_TOKEN repo secret (Pro/Max/Team/Enterprise).
+      # Floating major includes the >= v1.0.94 bot-trigger security fix
+      # (CVE-2025-66032). Note: this repo's dispatch issues are NOT bot-authored
+      # — verified 2026-07-30, the overlord writes as `Vinylfigure` (type User)
+      # via the claude-github-mcp-connector app, while only the child's own
+      # comments are `claude[bot]`. The pin stands as ordinary dependency
+      # hygiene, not because dispatch arrives from a bot.
+      # Echo-retrigger needs no actor guard: `allowed_bots` defaults to "",
+      # so no bot can trigger this workflow at all.
       - uses: anthropics/claude-code-action@v1
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          # --max-turns is the runaway bound, not the effort budget; per-order
+          # effort budgets live in the work-order spec.
+          #
+          # --allowedTools is the BOOTSTRAP TIER. Without it the action can run
+          # no shell command at all ("Claude does not have access to execute
+          # arbitrary Bash commands by default"), which is why this repo's
+          # first dispatch shipped a Python scaffold it never executed and no
+          # verify run behind it. Bare `Bash` is unrestricted — equivalent to
+          # Bash(*) — and is deliberate here only because a bootstrap cannot
+          # enumerate its stack's commands before choosing the stack.
+          # NARROWING TRIGGER: the PR that bootstraps this repo must replace it
+          # with the post-bootstrap tier, e.g.
+          #   --allowedTools "Bash(scripts/verify.sh:*),Bash(git:*),Bash(pytest:*),Bash(ruff:*)"
+          claude_args: --max-turns 50 --allowedTools "Bash"
