@@ -70,4 +70,12 @@ jobs:
           # a narrow costume. Both `scripts/verify.sh` and `./scripts/verify.sh`
           # are listed because `:*` is a trailing wildcard, not a path
           # normalizer.
+          #
+          # When an order needs a check this list cannot run, add the check to
+          # `scripts/verify.sh` — do not widen this list. A dispatched run
+          # (2026-08-03, issue #7) needed to parse a YAML file, had no way to,
+          # and burned 50 turns on 35 denials; the fix was a `*.yml` arm in
+          # `verify.sh quick`, which is already reachable through the runners
+          # named above and costs no new grant. Widening to `Bash(python3:*)`
+          # would have "fixed" it by handing over arbitrary execution.
           claude_args: --max-turns 50 --allowedTools "Bash(./scripts/verify.sh:*),Bash(scripts/verify.sh:*),Bash(bash scripts/verify.sh:*),Bash(./scripts/test-hooks.sh:*),Bash(scripts/test-hooks.sh:*),Bash(git status:*),Bash(git diff:*),Bash(git add:*),Bash(git checkout:*),Bash(git log:*),Bash(pip install -e .[dev]),Bash(ruff:*),Bash(pytest:*)"
