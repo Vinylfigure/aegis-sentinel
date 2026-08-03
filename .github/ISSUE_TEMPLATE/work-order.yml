@@ -1,0 +1,50 @@
+name: Work order
+description: Dispatch a scoped, verifiable unit of work with an explicit objective, done-means check, allowed paths, and effort budget.
+title: "[WO] "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        A work order is a scope contract, not a wishlist. Fill in all four
+        fields below — this template ports the shape of the `/plan-feature`
+        skill (`.claude/skills/plan-feature/SKILL.md`) so a filer can't
+        silently skip one.
+  - type: textarea
+    id: objective
+    attributes:
+      label: Objective
+      description: The one outcome this work order produces. State it in a single sentence.
+      placeholder: e.g. Add a work-order issue template under .github/ISSUE_TEMPLATE/.
+    validations:
+      required: true
+  - type: textarea
+    id: done-means
+    attributes:
+      label: Done means
+      description: >-
+        The exact runnable command(s) or observation(s) that prove this is
+        finished. Not a vibe ("it works") — a check someone else can run and
+        get the same answer from.
+      placeholder: |
+        - `scripts/verify.sh full` exits 0 — paste the output.
+        - ...
+    validations:
+      required: true
+  - type: textarea
+    id: allowed-paths
+    attributes:
+      label: Allowed paths
+      description: Where this work may touch. Anything outside this list is out of scope for this order.
+      placeholder: |
+        - .github/ISSUE_TEMPLATE/
+        - docs/ (only if the change needs documenting)
+    validations:
+      required: true
+  - type: input
+    id: effort-budget
+    attributes:
+      label: Effort budget
+      description: The bound on this run — a time box, iteration cap, or token budget.
+      placeholder: e.g. 1 session, ~30 min
+    validations:
+      required: true
