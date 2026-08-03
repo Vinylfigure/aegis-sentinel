@@ -27,6 +27,12 @@ case "$MODE" in
       *.sh) bash -n "$FILE" ;;
       *.json) if command -v jq >/dev/null 2>&1; then jq . "$FILE" >/dev/null; fi ;;
       *.py) ruff check "$FILE" && ruff format --check "$FILE" ;;
+      # A dispatched agent's only shell grants are named runners like this
+      # script, so a YAML file it writes is unverifiable unless the check
+      # lives here. That gap cost a real run: the work order for the issue
+      # template asked for a YAML parse, no allowlisted command could do
+      # one, and the agent burned 50 turns on denials instead.
+      *.yml|*.yaml) python3 -c 'import sys,yaml; yaml.safe_load(open(sys.argv[1]))' "$FILE" ;;
       *) exit 0 ;;
     esac
     # janus:bootstrap:quick:end
