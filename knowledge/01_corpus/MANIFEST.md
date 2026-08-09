@@ -1,0 +1,30 @@
+# Corpus Export Manifest
+
+Export timestamp (UTC): 2026-07-25T01:20:59Z
+Source: claude.ai Project "Compliance agents" (exported verbatim via Projects project_read)
+
+| File | Bytes | SHA-256 |
+| --- | --- | --- |
+| 01_architecture/Aegis_Investigator_Agentic_Architecture.md | 10466 | 9fc88b302415fb70eae25b09b12f209f2dc0e7efb7583a606eb2f9ea7e4ce1a8 |
+| 01_architecture/Aegis_Investigator_Design_Decisions.md | 6266 | 48bcd69f45fa28f0fbf6f246f9f50f7750494045875690d7edb76321fdff0728 |
+| 01_architecture/Glossary.rtf | 9206 | e8bf1c41fab3e59fe2d20bb632f38ce7337aedb87415e58090aff04316e9f4b6 |
+| 01_architecture/Workflow_Theory_Supporting_Information.md | 4729 | eaaa58c593ca47c7e7deeae82f9a343055b3b31f9d1ad3c475bb8cf107d9efb4 |
+| 02_design_decisions/API_Constraints_By_Trust_Consequence.md | 11944 | 11a2b29d92873a3278e3083fbc297fba64cb0f4c0cf6a1a15ec718eb2bc9c5fd |
+| 02_design_decisions/Aegis_Design_Fix_D7_UNKNOWN_Decomposition.md | 19657 | 5c01b54571e8e6d177e254ee86f65f40cc9373b9f96197a848d752fd15901371 |
+| 02_design_decisions/Aegis_Design_Fix_D8_Model_Reconciliation.md | 21279 | 6e9cba0c05b8fdd74236b0a424576ebcba799705b1f25394899d9ba2b5a1ddf5 |
+| 02_design_decisions/Aegis_Design_Fix_D9_Decentralization_Discipline.md | 38673 | a47c8a5262cef36d6ac2a1250c1778d1beb0d1fb195a36ce63f7d4d0b8e9dcf4 |
+| 02_design_decisions/Aegis_Design_Fixes.md | 9564 | 18aa214c4fa1f76d539f447fb9923a431e352db639b3b2a25741783c93d5a9ce |
+| 02_design_decisions/Aegis_RedTeam_Reconciliation.md | 11757 | 3f6b35156ab26d8b9b7089ffdda407162d39bf38d46ba89a76d59ae4a6e772de |
+| 02_design_decisions/Constraints.md | 6824 | 82f618b50e40ba908388ed05553feffa5c829039e39b5f92f3f70845a0fbf307 |
+| 02_design_decisions/Contradictions.md | 3557 | 4ad3f73282f70dc77b525c2d93233e1699970973f285c5356e5be2580b8b780e |
+| 02_design_decisions/Control_Evidence_API_Chain_Verified.md | 17743 | 3eed625909be947a16c8b2e664f111e07c699b0f6c05a9a695f14bd227933669 |
+| 02_design_decisions/Decision_Ledger.md | 23923 | 0d23948fe87cf6cca8b8d7de212d8a41c89c1e2cbf52c212e29b70c6cf5c282b |
+| 02_design_decisions/Version_Drift_Ledger.md | 15098 | 1639e30fe72cf59b4ec95ab898281901996b18b79d5b3bb931cd9064cb2a4ac8 |
+| 03_testing_libraries/FedRAMP_Agent_Testing_Library.md | 16503 | 4600153bffdb5fae0af443e0d164eaa4e56af25649b07fa570ba7e837fc9d84f |
+| 03_testing_libraries/SOC2_Control_Testing_Matrix.md | 38945 | 027a3e9d1b4bd44b3d486655891560a87e83716b9afe8194cd4a47e9d3052638 |
+| 03_testing_libraries/SOC2_TSC_Agent_Testing_Library.md | 47521 | e872cd22a73bd97f08060cdaa57805c393b8b2289cc3999d630455d7a2c19925 |
+| 03_testing_libraries/SOX_Agent_Testing_Library.md | 17775 | 41e7f9e6e10b89b7523968dc9ac3b6f89be9687e7a133983e0f1daa6137df645 |
+| 04_build_prds/Sentinel_Build_Execution_PRD.md | 9033 | ad45c751573bd1d77d5f5d4c679b43c78bcd19732582fe3e2566e60455369040 |
+| 04_build_prds/Sentinel_JIT_UI_DB_Janus.md | 11142 | f9aa0c0ad3e0bff351f6bf43174a8d49a2580415275bac4cd97188dec5c48413 |
+| 04_build_prds/Sentinel_v0.2_Event_Driven_Agentic_OSCAL.md | 11632 | b5edc63bfc1f7145bd3ec022ee548aaef222fe6a7c04a8afa854c1bf4ead3d3f |
+| 05_prior_art/Aegis_Prior_Art_GRCEngClub_Toolkit.md | 16120 | 0ab33f0b1ff0b4f94f6e0f9297503d14a5b3a8ff2974ee2c459272b38b5e19dc |
