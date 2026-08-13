@@ -1,0 +1,87 @@
+[
+  {
+    "verdict_ref": "vr-am06-b",
+    "nodes": [
+      {
+        "node_id": "n-cmt",
+        "kind": "commitment",
+        "label": "SOC 2 Type II — CC6.2",
+        "ref": "cmt-soc2-cc62"
+      },
+      {
+        "node_id": "n-req",
+        "kind": "requirement",
+        "label": "Revoke logical access on separation, timely",
+        "ref": "req-access-revocation"
+      },
+      {
+        "node_id": "n-claim",
+        "kind": "claim",
+        "label": "CL-TERM-01 — separation revokes production access ≤ 5 business days",
+        "ref": "CL-TERM-01"
+      },
+      {
+        "node_id": "n-pop",
+        "kind": "population",
+        "label": "Terminations H1 2026 · EVENT · 15 members",
+        "ref": "pop-term-2026h1"
+      },
+      {
+        "node_id": "n-src-hris",
+        "kind": "source",
+        "label": "hris.employee_feed — AUTHORITATIVE",
+        "ref": "hris.employee_feed"
+      },
+      {
+        "node_id": "n-src-okta",
+        "kind": "source",
+        "label": "okta.system_log — CORROBORATING",
+        "ref": "okta.system_log"
+      },
+      {
+        "node_id": "n-rec",
+        "kind": "reconciliation",
+        "label": "rec-term-2026h1 — six-bucket set reconciliation, all deltas dispositioned",
+        "ref": "rec-term-2026h1"
+      },
+      {
+        "node_id": "n-eqc",
+        "kind": "contract",
+        "label": "EQC okta.system_log H1 — supports EVENT · TIMING · EXISTENCE",
+        "ref": "4e030bb8c339e285f86dc319efeb1c0659430df98f9a2ad8f25857ce7a0cfa7d"
+      },
+      {
+        "node_id": "n-snap",
+        "kind": "snapshot",
+        "label": "WORM snapshot 2026-08-01 — sha256 da571eeb…5fb4",
+        "ref": "snap-okta-syslog-0801"
+      },
+      {
+        "node_id": "n-assert",
+        "kind": "assertion",
+        "label": "AM-06.b — TIMING: revoked ≤ 5 business days",
+        "ref": "AM-06.b"
+      },
+      {
+        "node_id": "n-verdict",
+        "kind": "verdict",
+        "label": "FAIL — E-1012 revoked in 6 business days",
+        "ref": "vr-am06-b"
+      }
+    ],
+    "edges": [
+      { "from": "n-cmt", "to": "n-req", "relation": "imposes" },
+      { "from": "n-req", "to": "n-claim", "relation": "mechanized_as" },
+      { "from": "n-claim", "to": "n-pop", "relation": "scoped_over" },
+      { "from": "n-pop", "to": "n-src-hris", "relation": "derived_from" },
+      { "from": "n-pop", "to": "n-src-okta", "relation": "corroborated_by" },
+      { "from": "n-src-hris", "to": "n-rec", "relation": "feeds" },
+      { "from": "n-src-okta", "to": "n-rec", "relation": "feeds" },
+      { "from": "n-rec", "to": "n-eqc", "relation": "completeness_basis" },
+      { "from": "n-eqc", "to": "n-snap", "relation": "collected_as" },
+      { "from": "n-snap", "to": "n-assert", "relation": "supports" },
+      { "from": "n-claim", "to": "n-assert", "relation": "decomposed_into" },
+      { "from": "n-assert", "to": "n-verdict", "relation": "evaluated_to" }
+    ]
+  }
+]

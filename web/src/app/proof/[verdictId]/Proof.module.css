@@ -1,0 +1,47 @@
+.head{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;margin-bottom:14px}
+.title{font:700 16px var(--font-slab)}
+.title span{color:var(--purple)}
+.sub{font-size:11.5px;color:var(--dim);margin-top:4px;max-width:78ch;line-height:1.55}
+.back{font:600 11px var(--font-mono-stack);color:var(--cyan);text-decoration:none;flex-shrink:0;margin-top:4px}
+.back:hover{color:var(--ink)}
+
+/* the lineage scrolls horizontally inside its own container */
+.scroll{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--panel)}
+.content{position:relative;min-width:max-content;padding:30px 22px 26px}
+
+.overlay{position:absolute;inset:0;pointer-events:none;z-index:1}
+.edge{fill:none;stroke:var(--faint);stroke-width:1.3;opacity:.75}
+.edgeLabel{font:500 9px var(--font-mono-stack);fill:var(--dim)}
+
+.grid{position:relative;z-index:2;display:grid;grid-template-columns:repeat(10,minmax(118px,1fr));gap:18px;align-items:stretch}
+.col{display:flex;flex-direction:column;min-width:118px}
+.colHead{font:700 8.5px var(--font-mono-stack);letter-spacing:.13em;text-transform:uppercase;color:var(--purple);text-align:center;margin-bottom:16px}
+.colNodes{flex:1;display:flex;flex-direction:column;justify-content:center;gap:26px;min-height:320px}
+
+/* bubble nodes (circle vocabulary from the process graph) */
+.node{background:none;border:0;padding:0;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:7px;font:inherit;color:inherit}
+.bubble{width:76px;height:76px;border-radius:50%;background:var(--panel2);border:2px solid var(--line);display:grid;place-items:center;font:700 8.5px var(--font-slab);text-align:center;line-height:1.25;padding:7px;transition:transform .12s}
+.node:hover .bubble{transform:scale(1.07)}
+.kCommitment .bubble{border-color:var(--purple)}
+.kRequirement .bubble{border-color:var(--purple);border-style:dashed}
+.kClaim .bubble{border-color:var(--cyan)}
+.kPopulation .bubble{border-color:var(--amber)}
+.kSource .bubble{border-color:var(--green)}
+.kReconciliation .bubble{border-color:var(--cyan);border-style:dashed}
+.kContract .bubble{border-color:var(--purple)}
+.kSnapshot .bubble{border-color:var(--green);border-style:double;border-width:3px}
+.nl{font-size:9.5px;color:var(--dim);text-align:center;line-height:1.3;max-width:126px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+
+/* assertion diamond (control-point vocabulary) */
+.diamondWrap{background:none;border:0;padding:0;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:13px;font:inherit;color:inherit}
+.diamond{width:52px;height:52px;transform:rotate(45deg);border-radius:9px;display:grid;place-items:center;border:2px solid var(--purple);background:rgba(139,127,245,.12);margin:8px;transition:transform .12s}
+.diamondWrap:hover .diamond{transform:rotate(45deg) scale(1.1)}
+.diamond i{transform:rotate(-45deg);font:700 8.5px var(--font-mono-stack);font-style:normal;color:var(--purple)}
+
+/* verdict node */
+.verdictNode{background:none;border:0;padding:0;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:9px;font:inherit;color:inherit}
+
+/* selection ring */
+.sel .bubble,.sel .diamond{box-shadow:0 0 0 3px rgba(139,127,245,.30)}
+.node.sel .bubble{transform:scale(1.07)}
+.verdictNode.sel{filter:drop-shadow(0 0 6px rgba(139,127,245,.5))}

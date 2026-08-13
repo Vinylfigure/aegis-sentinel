@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import { usePathname } from "next/navigation";
+import AssuranceSection from "@/components/engagement/AssuranceSection";
 import { useProgramStore } from "@/lib/state/programStore";
 import {
   avgReuse,
@@ -40,7 +42,11 @@ function Gauge({
   );
 }
 
+const ENGAGEMENT_ROUTES = /^\/(reconciliation|verdicts|registry|proof)/;
+
 export default function GaugesRail() {
+  const pathname = usePathname();
+  const onEngagement = ENGAGEMENT_ROUTES.test(pathname ?? "");
   const products = useProgramStore((s) => s.products);
   const systems = useProgramStore((s) => s.systems);
   const controls = useProgramStore((s) => s.controls);
@@ -56,6 +62,7 @@ export default function GaugesRail() {
 
   return (
     <div>
+      {onEngagement && <AssuranceSection />}
       <h2 className={styles.h2}>Scope</h2>
       <div
         className={`${styles.assert} ${

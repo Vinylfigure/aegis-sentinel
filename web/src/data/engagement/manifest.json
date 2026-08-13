@@ -1,0 +1,10 @@
+{
+  "manifest_version": "v3",
+  "snapshot_hash": "da571eebf75ab8e8ad4343faff575c04856ae024f80616d09acdeb1b95fb55b4",
+  "ratified_by": "vinylfigure (Ratifier)",
+  "ratified_at": "2026-08-01T17:20:00Z",
+  "engagement": "Termination lane — H1 2026",
+  "period": { "start": "2026-01-01", "end": "2026-06-30" },
+  "boundary": "HRIS separation feed → Okta → fan-out to GitHub, GCP, Slack — including local accounts and group-derived access",
+  "notes": "Ratified scope snapshot v3. Post-freeze drift enters PROPOSED_SCOPE_CHANGE; the run refuses to start if the loaded snapshot hash has no ratification row."
+}

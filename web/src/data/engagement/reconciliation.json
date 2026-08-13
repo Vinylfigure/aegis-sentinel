@@ -1,0 +1,341 @@
+[
+  {
+    "population_ref": "pop-term-2026h1",
+    "canonical_identity_keys": ["employee_id"],
+    "source_counts": {
+      "hris.employee_feed": 15,
+      "okta.system_log": 15
+    },
+    "deltas": [
+      {
+        "delta_id": "t-001",
+        "bucket": "intersection",
+        "member_key": "E-1001",
+        "display_name": "Priya Raman",
+        "sources_present": ["hris.employee_feed", "okta.system_log"],
+        "sources_absent": []
+      },
+      {
+        "delta_id": "t-002",
+        "bucket": "intersection",
+        "member_key": "E-1002",
+        "display_name": "Chen Wu",
+        "sources_present": ["hris.employee_feed", "okta.system_log"],
+        "sources_absent": []
+      },
+      {
+        "delta_id": "t-003",
+        "bucket": "intersection",
+        "member_key": "E-1003",
+        "display_name": "Sofia Alvarez",
+        "sources_present": ["hris.employee_feed", "okta.system_log"],
+        "sources_absent": []
+      },
+      {
+        "delta_id": "t-004",
+        "bucket": "intersection",
+        "member_key": "E-1004",
+        "display_name": "Daniel Okafor",
+        "sources_present": ["hris.employee_feed", "okta.system_log"],
+        "sources_absent": []
+      },
+      {
+        "delta_id": "t-005",
+        "bucket": "intersection",
+        "member_key": "E-1005",
+        "display_name": "Ingrid Solberg",
+        "sources_present": ["hris.employee_feed", "okta.system_log"],
+        "sources_absent": []
+      },
+      {
+        "delta_id": "t-006",
+        "bucket": "intersection",
+        "member_key": "E-1006",
+        "display_name": "Yusuf Demir",
+        "sources_present": ["hris.employee_feed", "okta.system_log"],
+        "sources_absent": []
+      },
+      {
+        "delta_id": "t-007",
+        "bucket": "intersection",
+        "member_key": "E-1007",
+        "display_name": "Hana Sato",
+        "sources_present": ["hris.employee_feed", "okta.system_log"],
+        "sources_absent": []
+      },
+      {
+        "delta_id": "t-008",
+        "bucket": "intersection",
+        "member_key": "E-1008",
+        "display_name": "Marcus Diaz",
+        "sources_present": ["hris.employee_feed", "okta.system_log"],
+        "sources_absent": []
+      },
+      {
+        "delta_id": "t-009",
+        "bucket": "intersection",
+        "member_key": "E-1009",
+        "display_name": "Lena Vogel",
+        "sources_present": ["hris.employee_feed", "okta.system_log"],
+        "sources_absent": []
+      },
+      {
+        "delta_id": "t-010",
+        "bucket": "intersection",
+        "member_key": "E-1010",
+        "display_name": "Ravi Menon",
+        "sources_present": ["hris.employee_feed", "okta.system_log"],
+        "sources_absent": []
+      },
+      {
+        "delta_id": "t-011",
+        "bucket": "intersection",
+        "member_key": "E-1011",
+        "display_name": "Petra Kovacs",
+        "sources_present": ["hris.employee_feed", "okta.system_log"],
+        "sources_absent": []
+      },
+      {
+        "delta_id": "t-012",
+        "bucket": "intersection",
+        "member_key": "E-1012",
+        "display_name": "Omar Haddad",
+        "sources_present": ["hris.employee_feed", "okta.system_log"],
+        "sources_absent": []
+      },
+      {
+        "delta_id": "t-013",
+        "bucket": "intersection",
+        "member_key": "E-1013",
+        "display_name": "Nora Lindqvist",
+        "sources_present": ["hris.employee_feed", "okta.system_log"],
+        "sources_absent": []
+      },
+      {
+        "delta_id": "t-014",
+        "bucket": "conflicts",
+        "member_key": "E-1014",
+        "display_name": "Felix Baranov",
+        "sources_present": ["hris.employee_feed", "okta.system_log"],
+        "sources_absent": [],
+        "owner": "people-ops",
+        "disposition": {
+          "value": "IMPLEMENTED_LOCALLY",
+          "justification": "HRIS effective date 2026-04-30 vs Okta deactivation 2026-05-01: HRIS records last-worked date, IdP deactivated next business day. Canonical date fixed to HRIS; timing measured from it.",
+          "owner": "people-ops",
+          "review_date": "2026-09-30"
+        }
+      },
+      {
+        "delta_id": "t-015",
+        "bucket": "excluded",
+        "member_key": "E-1015",
+        "display_name": "June Park",
+        "sources_present": ["hris.employee_feed"],
+        "sources_absent": ["okta.system_log"],
+        "owner": "it-iam",
+        "disposition": {
+          "value": "NA_WITH_RATIONALE",
+          "justification": "Separation converted to fixed-term advisory engagement through 2026-09-30; read-only access retained under approved exception disp-2026-044. Excluded from the revocation universe — never silently.",
+          "owner": "it-iam",
+          "review_date": "2026-09-30"
+        }
+      }
+    ]
+  },
+  {
+    "population_ref": "pop-identity-join",
+    "canonical_identity_keys": ["employee_id", "email", "github_login"],
+    "source_counts": {
+      "hris.employee_feed": 15,
+      "okta.users": 18,
+      "github.org_members": 17
+    },
+    "deltas": [
+      {
+        "delta_id": "d-101",
+        "bucket": "intersection",
+        "member_key": "E-1001",
+        "display_name": "Priya Raman",
+        "sources_present": ["hris.employee_feed", "okta.users", "github.org_members"],
+        "sources_absent": []
+      },
+      {
+        "delta_id": "d-102",
+        "bucket": "intersection",
+        "member_key": "E-1002",
+        "display_name": "Chen Wu",
+        "sources_present": ["hris.employee_feed", "okta.users", "github.org_members"],
+        "sources_absent": []
+      },
+      {
+        "delta_id": "d-104",
+        "bucket": "intersection",
+        "member_key": "E-1004",
+        "display_name": "Daniel Okafor",
+        "sources_present": ["hris.employee_feed", "okta.users", "github.org_members"],
+        "sources_absent": []
+      },
+      {
+        "delta_id": "d-105",
+        "bucket": "intersection",
+        "member_key": "E-1005",
+        "display_name": "Ingrid Solberg",
+        "sources_present": ["hris.employee_feed", "okta.users"],
+        "sources_absent": []
+      },
+      {
+        "delta_id": "d-106",
+        "bucket": "intersection",
+        "member_key": "E-1006",
+        "display_name": "Yusuf Demir",
+        "sources_present": ["hris.employee_feed", "okta.users", "github.org_members"],
+        "sources_absent": []
+      },
+      {
+        "delta_id": "d-107",
+        "bucket": "intersection",
+        "member_key": "E-1007",
+        "display_name": "Hana Sato",
+        "sources_present": ["hris.employee_feed", "okta.users"],
+        "sources_absent": []
+      },
+      {
+        "delta_id": "d-108",
+        "bucket": "intersection",
+        "member_key": "E-1008",
+        "display_name": "Marcus Diaz (SSO account)",
+        "sources_present": ["hris.employee_feed", "okta.users", "github.org_members"],
+        "sources_absent": []
+      },
+      {
+        "delta_id": "d-109",
+        "bucket": "intersection",
+        "member_key": "E-1009",
+        "display_name": "Lena Vogel",
+        "sources_present": ["hris.employee_feed", "okta.users"],
+        "sources_absent": []
+      },
+      {
+        "delta_id": "d-110",
+        "bucket": "intersection",
+        "member_key": "E-1010",
+        "display_name": "Ravi Menon",
+        "sources_present": ["hris.employee_feed", "okta.users", "github.org_members"],
+        "sources_absent": []
+      },
+      {
+        "delta_id": "d-111",
+        "bucket": "intersection",
+        "member_key": "E-1011",
+        "display_name": "Petra Kovacs",
+        "sources_present": ["hris.employee_feed", "okta.users"],
+        "sources_absent": []
+      },
+      {
+        "delta_id": "d-112",
+        "bucket": "intersection",
+        "member_key": "E-1012",
+        "display_name": "Omar Haddad",
+        "sources_present": ["hris.employee_feed", "okta.users", "github.org_members"],
+        "sources_absent": []
+      },
+      {
+        "delta_id": "d-113",
+        "bucket": "intersection",
+        "member_key": "E-1013",
+        "display_name": "Nora Lindqvist",
+        "sources_present": ["hris.employee_feed", "okta.users"],
+        "sources_absent": []
+      },
+      {
+        "delta_id": "d-114",
+        "bucket": "intersection",
+        "member_key": "E-1014",
+        "display_name": "Felix Baranov",
+        "sources_present": ["hris.employee_feed", "okta.users", "github.org_members"],
+        "sources_absent": []
+      },
+      {
+        "delta_id": "d-115",
+        "bucket": "intersection",
+        "member_key": "E-1015",
+        "display_name": "June Park",
+        "sources_present": ["hris.employee_feed", "okta.users"],
+        "sources_absent": []
+      },
+      {
+        "delta_id": "d-201",
+        "bucket": "left_only",
+        "member_key": "ext-tnovak",
+        "display_name": "Tomas Novak (contractor)",
+        "sources_present": ["okta.users"],
+        "sources_absent": ["hris.employee_feed"],
+        "owner": "it-iam"
+      },
+      {
+        "delta_id": "d-202",
+        "bucket": "right_only",
+        "member_key": "mdiaz-local",
+        "display_name": "Local GitHub account — no IdP anchor",
+        "sources_present": ["github.org_members"],
+        "sources_absent": ["okta.users", "hris.employee_feed"],
+        "owner": "platform-eng"
+      },
+      {
+        "delta_id": "d-203",
+        "bucket": "unresolvable",
+        "member_key": "dev-akira9",
+        "display_name": "GitHub login joins no identity",
+        "sources_present": ["github.org_members"],
+        "sources_absent": ["okta.users", "hris.employee_feed"],
+        "owner": "appsec"
+      },
+      {
+        "delta_id": "d-204",
+        "bucket": "conflicts",
+        "member_key": "E-1003",
+        "display_name": "Sofia Alvarez",
+        "sources_present": ["hris.employee_feed", "okta.users"],
+        "sources_absent": [],
+        "owner": "it-iam",
+        "disposition": {
+          "value": "IMPLEMENTED_LOCALLY",
+          "justification": "HRIS work_email s.alvarez@meridianlabs.example vs Okta profile email sofia.alvarez@meridianlabs.example — legacy alias. Canonical email fixed from HRIS; Okta alias mapped in the join table.",
+          "owner": "it-iam",
+          "review_date": "2026-10-15"
+        }
+      },
+      {
+        "delta_id": "d-205",
+        "bucket": "excluded",
+        "member_key": "svc-deploy-bot",
+        "display_name": "CI deploy service account",
+        "sources_present": ["github.org_members", "okta.users"],
+        "sources_absent": ["hris.employee_feed"],
+        "owner": "platform-eng",
+        "disposition": {
+          "value": "NA_WITH_RATIONALE",
+          "justification": "Service identity — excluded from the workforce join by the service-identity rule; covered instead by CL-PRIV-02 (production-capable principals).",
+          "owner": "platform-eng",
+          "review_date": "2026-12-31"
+        }
+      },
+      {
+        "delta_id": "d-206",
+        "bucket": "excluded",
+        "member_key": "okta-svc-scim",
+        "display_name": "SCIM provisioning integration",
+        "sources_present": ["okta.users"],
+        "sources_absent": ["hris.employee_feed"],
+        "owner": "it-iam",
+        "disposition": {
+          "value": "NA_WITH_RATIONALE",
+          "justification": "Provisioning integration identity — excluded by the service-identity rule; key rotation covered under CL-PRIV-02.",
+          "owner": "it-iam",
+          "review_date": "2026-12-31"
+        }
+      }
+    ]
+  }
+]

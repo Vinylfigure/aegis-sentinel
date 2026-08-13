@@ -5,6 +5,10 @@ import { usePathname } from "next/navigation";
 import NavTabs from "@/components/NavTabs";
 import GaugesRail from "@/components/GaugesRail";
 import ProcessRail from "@/components/ProcessRail";
+import {
+  ProofDetailRail,
+  ReconciliationDetailRail,
+} from "@/components/engagement/EngagementRails";
 import { useProgramStore } from "@/lib/state/programStore";
 
 export default function AppShell({ children }: { children: React.ReactNode }) {
@@ -31,7 +35,15 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
         {children}
       </div>
       <div className="rail">
-        {pathname?.startsWith("/process") ? <ProcessRail /> : <GaugesRail />}
+        {pathname?.startsWith("/process") ? (
+          <ProcessRail />
+        ) : /^\/reconciliation\/[^/]+/.test(pathname ?? "") ? (
+          <ReconciliationDetailRail />
+        ) : /^\/proof\/[^/]+/.test(pathname ?? "") ? (
+          <ProofDetailRail />
+        ) : (
+          <GaugesRail />
+        )}
       </div>
     </div>
   );

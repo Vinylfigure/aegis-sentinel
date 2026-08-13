@@ -1,0 +1,186 @@
+[
+  {
+    "entry_id": "hris.employee_feed",
+    "system": "hris",
+    "surface": "SFTP roster export v2 (daily CSV drop)",
+    "access_modes": ["custom-adapter"],
+    "populations_yielded": [
+      { "type": "ENTITY", "name": "employees (workforce roster)" },
+      { "type": "EVENT", "name": "separations (effective-dated)" }
+    ],
+    "attributes": [
+      "employee_id",
+      "legal_name",
+      "work_email",
+      "worker_type",
+      "separation_effective_date",
+      "manager_id"
+    ],
+    "temporal": { "shape": "snapshot-cadence", "cadence": "daily 02:00 UTC" },
+    "join_keys": ["employee_id", "work_email"],
+    "auth_scope": "read-only SFTP service account, roster share only",
+    "pagination": "none",
+    "rate_limits": "n/a (file drop)",
+    "history_caveats": [
+      "Roster is a point-in-time snapshot — separations older than the export retention (180 days) need the archived drops"
+    ],
+    "provenance": {
+      "researched_by": "Cartographer (LLM lane)",
+      "researched_at": "2026-07-24",
+      "doc_version": "HRIS export spec 2.3",
+      "ratified_by": "vinylfigure (Ratifier)"
+    }
+  },
+  {
+    "entry_id": "okta.system_log",
+    "system": "okta",
+    "surface": "System Log API /api/v1/logs",
+    "access_modes": ["direct-api"],
+    "populations_yielded": [
+      { "type": "EVENT", "name": "lifecycle + auth events (deactivation, suspend, group change)" }
+    ],
+    "attributes": ["eventType", "actor.id", "target.id", "published", "outcome.result"],
+    "temporal": { "shape": "event-history", "window_days": 90 },
+    "join_keys": ["okta_user_id", "email"],
+    "auth_scope": "okta.logs.read (least-privilege API token)",
+    "pagination": "cursor",
+    "rate_limits": "600 req/min per org, burst 60/10s",
+    "history_caveats": [
+      "Okta System Log retains 90 days — TIMING assertions beyond window need exported archive"
+    ],
+    "provenance": {
+      "researched_by": "Cartographer (LLM lane)",
+      "researched_at": "2026-07-25",
+      "doc_version": "Okta API docs 2026.06",
+      "ratified_by": "vinylfigure (Ratifier)"
+    }
+  },
+  {
+    "entry_id": "okta.users",
+    "system": "okta",
+    "surface": "Users API /api/v1/users (SCIM-shaped profiles)",
+    "access_modes": ["direct-api", "official-mcp"],
+    "populations_yielded": [
+      { "type": "ENTITY", "name": "okta accounts" },
+      { "type": "RELATIONSHIP", "name": "user → group membership" }
+    ],
+    "attributes": [
+      "id",
+      "status",
+      "profile.login",
+      "profile.email",
+      "profile.employeeNumber",
+      "lastLogin"
+    ],
+    "temporal": { "shape": "state-only" },
+    "join_keys": ["okta_user_id", "email", "employee_id"],
+    "auth_scope": "okta.users.read",
+    "pagination": "cursor",
+    "rate_limits": "600 req/min per org",
+    "history_caveats": [],
+    "provenance": {
+      "researched_by": "Cartographer (LLM lane)",
+      "researched_at": "2026-07-25",
+      "doc_version": "Okta API docs 2026.06",
+      "ratified_by": "vinylfigure (Ratifier)"
+    }
+  },
+  {
+    "entry_id": "github.org_members",
+    "system": "github",
+    "surface": "REST v3 /orgs/{org}/members",
+    "access_modes": ["direct-api"],
+    "populations_yielded": [
+      { "type": "ENTITY", "name": "org members (incl. local accounts)" },
+      { "type": "RELATIONSHIP", "name": "member → team" }
+    ],
+    "attributes": ["login", "id", "type", "role", "two_factor_enabled"],
+    "temporal": { "shape": "state-only" },
+    "join_keys": ["login"],
+    "auth_scope": "org:read via fine-grained PAT (members read-only)",
+    "pagination": "page",
+    "rate_limits": "5000 req/hr (authenticated)",
+    "history_caveats": [
+      "STATE only — cannot prove removal TIMING; pair with github.audit_log (E204-class check)",
+      "SAML-linked email requires the external-identities GraphQL edge; login is the only native join key"
+    ],
+    "provenance": {
+      "researched_by": "Cartographer (LLM lane)",
+      "researched_at": "2026-07-26",
+      "doc_version": "GitHub REST docs 2026-06-30",
+      "ratified_by": "vinylfigure (Ratifier)"
+    }
+  },
+  {
+    "entry_id": "github.audit_log",
+    "system": "github",
+    "surface": "Audit log export /orgs/{org}/audit-log",
+    "access_modes": ["direct-api"],
+    "populations_yielded": [
+      { "type": "EVENT", "name": "org audit events (member remove, repo access)" }
+    ],
+    "attributes": ["action", "actor", "user", "created_at", "org"],
+    "temporal": { "shape": "event-history", "window_days": 180 },
+    "join_keys": ["login"],
+    "auth_scope": "read:audit_log",
+    "pagination": "cursor",
+    "rate_limits": "1750 req/hr (audit-log endpoint)",
+    "history_caveats": [
+      "Git-protocol events retained only 7 days — org membership events reach the full 180"
+    ],
+    "provenance": {
+      "researched_by": "Cartographer (LLM lane)",
+      "researched_at": "2026-07-26",
+      "doc_version": "GitHub REST docs 2026-06-30",
+      "ratified_by": "vinylfigure (Ratifier)"
+    }
+  },
+  {
+    "entry_id": "gcp.iam_policy",
+    "system": "gcp",
+    "surface": "Cloud Asset Inventory — IAM policy snapshot",
+    "access_modes": ["direct-api"],
+    "populations_yielded": [
+      { "type": "ENTITY", "name": "IAM principals" },
+      { "type": "RELATIONSHIP", "name": "principal → role binding" }
+    ],
+    "attributes": ["member", "role", "resource", "condition", "etag"],
+    "temporal": { "shape": "snapshot-cadence", "cadence": "daily asset export" },
+    "join_keys": ["email", "principal"],
+    "auth_scope": "roles/cloudasset.viewer at org node",
+    "pagination": "page",
+    "rate_limits": "600 req/min per project",
+    "history_caveats": [
+      "Group-derived bindings are opaque — membership expansion needs google.groups; not present in IAM policy",
+      "Break-glass accounts provisioned outside IAM (breakglass.config) are invisible to this surface"
+    ],
+    "provenance": {
+      "researched_by": "Cartographer (LLM lane)",
+      "researched_at": "2026-07-27",
+      "doc_version": "GCP CAI docs 2026-05",
+      "ratified_by": "vinylfigure (Ratifier)"
+    }
+  },
+  {
+    "entry_id": "slack.users",
+    "system": "slack",
+    "surface": "SCIM Users API /scim/v2/Users",
+    "access_modes": ["direct-api"],
+    "populations_yielded": [{ "type": "ENTITY", "name": "workspace users (incl. guests)" }],
+    "attributes": ["id", "userName", "emails", "active", "userType"],
+    "temporal": { "shape": "state-only" },
+    "join_keys": ["email"],
+    "auth_scope": "SCIM read via org-level admin token (read subset)",
+    "pagination": "cursor",
+    "rate_limits": "Tier 2 (~20 req/min)",
+    "history_caveats": [
+      "Guest/shared-channel access is not in SCIM — audit-log export required for EXISTENCE over guests"
+    ],
+    "provenance": {
+      "researched_by": "Cartographer (LLM lane)",
+      "researched_at": "2026-07-27",
+      "doc_version": "Slack SCIM docs 2026-04",
+      "ratified_by": "vinylfigure (Ratifier)"
+    }
+  }
+]

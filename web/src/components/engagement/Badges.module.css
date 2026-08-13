@@ -1,0 +1,59 @@
+/* Engagement badge kit — chip/badge vocabulary extended from Rail.module.css
+ * (.bd) and Process.module.css (.chip). Five verdict treatments must stay
+ * UNMISTAKABLY distinct: solid fill vs outline vs dim. */
+
+/* verdict badge */
+.vb{display:inline-flex;align-items:center;gap:6px;font:700 9.5px var(--font-mono-stack);letter-spacing:.09em;border-radius:5px;padding:3px 9px;border:1.5px solid transparent;white-space:nowrap}
+.vbLg{font-size:13px;padding:8px 18px;border-radius:8px;letter-spacing:.11em}
+.vbPass{background:var(--green);border-color:var(--green);color:#0e0f14}
+.vbFail{background:var(--red);border-color:var(--red);color:#0e0f14}
+.vbUnknown{background:transparent;border-color:var(--amber);color:var(--amber)}
+.vbExcluded{background:transparent;border-color:var(--line);color:var(--faint)}
+.vbException{background:transparent;border-color:var(--purple);color:var(--purple)}
+
+/* small companion chips (why-code, d7 family, refs) */
+.mchip{display:inline-block;font:600 9px var(--font-mono-stack);letter-spacing:.06em;border-radius:10px;padding:2px 8px;white-space:nowrap}
+.mAmber{background:rgba(232,179,75,.13);color:var(--amber)}
+.mDim{background:rgba(154,157,178,.13);color:var(--dim)}
+.mPurple{background:rgba(139,127,245,.13);color:var(--purple)}
+.mCyan{background:rgba(109,184,216,.13);color:var(--cyan)}
+.mGreen{background:rgba(111,191,143,.13);color:var(--green)}
+.mRed{background:rgba(224,113,111,.13);color:var(--red)}
+
+/* source-role tag */
+.role{display:inline-block;font:600 8.5px var(--font-mono-stack);letter-spacing:.08em;border-radius:3px;padding:2px 6px;border:1px solid}
+.roleAUTHORITATIVE{color:var(--green);border-color:var(--green)}
+.roleCONTRIBUTING{color:var(--cyan);border-color:var(--cyan)}
+.roleCORROBORATING{color:var(--purple);border-color:var(--purple)}
+.roleDISCOVERY{color:var(--amber);border-color:var(--amber)}
+.roleEXCLUSION{color:var(--faint);border-color:var(--faint)}
+
+/* ladder-state chip */
+.ladder{display:inline-block;font:600 9px var(--font-mono-stack);letter-spacing:.08em;border-radius:12px;padding:2px 9px;border:1px solid}
+.lUNDEFINED{color:var(--faint);border-color:var(--line)}
+.lDEFINED{color:var(--dim);border-color:var(--dim)}
+.lDISCOVERED{color:var(--cyan);border-color:var(--cyan)}
+.lRECONCILED{color:var(--purple);border-color:var(--purple)}
+.lRATIFIED{color:var(--green);border-color:var(--green)}
+.lSTALE{color:var(--amber);border-color:var(--amber);border-style:dashed}
+
+/* population-type badge */
+.ptype{display:inline-block;font:700 8.5px var(--font-mono-stack);letter-spacing:.1em;border-radius:3px;padding:2px 6px}
+.ptENTITY{background:rgba(109,184,216,.14);color:var(--cyan)}
+.ptEVENT{background:rgba(139,127,245,.14);color:var(--purple)}
+.ptRELATIONSHIP{background:rgba(232,179,75,.14);color:var(--amber)}
+
+/* ghost chip — negative space: a source where the member SHOULD be */
+.ghost{display:inline-block;font:500 9px var(--font-mono-stack);border:1px dashed var(--faint);border-radius:10px;padding:1.5px 8px;color:var(--faint);opacity:.85;text-decoration:line-through;text-decoration-thickness:1px}
+.present{display:inline-block;font:500 9px var(--font-mono-stack);border:1px solid var(--line);border-radius:10px;padding:1.5px 8px;color:var(--dim)}
+
+/* disposition badge */
+.disp{display:inline-flex;align-items:center;gap:5px;font:600 8.5px var(--font-mono-stack);letter-spacing:.05em;border-radius:10px;padding:2px 8px}
+.dispOpen{background:rgba(232,179,75,.15);color:var(--amber)}
+.dispSet{background:rgba(111,191,143,.12);color:var(--green)}
+.dispDot{width:5px;height:5px;border-radius:50%;background:currentColor}
+
+/* tooltip */
+.tip{position:relative;cursor:help;border-bottom:1px dotted var(--faint)}
+.tip::after{content:attr(data-tip);position:absolute;left:0;top:calc(100% + 7px);z-index:30;width:250px;background:var(--panel3);border:1px solid var(--line);border-radius:8px;padding:9px 11px;font:400 11px/1.45 var(--font-sans);color:var(--dim);opacity:0;pointer-events:none;transition:opacity .12s;letter-spacing:normal;text-transform:none;white-space:normal}
+.tip:hover::after{opacity:1}

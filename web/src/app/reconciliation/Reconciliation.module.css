@@ -1,0 +1,16 @@
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:12px}
+
+.card{display:block;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px;text-decoration:none;color:inherit;transition:border-color .12s}
+.card:hover{border-color:var(--purple)}
+
+.cardTop{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.name{font:700 14px var(--font-slab);margin-top:9px}
+.pid{font-family:var(--font-mono-stack);font-size:9.5px;color:var(--purple)}
+.def{font-size:11px;color:var(--dim);margin-top:7px;line-height:1.5;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-top:11px;border-top:1px dashed var(--line);padding-top:10px}
+.stat{text-align:center}
+.stat b{display:block;font:700 16px var(--font-slab)}
+.stat span{font:500 8.5px var(--font-mono-stack);letter-spacing:.06em;text-transform:uppercase;color:var(--faint)}
+.dash{color:var(--faint)}
+.openWarn{color:var(--amber)}

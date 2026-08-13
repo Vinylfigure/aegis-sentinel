@@ -1,0 +1,34 @@
+/* compiler output block */
+.compiler{background:var(--bg);border:1px solid var(--red);border-radius:10px;padding:6px 0;margin-bottom:8px}
+.ecode{display:flex;gap:13px;padding:10px 16px}
+.ecode+.ecode{border-top:1px dashed var(--line)}
+.code{font:700 12px var(--font-mono-stack);color:var(--red);flex-shrink:0}
+.emsg{font:400 11px/1.55 var(--font-mono-stack);color:var(--red)}
+.esuggest{font:400 10.5px/1.5 var(--font-mono-stack);color:var(--cyan);margin-top:4px}
+.eref{font:400 9.5px var(--font-mono-stack);color:var(--faint);margin-top:4px}
+
+/* entry cards */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:12px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+.cardHead{display:flex;align-items:baseline;justify-content:space-between;gap:10px}
+.system{font:700 14px var(--font-slab);text-transform:capitalize}
+.entryId{font-family:var(--font-mono-stack);font-size:9.5px;color:var(--purple)}
+.surface{display:inline-block;font-family:var(--font-mono-stack);font-size:10.5px;color:var(--green);background:var(--bg);border-radius:5px;padding:2px 7px;margin-top:6px;word-break:break-all}
+
+.modes{display:flex;gap:5px;flex-wrap:wrap;margin-top:9px}
+
+.pops{display:flex;flex-direction:column;gap:4px;margin-top:10px}
+.pop{font-size:10.5px;color:var(--dim);display:flex;align-items:center;gap:6px}
+
+.meta{margin-top:10px;border-top:1px dashed var(--line);padding-top:9px}
+.mrow{display:flex;gap:10px;align-items:baseline;margin-bottom:5px}
+.mrow label{font-family:var(--font-mono-stack);font-size:8.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--faint);width:74px;flex-shrink:0}
+.mrow div{font-size:10.5px;color:var(--dim);min-width:0}
+.mrow code{font-family:var(--font-mono-stack);font-size:9.5px;color:var(--cyan);background:var(--bg);border-radius:4px;padding:1px 5px;margin-right:4px}
+
+.caveats{background:rgba(232,179,75,.10);border:1px solid var(--amber);border-radius:8px;padding:9px 11px;margin-top:10px}
+.caveats p{font:500 10.5px/1.5 var(--font-sans);color:var(--amber)}
+.caveats p+p{margin-top:5px}
+
+.prov{font-size:9.5px;color:var(--faint);margin-top:10px;font-family:var(--font-mono-stack);line-height:1.5}
+.prov b{color:var(--dim)}

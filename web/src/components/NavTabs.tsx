@@ -10,6 +10,9 @@ const TABS = [
   { n: "3", label: "Datasets", href: "/datasets" },
   { n: "4", label: "Overlord", href: "/overlord" },
   { n: "5", label: "Process", href: "/process" },
+  { n: "6", label: "Reconciliation", href: "/reconciliation" },
+  { n: "7", label: "Verdicts", href: "/verdicts" },
+  { n: "8", label: "Registry", href: "/registry" },
 ];
 
 export default function NavTabs() {
