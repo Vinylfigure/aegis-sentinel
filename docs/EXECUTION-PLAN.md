@@ -30,7 +30,7 @@ redaction (D-R1), naming (D-N1). Open: lifecycle collapse (D-L1, due at SCH00 PR
   unratified entries mechanically unusable (`Registry.usable()` excludes them; tested).
 - [ ] **SCH03** — manifest snapshots + human-readable diff + `PROPOSED_SCOPE_CHANGE`
   (transition requires a ratifier identity; structural-exclusion pattern).
-- [ ] **VAL01** — mutation harness in `tests/mutation/` (detection rate computed;
+- [x] **VAL01** — mutation harness in `tests/mutation/` (detection rate computed;
   a deliberately-silent-PASS stub proves the harness turns the build red).
 - [ ] **INFRA01** — verdict-path purity tests (AST import/impurity bans + registered
   file roster), per-file purity check script wired into `verify.sh quick`,
