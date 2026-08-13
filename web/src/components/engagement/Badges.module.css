@@ -57,3 +57,4 @@
 .tip{position:relative;cursor:help;border-bottom:1px dotted var(--faint)}
 .tip::after{content:attr(data-tip);position:absolute;left:0;top:calc(100% + 7px);z-index:30;width:250px;background:var(--panel3);border:1px solid var(--line);border-radius:8px;padding:9px 11px;font:400 11px/1.45 var(--font-sans);color:var(--dim);opacity:0;pointer-events:none;transition:opacity .12s;letter-spacing:normal;text-transform:none;white-space:normal}
 .tip:hover::after{opacity:1}
+.dispRef{font:700 8.5px var(--font-mono-stack);color:var(--purple);margin-left:5px}

@@ -2,11 +2,17 @@
 
 /* Population index: every defined universe with its type, ladder state,
  * size, and open-delta count. Size shows "—" wherever the denominator
- * is unratified — the no-%-against-an-unratified-denominator rule. */
+ * is unratified — the no-%-against-an-unratified-denominator rule. A
+ * population whose derivation names a source with no capability entry
+ * wears its E117: DEFINED, and it cannot advance until the entry lands. */
 
 import Link from "next/link";
-import { loadEngagement, openDeltaCount } from "@/lib/data/engagement";
-import { LadderChip, Tip, TypeBadge } from "@/components/engagement/Badges";
+import {
+  blockingCompileError,
+  loadEngagement,
+  openDeltaCount,
+} from "@/lib/data/engagement";
+import { LadderChip, MiniChip, Tip, TypeBadge } from "@/components/engagement/Badges";
 import SchemaDriftBanner from "@/components/engagement/SchemaDriftBanner";
 import styles from "./Reconciliation.module.css";
 
@@ -29,6 +35,7 @@ export default function ReconciliationIndexPage() {
         {populations.map((p) => {
           const open = Math.max(openDeltaCount(load, p.population_id), p.open_deltas.length);
           const ratified = p.state === "RATIFIED";
+          const blocker = blockingCompileError(load, p);
           return (
             <Link
               key={p.population_id}
@@ -39,6 +46,14 @@ export default function ReconciliationIndexPage() {
               <div className={styles.cardTop}>
                 <TypeBadge type={p.type} />
                 <LadderChip state={p.state} />
+                {blocker && (
+                  <MiniChip
+                    tone="red"
+                    title={`${blocker.missing_source}: no ratified capability entry — discovery cannot run`}
+                  >
+                    {blocker.code}
+                  </MiniChip>
+                )}
               </div>
               <div className={styles.name}>{p.name}</div>
               <code className={styles.pid}>{p.population_id}</code>

@@ -2,9 +2,9 @@ name: web-verify
 
 on:
   pull_request:
-    paths: ["web/**", "artifacts/**"]
+    paths: ["web/**", "artifacts/**", "schemas/**"]
   push:
-    paths: ["web/**", "artifacts/**"]
+    paths: ["web/**", "artifacts/**", "schemas/**"]
 
 jobs:
   web-verify:
@@ -20,7 +20,16 @@ jobs:
           cache: npm
           cache-dependency-path: web/package-lock.json
       - run: npm ci
+      # Artifact-sync drift gate: the committed copies must equal the
+      # synced pipeline output (src/data/engagement == artifacts/demo-engagement).
+      - run: node scripts/sync-artifacts.mjs
+      - run: git diff --exit-code -- web/src/data/engagement
+        working-directory: .
+      # Codegen drift gate: committed generated types must equal a fresh
+      # run against schemas/*.schema.json (assignability vs the mirrored
+      # ontology is then enforced by tsc via src/lib/types/checks.ts).
+      - run: npm run codegen
+      - run: git diff --exit-code -- web/src/lib/types/generated
+        working-directory: .
       - run: npx tsc --noEmit
       - run: npm run build
-      # Placeholder: artifact-sync drift check (enable once artifacts/ exists)
-      # - run: node scripts/check-artifact-sync.mjs

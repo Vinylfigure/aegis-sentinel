@@ -2,8 +2,8 @@
 .compiler{background:var(--bg);border:1px solid var(--red);border-radius:10px;padding:6px 0;margin-bottom:8px}
 .ecode{display:flex;gap:13px;padding:10px 16px}
 .ecode+.ecode{border-top:1px dashed var(--line)}
-.code{font:700 12px var(--font-mono-stack);color:var(--red);flex-shrink:0}
-.emsg{font:400 11px/1.55 var(--font-mono-stack);color:var(--red)}
+.ebody{min-width:0;flex:1}
+.erendered{font:400 11px/1.55 var(--font-mono-stack);color:var(--red);white-space:pre-wrap;word-break:break-word}
 .esuggest{font:400 10.5px/1.5 var(--font-mono-stack);color:var(--cyan);margin-top:4px}
 .eref{font:400 9.5px var(--font-mono-stack);color:var(--faint);margin-top:4px}
 
@@ -19,6 +19,8 @@
 
 .pops{display:flex;flex-direction:column;gap:4px;margin-top:10px}
 .pop{font-size:10.5px;color:var(--dim);display:flex;align-items:center;gap:6px}
+.fields{font:400 9px var(--font-mono-stack);color:var(--faint);font-style:normal}
+.pmethod{font:700 9.5px var(--font-mono-stack);color:var(--cyan)}
 
 .meta{margin-top:10px;border-top:1px dashed var(--line);padding-top:9px}
 .mrow{display:flex;gap:10px;align-items:baseline;margin-bottom:5px}

@@ -1,7 +1,6 @@
 .claim{background:var(--panel);border:1px solid var(--line);border-radius:12px;margin-bottom:14px;overflow:hidden}
 .claimHead{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;padding:13px 18px;border-bottom:1px solid var(--line)}
-.claimId{font-family:var(--font-mono-stack);font-size:10.5px;color:var(--purple)}
-.claimStmt{font:700 13.5px var(--font-slab);flex:1;min-width:200px}
+.claimId{font:700 13px var(--font-mono-stack);color:var(--purple);flex:1;min-width:200px}
 .maps{display:flex;gap:5px;flex-wrap:wrap}
 
 .rowLink{display:block;text-decoration:none;color:inherit}
@@ -9,16 +8,16 @@
 .row{display:grid;grid-template-columns:150px 1fr auto;gap:14px;align-items:start;padding:11px 18px;border-bottom:1px dashed var(--line);transition:background .1s}
 .rowL{display:flex;flex-direction:column;gap:5px;align-items:flex-start}
 .aid{font-family:var(--font-mono-stack);font-size:11px;color:var(--ink)}
+.hash{font-family:var(--font-mono-stack);font-size:9px;color:var(--faint)}
 .pred{font-size:11.5px;color:var(--dim);line-height:1.5}
-.msg{display:block;font:400 10px/1.5 var(--font-mono-stack);color:var(--faint);margin-top:5px;border-left:2px solid var(--line);padding-left:9px}
+.msg{display:block;font:400 10px/1.5 var(--font-mono-stack);color:var(--faint);border-left:2px solid var(--line);padding-left:9px}
 .rowR{display:flex;flex-direction:column;gap:5px;align-items:flex-end}
 
-/* compile-error rows — styled as compiler output */
+/* compile-error rows — the compiler's rendered output, verbatim */
 .errRow{display:flex;gap:13px;padding:12px 18px;border-bottom:1px dashed var(--line);background:rgba(224,113,111,.05)}
-.errCode{font:700 12px var(--font-mono-stack);color:var(--red);flex-shrink:0}
-.errBody{min-width:0}
+.errBody{min-width:0;flex:1}
 .errAssert{font:600 10px var(--font-mono-stack);letter-spacing:.05em;color:var(--faint);text-transform:uppercase}
-.errMsg{font:400 11px/1.55 var(--font-mono-stack);color:var(--red);margin-top:4px}
+.errRendered{font:400 11px/1.55 var(--font-mono-stack);color:var(--red);margin-top:4px;white-space:pre-wrap;word-break:break-word}
 .errSuggest{font:400 10.5px/1.5 var(--font-mono-stack);color:var(--cyan);margin-top:4px}
 
 @media(max-width:860px){

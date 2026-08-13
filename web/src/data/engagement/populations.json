@@ -1,158 +1,202 @@
-[
-  {
-    "population_id": "pop-term-2026h1",
-    "name": "Terminations H1 2026",
-    "type": "EVENT",
-    "definition": "Every employment separation with an effective date inside the engagement period, regardless of worker type or which system first observed it.",
-    "derivation_rule": {
-      "rule_text": "HRIS separation feed enumerates the membership (AUTHORITATIVE); Okta System Log deactivation events corroborate each member and contribute candidates observed in the IdP but absent from the feed.",
-      "source_refs": ["hris.employee_feed", "okta.system_log"]
+{
+  "engagement": "demo-engagement",
+  "populations": [
+    {
+      "definition": "Every worker (employee or contractor) whose engagement ended during the period, as enumerated by the hris termination feed",
+      "derivation_rule": {
+        "rule_text": "all members enumerated by authoritative source hris-termination-feed; okta-system-log deactivation events corroborate membership",
+        "source_refs": [
+          "hris-termination-feed"
+        ]
+      },
+      "exclusions": [],
+      "name": "Terminated workers",
+      "open_deltas": [],
+      "period": {
+        "end": "2026-06-30",
+        "start": "2026-01-01"
+      },
+      "population_id": "TERM.terminations",
+      "size": 15,
+      "sources": [
+        {
+          "role": "AUTHORITATIVE",
+          "source_id": "hris-termination-feed"
+        },
+        {
+          "role": "CORROBORATING",
+          "source_id": "okta-system-log"
+        }
+      ],
+      "state": "RATIFIED",
+      "type": "EVENT"
     },
-    "sources": [
-      { "source_id": "hris.employee_feed", "role": "AUTHORITATIVE" },
-      { "source_id": "okta.system_log", "role": "CORROBORATING" }
-    ],
-    "period": { "start": "2026-01-01", "end": "2026-06-30" },
-    "size": 15,
-    "exclusions": [
-      {
-        "member_id": "E-1015",
-        "rationale": "Separation converted to fixed-term advisory engagement; retained read-only access dispositioned under disp-2026-044."
-      }
-    ],
-    "open_deltas": [],
-    "state": "RECONCILED"
-  },
-  {
-    "population_id": "pop-hris-employees",
-    "name": "Workforce roster (HRIS)",
-    "type": "ENTITY",
-    "definition": "All active and separated workers carried on the HRIS roster during the period — the identity anchor for every join on the lane.",
-    "derivation_rule": {
-      "rule_text": "All members enumerated by authoritative source hris.employee_feed (degenerate case).",
-      "source_refs": ["hris.employee_feed"]
+    {
+      "definition": "Every account able to authenticate to github — SSO-provisioned and local (non-SSO) accounts alike — including access derived from group membership",
+      "derivation_rule": {
+        "rule_text": "all accounts enumerated by github-account-inventory, joined with group-derived access from okta-group-assignments",
+        "source_refs": [
+          "github-account-inventory",
+          "okta-group-assignments"
+        ]
+      },
+      "exclusions": [],
+      "name": "github accounts",
+      "open_deltas": [
+        {
+          "delta_id": "TERM.github.accounts#right_only#bm-legacy-bot",
+          "owner": "vinylfigure (Ratifier)"
+        }
+      ],
+      "period": {
+        "end": "2026-06-30",
+        "start": "2026-01-01"
+      },
+      "population_id": "TERM.github.accounts",
+      "size": 19,
+      "sources": [
+        {
+          "role": "AUTHORITATIVE",
+          "source_id": "github-account-inventory"
+        },
+        {
+          "role": "CONTRIBUTING",
+          "source_id": "okta-group-assignments"
+        }
+      ],
+      "state": "DISCOVERED",
+      "type": "ENTITY"
     },
-    "sources": [{ "source_id": "hris.employee_feed", "role": "AUTHORITATIVE" }],
-    "period": { "start": "2026-01-01", "end": "2026-06-30" },
-    "size": 312,
-    "exclusions": [],
-    "open_deltas": [],
-    "state": "RATIFIED"
-  },
-  {
-    "population_id": "pop-okta-accounts",
-    "name": "IdP accounts (Okta)",
-    "type": "ENTITY",
-    "definition": "Every Okta account in the tenant — active, suspended, and deprovisioned — including service and integration identities.",
-    "derivation_rule": {
-      "rule_text": "Okta Users API enumerates the membership (AUTHORITATIVE); System Log lifecycle events corroborate status transitions.",
-      "source_refs": ["okta.users", "okta.system_log"]
+    {
+      "definition": "Every account able to authenticate to gcp — SSO-provisioned and local (non-SSO) accounts alike — including access derived from group membership",
+      "derivation_rule": {
+        "rule_text": "all accounts enumerated by gcp-account-inventory, joined with group-derived access from okta-group-assignments; union break-glass accounts enumerated by breakglass.config",
+        "source_refs": [
+          "gcp-account-inventory",
+          "okta-group-assignments",
+          "breakglass.config"
+        ]
+      },
+      "exclusions": [],
+      "name": "gcp accounts",
+      "open_deltas": [],
+      "period": {
+        "end": "2026-06-30",
+        "start": "2026-01-01"
+      },
+      "population_id": "TERM.gcp.accounts",
+      "size": null,
+      "sources": [
+        {
+          "role": "AUTHORITATIVE",
+          "source_id": "gcp-account-inventory"
+        },
+        {
+          "role": "CONTRIBUTING",
+          "source_id": "okta-group-assignments"
+        },
+        {
+          "role": "CONTRIBUTING",
+          "source_id": "breakglass.config"
+        }
+      ],
+      "state": "DEFINED",
+      "type": "ENTITY"
     },
-    "sources": [
-      { "source_id": "okta.users", "role": "AUTHORITATIVE" },
-      { "source_id": "okta.system_log", "role": "CORROBORATING" }
-    ],
-    "period": { "start": "2026-01-01", "end": "2026-06-30" },
-    "size": 348,
-    "exclusions": [],
-    "open_deltas": [],
-    "state": "RATIFIED"
-  },
-  {
-    "population_id": "pop-github-accounts",
-    "name": "Source-control accounts (GitHub)",
-    "type": "ENTITY",
-    "definition": "Every account with membership in the engineering org — SSO-linked and local — plus outside collaborators on production repositories.",
-    "derivation_rule": {
-      "rule_text": "Org members endpoint enumerates the membership; audit-log export contributes removal events and discovers accounts the members endpoint no longer returns.",
-      "source_refs": ["github.org_members", "github.audit_log"]
+    {
+      "definition": "Every account able to authenticate to slack — SSO-provisioned and local (non-SSO) accounts alike — including access derived from group membership",
+      "derivation_rule": {
+        "rule_text": "all accounts enumerated by slack-account-inventory, joined with group-derived access from okta-group-assignments",
+        "source_refs": [
+          "slack-account-inventory",
+          "okta-group-assignments"
+        ]
+      },
+      "exclusions": [],
+      "name": "slack accounts",
+      "open_deltas": [
+        {
+          "delta_id": "TERM.slack.accounts#left_only#ctr.blake.morgan@example-vendor.com",
+          "owner": "vinylfigure (Ratifier)"
+        }
+      ],
+      "period": {
+        "end": "2026-06-30",
+        "start": "2026-01-01"
+      },
+      "population_id": "TERM.slack.accounts",
+      "size": 31,
+      "sources": [
+        {
+          "role": "AUTHORITATIVE",
+          "source_id": "slack-account-inventory"
+        },
+        {
+          "role": "CONTRIBUTING",
+          "source_id": "okta-group-assignments"
+        }
+      ],
+      "state": "DISCOVERED",
+      "type": "ENTITY"
     },
-    "sources": [
-      { "source_id": "github.org_members", "role": "AUTHORITATIVE" },
-      { "source_id": "github.audit_log", "role": "DISCOVERY" }
-    ],
-    "period": { "start": "2026-01-01", "end": "2026-06-30" },
-    "size": 74,
-    "exclusions": [],
-    "open_deltas": [{ "delta_id": "d-202", "owner": "platform-eng" }],
-    "state": "DISCOVERED"
-  },
-  {
-    "population_id": "pop-gcp-principals",
-    "name": "Cloud IAM principals (GCP)",
-    "type": "ENTITY",
-    "definition": "Every principal holding an IAM binding at or below the production folder, with group-derived bindings expanded.",
-    "derivation_rule": {
-      "rule_text": "Cloud Asset Inventory IAM snapshot enumerates direct bindings (AUTHORITATIVE); group expansion is a contributing join pending google.groups capability.",
-      "source_refs": ["gcp.iam_policy"]
-    },
-    "sources": [{ "source_id": "gcp.iam_policy", "role": "AUTHORITATIVE" }],
-    "period": { "start": "2026-01-01", "end": "2026-06-30" },
-    "size": 61,
-    "exclusions": [],
-    "open_deltas": [],
-    "state": "STALE"
-  },
-  {
-    "population_id": "pop-slack-accounts",
-    "name": "Chat workspace users (Slack)",
-    "type": "ENTITY",
-    "definition": "Every Slack workspace user including single- and multi-channel guests.",
-    "derivation_rule": {
-      "rule_text": "SCIM Users enumerates full members (AUTHORITATIVE); guest coverage requires the audit-log surface, not yet ratified.",
-      "source_refs": ["slack.users"]
-    },
-    "sources": [{ "source_id": "slack.users", "role": "AUTHORITATIVE" }],
-    "period": { "start": "2026-01-01", "end": "2026-06-30" },
-    "size": null,
-    "exclusions": [],
-    "open_deltas": [],
-    "state": "DEFINED"
-  },
-  {
-    "population_id": "pop-identity-join",
-    "name": "Identity join — workforce ↔ accounts",
-    "type": "RELATIONSHIP",
-    "definition": "The join of every in-scope account (Okta, GitHub, GCP, Slack) to exactly one canonical workforce identity on the HRIS roster.",
-    "derivation_rule": {
-      "rule_text": "HRIS roster anchors identity (AUTHORITATIVE); Okta profiles contribute employee_id and email joins; GitHub members are joined via SSO-linked login; accounts matching the service-identity rule are excluded by policy.",
-      "source_refs": ["hris.employee_feed", "okta.users", "github.org_members"]
-    },
-    "sources": [
-      { "source_id": "hris.employee_feed", "role": "AUTHORITATIVE" },
-      { "source_id": "okta.users", "role": "CONTRIBUTING" },
-      { "source_id": "github.org_members", "role": "CONTRIBUTING" },
-      { "source_id": "github.audit_log", "role": "DISCOVERY" },
-      { "source_id": "slack.users", "role": "EXCLUSION" }
-    ],
-    "period": { "start": "2026-01-01", "end": "2026-06-30" },
-    "size": null,
-    "exclusions": [],
-    "open_deltas": [
-      { "delta_id": "d-201", "owner": "it-iam" },
-      { "delta_id": "d-202", "owner": "platform-eng" },
-      { "delta_id": "d-203", "owner": "appsec" }
-    ],
-    "state": "DISCOVERED"
-  },
-  {
-    "population_id": "pop-prod-modifiers",
-    "name": "Everyone capable of modifying production",
-    "type": "ENTITY",
-    "definition": "The union of every principal that can change production: cloud IAM, source-control deploy paths, CI service accounts, and break-glass credentials.",
-    "derivation_rule": {
-      "rule_text": "Union of gcp.iam_policy bindings, github.org_members with deploy permission, and breakglass.config entries — the derivation cannot compile while breakglass.config has no ratified capability entry (E117).",
-      "source_refs": ["gcp.iam_policy", "github.org_members", "breakglass.config"]
-    },
-    "sources": [
-      { "source_id": "gcp.iam_policy", "role": "CONTRIBUTING" },
-      { "source_id": "github.org_members", "role": "CONTRIBUTING" },
-      { "source_id": "breakglass.config", "role": "CONTRIBUTING" }
-    ],
-    "period": { "start": "2026-01-01", "end": "2026-06-30" },
-    "size": null,
-    "exclusions": [],
-    "open_deltas": [],
-    "state": "UNDEFINED"
-  }
-]
+    {
+      "definition": "Canonical-identity join of every terminated worker to every downstream account attributable to them across the lane's target systems",
+      "derivation_rule": {
+        "rule_text": "canonical-identity join of hris-termination-feed members to each downstream system's account inventory, keyed through okta-system-log identities",
+        "source_refs": [
+          "hris-termination-feed",
+          "okta-system-log",
+          "github-account-inventory",
+          "gcp-account-inventory",
+          "slack-account-inventory"
+        ]
+      },
+      "exclusions": [],
+      "name": "Terminated worker to downstream accounts",
+      "open_deltas": [
+        {
+          "delta_id": "TERM.identity-join#left_only#bm-legacy-bot",
+          "owner": "vinylfigure (Ratifier)"
+        },
+        {
+          "delta_id": "TERM.identity-join#left_only#ctr.blake.morgan@example-vendor.com",
+          "owner": "vinylfigure (Ratifier)"
+        },
+        {
+          "delta_id": "TERM.identity-join#unresolvable#dana.kowalski@meridianfinancial.example",
+          "owner": "vinylfigure (Ratifier)"
+        }
+      ],
+      "period": {
+        "end": "2026-06-30",
+        "start": "2026-01-01"
+      },
+      "population_id": "TERM.identity-join",
+      "size": 15,
+      "sources": [
+        {
+          "role": "AUTHORITATIVE",
+          "source_id": "hris-termination-feed"
+        },
+        {
+          "role": "CONTRIBUTING",
+          "source_id": "okta-system-log"
+        },
+        {
+          "role": "CONTRIBUTING",
+          "source_id": "github-account-inventory"
+        },
+        {
+          "role": "CONTRIBUTING",
+          "source_id": "gcp-account-inventory"
+        },
+        {
+          "role": "CONTRIBUTING",
+          "source_id": "slack-account-inventory"
+        }
+      ],
+      "state": "DISCOVERED",
+      "type": "RELATIONSHIP"
+    }
+  ]
+}

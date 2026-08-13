@@ -13,7 +13,12 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { PROOF_NODE_KINDS } from "@/lib/types/artifacts";
 import type { ProofNode } from "@/lib/types/artifacts";
-import { loadEngagement, proofGraphFor, verdictById } from "@/lib/data/engagement";
+import {
+  loadEngagement,
+  proofGraphFor,
+  verdictBySlug,
+  verdictSlug,
+} from "@/lib/data/engagement";
 import { useEngagementStore } from "@/lib/state/engagementStore";
 import { VerdictBadge } from "@/components/engagement/Badges";
 import SchemaDriftBanner from "@/components/engagement/SchemaDriftBanner";
@@ -46,10 +51,12 @@ function shortText(node: ProofNode): string {
 
 export default function ProofPage() {
   const params = useParams<{ verdictId: string }>();
+  // The route key is a URL-safe prefix of the verdict's record_hash —
+  // SCH01 records have no verdict_id; record identity IS the hash.
   const verdictId = decodeURIComponent(params?.verdictId ?? "");
   const load = loadEngagement();
   const graph = proofGraphFor(load, verdictId);
-  const verdict = verdictById(load, verdictId);
+  const verdict = verdictBySlug(load, verdictId);
 
   const selectedNodeId = useEngagementStore((s) => s.selectedProofNodeId);
   const selectProofNode = useEngagementStore((s) => s.selectProofNode);
@@ -106,6 +113,10 @@ export default function ProofPage() {
   };
 
   if (!graph) {
+    const timingGraph = load.artifacts.proof_graphs[0];
+    const timingVerdict = timingGraph
+      ? verdictBySlug(load, timingGraph.verdict_ref)
+      : undefined;
     return (
       <div>
         <SchemaDriftBanner drift={load.drift} />
@@ -113,9 +124,19 @@ export default function ProofPage() {
           {verdict ? (
             <>
               Verdict <code>{verdictId}</code> ({verdict.state} on{" "}
-              {verdict.assertion_ref}) has no lineage artifact in the mock
-              bundle — the full ten-stage proof graph ships for the TIMING FAIL
-              (<Link href="/proof/vr-am06-b">vr-am06-b</Link>).
+              {verdict.assertion_ref}) has no lineage artifact in the engagement
+              bundle
+              {timingVerdict ? (
+                <>
+                  {" "}
+                  — the full ten-stage proof graph ships for the TIMING FAIL (
+                  <Link href={`/proof/${verdictSlug(timingVerdict)}`}>
+                    {timingVerdict.assertion_ref} · {verdictSlug(timingVerdict)}…
+                  </Link>
+                  )
+                </>
+              ) : null}
+              . <Link href="/verdicts">Back to verdicts.</Link>
             </>
           ) : (
             <>
@@ -134,7 +155,8 @@ export default function ProofPage() {
       <div className={styles.head}>
         <div>
           <h2 className={styles.title}>
-            Proof lineage <span>·</span> {verdictId}
+            Proof lineage <span>·</span>{" "}
+            {verdict ? `${verdict.assertion_ref} · ${verdictSlug(verdict)}…` : verdictId}
           </h2>
           <p className={styles.sub}>
             Every arrow is typed. Read left to right: the commitment imposes an

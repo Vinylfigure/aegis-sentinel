@@ -1,87 +1,135 @@
 [
   {
-    "verdict_ref": "vr-am06-b",
-    "nodes": [
+    "edges": [
       {
-        "node_id": "n-cmt",
-        "kind": "commitment",
-        "label": "SOC 2 Type II — CC6.2",
-        "ref": "cmt-soc2-cc62"
+        "from": "n-cmt",
+        "relation": "imposes",
+        "to": "n-req"
       },
       {
-        "node_id": "n-req",
-        "kind": "requirement",
-        "label": "Revoke logical access on separation, timely",
-        "ref": "req-access-revocation"
+        "from": "n-req",
+        "relation": "mechanized_as",
+        "to": "n-claim"
       },
       {
-        "node_id": "n-claim",
-        "kind": "claim",
-        "label": "CL-TERM-01 — separation revokes production access ≤ 5 business days",
-        "ref": "CL-TERM-01"
+        "from": "n-claim",
+        "relation": "scoped_over",
+        "to": "n-pop"
       },
       {
-        "node_id": "n-pop",
-        "kind": "population",
-        "label": "Terminations H1 2026 · EVENT · 15 members",
-        "ref": "pop-term-2026h1"
+        "from": "n-pop",
+        "relation": "derived_from",
+        "to": "n-src-1"
       },
       {
-        "node_id": "n-src-hris",
-        "kind": "source",
-        "label": "hris.employee_feed — AUTHORITATIVE",
-        "ref": "hris.employee_feed"
+        "from": "n-pop",
+        "relation": "corroborated_by",
+        "to": "n-src-2"
       },
       {
-        "node_id": "n-src-okta",
-        "kind": "source",
-        "label": "okta.system_log — CORROBORATING",
-        "ref": "okta.system_log"
+        "from": "n-src-1",
+        "relation": "feeds",
+        "to": "n-rec"
       },
       {
-        "node_id": "n-rec",
-        "kind": "reconciliation",
-        "label": "rec-term-2026h1 — six-bucket set reconciliation, all deltas dispositioned",
-        "ref": "rec-term-2026h1"
+        "from": "n-src-2",
+        "relation": "feeds",
+        "to": "n-rec"
       },
       {
-        "node_id": "n-eqc",
-        "kind": "contract",
-        "label": "EQC okta.system_log H1 — supports EVENT · TIMING · EXISTENCE",
-        "ref": "4e030bb8c339e285f86dc319efeb1c0659430df98f9a2ad8f25857ce7a0cfa7d"
+        "from": "n-rec",
+        "relation": "completeness_basis",
+        "to": "n-eqc"
       },
       {
-        "node_id": "n-snap",
-        "kind": "snapshot",
-        "label": "WORM snapshot 2026-08-01 — sha256 da571eeb…5fb4",
-        "ref": "snap-okta-syslog-0801"
+        "from": "n-eqc",
+        "relation": "collected_as",
+        "to": "n-snap"
       },
       {
-        "node_id": "n-assert",
-        "kind": "assertion",
-        "label": "AM-06.b — TIMING: revoked ≤ 5 business days",
-        "ref": "AM-06.b"
+        "from": "n-snap",
+        "relation": "supports",
+        "to": "n-assert"
       },
       {
-        "node_id": "n-verdict",
-        "kind": "verdict",
-        "label": "FAIL — E-1012 revoked in 6 business days",
-        "ref": "vr-am06-b"
+        "from": "n-claim",
+        "relation": "decomposed_into",
+        "to": "n-assert"
+      },
+      {
+        "from": "n-assert",
+        "relation": "evaluated_to",
+        "to": "n-verdict"
       }
     ],
-    "edges": [
-      { "from": "n-cmt", "to": "n-req", "relation": "imposes" },
-      { "from": "n-req", "to": "n-claim", "relation": "mechanized_as" },
-      { "from": "n-claim", "to": "n-pop", "relation": "scoped_over" },
-      { "from": "n-pop", "to": "n-src-hris", "relation": "derived_from" },
-      { "from": "n-pop", "to": "n-src-okta", "relation": "corroborated_by" },
-      { "from": "n-src-hris", "to": "n-rec", "relation": "feeds" },
-      { "from": "n-src-okta", "to": "n-rec", "relation": "feeds" },
-      { "from": "n-rec", "to": "n-eqc", "relation": "completeness_basis" },
-      { "from": "n-eqc", "to": "n-snap", "relation": "collected_as" },
-      { "from": "n-snap", "to": "n-assert", "relation": "supports" },
-      { "from": "n-claim", "to": "n-assert", "relation": "decomposed_into" },
-      { "from": "n-assert", "to": "n-verdict", "relation": "evaluated_to" }
-    ]
+    "nodes": [
+      {
+        "kind": "commitment",
+        "label": "SOC 2 Type II — CC6.3",
+        "node_id": "n-cmt",
+        "ref": "cmt-soc2-cc6.3"
+      },
+      {
+        "kind": "requirement",
+        "label": "Revoke logical access on separation, timely (AM-06)",
+        "node_id": "n-req",
+        "ref": "req-am-06"
+      },
+      {
+        "kind": "claim",
+        "label": "TERM.timely-revocation — Every terminated worker lost access within five business days of the termination date",
+        "node_id": "n-claim",
+        "ref": "TERM.timely-revocation"
+      },
+      {
+        "kind": "population",
+        "label": "Terminated workers · EVENT · 15 members · RATIFIED",
+        "node_id": "n-pop",
+        "ref": "TERM.terminations"
+      },
+      {
+        "kind": "source",
+        "label": "hris-termination-feed — AUTHORITATIVE",
+        "node_id": "n-src-1",
+        "ref": "hris-termination-feed"
+      },
+      {
+        "kind": "source",
+        "label": "okta-system-log — CORROBORATING",
+        "node_id": "n-src-2",
+        "ref": "okta-system-log"
+      },
+      {
+        "kind": "reconciliation",
+        "label": "rec-TERM.terminations — set reconciliation, 0 delta(s), 0 open",
+        "node_id": "n-rec",
+        "ref": "rec-TERM.terminations"
+      },
+      {
+        "kind": "contract",
+        "label": "EQC okta System Log API GET /api/v1/logs (deprovisioning events: user.lifecycle.deactivate, user.lifecycle.suspend, application.user_membership.remove) — supports AGGREGATE · EVENT · SEQUENCE · TIMING",
+        "node_id": "n-eqc",
+        "ref": "3bb0a3e1382aa8dfbaa37bea5f24dbb09afdc4529569f33263155c39f4feafab"
+      },
+      {
+        "kind": "snapshot",
+        "label": "WORM snapshot 2026-07-01 — sha256 fd1bda04…b9f0",
+        "node_id": "n-snap",
+        "ref": "fd1bda04300c3b2d9c09e8eb59a6a77cbf313ce54821dda61b0b146fd194b9f0"
+      },
+      {
+        "kind": "assertion",
+        "label": "TERM-TIMING.a — TIMING: identity-provider deactivation occurred no more than five business days after the termination date, tested across the full population",
+        "node_id": "n-assert",
+        "ref": "TERM-TIMING.a"
+      },
+      {
+        "kind": "verdict",
+        "label": "FAIL — marcus.webb@meridianfinancial.example: terminated 2026-02-13, IdP deactivation 2026-02-26 = 9 business day(s) (> 5)",
+        "node_id": "n-verdict",
+        "ref": "e375bc0e3f94e1c8bed9a8d8e6d78b2a1d41ed05ef32cdf4ea3dd472967859af"
+      }
+    ],
+    "verdict_ref": "e375bc0e3f94e1c8bed9a8d8e6d78b2a1d41ed05ef32cdf4ea3dd472967859af"
   }
 ]

@@ -11,7 +11,7 @@ import {
   loadEngagement,
   populationById,
   reconciliationFor,
-  verdictById,
+  verdictBySlug,
 } from "@/lib/data/engagement";
 import { LadderChip, MiniChip, SourceRoleTag, VerdictBadge } from "./Badges";
 import WhyCompletePanel from "./WhyCompletePanel";
@@ -22,16 +22,20 @@ export default function NodeInspector({ node }: { node: ProofNode }) {
   const { artifacts } = load;
 
   const population = node.kind === "population" ? populationById(load, node.ref) : undefined;
-  const verdict = node.kind === "verdict" ? verdictById(load, node.ref) : undefined;
-  const assertion =
+  // Verdict nodes ref the full record_hash.
+  const verdict = node.kind === "verdict" ? verdictBySlug(load, node.ref) : undefined;
+  // Assertion nodes ref the assertion_id; its verdict carries the triple.
+  const assertionVerdict =
     node.kind === "assertion"
-      ? artifacts.claims.flatMap((c) => c.assertions).find((a) => a.assertion_id === node.ref)
+      ? artifacts.verdicts.find((v) => v.assertion_ref === node.ref)
       : undefined;
-  const claim =
-    node.kind === "claim" ? artifacts.claims.find((c) => c.claim_id === node.ref) : undefined;
+  // Source nodes ref a population-yielding source id; the capability entry
+  // that yields it is the underlying record.
   const capability =
     node.kind === "source"
-      ? artifacts.capability_registry.find((e) => e.entry_id === node.ref)
+      ? artifacts.capability_registry.find((e) =>
+          e.populations_yielded.some((p) => p.name === node.ref)
+        )
       : undefined;
   const sourceRole =
     node.kind === "source"
@@ -64,12 +68,18 @@ export default function NodeInspector({ node }: { node: ProofNode }) {
                 {verdict.contract_hash.slice(0, 12)}…
               </div>
             </div>
-            {verdict.record_hash && (
-              <div className={styles.frow}>
-                <label>record_hash</label>
-                <div className={styles.hashes}>{verdict.record_hash.slice(0, 24)}…</div>
+            <div className={styles.frow}>
+              <label>record_hash</label>
+              <div className={styles.hashes}>{verdict.record_hash.slice(0, 24)}…</div>
+            </div>
+            <div className={styles.frow}>
+              <label>evidence</label>
+              <div className={styles.hashes}>
+                {verdict.evidence_refs.map((r) => (
+                  <div key={r}>{r.length > 40 ? `${r.slice(0, 38)}…` : r}</div>
+                ))}
               </div>
-            )}
+            </div>
           </div>
         </div>
       )}
@@ -94,26 +104,42 @@ export default function NodeInspector({ node }: { node: ProofNode }) {
         </div>
       )}
 
-      {node.kind === "assertion" && assertion && (
+      {node.kind === "assertion" && (
         <div className={styles.body}>
-          <MiniChip tone="purple">{assertion.type}</MiniChip>
-          <p className={styles.msg}>{assertion.predicate_text}</p>
-          <div className={styles.frow}>
-            <label>population</label>
-            <div>{assertion.population_ref}</div>
-          </div>
+          {assertionVerdict && (
+            <div className={styles.popRow}>
+              <MiniChip tone="purple">evaluated</MiniChip>
+              <VerdictBadge state={assertionVerdict.state} />
+            </div>
+          )}
+          <p className={styles.msg}>
+            A lettered, typed, testable attribute of its claim — the type
+            constrains what evidence may prove it.
+          </p>
+          {assertionVerdict && (
+            <div className={styles.frow}>
+              <label>population</label>
+              <div>{assertionVerdict.population_ref}</div>
+            </div>
+          )}
         </div>
       )}
 
-      {node.kind === "claim" && claim && (
+      {node.kind === "claim" && (
         <div className={styles.body}>
-          <p className={styles.msg}>{claim.statement}</p>
+          <p className={styles.msg}>
+            The semantic unit: a testable proposition over a subject population,
+            decomposed into typed assertions. Framework mappings are
+            projections onto the claim, never the claim itself.
+          </p>
           <div className={styles.mapChips}>
-            {claim.framework_mappings.map((m) => (
-              <MiniChip key={`${m.framework}-${m.control_id}`} tone="cyan">
-                {m.framework} {m.control_id}
-              </MiniChip>
-            ))}
+            {artifacts.verdicts
+              .filter((v) => v.claim_ref === node.ref)
+              .map((v) => (
+                <MiniChip key={v.record_hash} tone="cyan">
+                  {v.assertion_ref}
+                </MiniChip>
+              ))}
           </div>
         </div>
       )}
@@ -128,14 +154,18 @@ export default function NodeInspector({ node }: { node: ProofNode }) {
           {capability ? (
             <div className={styles.frows}>
               <div className={styles.frow}>
+                <label>capability entry</label>
+                <div className={styles.hashes}>{capability.entry_id}</div>
+              </div>
+              <div className={styles.frow}>
                 <label>surface</label>
                 <div className={styles.hashes}>{capability.surface}</div>
               </div>
               <div className={styles.frow}>
                 <label>temporal</label>
                 <div>
-                  {capability.temporal.shape}
-                  {capability.temporal.window_days
+                  {capability.temporal.kind}
+                  {capability.temporal.window_days != null
                     ? ` (${capability.temporal.window_days}d window)`
                     : ""}
                 </div>

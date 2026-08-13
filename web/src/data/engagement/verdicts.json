@@ -1,288 +1,172 @@
 {
-  "claims": [
-    {
-      "claim_id": "CL-TERM-01",
-      "statement": "Every employee separated in the period lost production access within five business days of the separation effective date.",
-      "population_ref": "pop-term-2026h1",
-      "framework_mappings": [
-        { "framework": "SOC2", "control_id": "CC6.2" },
-        { "framework": "ISO27001", "control_id": "A.5.11" },
-        { "framework": "internal", "control_id": "AM-06" }
-      ],
-      "assertions": [
-        {
-          "assertion_id": "AM-06.a",
-          "claim_ref": "CL-TERM-01",
-          "type": "EVENT",
-          "predicate_text": "An IdP deactivation event exists in the System Log for every HRIS separation.",
-          "population_ref": "pop-term-2026h1"
-        },
-        {
-          "assertion_id": "AM-06.b",
-          "claim_ref": "CL-TERM-01",
-          "type": "TIMING",
-          "predicate_text": "IdP access revoked within 5 business days of the separation effective date.",
-          "population_ref": "pop-term-2026h1"
-        },
-        {
-          "assertion_id": "AM-06.c",
-          "claim_ref": "CL-TERM-01",
-          "type": "NON_EXISTENCE",
-          "predicate_text": "No active source-control account remains for any separated member at snapshot date.",
-          "population_ref": "pop-term-2026h1"
-        },
-        {
-          "assertion_id": "AM-06.d",
-          "claim_ref": "CL-TERM-01",
-          "type": "STATE",
-          "predicate_text": "Cloud IAM carries no bindings for separated principals at snapshot date.",
-          "population_ref": "pop-term-2026h1"
-        },
-        {
-          "assertion_id": "AM-06.e",
-          "claim_ref": "CL-TERM-01",
-          "type": "EXISTENCE",
-          "predicate_text": "A matching HRIS separation record exists for every IdP deactivation observed in the period (reverse completeness).",
-          "population_ref": "pop-term-2026h1"
-        },
-        {
-          "assertion_id": "AM-06.f",
-          "claim_ref": "CL-TERM-01",
-          "type": "TIMING",
-          "predicate_text": "Chat workspace access revoked within 5 business days of the separation effective date.",
-          "population_ref": "pop-term-2026h1"
-        },
-        {
-          "assertion_id": "AM-06.g",
-          "claim_ref": "CL-TERM-01",
-          "type": "STATE",
-          "predicate_text": "No separated member retains any workspace access at period end.",
-          "population_ref": "pop-term-2026h1"
-        }
-      ]
-    },
-    {
-      "claim_id": "CL-IDENT-03",
-      "statement": "Every in-scope account joins to exactly one canonical workforce identity.",
-      "population_ref": "pop-identity-join",
-      "framework_mappings": [
-        { "framework": "SOC2", "control_id": "CC6.1" },
-        { "framework": "internal", "control_id": "IAM-02" }
-      ],
-      "assertions": [
-        {
-          "assertion_id": "IAM-02.a",
-          "claim_ref": "CL-IDENT-03",
-          "type": "AGGREGATE",
-          "predicate_text": "All in-scope accounts resolve to a canonical workforce identity via the ratified join keys.",
-          "population_ref": "pop-identity-join"
-        },
-        {
-          "assertion_id": "IAM-02.b",
-          "claim_ref": "CL-IDENT-03",
-          "type": "STATE",
-          "predicate_text": "The identity join uses only ratified canonical keys (employee_id, email, github_login).",
-          "population_ref": "pop-identity-join"
-        }
-      ]
-    },
-    {
-      "claim_id": "CL-PRIV-02",
-      "statement": "Everyone capable of modifying production is enumerated and reviewed quarterly.",
-      "population_ref": "pop-prod-modifiers",
-      "framework_mappings": [
-        { "framework": "SOC2", "control_id": "CC6.3" },
-        { "framework": "internal", "control_id": "PRV-01" }
-      ],
-      "assertions": [
-        {
-          "assertion_id": "PRV-01.a",
-          "claim_ref": "CL-PRIV-02",
-          "type": "EXISTENCE",
-          "predicate_text": "A quarterly access review exists covering every production-capable principal, including break-glass credentials.",
-          "population_ref": "pop-prod-modifiers"
-        }
-      ]
-    }
-  ],
-  "verdicts": [
-    {
-      "verdict_id": "vr-am06-a",
-      "claim_ref": "CL-TERM-01",
-      "assertion_ref": "AM-06.a",
-      "population_ref": "pop-term-2026h1",
-      "manifest_version": "v3",
-      "snapshot_hash": "da571eebf75ab8e8ad4343faff575c04856ae024f80616d09acdeb1b95fb55b4",
-      "contract_hash": "4e030bb8c339e285f86dc319efeb1c0659430df98f9a2ad8f25857ce7a0cfa7d",
-      "state": "PASS",
-      "evaluated_at": "2026-08-01T18:05:00Z",
-      "message": null,
-      "why_code": null,
-      "d7_family": null,
-      "ratification_ref": null,
-      "disposition_ref": null,
-      "evidence_refs": ["snap-okta-syslog-0801", "snap-hris-roster-0801"],
-      "record_hash": "cbc13ee3866b100e48cccddad8f65971ef19a6c5c170810522c86a184ae9a423"
-    },
-    {
-      "verdict_id": "vr-am06-b",
-      "claim_ref": "CL-TERM-01",
-      "assertion_ref": "AM-06.b",
-      "population_ref": "pop-term-2026h1",
-      "manifest_version": "v3",
-      "snapshot_hash": "da571eebf75ab8e8ad4343faff575c04856ae024f80616d09acdeb1b95fb55b4",
-      "contract_hash": "4e030bb8c339e285f86dc319efeb1c0659430df98f9a2ad8f25857ce7a0cfa7d",
-      "state": "FAIL",
-      "evaluated_at": "2026-08-01T18:05:00Z",
-      "message": "E-1012: separation effective Fri 2026-03-06; Okta deactivation 2026-03-16T14:02Z — 6 business days elapsed (Mon 03-09 → Mon 03-16), threshold 5. Remaining 13 evaluated members within threshold; E-1015 excluded with disposition (delta t-015).",
-      "why_code": null,
-      "d7_family": null,
-      "ratification_ref": null,
-      "disposition_ref": null,
-      "evidence_refs": ["snap-okta-syslog-0801", "snap-hris-roster-0801", "rec-term-2026h1"],
-      "record_hash": "3425d658842139cd053188111e845067fd6383bf4e399709f8d3e9dbea73f53f"
-    },
-    {
-      "verdict_id": "vr-am06-c",
-      "claim_ref": "CL-TERM-01",
-      "assertion_ref": "AM-06.c",
-      "population_ref": "pop-term-2026h1",
-      "manifest_version": "v3",
-      "snapshot_hash": "da571eebf75ab8e8ad4343faff575c04856ae024f80616d09acdeb1b95fb55b4",
-      "contract_hash": "9e30cb1e8ba005f2f005b5e2555d1d8c642dfee05acd5680c94de0f0d0507ccf",
-      "state": "FAIL",
-      "evaluated_at": "2026-08-01T18:06:00Z",
-      "message": "mdiaz-local: local (non-SSO) GitHub org membership still active at snapshot 2026-08-01 — 57 days after the E-1008 separation effective date (2026-06-05); no org.remove_member event in the audit-log window.",
-      "why_code": null,
-      "d7_family": null,
-      "ratification_ref": null,
-      "disposition_ref": null,
-      "evidence_refs": ["snap-gh-members-0801", "snap-gh-audit-0801"],
-      "record_hash": "954925bbb193bd5619b9fc9f01af518c27c1edb090983399e32a95594ab6ddca"
-    },
-    {
-      "verdict_id": "vr-am06-d",
-      "claim_ref": "CL-TERM-01",
-      "assertion_ref": "AM-06.d",
-      "population_ref": "pop-term-2026h1",
-      "manifest_version": "v3",
-      "snapshot_hash": "da571eebf75ab8e8ad4343faff575c04856ae024f80616d09acdeb1b95fb55b4",
-      "contract_hash": "a5eaf6afc3ad406f857aaf416040bf834e47fd79b0bdd9276fdeff90911a075a",
-      "state": "PASS",
-      "evaluated_at": "2026-08-01T18:06:00Z",
-      "message": null,
-      "why_code": null,
-      "d7_family": null,
-      "ratification_ref": null,
-      "disposition_ref": null,
-      "evidence_refs": ["snap-gcp-iam-0801"],
-      "record_hash": "682a2ab066c7998371792e570eefebc47da3065a941f26db5e528e29d6f9d498"
-    },
-    {
-      "verdict_id": "vr-am06-e",
-      "claim_ref": "CL-TERM-01",
-      "assertion_ref": "AM-06.e",
-      "population_ref": "pop-term-2026h1",
-      "manifest_version": "v3",
-      "snapshot_hash": "da571eebf75ab8e8ad4343faff575c04856ae024f80616d09acdeb1b95fb55b4",
-      "contract_hash": "7edcd6a8b87d4d9d03b52854ca94bf9670b3cd06e6f0b611971df82348fdcc29",
-      "state": "PASS",
-      "evaluated_at": "2026-08-01T18:07:00Z",
-      "message": null,
-      "why_code": null,
-      "d7_family": null,
-      "ratification_ref": null,
-      "disposition_ref": null,
-      "evidence_refs": ["snap-hris-roster-0801", "snap-okta-syslog-0801"],
-      "record_hash": "f5cb6a2f629a091be2401554236068c0a6f701d9bcd86213345cca17a2bb4ab7"
-    },
-    {
-      "verdict_id": "vr-am06-f",
-      "claim_ref": "CL-TERM-01",
-      "assertion_ref": "AM-06.f",
-      "population_ref": "pop-term-2026h1",
-      "manifest_version": "v3",
-      "snapshot_hash": "da571eebf75ab8e8ad4343faff575c04856ae024f80616d09acdeb1b95fb55b4",
-      "contract_hash": "6923f4242803f1ef6f1614d6216200a2f7d94daeca6eadc4622b87428fe9d787",
-      "state": "EXCLUDED",
-      "evaluated_at": "2026-08-01T18:07:00Z",
-      "message": "Slack deprovisioning is SCIM-pushed from the IdP; timing is proven once at the IdP (AM-06.b). Ratified exclusion for H1 while pop-slack-accounts remains DEFINED.",
-      "why_code": null,
-      "d7_family": null,
-      "ratification_ref": "rat-2026-018",
-      "disposition_ref": null,
-      "evidence_refs": [],
-      "record_hash": "b9d054a7bad4a659500132ab10023bb2a0480b94fb4a5c7b8c6b5a52570c81ba"
-    },
-    {
-      "verdict_id": "vr-am06-g",
-      "claim_ref": "CL-TERM-01",
-      "assertion_ref": "AM-06.g",
-      "population_ref": "pop-term-2026h1",
-      "manifest_version": "v3",
-      "snapshot_hash": "da571eebf75ab8e8ad4343faff575c04856ae024f80616d09acdeb1b95fb55b4",
-      "contract_hash": "6923f4242803f1ef6f1614d6216200a2f7d94daeca6eadc4622b87428fe9d787",
-      "state": "EXCEPTION",
-      "evaluated_at": "2026-08-01T18:08:00Z",
-      "message": "E-1015 retains read-only advisory workspace access through 2026-09-30 under an approved, owner-signed exception with a review date — dispositioned, not silent.",
-      "why_code": null,
-      "d7_family": null,
-      "ratification_ref": null,
-      "disposition_ref": "disp-2026-044",
-      "evidence_refs": ["snap-slack-users-0801"],
-      "record_hash": "950cdfa4004060b089e3d85cf4da68bbbe6407d646583911befa52a69d9cbc6a"
-    },
-    {
-      "verdict_id": "vr-iam02-a",
-      "claim_ref": "CL-IDENT-03",
-      "assertion_ref": "IAM-02.a",
-      "population_ref": "pop-identity-join",
-      "manifest_version": "v3",
-      "snapshot_hash": "da571eebf75ab8e8ad4343faff575c04856ae024f80616d09acdeb1b95fb55b4",
-      "contract_hash": "d1886019a21f67ba9c26897bc8eb486b9b5d21c88ee87e324c26d460ed87f564",
-      "state": "UNKNOWN",
-      "evaluated_at": "2026-08-01T18:09:00Z",
-      "message": "3 accounts fail the canonical identity join: ext-tnovak (in IdP, absent from the HRIS roster — negative space), mdiaz-local and dev-akira9 (source control, no IdP anchor). The population basis is fuzzy; the verdict is withheld, not guessed.",
-      "why_code": "UNKNOWN_POPULATION",
-      "d7_family": "identity_fuzzy",
-      "ratification_ref": null,
-      "disposition_ref": null,
-      "evidence_refs": ["rec-identity-join-0801", "snap-okta-users-0801", "snap-gh-members-0801"],
-      "record_hash": "48c4435ee874aaf683b823d49a742ed1dc04e5e0ec255561d7d54642a46b2a37"
-    },
-    {
-      "verdict_id": "vr-iam02-b",
-      "claim_ref": "CL-IDENT-03",
-      "assertion_ref": "IAM-02.b",
-      "population_ref": "pop-identity-join",
-      "manifest_version": "v3",
-      "snapshot_hash": "da571eebf75ab8e8ad4343faff575c04856ae024f80616d09acdeb1b95fb55b4",
-      "contract_hash": "d1886019a21f67ba9c26897bc8eb486b9b5d21c88ee87e324c26d460ed87f564",
-      "state": "PASS",
-      "evaluated_at": "2026-08-01T18:09:00Z",
-      "message": null,
-      "why_code": null,
-      "d7_family": null,
-      "ratification_ref": null,
-      "disposition_ref": null,
-      "evidence_refs": ["snap-okta-users-0801"],
-      "record_hash": "4ea7d59b8c8a2c80a7d7ac434c868b2effe1e6dbcf0e704fd20e8d3b68acb762"
-    }
-  ],
   "compile_errors": [
     {
-      "code": "E117",
-      "message": "Population \"pop-prod-modifiers\" derivation rule references gcp.iam_policy + github.org_members + breakglass.config; capability entry missing for breakglass.config.",
-      "suggestion": "Cartographer: research and propose a capability entry for breakglass.config (citations required); human ratification, then Surveyor verification, before PRV-01.a can compile.",
-      "claim_ref": "CL-PRIV-02",
-      "assertion_ref": "PRV-01.a"
+      "assertion_ref": "TERM-TIMING.a",
+      "capability_window_days": 90,
+      "claim_ref": "TERM.timely-revocation",
+      "code": "E204",
+      "message": "TIMING assertion \"identity-provider deactivation occurred no more than five business days after the termination date, tested across the full population\" (TERM-TIMING.a) requires historical transition timestamps covering 2026-01-01..2026-06-30 (181 days); capability okta.system_log.api_v1 (System Log API GET /api/v1/logs (deprovisioning events: user.lifecycle.deactivate, user.lifecycle.suspend, application.user_membership.remove)) yields event-history(window=90d) — 90 days short of 181. No usable capability combination covers the period.",
+      "rendered": "E204  TIMING assertion \"identity-provider deactivation occurred no more than five business days after the termination date, tested across the full population\" (TERM-TIMING.a) requires historical transition timestamps covering 2026-01-01..2026-06-30 (181 days); capability okta.system_log.api_v1 (System Log API GET /api/v1/logs (deprovisioning events: user.lifecycle.deactivate, user.lifecycle.suspend, application.user_membership.remove)) yields event-history(window=90d) — 90 days short of 181. No usable capability combination covers the period.",
+      "required_window": {
+        "end": "2026-06-30",
+        "start": "2026-01-01"
+      },
+      "satisfiable_via": []
     },
     {
-      "code": "E302",
-      "message": "Contract schema_version v3.1 ≠ ratified v3.0 for gcp.iam_policy — re-ratify or pin. pop-gcp-principals marked STALE until resolved.",
-      "suggestion": "Pin collector to asset-inventory schema v3.0, or ratify v3.1 into snapshot v4.",
-      "claim_ref": "CL-TERM-01",
-      "assertion_ref": "AM-06.d"
+      "assertion_ref": null,
+      "claim_ref": "TERM.gcp.no-residual-access",
+      "code": "E117",
+      "message": "Population \"TERM.gcp.accounts\" derivation rule references gcp-account-inventory + okta-group-assignments + breakglass.config; capability entry missing for breakglass.config.",
+      "missing_source": "breakglass.config",
+      "rendered": "E117  Population \"TERM.gcp.accounts\" derivation rule references gcp-account-inventory + okta-group-assignments + breakglass.config; capability entry missing for breakglass.config."
+    }
+  ],
+  "engagement": "demo-engagement",
+  "manifest_version": "v1-skeleton",
+  "verdicts": [
+    {
+      "assertion_ref": "TERM-FEED.a",
+      "claim_ref": "TERM.feed-completeness",
+      "contract_hash": "c647887108368337ecbef46e097f5cfd96ed8513c9fc458248114fdcb05fcb1f",
+      "d7_family": null,
+      "disposition_ref": null,
+      "evaluated_at": "2026-07-01T06:05:00Z",
+      "evidence_refs": [
+        "collection-snapshot:sha256:b597b7818069b9fff23403199f057edfa814499a0d1a6dd5451ba9bb7291973a",
+        "collection-snapshot:sha256:fd1bda04300c3b2d9c09e8eb59a6a77cbf313ce54821dda61b0b146fd194b9f0"
+      ],
+      "manifest_version": "v1-skeleton",
+      "message": "population of 15 reconciled with zero undispositioned deltas",
+      "population_ref": "TERM.terminations",
+      "ratification_ref": null,
+      "record_hash": "104b7b972e9090fb77633b80cd1ee65711a1c81f9bfa811993da388b68e852a1",
+      "snapshot_hash": "b73c1e5754b3091df4f79ae6ea435cd0b0f405e4566f357e4d50f93dad82b027",
+      "state": "PASS",
+      "why_code": null
+    },
+    {
+      "assertion_ref": "TERM-FEED.b",
+      "claim_ref": "TERM.feed-completeness",
+      "contract_hash": "c647887108368337ecbef46e097f5cfd96ed8513c9fc458248114fdcb05fcb1f",
+      "d7_family": "identity_fuzzy",
+      "disposition_ref": null,
+      "evaluated_at": "2026-07-01T06:05:00Z",
+      "evidence_refs": [
+        "collection-snapshot:sha256:b597b7818069b9fff23403199f057edfa814499a0d1a6dd5451ba9bb7291973a",
+        "collection-snapshot:sha256:fd1bda04300c3b2d9c09e8eb59a6a77cbf313ce54821dda61b0b146fd194b9f0"
+      ],
+      "manifest_version": "v1-skeleton",
+      "message": "1 terminated worker(s) whose identity join failed; deprovisioning events cannot be attributed to them (human resolution queue): E-1033",
+      "population_ref": "TERM.terminations",
+      "ratification_ref": null,
+      "record_hash": "d2f9cf23ab242098b36c779c798273d356b218fcf138fc81b02230298c5b3217",
+      "snapshot_hash": "b73c1e5754b3091df4f79ae6ea435cd0b0f405e4566f357e4d50f93dad82b027",
+      "state": "UNKNOWN",
+      "why_code": "UNKNOWN_POPULATION"
+    },
+    {
+      "assertion_ref": "TERM-TIMING.a",
+      "claim_ref": "TERM.timely-revocation",
+      "contract_hash": "3bb0a3e1382aa8dfbaa37bea5f24dbb09afdc4529569f33263155c39f4feafab",
+      "d7_family": null,
+      "disposition_ref": null,
+      "evaluated_at": "2026-07-01T06:05:00Z",
+      "evidence_refs": [
+        "collection-snapshot:sha256:b597b7818069b9fff23403199f057edfa814499a0d1a6dd5451ba9bb7291973a",
+        "collection-snapshot:sha256:fd1bda04300c3b2d9c09e8eb59a6a77cbf313ce54821dda61b0b146fd194b9f0",
+        "collection-snapshot:sha256:23a3696a12b63f7601bf44ddf667e92ab307c3b6ddca2d9ae77d5b0d4655cab7"
+      ],
+      "manifest_version": "v1-skeleton",
+      "message": "4 termination(s) tested over 2026-02-01..2026-04-01 against the 5-business-day limit; marcus.webb@meridianfinancial.example: terminated 2026-02-13, IdP deactivation 2026-02-26 = 9 business day(s) (> 5); dana.whitfield@meridianfinancial.example: canonical identity join failed; revocation events cannot be attributed (human resolution queue); tomas.rivera@meridianfinancial.example: terminated 2026-03-06, IdP deactivation 2026-03-09 = 1 business day(s); ingrid.solberg@meridianfinancial.example: terminated 2026-03-20, IdP deactivation 2026-03-25 = 3 business day(s)",
+      "population_ref": "TERM.terminations",
+      "ratification_ref": null,
+      "record_hash": "e375bc0e3f94e1c8bed9a8d8e6d78b2a1d41ed05ef32cdf4ea3dd472967859af",
+      "snapshot_hash": "b73c1e5754b3091df4f79ae6ea435cd0b0f405e4566f357e4d50f93dad82b027",
+      "state": "FAIL",
+      "why_code": null
+    },
+    {
+      "assertion_ref": "TERM-JOIN.a",
+      "claim_ref": "TERM.attributability",
+      "contract_hash": "6a8555f37c072eac391750b093dd853895c5106d0fd41be8e20b01365d2381f2",
+      "d7_family": null,
+      "disposition_ref": null,
+      "evaluated_at": "2026-07-01T06:05:00Z",
+      "evidence_refs": [
+        "collection-snapshot:sha256:b597b7818069b9fff23403199f057edfa814499a0d1a6dd5451ba9bb7291973a",
+        "collection-snapshot:sha256:fd1bda04300c3b2d9c09e8eb59a6a77cbf313ce54821dda61b0b146fd194b9f0",
+        "collection-snapshot:sha256:d6c0575f1f0cd86cade116271f2f79a76bd3a6d33a5185e7e0cb40efa98e83ac",
+        "collection-snapshot:sha256:3ff304bd62e66b96216ba5373c4cb6220c53903610c4b644fb7c69701efe15f1",
+        "collection-snapshot:sha256:5b1bc4c9035195bbc577074330cfbb3eeed3ae9dbb51b734bb7076de8c3d22d9"
+      ],
+      "manifest_version": "v1-skeleton",
+      "message": "3 undispositioned identity-join delta(s) — the population cannot be shown complete: left_only: bm-legacy-bot (present in github-account-inventory; absent from hris-termination-feed); left_only: blake-morgan-vendor (present in github-account-inventory; absent from hris-termination-feed); unresolvable: dana.kowalski@meridianfinancial.example (present in okta-system-log; absent from hris-termination-feed)",
+      "population_ref": "TERM.identity-join",
+      "ratification_ref": null,
+      "record_hash": "d7c9707c7d5e4acc7e432479bdad8bace04d6aeae43b965314d4453f26a224a3",
+      "snapshot_hash": "b73c1e5754b3091df4f79ae6ea435cd0b0f405e4566f357e4d50f93dad82b027",
+      "state": "UNKNOWN",
+      "why_code": "UNKNOWN_POPULATION"
+    },
+    {
+      "assertion_ref": "TERM-GITHUB.a",
+      "claim_ref": "TERM.github.no-residual-access",
+      "contract_hash": "1778b7092950c6ad846f159cdeaa46d4189bfaebfaf9189577e2472fdb5b4dc5",
+      "d7_family": null,
+      "disposition_ref": null,
+      "evaluated_at": "2026-07-01T06:05:00Z",
+      "evidence_refs": [
+        "collection-snapshot:sha256:d6c0575f1f0cd86cade116271f2f79a76bd3a6d33a5185e7e0cb40efa98e83ac",
+        "collection-snapshot:sha256:b597b7818069b9fff23403199f057edfa814499a0d1a6dd5451ba9bb7291973a"
+      ],
+      "manifest_version": "v1-skeleton",
+      "message": "19 account(s) tested; 15 clean; blake-morgan-vendor: active account with a known identity the authoritative workforce source cannot account for (negative space — population question); bm-legacy-bot: active local account (dormant) joins to no identity in any source; non-existence cannot be asserted while an unaccountable account is live; kai-moreno: active despite termination, covered by ratified disposition DISP-2026-114; osprey-design-ext: active account outside the workforce join, covered by ratified disposition DISP-2026-102",
+      "population_ref": "TERM.github.accounts",
+      "ratification_ref": null,
+      "record_hash": "e46a6e2b41f92525548e54e99db02e9f6c237be3225e5ec5d95f4c5b86bedc9c",
+      "snapshot_hash": "b73c1e5754b3091df4f79ae6ea435cd0b0f405e4566f357e4d50f93dad82b027",
+      "state": "FAIL",
+      "why_code": null
+    },
+    {
+      "assertion_ref": "TERM-SLACK.a",
+      "claim_ref": "TERM.slack.no-residual-access",
+      "contract_hash": "3d9a346cbe21acb017fb11688a9cbaee57c5137b65a96ae8f316e1716eed99b4",
+      "d7_family": null,
+      "disposition_ref": "DISP-2026-114",
+      "evaluated_at": "2026-07-01T06:05:00Z",
+      "evidence_refs": [
+        "collection-snapshot:sha256:5b1bc4c9035195bbc577074330cfbb3eeed3ae9dbb51b734bb7076de8c3d22d9",
+        "collection-snapshot:sha256:b597b7818069b9fff23403199f057edfa814499a0d1a6dd5451ba9bb7291973a"
+      ],
+      "manifest_version": "v1-skeleton",
+      "message": "30 account(s) tested; 29 clean; kaimoreno: active despite termination, covered by ratified disposition DISP-2026-114",
+      "population_ref": "TERM.slack.accounts",
+      "ratification_ref": null,
+      "record_hash": "eae34174328815d845a7098169e435e4e70d890653c1c83d410cc2aa697cc466",
+      "snapshot_hash": "b73c1e5754b3091df4f79ae6ea435cd0b0f405e4566f357e4d50f93dad82b027",
+      "state": "EXCEPTION",
+      "why_code": null
+    },
+    {
+      "assertion_ref": "TERM-CORP-IT.a",
+      "claim_ref": "TERM.corp-it.no-residual-access",
+      "contract_hash": "3b829a14b704848bcf1c11abc2ba6bd8aa3626cfc68e51a6c16a816e7f5baa97",
+      "d7_family": null,
+      "disposition_ref": null,
+      "evaluated_at": "2026-07-01T06:05:00Z",
+      "evidence_refs": [
+        "ratification:RAT-2026-031"
+      ],
+      "manifest_version": "v1-skeleton",
+      "message": "system 'corp-it' excluded from scope by vinylfigure (Ratifier): corp-IT endpoint management is out of the termination lane's TA-3 scope for this engagement; device deprovisioning is covered by the endpoint lane",
+      "population_ref": "TERM.corp-it.accounts",
+      "ratification_ref": "RAT-2026-031",
+      "record_hash": "62a8009498d6d2620f4daea95c85bea1ce1bec7df25684a1ef7242e8749bb352",
+      "snapshot_hash": "b73c1e5754b3091df4f79ae6ea435cd0b0f405e4566f357e4d50f93dad82b027",
+      "state": "EXCLUDED",
+      "why_code": null
     }
   ]
 }

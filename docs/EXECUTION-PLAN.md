@@ -82,6 +82,9 @@ redaction (D-R1), naming (D-N1). Open: lifecycle collapse (D-L1, due at SCH00 PR
 
 ## Frontend track (worktree; independent until Phase C)
 
+UI redesign in progress — prototype-derived screens are being replaced by a
+process-flow-first design (Owner directive).
+
 - [x] **A1** — Next.js 15 scaffold in `web/` (CSS Modules + token sheet from the
   prototypes; fonts via next/font; AppShell + NavTabs + GaugesRail), Aegis branding,
   `.github/workflows/web-verify.yml` (npm ci, tsc, build, artifact-sync drift check),
@@ -92,17 +95,17 @@ redaction (D-R1), naming (D-N1). Open: lifecycle collapse (D-L1, due at SCH00 PR
 - [x] **A4** — `/controls`, `/datasets` (derived registry), `/overlord` (generated
   missions + manifest export) + posture/dataset/agent gauges.
 - [x] **A5** — `/process` lanes + control-point detail rail.
-- [ ] **B1** — TS ontology/artifact types + hand-authored mock
+- [x] **B1** — TS ontology/artifact types + hand-authored mock
   `web/src/data/engagement/*.json` encoding the six poisons (doubles as the review
   artifact for SCH01/REC01 output shapes).
-- [ ] **B2** — `/reconciliation` + `/reconciliation/[populationId]` (ladder stepper,
+- [x] **B2** — `/reconciliation` + `/reconciliation/[populationId]` (ladder stepper,
   identity join panel, six-bucket board, why-complete rail).
-- [ ] **B3** — `/verdicts` (five distinct states, why-code chips, mutation scorecard)
+- [x] **B3** — `/verdicts` (five distinct states, why-code chips, mutation scorecard)
   + `/registry` (capability entries, E-codes as compiler errors).
-- [ ] **B4** — `/proof/[verdictId]` ten-stage SVG lineage + node inspector.
-- [ ] **C1** — pydantic JSON-Schema export + codegen (`json-schema-to-typescript`) +
+- [x] **B4** — `/proof/[verdictId]` ten-stage SVG lineage + node inspector.
+- [x] **C1** — pydantic JSON-Schema export + codegen (`json-schema-to-typescript`) +
   assignability checks (needs SCH01).
-- [ ] **C2** — swap mocks for real `artifacts/demo-engagement/` output (needs VAL02);
+- [x] **C2** — swap mocks for real `artifacts/demo-engagement/` output (needs VAL02);
   deep-link process-graph TA control points → reconciliation/verdicts.
 - [ ] **C3** — demo polish against PRD §6 acceptance: five verdict states visibly
   distinct, every seeded defect visibly caught, population click answers "why complete".

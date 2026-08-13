@@ -4,8 +4,10 @@
  * backend serializes them). Do not rename fields here — rename upstream
  * first, then re-mirror.
  *
- * Frontend-only additions are explicitly flagged with `verdict_id`
- * (see VerdictRecord) — everything else is a straight projection.
+ * Drift protection: src/lib/types/checks.ts asserts assignability
+ * between these mirrors and the codegen output in
+ * src/lib/types/generated/ (from schemas/*.schema.json) — a backend
+ * rename or enum change fails `tsc` here.
  */
 
 /* ---------------- population.py ---------------- */
@@ -173,9 +175,6 @@ export const D7_FAMILY_WHY: Record<D7Family, UnknownWhyCode> = {
 };
 
 export interface VerdictRecord {
-  /** FRONTEND-ONLY route key. SCH01 has no verdict_id — record identity
-   *  upstream is record_hash. Flagged for reconciliation with SCH01. */
-  verdict_id: string;
   claim_ref: string;
   assertion_ref: string;
   population_ref: string;
@@ -190,7 +189,9 @@ export interface VerdictRecord {
   ratification_ref: string | null;
   disposition_ref: string | null;
   evidence_refs: string[];
-  record_hash: string | null;
+  /** Record identity (D-S1 seal). Routes key off a URL-safe prefix of
+   *  this hash — SCH01 has no verdict_id. */
+  record_hash: string;
 }
 
 /* ---------------- disposition.py ---------------- */

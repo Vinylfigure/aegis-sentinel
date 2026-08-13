@@ -89,8 +89,11 @@ export function PresentChip({ source }: { source: string }) {
 
 export function DispositionBadge({
   disposition,
+  dispositionRef,
 }: {
   disposition?: DeltaDisposition;
+  /** Ratified disposition record id (e.g. DISP-2026-102). */
+  dispositionRef?: string;
 }) {
   if (!disposition) {
     return (
@@ -105,6 +108,7 @@ export function DispositionBadge({
       title={`${disposition.justification} — ${disposition.owner}, review ${disposition.review_date}`}
     >
       <i className={styles.dispDot} /> {disposition.value}
+      {dispositionRef && <b className={styles.dispRef}>{dispositionRef}</b>}
     </span>
   );
 }

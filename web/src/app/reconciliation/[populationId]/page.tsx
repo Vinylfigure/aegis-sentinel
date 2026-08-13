@@ -11,6 +11,7 @@ import { useEffect } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import {
+  blockingCompileError,
   loadEngagement,
   populationById,
   reconciliationFor,
@@ -52,6 +53,7 @@ export default function PopulationDetailPage() {
     ? recon.deltas.filter((d) => d.bucket !== "intersection" && !d.disposition).length
     : population.open_deltas.length;
   const ratified = population.state === "RATIFIED";
+  const blocker = blockingCompileError(load, population);
 
   return (
     <div>
@@ -114,10 +116,20 @@ export default function PopulationDetailPage() {
       {recon ? (
         <ReconciliationBoard recon={recon} />
       ) : (
-        <p className={styles.norecon}>
-          No reconciliation run recorded for this population — the reconciler
-          runs at DISCOVERED, and this population is {population.state}.
-        </p>
+        <>
+          <p className={styles.norecon}>
+            No reconciliation run recorded for this population — the reconciler
+            runs at DISCOVERED, and this population is {population.state}
+            {blocker
+              ? ": its derivation rule names a source with no ratified capability entry, so discovery refuses to compile."
+              : "."}
+          </p>
+          {blocker && (
+            <div className={styles.blocker} data-testid="population-blocker">
+              <pre>{blocker.rendered}</pre>
+            </div>
+          )}
+        </>
       )}
 
       {population.exclusions.length > 0 && (

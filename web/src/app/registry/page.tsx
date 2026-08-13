@@ -3,7 +3,7 @@
 /* Capability Registry: what evidence each system is capable of yielding,
  * Cartographer-proposed, human-ratified. History caveats render
  * prominently amber — the 90-day trap is the whole point. Unresolved
- * E-codes render as compiler output. */
+ * E-codes render as compiler output — the `rendered` strings verbatim. */
 
 import { loadEngagement } from "@/lib/data/engagement";
 import { MiniChip, TypeBadge } from "@/components/engagement/Badges";
@@ -30,17 +30,18 @@ export default function RegistryPage() {
           <div className="slab">Unresolved E-codes — the program does not fully compile</div>
           <div className={styles.compiler} data-testid="ecode-block">
             {compile_errors.map((e) => (
-              <div key={e.code + (e.assertion_ref ?? "")} className={styles.ecode}>
-                <span className={styles.code}>{e.code}</span>
-                <div>
-                  <p className={styles.emsg}>{e.message}</p>
-                  {e.suggestion && <p className={styles.esuggest}>↳ {e.suggestion}</p>}
-                  {(e.claim_ref || e.assertion_ref) && (
-                    <p className={styles.eref}>
-                      at {e.claim_ref}
-                      {e.assertion_ref ? ` · ${e.assertion_ref}` : ""}
+              <div key={e.code + (e.assertion_ref ?? e.claim_ref)} className={styles.ecode}>
+                <div className={styles.ebody}>
+                  <pre className={styles.erendered}>{e.rendered}</pre>
+                  {e.satisfiable_via && e.satisfiable_via.length > 0 && (
+                    <p className={styles.esuggest}>
+                      ↳ satisfiable via {e.satisfiable_via.join(", ")}
                     </p>
                   )}
+                  <p className={styles.eref}>
+                    at {e.claim_ref}
+                    {e.assertion_ref ? ` · ${e.assertion_ref}` : ""}
+                  </p>
                 </div>
               </div>
             ))}
@@ -60,23 +61,31 @@ export default function RegistryPage() {
 
             <div className={styles.modes}>
               {e.access_modes.map((m) => (
-                <MiniChip key={m} tone={m === "direct-api" ? "green" : "cyan"}>
+                <MiniChip key={m} tone={m === "DIRECT_API" ? "green" : "cyan"}>
                   {m}
                 </MiniChip>
               ))}
               <MiniChip tone="purple">
-                {e.temporal.shape}
-                {e.temporal.window_days ? ` · ${e.temporal.window_days}d` : ""}
-                {e.temporal.cadence ? ` · ${e.temporal.cadence}` : ""}
+                {e.temporal.kind}
+                {e.temporal.window_days != null ? ` · ${e.temporal.window_days}d` : ""}
               </MiniChip>
             </div>
 
             <div className={styles.pops}>
-              {e.populations_yielded.map((p) => (
-                <span key={p.name} className={styles.pop}>
-                  <TypeBadge type={p.type} /> {p.name}
-                </span>
-              ))}
+              {e.populations_yielded.map((p) => {
+                const attrs = e.attributes.find((a) => a.population_name === p.name);
+                return (
+                  <span key={p.name} className={styles.pop}>
+                    <TypeBadge type={p.type} /> {p.name}
+                    {attrs && (
+                      <em className={styles.fields}>
+                        {attrs.fields_exposed.length} field
+                        {attrs.fields_exposed.length === 1 ? "" : "s"}
+                      </em>
+                    )}
+                  </span>
+                );
+              })}
             </div>
 
             <div className={styles.meta}>
@@ -90,18 +99,19 @@ export default function RegistryPage() {
               </div>
               <div className={styles.mrow}>
                 <label>pagination</label>
-                <div>{e.pagination}</div>
+                <div>
+                  <b className={styles.pmethod}>{e.pagination.method}</b> —{" "}
+                  {e.pagination.exhaustion_method}
+                </div>
               </div>
               <div className={styles.mrow}>
                 <label>auth scope</label>
                 <div>{e.auth_scope}</div>
               </div>
-              {e.rate_limits && (
-                <div className={styles.mrow}>
-                  <label>rate limits</label>
-                  <div>{e.rate_limits}</div>
-                </div>
-              )}
+              <div className={styles.mrow}>
+                <label>rate limits</label>
+                <div>{e.rate_limits}</div>
+              </div>
             </div>
 
             {e.history_caveats.length > 0 && (
@@ -113,9 +123,10 @@ export default function RegistryPage() {
             )}
 
             <div className={styles.prov}>
-              {e.provenance.researched_by} · {e.provenance.researched_at} ·{" "}
-              {e.provenance.doc_version} — ratified by{" "}
-              <b>{e.provenance.ratified_by}</b>
+              {e.provenance.researched_by} · {e.provenance.researched_at.slice(0, 10)} ·{" "}
+              {e.provenance.doc_version} · {e.provenance.source_citations.length}{" "}
+              citation{e.provenance.source_citations.length === 1 ? "" : "s"} — ratified
+              by <b>{e.provenance.ratified_by ?? "— UNRATIFIED (mechanically unusable)"}</b>
             </div>
           </div>
         ))}

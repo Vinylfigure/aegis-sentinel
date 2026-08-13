@@ -1,9 +1,37 @@
 "use client";
 
+import Link from "next/link";
 import { FLOWS } from "@/data/seed";
 import type { ControlPoint } from "@/lib/types/authoring";
 import { useProgramStore } from "@/lib/state/programStore";
 import styles from "./Rail.module.css";
+
+/* Deep links from the TA (termination) control points into the live
+ * engagement: the population/reconciliation screens and the verdict
+ * table are the mechanized form of these diamonds. */
+const ENGAGEMENT_LINKS: Record<string, { href: string; label: string }[]> = {
+  "TA-1": [
+    {
+      href: "/reconciliation/TERM.terminations",
+      label: "TERM.terminations — ratified population & reconciliation",
+    },
+    { href: "/verdicts", label: "TERM-FEED.a/b verdicts" },
+  ],
+  "TA-2": [
+    { href: "/verdicts", label: "TERM-TIMING.a — 5-business-day verdict" },
+    {
+      href: "/reconciliation/TERM.terminations",
+      label: "tested population (denominator)",
+    },
+  ],
+  "TA-3": [
+    {
+      href: "/reconciliation/TERM.identity-join",
+      label: "TERM.identity-join — downstream attribution",
+    },
+    { href: "/verdicts", label: "per-system NON_EXISTENCE verdicts" },
+  ],
+};
 
 const ALL: Record<string, ControlPoint> = {};
 FLOWS.forEach((f) =>
@@ -67,6 +95,20 @@ export default function ProcessRail() {
             <div className={styles.gap}>
               <b>Watch</b>
               <p>{c.gap}</p>
+            </div>
+          )}
+          {ENGAGEMENT_LINKS[c.id] && (
+            <div className={styles.frow}>
+              <label>In the engagement</label>
+              <div>
+                {ENGAGEMENT_LINKS[c.id].map((l) => (
+                  <div key={l.href + l.label}>
+                    <Link href={l.href} className={styles.deepLink}>
+                      {l.label} →
+                    </Link>
+                  </div>
+                ))}
+              </div>
             </div>
           )}
         </div>

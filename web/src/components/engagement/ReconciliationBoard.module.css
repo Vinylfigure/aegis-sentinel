@@ -29,3 +29,8 @@
 .chips{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px}
 .foot{display:flex;align-items:center;justify-content:space-between;gap:6px;margin-top:7px;flex-wrap:wrap}
 .owner{font:500 9px var(--font-mono-stack);color:var(--cyan)}
+
+/* corroborated members with no exception record — compact chips */
+.members{display:flex;flex-wrap:wrap;gap:4px;padding:2px}
+.member{font:400 9px var(--font-mono-stack);color:var(--dim);background:var(--bg);border:1px solid var(--line);border-radius:4px;padding:2px 6px;word-break:break-all}
+.more{font:600 9px var(--font-mono-stack);color:var(--faint);align-self:center;padding:2px 4px}

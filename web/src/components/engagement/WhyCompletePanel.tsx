@@ -44,7 +44,7 @@ export default function WhyCompletePanel({
 
   const totals = DELTA_BUCKETS.map((b) => ({
     bucket: b,
-    n: recon ? recon.deltas.filter((d) => d.bucket === b).length : 0,
+    n: recon ? (recon.buckets[b] ?? []).length : 0,
   }));
   const needing = recon
     ? recon.deltas.filter((d) => d.bucket !== "intersection")
@@ -77,7 +77,10 @@ export default function WhyCompletePanel({
           <p className={styles.focusStory}>{BUCKET_STORY[focused.bucket]}</p>
           {focused.disposition ? (
             <p className={styles.focusDisp}>
-              <DispositionBadge disposition={focused.disposition} />
+              <DispositionBadge
+                disposition={focused.disposition}
+                dispositionRef={focused.disposition_ref ?? undefined}
+              />
               <span>
                 {focused.disposition.justification} — {focused.disposition.owner},
                 review {focused.disposition.review_date}
@@ -121,6 +124,19 @@ export default function WhyCompletePanel({
               </div>
             ))}
           </div>
+        </div>
+      )}
+
+      {recon && (
+        <div className={styles.block}>
+          <label>Collection basis</label>
+          <p className={recon.basis_complete ? styles.dispClear : styles.dispOpen}>
+            {recon.basis_complete
+              ? "complete — every declared source collected to pagination exhaustion."
+              : `INCOMPLETE — partial collection is UNKNOWN(basis_missing) at population level, never a partial pass.${
+                  recon.basis_notes.length ? ` ${recon.basis_notes.join("; ")}` : ""
+                }`}
+          </p>
         </div>
       )}
 

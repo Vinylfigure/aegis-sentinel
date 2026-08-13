@@ -1,58 +1,78 @@
-/* Engagement-artifact types — the mock bundle Phase B renders.
+/* Engagement-artifact types — the REAL pipeline output shapes.
  *
- * Shapes not yet frozen upstream (Capability Registry entry is SCH02;
- * the reconciler's DeltaObject is REC01; the proof graph is the P1
- * lineage view). Field names follow the backend convention (snake_case)
- * and the PRD-v3 §3 capability-entry schema. Guessed fields are noted
- * inline for reconciliation against SCH01/SCH02/REC01.
+ * Mirrored 1:1 from artifacts/demo-engagement/*.json as emitted by
+ * scripts/emit_demo_artifacts.py (VAL02) against the frozen schemas
+ * (capability-entry SCH02, reconciler DeltaObject REC01, verdict-record
+ * SCH01). Field names are EXACT (snake_case). Drift protection:
+ * src/lib/types/checks.ts asserts assignability against the codegen
+ * output in src/lib/types/generated/.
  */
 
 import type {
-  Claim,
+  AssuranceState,
   DispositionValue,
   Period,
   Population,
   PopulationType,
   VerdictRecord,
+  VerdictState,
 } from "@/lib/types/ontology";
 
-/* ---------------- capability registry (PRD-v3 §3 / SCH02) ---------------- */
+/* ------------- capability registry (SCH02, capability-entry@0.1.0) ------- */
 
 export const ACCESS_MODES = [
-  "direct-api",
-  "official-mcp",
-  "community-mcp",
-  "custom-adapter",
-  "playwright",
+  "DIRECT_API",
+  "OFFICIAL_MCP",
+  "COMMUNITY_MCP",
+  "CUSTOM_ADAPTER",
+  "PLAYWRIGHT",
 ] as const;
 export type AccessMode = (typeof ACCESS_MODES)[number];
 
-export const TEMPORAL_SHAPES = [
-  "state-only",
-  "event-history",
-  "full-history",
-  "snapshot-cadence",
+export const TEMPORAL_SHAPE_KINDS = [
+  "STATE_ONLY",
+  "EVENT_HISTORY",
+  "FULL_HISTORY",
+  "SNAPSHOT_CADENCE",
 ] as const;
-export type TemporalShape = (typeof TEMPORAL_SHAPES)[number];
+export type TemporalShapeKind = (typeof TEMPORAL_SHAPE_KINDS)[number];
+
+export const PAGINATION_METHODS = ["CURSOR", "PAGE", "NONE"] as const;
+export type PaginationMethod = (typeof PAGINATION_METHODS)[number];
 
 export interface CapabilityTemporal {
-  shape: TemporalShape;
-  /** Retention window in days — only for event-history. */
-  window_days?: number;
-  /** Cadence label — only for snapshot-cadence. */
-  cadence?: string;
+  kind: TemporalShapeKind;
+  /** Retention window in days — EVENT_HISTORY only; null otherwise. */
+  window_days: number | null;
 }
 
-export interface PopulationYielded {
-  type: PopulationType;
+export interface CapabilityPagination {
+  method: PaginationMethod;
+  /** How the collector proves it drained every page. */
+  exhaustion_method: string;
+}
+
+export interface PopulationYield {
   name: string;
+  type: PopulationType;
+}
+
+export interface PopulationAttributes {
+  population_name: string;
+  fields_exposed: string[];
+}
+
+export interface SourceCitation {
+  title: string;
+  url: string;
 }
 
 export interface CapabilityProvenance {
   researched_by: string;
   researched_at: string;
   doc_version: string;
-  ratified_by: string;
+  ratified_by: string | null;
+  source_citations: SourceCitation[];
 }
 
 export interface CapabilityEntry {
@@ -60,29 +80,41 @@ export interface CapabilityEntry {
   system: string;
   surface: string;
   access_modes: AccessMode[];
-  populations_yielded: PopulationYielded[];
-  attributes: string[];
+  populations_yielded: PopulationYield[];
+  attributes: PopulationAttributes[];
   temporal: CapabilityTemporal;
   join_keys: string[];
   auth_scope: string;
-  pagination: "cursor" | "page" | "none";
-  rate_limits?: string;
+  pagination: CapabilityPagination;
+  rate_limits: string;
   history_caveats: string[];
   provenance: CapabilityProvenance;
+  schema_version: string;
 }
 
-/* ---------------- compile errors (PRD-v3 §3) ---------------- */
+export interface CapabilityRegistryFile {
+  entries: CapabilityEntry[];
+}
 
-export interface ECode {
+/* ---------------- compile errors (TYP01 E-codes) ---------------- */
+
+export interface CompileError {
   code: "E204" | "E117" | "E302";
   message: string;
-  suggestion?: string;
-  /** Where the error was raised — guessed refs, pending SCH02. */
-  claim_ref?: string;
-  assertion_ref?: string;
+  /** The exact compiler-output line — render verbatim. */
+  rendered: string;
+  claim_ref: string;
+  /** null for claim-level errors (E117/E302); set for E204. */
+  assertion_ref: string | null;
+  /* E204 extras */
+  capability_window_days?: number;
+  required_window?: Period;
+  satisfiable_via?: string[];
+  /* E117 extras */
+  missing_source?: string;
 }
 
-/* ---------------- reconciliation (REC01 — shape guessed) ---------------- */
+/* ---------------- reconciliation (REC01 DeltaObject) ---------------- */
 
 export const DELTA_BUCKETS = [
   "intersection",
@@ -94,9 +126,7 @@ export const DELTA_BUCKETS = [
 ] as const;
 export type DeltaBucket = (typeof DELTA_BUCKETS)[number];
 
-/** REI mechanized: justification + owner + review date (PRD-v3 §2).
- *  Backend Disposition is {value, rationale}; this richer shape is the
- *  delta-disposition guess for REC01. */
+/** REI mechanized: justification + owner + review date (PRD-v3 §2). */
 export interface DeltaDisposition {
   value: DispositionValue;
   justification: string;
@@ -109,13 +139,15 @@ export interface DeltaObject {
   bucket: DeltaBucket;
   /** Canonical member identity (join-key value, e.g. employee_id or login). */
   member_key: string;
-  display_name?: string;
+  display_name: string;
   /** Source ids where this member WAS observed. */
   sources_present: string[];
   /** Negative space: sources where this member was expected but absent. */
   sources_absent: string[];
-  owner?: string;
-  disposition?: DeltaDisposition;
+  owner: string | null;
+  disposition: DeltaDisposition | null;
+  /** Ratified disposition record id (e.g. DISP-2026-102), human-issued. */
+  disposition_ref: string | null;
 }
 
 export interface ReconciliationResult {
@@ -124,6 +156,35 @@ export interface ReconciliationResult {
   /** Diagnostic member counts per source — a smell test, not evidence. */
   source_counts: Record<string, number>;
   deltas: DeltaObject[];
+  /** Full bucket membership (canonical member keys), delta or not. */
+  buckets: Record<DeltaBucket, string[]>;
+  /** The reconciled population membership (canonical keys, sorted). */
+  members: string[];
+  /** Whether every declared source was collected to exhaustion. */
+  basis_complete: boolean;
+  basis_notes: string[];
+  /** Non-blocking observations (out-of-scope identities, bot principals…). */
+  diagnostics: string[];
+  ladder_state: AssuranceState;
+}
+
+export interface ReconciliationFile {
+  engagement: string;
+  reconciliations: ReconciliationResult[];
+}
+
+export interface PopulationsFile {
+  engagement: string;
+  populations: Population[];
+}
+
+/* ---------------- verdicts bundle ---------------- */
+
+export interface VerdictsFile {
+  engagement: string;
+  manifest_version: string;
+  verdicts: VerdictRecord[];
+  compile_errors: CompileError[];
 }
 
 /* ---------------- proof graph (P1 lineage view) ---------------- */
@@ -157,12 +218,20 @@ export interface ProofEdge {
 }
 
 export interface ProofGraph {
+  /** record_hash of the verdict this lineage proves. */
   verdict_ref: string;
   nodes: ProofNode[];
   edges: ProofEdge[];
 }
 
 /* ---------------- manifest + bundle ---------------- */
+
+export interface ManifestSummary {
+  claims: number;
+  compile_error_codes: string[];
+  populations_by_state: Partial<Record<AssuranceState, number>>;
+  verdict_states_present: VerdictState[];
+}
 
 export interface EngagementManifest {
   manifest_version: string;
@@ -173,6 +242,7 @@ export interface EngagementManifest {
   period: Period;
   boundary: string;
   notes?: string;
+  summary: ManifestSummary;
 }
 
 export interface EngagementArtifacts {
@@ -180,8 +250,7 @@ export interface EngagementArtifacts {
   capability_registry: CapabilityEntry[];
   populations: Population[];
   reconciliations: ReconciliationResult[];
-  claims: Claim[];
   verdicts: VerdictRecord[];
-  compile_errors: ECode[];
+  compile_errors: CompileError[];
   proof_graphs: ProofGraph[];
 }

@@ -39,6 +39,7 @@ export function ReconciliationDetailRail() {
 export function ProofDetailRail() {
   const pathname = usePathname();
   const load = loadEngagement();
+  // Route key = record_hash prefix (see /proof/[verdictId]).
   const verdictId = decodeURIComponent(pathname?.split("/")[2] ?? "");
   const graph = proofGraphFor(load, verdictId);
   const selectedProofNodeId = useEngagementStore((s) => s.selectedProofNodeId);

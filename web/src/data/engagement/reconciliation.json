@@ -1,341 +1,446 @@
-[
-  {
-    "population_ref": "pop-term-2026h1",
-    "canonical_identity_keys": ["employee_id"],
-    "source_counts": {
-      "hris.employee_feed": 15,
-      "okta.system_log": 15
-    },
-    "deltas": [
-      {
-        "delta_id": "t-001",
-        "bucket": "intersection",
-        "member_key": "E-1001",
-        "display_name": "Priya Raman",
-        "sources_present": ["hris.employee_feed", "okta.system_log"],
-        "sources_absent": []
+{
+  "engagement": "demo-engagement",
+  "reconciliations": [
+    {
+      "basis_complete": true,
+      "basis_notes": [],
+      "buckets": {
+        "conflicts": [],
+        "excluded": [
+          "osprey-design-ext"
+        ],
+        "intersection": [
+          "amara.diallo@meridianfinancial.example",
+          "bianca.rossi@meridianfinancial.example",
+          "chloe.marchand@meridianfinancial.example",
+          "ctr.blake.morgan@example-vendor.com",
+          "ethan.macleod@meridianfinancial.example",
+          "grace.lindqvist@meridianfinancial.example",
+          "isla.donovan@meridianfinancial.example",
+          "kai.moreno@meridianfinancial.example",
+          "liam.hutchins@meridianfinancial.example",
+          "lucas.ferraro@meridianfinancial.example",
+          "mei.tanaka@meridianfinancial.example",
+          "nora.okafor@meridianfinancial.example",
+          "rafael.ortiz@meridianfinancial.example",
+          "ravi.menon@meridianfinancial.example",
+          "samuel.adeyemi@meridianfinancial.example",
+          "viktor.petrov@meridianfinancial.example",
+          "zoe.sandoval@meridianfinancial.example"
+        ],
+        "left_only": [],
+        "right_only": [
+          "bm-legacy-bot"
+        ],
+        "unresolvable": []
       },
-      {
-        "delta_id": "t-002",
-        "bucket": "intersection",
-        "member_key": "E-1002",
-        "display_name": "Chen Wu",
-        "sources_present": ["hris.employee_feed", "okta.system_log"],
-        "sources_absent": []
-      },
-      {
-        "delta_id": "t-003",
-        "bucket": "intersection",
-        "member_key": "E-1003",
-        "display_name": "Sofia Alvarez",
-        "sources_present": ["hris.employee_feed", "okta.system_log"],
-        "sources_absent": []
-      },
-      {
-        "delta_id": "t-004",
-        "bucket": "intersection",
-        "member_key": "E-1004",
-        "display_name": "Daniel Okafor",
-        "sources_present": ["hris.employee_feed", "okta.system_log"],
-        "sources_absent": []
-      },
-      {
-        "delta_id": "t-005",
-        "bucket": "intersection",
-        "member_key": "E-1005",
-        "display_name": "Ingrid Solberg",
-        "sources_present": ["hris.employee_feed", "okta.system_log"],
-        "sources_absent": []
-      },
-      {
-        "delta_id": "t-006",
-        "bucket": "intersection",
-        "member_key": "E-1006",
-        "display_name": "Yusuf Demir",
-        "sources_present": ["hris.employee_feed", "okta.system_log"],
-        "sources_absent": []
-      },
-      {
-        "delta_id": "t-007",
-        "bucket": "intersection",
-        "member_key": "E-1007",
-        "display_name": "Hana Sato",
-        "sources_present": ["hris.employee_feed", "okta.system_log"],
-        "sources_absent": []
-      },
-      {
-        "delta_id": "t-008",
-        "bucket": "intersection",
-        "member_key": "E-1008",
-        "display_name": "Marcus Diaz",
-        "sources_present": ["hris.employee_feed", "okta.system_log"],
-        "sources_absent": []
-      },
-      {
-        "delta_id": "t-009",
-        "bucket": "intersection",
-        "member_key": "E-1009",
-        "display_name": "Lena Vogel",
-        "sources_present": ["hris.employee_feed", "okta.system_log"],
-        "sources_absent": []
-      },
-      {
-        "delta_id": "t-010",
-        "bucket": "intersection",
-        "member_key": "E-1010",
-        "display_name": "Ravi Menon",
-        "sources_present": ["hris.employee_feed", "okta.system_log"],
-        "sources_absent": []
-      },
-      {
-        "delta_id": "t-011",
-        "bucket": "intersection",
-        "member_key": "E-1011",
-        "display_name": "Petra Kovacs",
-        "sources_present": ["hris.employee_feed", "okta.system_log"],
-        "sources_absent": []
-      },
-      {
-        "delta_id": "t-012",
-        "bucket": "intersection",
-        "member_key": "E-1012",
-        "display_name": "Omar Haddad",
-        "sources_present": ["hris.employee_feed", "okta.system_log"],
-        "sources_absent": []
-      },
-      {
-        "delta_id": "t-013",
-        "bucket": "intersection",
-        "member_key": "E-1013",
-        "display_name": "Nora Lindqvist",
-        "sources_present": ["hris.employee_feed", "okta.system_log"],
-        "sources_absent": []
-      },
-      {
-        "delta_id": "t-014",
-        "bucket": "conflicts",
-        "member_key": "E-1014",
-        "display_name": "Felix Baranov",
-        "sources_present": ["hris.employee_feed", "okta.system_log"],
-        "sources_absent": [],
-        "owner": "people-ops",
-        "disposition": {
-          "value": "IMPLEMENTED_LOCALLY",
-          "justification": "HRIS effective date 2026-04-30 vs Okta deactivation 2026-05-01: HRIS records last-worked date, IdP deactivated next business day. Canonical date fixed to HRIS; timing measured from it.",
-          "owner": "people-ops",
-          "review_date": "2026-09-30"
+      "canonical_identity_keys": [
+        "employee_id",
+        "email",
+        "login"
+      ],
+      "deltas": [
+        {
+          "bucket": "excluded",
+          "delta_id": "TERM.github.accounts#excluded#osprey-design-ext",
+          "display_name": "osprey-design-ext",
+          "disposition": {
+            "justification": "contracted design vendor's outside collaborator; access governed by the vendor-access review, not the termination lane",
+            "owner": "vinylfigure",
+            "review_date": "2026-12-31",
+            "value": "VENDOR_MANAGED"
+          },
+          "disposition_ref": "DISP-2026-102",
+          "member_key": "osprey-design-ext",
+          "owner": "vinylfigure",
+          "sources_absent": [
+            "okta-group-assignments"
+          ],
+          "sources_present": [
+            "github-account-inventory"
+          ]
+        },
+        {
+          "bucket": "right_only",
+          "delta_id": "TERM.github.accounts#right_only#bm-legacy-bot",
+          "display_name": "bm-legacy-bot",
+          "disposition": null,
+          "disposition_ref": null,
+          "member_key": "bm-legacy-bot",
+          "owner": null,
+          "sources_absent": [
+            "okta-group-assignments"
+          ],
+          "sources_present": [
+            "github-account-inventory"
+          ]
         }
-      },
-      {
-        "delta_id": "t-015",
-        "bucket": "excluded",
-        "member_key": "E-1015",
-        "display_name": "June Park",
-        "sources_present": ["hris.employee_feed"],
-        "sources_absent": ["okta.system_log"],
-        "owner": "it-iam",
-        "disposition": {
-          "value": "NA_WITH_RATIONALE",
-          "justification": "Separation converted to fixed-term advisory engagement through 2026-09-30; read-only access retained under approved exception disp-2026-044. Excluded from the revocation universe — never silently.",
-          "owner": "it-iam",
-          "review_date": "2026-09-30"
-        }
+      ],
+      "diagnostics": [],
+      "ladder_state": "DISCOVERED",
+      "members": [
+        "amara.diallo@meridianfinancial.example",
+        "bianca.rossi@meridianfinancial.example",
+        "bm-legacy-bot",
+        "chloe.marchand@meridianfinancial.example",
+        "ctr.blake.morgan@example-vendor.com",
+        "ethan.macleod@meridianfinancial.example",
+        "grace.lindqvist@meridianfinancial.example",
+        "isla.donovan@meridianfinancial.example",
+        "kai.moreno@meridianfinancial.example",
+        "liam.hutchins@meridianfinancial.example",
+        "lucas.ferraro@meridianfinancial.example",
+        "mei.tanaka@meridianfinancial.example",
+        "nora.okafor@meridianfinancial.example",
+        "osprey-design-ext",
+        "rafael.ortiz@meridianfinancial.example",
+        "ravi.menon@meridianfinancial.example",
+        "samuel.adeyemi@meridianfinancial.example",
+        "viktor.petrov@meridianfinancial.example",
+        "zoe.sandoval@meridianfinancial.example"
+      ],
+      "population_ref": "TERM.github.accounts",
+      "source_counts": {
+        "github-account-inventory": 19,
+        "okta-group-assignments": 17
       }
-    ]
-  },
-  {
-    "population_ref": "pop-identity-join",
-    "canonical_identity_keys": ["employee_id", "email", "github_login"],
-    "source_counts": {
-      "hris.employee_feed": 15,
-      "okta.users": 18,
-      "github.org_members": 17
     },
-    "deltas": [
-      {
-        "delta_id": "d-101",
-        "bucket": "intersection",
-        "member_key": "E-1001",
-        "display_name": "Priya Raman",
-        "sources_present": ["hris.employee_feed", "okta.users", "github.org_members"],
-        "sources_absent": []
+    {
+      "basis_complete": true,
+      "basis_notes": [],
+      "buckets": {
+        "conflicts": [],
+        "excluded": [
+          "CT-2044",
+          "osprey-design-ext"
+        ],
+        "intersection": [
+          "E-1004",
+          "E-1019",
+          "E-1027",
+          "E-1033",
+          "E-1041",
+          "E-1048",
+          "E-1052",
+          "E-1060",
+          "E-1066",
+          "E-1073",
+          "E-1080",
+          "E-1088",
+          "E-1091",
+          "E-1095"
+        ],
+        "left_only": [
+          "bm-legacy-bot",
+          "ctr.blake.morgan@example-vendor.com"
+        ],
+        "right_only": [],
+        "unresolvable": [
+          "dana.kowalski@meridianfinancial.example"
+        ]
       },
-      {
-        "delta_id": "d-102",
-        "bucket": "intersection",
-        "member_key": "E-1002",
-        "display_name": "Chen Wu",
-        "sources_present": ["hris.employee_feed", "okta.users", "github.org_members"],
-        "sources_absent": []
-      },
-      {
-        "delta_id": "d-104",
-        "bucket": "intersection",
-        "member_key": "E-1004",
-        "display_name": "Daniel Okafor",
-        "sources_present": ["hris.employee_feed", "okta.users", "github.org_members"],
-        "sources_absent": []
-      },
-      {
-        "delta_id": "d-105",
-        "bucket": "intersection",
-        "member_key": "E-1005",
-        "display_name": "Ingrid Solberg",
-        "sources_present": ["hris.employee_feed", "okta.users"],
-        "sources_absent": []
-      },
-      {
-        "delta_id": "d-106",
-        "bucket": "intersection",
-        "member_key": "E-1006",
-        "display_name": "Yusuf Demir",
-        "sources_present": ["hris.employee_feed", "okta.users", "github.org_members"],
-        "sources_absent": []
-      },
-      {
-        "delta_id": "d-107",
-        "bucket": "intersection",
-        "member_key": "E-1007",
-        "display_name": "Hana Sato",
-        "sources_present": ["hris.employee_feed", "okta.users"],
-        "sources_absent": []
-      },
-      {
-        "delta_id": "d-108",
-        "bucket": "intersection",
-        "member_key": "E-1008",
-        "display_name": "Marcus Diaz (SSO account)",
-        "sources_present": ["hris.employee_feed", "okta.users", "github.org_members"],
-        "sources_absent": []
-      },
-      {
-        "delta_id": "d-109",
-        "bucket": "intersection",
-        "member_key": "E-1009",
-        "display_name": "Lena Vogel",
-        "sources_present": ["hris.employee_feed", "okta.users"],
-        "sources_absent": []
-      },
-      {
-        "delta_id": "d-110",
-        "bucket": "intersection",
-        "member_key": "E-1010",
-        "display_name": "Ravi Menon",
-        "sources_present": ["hris.employee_feed", "okta.users", "github.org_members"],
-        "sources_absent": []
-      },
-      {
-        "delta_id": "d-111",
-        "bucket": "intersection",
-        "member_key": "E-1011",
-        "display_name": "Petra Kovacs",
-        "sources_present": ["hris.employee_feed", "okta.users"],
-        "sources_absent": []
-      },
-      {
-        "delta_id": "d-112",
-        "bucket": "intersection",
-        "member_key": "E-1012",
-        "display_name": "Omar Haddad",
-        "sources_present": ["hris.employee_feed", "okta.users", "github.org_members"],
-        "sources_absent": []
-      },
-      {
-        "delta_id": "d-113",
-        "bucket": "intersection",
-        "member_key": "E-1013",
-        "display_name": "Nora Lindqvist",
-        "sources_present": ["hris.employee_feed", "okta.users"],
-        "sources_absent": []
-      },
-      {
-        "delta_id": "d-114",
-        "bucket": "intersection",
-        "member_key": "E-1014",
-        "display_name": "Felix Baranov",
-        "sources_present": ["hris.employee_feed", "okta.users", "github.org_members"],
-        "sources_absent": []
-      },
-      {
-        "delta_id": "d-115",
-        "bucket": "intersection",
-        "member_key": "E-1015",
-        "display_name": "June Park",
-        "sources_present": ["hris.employee_feed", "okta.users"],
-        "sources_absent": []
-      },
-      {
-        "delta_id": "d-201",
-        "bucket": "left_only",
-        "member_key": "ext-tnovak",
-        "display_name": "Tomas Novak (contractor)",
-        "sources_present": ["okta.users"],
-        "sources_absent": ["hris.employee_feed"],
-        "owner": "it-iam"
-      },
-      {
-        "delta_id": "d-202",
-        "bucket": "right_only",
-        "member_key": "mdiaz-local",
-        "display_name": "Local GitHub account — no IdP anchor",
-        "sources_present": ["github.org_members"],
-        "sources_absent": ["okta.users", "hris.employee_feed"],
-        "owner": "platform-eng"
-      },
-      {
-        "delta_id": "d-203",
-        "bucket": "unresolvable",
-        "member_key": "dev-akira9",
-        "display_name": "GitHub login joins no identity",
-        "sources_present": ["github.org_members"],
-        "sources_absent": ["okta.users", "hris.employee_feed"],
-        "owner": "appsec"
-      },
-      {
-        "delta_id": "d-204",
-        "bucket": "conflicts",
-        "member_key": "E-1003",
-        "display_name": "Sofia Alvarez",
-        "sources_present": ["hris.employee_feed", "okta.users"],
-        "sources_absent": [],
-        "owner": "it-iam",
-        "disposition": {
-          "value": "IMPLEMENTED_LOCALLY",
-          "justification": "HRIS work_email s.alvarez@meridianlabs.example vs Okta profile email sofia.alvarez@meridianlabs.example — legacy alias. Canonical email fixed from HRIS; Okta alias mapped in the join table.",
-          "owner": "it-iam",
-          "review_date": "2026-10-15"
+      "canonical_identity_keys": [
+        "employee_id",
+        "email",
+        "login"
+      ],
+      "deltas": [
+        {
+          "bucket": "excluded",
+          "delta_id": "TERM.identity-join#excluded#CT-2044",
+          "display_name": "kai.moreno@meridianfinancial.example",
+          "disposition": {
+            "justification": "contractor-to-advisor conversion effective 2026-06-19: retains Okta, GitHub, and Slack access under the ratified advisory agreement; revocation expectation does not apply for the review window",
+            "owner": "vinylfigure",
+            "review_date": "2026-09-30",
+            "value": "NA_WITH_RATIONALE"
+          },
+          "disposition_ref": "DISP-2026-114",
+          "member_key": "CT-2044",
+          "owner": "vinylfigure",
+          "sources_absent": [],
+          "sources_present": [
+            "github-account-inventory",
+            "hris-termination-feed",
+            "slack-account-inventory"
+          ]
+        },
+        {
+          "bucket": "excluded",
+          "delta_id": "TERM.identity-join#excluded#osprey-design-ext",
+          "display_name": "osprey-design-ext",
+          "disposition": {
+            "justification": "contracted design vendor's outside collaborator; access governed by the vendor-access review, not the termination lane",
+            "owner": "vinylfigure",
+            "review_date": "2026-12-31",
+            "value": "VENDOR_MANAGED"
+          },
+          "disposition_ref": "DISP-2026-102",
+          "member_key": "osprey-design-ext",
+          "owner": "vinylfigure",
+          "sources_absent": [
+            "hris-termination-feed"
+          ],
+          "sources_present": [
+            "github-account-inventory"
+          ]
+        },
+        {
+          "bucket": "left_only",
+          "delta_id": "TERM.identity-join#left_only#bm-legacy-bot",
+          "display_name": "bm-legacy-bot",
+          "disposition": null,
+          "disposition_ref": null,
+          "member_key": "bm-legacy-bot",
+          "owner": null,
+          "sources_absent": [
+            "hris-termination-feed"
+          ],
+          "sources_present": [
+            "github-account-inventory"
+          ]
+        },
+        {
+          "bucket": "left_only",
+          "delta_id": "TERM.identity-join#left_only#ctr.blake.morgan@example-vendor.com",
+          "display_name": "blake-morgan-vendor",
+          "disposition": null,
+          "disposition_ref": null,
+          "member_key": "ctr.blake.morgan@example-vendor.com",
+          "owner": null,
+          "sources_absent": [
+            "hris-termination-feed"
+          ],
+          "sources_present": [
+            "github-account-inventory"
+          ]
+        },
+        {
+          "bucket": "unresolvable",
+          "delta_id": "TERM.identity-join#unresolvable#dana.kowalski@meridianfinancial.example",
+          "display_name": "dana.kowalski@meridianfinancial.example",
+          "disposition": null,
+          "disposition_ref": null,
+          "member_key": "dana.kowalski@meridianfinancial.example",
+          "owner": null,
+          "sources_absent": [
+            "hris-termination-feed"
+          ],
+          "sources_present": [
+            "okta-system-log"
+          ]
         }
-      },
-      {
-        "delta_id": "d-205",
-        "bucket": "excluded",
-        "member_key": "svc-deploy-bot",
-        "display_name": "CI deploy service account",
-        "sources_present": ["github.org_members", "okta.users"],
-        "sources_absent": ["hris.employee_feed"],
-        "owner": "platform-eng",
-        "disposition": {
-          "value": "NA_WITH_RATIONALE",
-          "justification": "Service identity — excluded from the workforce join by the service-identity rule; covered instead by CL-PRIV-02 (production-capable principals).",
-          "owner": "platform-eng",
-          "review_date": "2026-12-31"
-        }
-      },
-      {
-        "delta_id": "d-206",
-        "bucket": "excluded",
-        "member_key": "okta-svc-scim",
-        "display_name": "SCIM provisioning integration",
-        "sources_present": ["okta.users"],
-        "sources_absent": ["hris.employee_feed"],
-        "owner": "it-iam",
-        "disposition": {
-          "value": "NA_WITH_RATIONALE",
-          "justification": "Provisioning integration identity — excluded by the service-identity rule; key rotation covered under CL-PRIV-02.",
-          "owner": "it-iam",
-          "review_date": "2026-12-31"
-        }
+      ],
+      "diagnostics": [
+        "in-domain active workforce identity outside population scope: amara.diallo@meridianfinancial.example",
+        "in-domain active workforce identity outside population scope: bianca.rossi@meridianfinancial.example",
+        "in-domain active workforce identity outside population scope: chloe.marchand@meridianfinancial.example",
+        "in-domain active workforce identity outside population scope: ethan.macleod@meridianfinancial.example",
+        "in-domain active workforce identity outside population scope: grace.lindqvist@meridianfinancial.example",
+        "in-domain active workforce identity outside population scope: isla.donovan@meridianfinancial.example",
+        "in-domain active workforce identity outside population scope: liam.hutchins@meridianfinancial.example",
+        "in-domain active workforce identity outside population scope: lucas.ferraro@meridianfinancial.example",
+        "in-domain active workforce identity outside population scope: mei.tanaka@meridianfinancial.example",
+        "in-domain active workforce identity outside population scope: nora.okafor@meridianfinancial.example",
+        "in-domain active workforce identity outside population scope: rafael.ortiz@meridianfinancial.example",
+        "in-domain active workforce identity outside population scope: ravi.menon@meridianfinancial.example",
+        "in-domain active workforce identity outside population scope: samuel.adeyemi@meridianfinancial.example",
+        "in-domain active workforce identity outside population scope: viktor.petrov@meridianfinancial.example",
+        "in-domain active workforce identity outside population scope: zoe.sandoval@meridianfinancial.example",
+        "non-workforce principals outside the identity universe (bot/service-account/group; governance is a separate lane): analytics@meridianfinancial.example, breakglass-admin@example-prod.iam.gserviceaccount.com, ci-deployer@mf-staging.iam.gserviceaccount.com, mf-deploybot"
+      ],
+      "ladder_state": "DISCOVERED",
+      "members": [
+        "CT-2044",
+        "E-1004",
+        "E-1019",
+        "E-1027",
+        "E-1033",
+        "E-1041",
+        "E-1048",
+        "E-1052",
+        "E-1060",
+        "E-1066",
+        "E-1073",
+        "E-1080",
+        "E-1088",
+        "E-1091",
+        "E-1095"
+      ],
+      "population_ref": "TERM.identity-join",
+      "source_counts": {
+        "gcp-account-inventory": 11,
+        "github-account-inventory": 19,
+        "hris-termination-feed": 15,
+        "okta-system-log": 14,
+        "slack-account-inventory": 31
       }
-    ]
-  }
-]
+    },
+    {
+      "basis_complete": true,
+      "basis_notes": [],
+      "buckets": {
+        "conflicts": [],
+        "excluded": [],
+        "intersection": [
+          "amara.diallo@meridianfinancial.example",
+          "avery.chen@meridianfinancial.example",
+          "bianca.rossi@meridianfinancial.example",
+          "chloe.marchand@meridianfinancial.example",
+          "colin.drexler@meridianfinancial.example",
+          "dana.whitfield@meridianfinancial.example",
+          "devon.ellis@meridianfinancial.example",
+          "ethan.macleod@meridianfinancial.example",
+          "fatima.noor@meridianfinancial.example",
+          "grace.lindqvist@meridianfinancial.example",
+          "hannah.beck@meridianfinancial.example",
+          "ingrid.solberg@meridianfinancial.example",
+          "isla.donovan@meridianfinancial.example",
+          "jae.park@meridianfinancial.example",
+          "kai.moreno@meridianfinancial.example",
+          "liam.hutchins@meridianfinancial.example",
+          "lucas.ferraro@meridianfinancial.example",
+          "marcus.webb@meridianfinancial.example",
+          "mei.tanaka@meridianfinancial.example",
+          "nora.okafor@meridianfinancial.example",
+          "oliver.grant@meridianfinancial.example",
+          "priya.natarajan@meridianfinancial.example",
+          "rafael.ortiz@meridianfinancial.example",
+          "ravi.menon@meridianfinancial.example",
+          "renata.vasquez@meridianfinancial.example",
+          "samuel.adeyemi@meridianfinancial.example",
+          "sofia.marino@meridianfinancial.example",
+          "tomas.rivera@meridianfinancial.example",
+          "viktor.petrov@meridianfinancial.example",
+          "zoe.sandoval@meridianfinancial.example"
+        ],
+        "left_only": [
+          "ctr.blake.morgan@example-vendor.com"
+        ],
+        "right_only": [],
+        "unresolvable": []
+      },
+      "canonical_identity_keys": [
+        "employee_id",
+        "email",
+        "login"
+      ],
+      "deltas": [
+        {
+          "bucket": "left_only",
+          "delta_id": "TERM.slack.accounts#left_only#ctr.blake.morgan@example-vendor.com",
+          "display_name": "ctr.blake.morgan@example-vendor.com",
+          "disposition": null,
+          "disposition_ref": null,
+          "member_key": "ctr.blake.morgan@example-vendor.com",
+          "owner": null,
+          "sources_absent": [
+            "slack-account-inventory"
+          ],
+          "sources_present": [
+            "okta-group-assignments"
+          ]
+        }
+      ],
+      "diagnostics": [
+        "non-workforce principals outside the identity universe (bot/service-account/group; governance is a separate lane): mf-deploybot"
+      ],
+      "ladder_state": "DISCOVERED",
+      "members": [
+        "amara.diallo@meridianfinancial.example",
+        "avery.chen@meridianfinancial.example",
+        "bianca.rossi@meridianfinancial.example",
+        "chloe.marchand@meridianfinancial.example",
+        "colin.drexler@meridianfinancial.example",
+        "ctr.blake.morgan@example-vendor.com",
+        "dana.whitfield@meridianfinancial.example",
+        "devon.ellis@meridianfinancial.example",
+        "ethan.macleod@meridianfinancial.example",
+        "fatima.noor@meridianfinancial.example",
+        "grace.lindqvist@meridianfinancial.example",
+        "hannah.beck@meridianfinancial.example",
+        "ingrid.solberg@meridianfinancial.example",
+        "isla.donovan@meridianfinancial.example",
+        "jae.park@meridianfinancial.example",
+        "kai.moreno@meridianfinancial.example",
+        "liam.hutchins@meridianfinancial.example",
+        "lucas.ferraro@meridianfinancial.example",
+        "marcus.webb@meridianfinancial.example",
+        "mei.tanaka@meridianfinancial.example",
+        "nora.okafor@meridianfinancial.example",
+        "oliver.grant@meridianfinancial.example",
+        "priya.natarajan@meridianfinancial.example",
+        "rafael.ortiz@meridianfinancial.example",
+        "ravi.menon@meridianfinancial.example",
+        "renata.vasquez@meridianfinancial.example",
+        "samuel.adeyemi@meridianfinancial.example",
+        "sofia.marino@meridianfinancial.example",
+        "tomas.rivera@meridianfinancial.example",
+        "viktor.petrov@meridianfinancial.example",
+        "zoe.sandoval@meridianfinancial.example"
+      ],
+      "population_ref": "TERM.slack.accounts",
+      "source_counts": {
+        "okta-group-assignments": 17,
+        "slack-account-inventory": 31
+      }
+    },
+    {
+      "basis_complete": true,
+      "basis_notes": [],
+      "buckets": {
+        "conflicts": [],
+        "excluded": [],
+        "intersection": [
+          "CT-2044",
+          "E-1004",
+          "E-1019",
+          "E-1027",
+          "E-1033",
+          "E-1041",
+          "E-1048",
+          "E-1052",
+          "E-1060",
+          "E-1066",
+          "E-1073",
+          "E-1080",
+          "E-1088",
+          "E-1091",
+          "E-1095"
+        ],
+        "left_only": [],
+        "right_only": [],
+        "unresolvable": []
+      },
+      "canonical_identity_keys": [
+        "employee_id",
+        "email",
+        "login"
+      ],
+      "deltas": [],
+      "diagnostics": [],
+      "ladder_state": "RATIFIED",
+      "members": [
+        "CT-2044",
+        "E-1004",
+        "E-1019",
+        "E-1027",
+        "E-1033",
+        "E-1041",
+        "E-1048",
+        "E-1052",
+        "E-1060",
+        "E-1066",
+        "E-1073",
+        "E-1080",
+        "E-1088",
+        "E-1091",
+        "E-1095"
+      ],
+      "population_ref": "TERM.terminations",
+      "source_counts": {
+        "hris-termination-feed": 15
+      }
+    }
+  ]
+}

@@ -1,10 +1,13 @@
 /* Engagement-artifact loader with lightweight runtime guards.
  *
- * The mock JSON is hand-authored; these guards check enum membership and
- * required keys against the mirrored ontology so that artifact drift
- * (backend renames a field, adds an enum value…) surfaces as a visible
- * red "artifact schema drift" banner — never a crash, never a silent
- * mis-render. On mismatch we still return the parseable data.
+ * The JSON under src/data/engagement/ is the REAL pipeline output,
+ * synced verbatim from artifacts/demo-engagement/ by
+ * scripts/sync-artifacts.mjs (committed == synced, CI-enforced). The
+ * guards check enum membership and required keys against the mirrored
+ * ontology so that artifact drift (backend renames a field, adds an
+ * enum value…) surfaces as a visible red "artifact schema drift"
+ * banner — never a crash, never a silent mis-render. On mismatch we
+ * still return the parseable data.
  */
 
 import manifestJson from "@/data/engagement/manifest.json";
@@ -15,7 +18,6 @@ import verdictsJson from "@/data/engagement/verdicts.json";
 import proofGraphJson from "@/data/engagement/proof_graph.json";
 
 import {
-  ASSERTION_TYPES,
   ASSURANCE_STATES,
   D7_FAMILIES,
   D7_FAMILY_WHY,
@@ -24,15 +26,17 @@ import {
   UNKNOWN_WHY_CODES,
   VERDICT_STATES,
 } from "@/lib/types/ontology";
-import type { Claim, Population, VerdictRecord } from "@/lib/types/ontology";
+import type { Population, VerdictRecord } from "@/lib/types/ontology";
 import {
   ACCESS_MODES,
   DELTA_BUCKETS,
+  PAGINATION_METHODS,
   PROOF_NODE_KINDS,
+  TEMPORAL_SHAPE_KINDS,
 } from "@/lib/types/artifacts";
 import type {
   CapabilityEntry,
-  ECode,
+  CompileError,
   EngagementArtifacts,
   EngagementManifest,
   ProofGraph,
@@ -90,6 +94,9 @@ function checkPopulations(pops: unknown[], drift: string[]): void {
         "derivation_rule",
         "sources",
         "period",
+        "size",
+        "exclusions",
+        "open_deltas",
         "state",
       ],
       where,
@@ -116,31 +123,12 @@ function checkPopulations(pops: unknown[], drift: string[]): void {
   });
 }
 
-function checkClaims(claims: unknown[], drift: string[]): void {
-  claims.forEach((c, i) => {
-    const where = `claims[${i}]`;
-    requireKeys(c, ["claim_id", "statement", "population_ref", "assertions"], where, drift);
-    if (!isRecord(c) || !Array.isArray(c.assertions)) return;
-    c.assertions.forEach((a, j) => {
-      const aw = `${where}.assertions[${j}]`;
-      requireKeys(
-        a,
-        ["assertion_id", "claim_ref", "type", "predicate_text", "population_ref"],
-        aw,
-        drift
-      );
-      if (isRecord(a)) requireEnum(a.type, ASSERTION_TYPES, `${aw}.type`, drift);
-    });
-  });
-}
-
 function checkVerdicts(verdicts: unknown[], drift: string[]): void {
   verdicts.forEach((v, i) => {
     const where = `verdicts[${i}]`;
     requireKeys(
       v,
       [
-        "verdict_id",
         "claim_ref",
         "assertion_ref",
         "population_ref",
@@ -149,12 +137,16 @@ function checkVerdicts(verdicts: unknown[], drift: string[]): void {
         "contract_hash",
         "state",
         "evaluated_at",
+        "record_hash",
+        "evidence_refs",
       ],
       where,
       drift
     );
     if (!isRecord(v)) return;
     requireEnum(v.state, VERDICT_STATES, `${where}.state`, drift);
+    if (typeof v.record_hash !== "string" || v.record_hash.length < 12)
+      drift.push(`${where}: record_hash must be a hash string (route identity)`);
     if (v.state === "UNKNOWN") {
       if (v.why_code == null) drift.push(`${where}: UNKNOWN requires a why_code`);
       else requireEnum(v.why_code, UNKNOWN_WHY_CODES, `${where}.why_code`, drift);
@@ -176,21 +168,54 @@ function checkVerdicts(verdicts: unknown[], drift: string[]): void {
   });
 }
 
+function checkCompileErrors(errors: unknown[], drift: string[]): void {
+  errors.forEach((e, i) => {
+    const where = `compile_errors[${i}]`;
+    requireKeys(e, ["code", "message", "rendered", "claim_ref", "assertion_ref"], where, drift);
+  });
+}
+
 function checkReconciliations(recs: unknown[], drift: string[]): void {
   recs.forEach((r, i) => {
     const where = `reconciliation[${i}]`;
     requireKeys(
       r,
-      ["population_ref", "canonical_identity_keys", "source_counts", "deltas"],
+      [
+        "population_ref",
+        "canonical_identity_keys",
+        "source_counts",
+        "deltas",
+        "buckets",
+        "members",
+        "basis_complete",
+        "basis_notes",
+        "diagnostics",
+        "ladder_state",
+      ],
       where,
       drift
     );
-    if (!isRecord(r) || !Array.isArray(r.deltas)) return;
+    if (!isRecord(r)) return;
+    requireEnum(r.ladder_state, ASSURANCE_STATES, `${where}.ladder_state`, drift);
+    if (isRecord(r.buckets)) {
+      requireKeys(r.buckets, [...DELTA_BUCKETS], `${where}.buckets`, drift);
+    }
+    if (!Array.isArray(r.deltas)) return;
     r.deltas.forEach((d, j) => {
       const dw = `${where}.deltas[${j}]`;
       requireKeys(
         d,
-        ["delta_id", "bucket", "member_key", "sources_present", "sources_absent"],
+        [
+          "delta_id",
+          "bucket",
+          "member_key",
+          "display_name",
+          "sources_present",
+          "sources_absent",
+          "owner",
+          "disposition",
+          "disposition_ref",
+        ],
         dw,
         drift
       );
@@ -210,12 +235,15 @@ function checkRegistry(entries: unknown[], drift: string[]): void {
         "surface",
         "access_modes",
         "populations_yielded",
+        "attributes",
         "temporal",
         "join_keys",
         "auth_scope",
         "pagination",
+        "rate_limits",
         "history_caveats",
         "provenance",
+        "schema_version",
       ],
       where,
       drift
@@ -224,6 +252,15 @@ function checkRegistry(entries: unknown[], drift: string[]): void {
     if (Array.isArray(e.access_modes))
       e.access_modes.forEach((m, j) =>
         requireEnum(m, ACCESS_MODES, `${where}.access_modes[${j}]`, drift)
+      );
+    if (isRecord(e.temporal))
+      requireEnum(e.temporal.kind, TEMPORAL_SHAPE_KINDS, `${where}.temporal.kind`, drift);
+    if (isRecord(e.pagination))
+      requireEnum(
+        e.pagination.method,
+        PAGINATION_METHODS,
+        `${where}.pagination.method`,
+        drift
       );
   });
 }
@@ -266,35 +303,52 @@ export function loadEngagement(): EngagementLoad {
 
   requireKeys(
     manifestJson,
-    ["manifest_version", "snapshot_hash", "ratified_by", "ratified_at", "engagement", "period"],
+    [
+      "manifest_version",
+      "snapshot_hash",
+      "ratified_by",
+      "ratified_at",
+      "engagement",
+      "period",
+      "boundary",
+      "summary",
+    ],
     "manifest",
     drift
   );
 
-  const verdictsBundle = verdictsJson as unknown as {
-    claims: unknown[];
-    verdicts: unknown[];
-    compile_errors: unknown[];
+  const populationsFile = populationsJson as unknown as { populations?: unknown[] };
+  const registryFile = registryJson as unknown as { entries?: unknown[] };
+  const reconciliationFile = reconciliationJson as unknown as {
+    reconciliations?: unknown[];
+  };
+  const verdictsFile = verdictsJson as unknown as {
+    verdicts?: unknown[];
+    compile_errors?: unknown[];
   };
 
-  checkPopulations(populationsJson as unknown[], drift);
-  checkClaims(verdictsBundle.claims ?? [], drift);
-  checkVerdicts(verdictsBundle.verdicts ?? [], drift);
-  checkReconciliations(reconciliationJson as unknown[], drift);
-  checkRegistry(registryJson as unknown[], drift);
+  if (!Array.isArray(populationsFile.populations))
+    drift.push('populations.json: missing top-level "populations" array');
+  if (!Array.isArray(registryFile.entries))
+    drift.push('capability_registry.json: missing top-level "entries" array');
+  if (!Array.isArray(reconciliationFile.reconciliations))
+    drift.push('reconciliation.json: missing top-level "reconciliations" array');
+
+  checkPopulations(populationsFile.populations ?? [], drift);
+  checkVerdicts(verdictsFile.verdicts ?? [], drift);
+  checkCompileErrors(verdictsFile.compile_errors ?? [], drift);
+  checkReconciliations(reconciliationFile.reconciliations ?? [], drift);
+  checkRegistry(registryFile.entries ?? [], drift);
   checkProofGraphs(proofGraphJson as unknown[], drift);
-  (verdictsBundle.compile_errors ?? []).forEach((e, i) =>
-    requireKeys(e, ["code", "message"], `compile_errors[${i}]`, drift)
-  );
 
   const artifacts: EngagementArtifacts = {
-    manifest: manifestJson as EngagementManifest,
-    capability_registry: registryJson as unknown as CapabilityEntry[],
-    populations: populationsJson as unknown as Population[],
-    reconciliations: reconciliationJson as unknown as ReconciliationResult[],
-    claims: (verdictsBundle.claims ?? []) as Claim[],
-    verdicts: (verdictsBundle.verdicts ?? []) as VerdictRecord[],
-    compile_errors: (verdictsBundle.compile_errors ?? []) as ECode[],
+    manifest: manifestJson as unknown as EngagementManifest,
+    capability_registry: (registryFile.entries ?? []) as CapabilityEntry[],
+    populations: (populationsFile.populations ?? []) as unknown as Population[],
+    reconciliations: (reconciliationFile.reconciliations ??
+      []) as unknown as ReconciliationResult[],
+    verdicts: (verdictsFile.verdicts ?? []) as unknown as VerdictRecord[],
+    compile_errors: (verdictsFile.compile_errors ?? []) as unknown as CompileError[],
     proof_graphs: proofGraphJson as unknown as ProofGraph[],
   };
 
@@ -303,6 +357,19 @@ export function loadEngagement(): EngagementLoad {
 }
 
 /* ---------------- derived helpers (pure, computed, never stored) -------- */
+
+/** URL-safe route key for a verdict: a stable prefix of its record_hash. */
+export const VERDICT_SLUG_LEN = 12;
+
+export function verdictSlug(v: VerdictRecord): string {
+  return v.record_hash.slice(0, VERDICT_SLUG_LEN);
+}
+
+/** Resolve a route slug (record_hash prefix) — or a full hash — to its verdict. */
+export function verdictBySlug(load: EngagementLoad, slug: string): VerdictRecord | undefined {
+  if (slug.length < 8) return undefined; // too short to be unambiguous
+  return load.artifacts.verdicts.find((v) => v.record_hash.startsWith(slug));
+}
 
 export function populationById(load: EngagementLoad, id: string): Population | undefined {
   return load.artifacts.populations.find((p) => p.population_id === id);
@@ -315,12 +382,24 @@ export function reconciliationFor(
   return load.artifacts.reconciliations.find((r) => r.population_ref === populationId);
 }
 
-export function verdictById(load: EngagementLoad, id: string): VerdictRecord | undefined {
-  return load.artifacts.verdicts.find((v) => v.verdict_id === id);
+/** Proof lineage for a verdict, keyed by record_hash (prefix accepted). */
+export function proofGraphFor(load: EngagementLoad, slug: string): ProofGraph | undefined {
+  if (slug.length < 8) return undefined;
+  return load.artifacts.proof_graphs.find((g) => g.verdict_ref.startsWith(slug));
 }
 
-export function proofGraphFor(load: EngagementLoad, verdictId: string): ProofGraph | undefined {
-  return load.artifacts.proof_graphs.find((g) => g.verdict_ref === verdictId);
+/** An E117 that blocks this population from compiling (missing capability
+ *  for one of its derivation sources) — the DEFINED-behind-E117 state. */
+export function blockingCompileError(
+  load: EngagementLoad,
+  population: Population
+): CompileError | undefined {
+  return load.artifacts.compile_errors.find(
+    (e) =>
+      e.code === "E117" &&
+      e.missing_source != null &&
+      population.derivation_rule.source_refs.includes(e.missing_source)
+  );
 }
 
 /** Open (undispositioned) deltas for a population's reconciliation. */
