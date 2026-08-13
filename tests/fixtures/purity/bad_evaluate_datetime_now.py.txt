@@ -1,0 +1,11 @@
+# Seeded-bad fixture: a hypothetical evaluator that reads the wall clock.
+# Never importable (.py.txt). Must be flagged by the STRICT lane (D-P3:
+# clock values are explicit function inputs), and must NOT be an
+# import-level violation in the base lane (datetime import is legal;
+# calling .now() in evaluate/ is not).
+from datetime import datetime
+
+
+def evaluate_timing() -> str:
+    observed_at = datetime.now()
+    return observed_at.isoformat()
