@@ -1,0 +1,22 @@
+{
+  "additionalProperties": false,
+  "description": "A framework control projected onto a claim (frameworks are projections).",
+  "properties": {
+    "control_id": {
+      "minLength": 1,
+      "title": "Control Id",
+      "type": "string"
+    },
+    "framework": {
+      "minLength": 1,
+      "title": "Framework",
+      "type": "string"
+    }
+  },
+  "required": [
+    "framework",
+    "control_id"
+  ],
+  "title": "FrameworkMapping",
+  "type": "object"
+}

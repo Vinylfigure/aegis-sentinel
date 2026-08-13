@@ -1,0 +1,16 @@
+{
+  "additionalProperties": false,
+  "description": "One quality property with its independently named method.\n\nKept to a single named field to stay closed (no free-form params\ndict); method-specific parameters belong in the contract's\n``parameters`` list, named per parameter.",
+  "properties": {
+    "method": {
+      "minLength": 1,
+      "title": "Method",
+      "type": "string"
+    }
+  },
+  "required": [
+    "method"
+  ],
+  "title": "QualityProperty",
+  "type": "object"
+}

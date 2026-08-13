@@ -1,0 +1,194 @@
+{
+  "$defs": {
+    "AssertionType": {
+      "description": "The seven assertion types (PRD-v3 \u00a72); type constrains evidence.",
+      "enum": [
+        "STATE",
+        "EVENT",
+        "SEQUENCE",
+        "AGGREGATE",
+        "EXISTENCE",
+        "NON_EXISTENCE",
+        "TIMING"
+      ],
+      "title": "AssertionType",
+      "type": "string"
+    },
+    "Parameter": {
+      "additionalProperties": false,
+      "description": "One named collection parameter (closed alternative to a dict).",
+      "properties": {
+        "name": {
+          "minLength": 1,
+          "title": "Name",
+          "type": "string"
+        },
+        "value": {
+          "title": "Value",
+          "type": "string"
+        }
+      },
+      "required": [
+        "name",
+        "value"
+      ],
+      "title": "Parameter",
+      "type": "object"
+    },
+    "Period": {
+      "additionalProperties": false,
+      "description": "Closed date interval a population (or evidence window) covers.",
+      "properties": {
+        "end": {
+          "format": "date",
+          "title": "End",
+          "type": "string"
+        },
+        "start": {
+          "format": "date",
+          "title": "Start",
+          "type": "string"
+        }
+      },
+      "required": [
+        "start",
+        "end"
+      ],
+      "title": "Period",
+      "type": "object"
+    },
+    "QualityProperty": {
+      "additionalProperties": false,
+      "description": "One quality property with its independently named method.\n\nKept to a single named field to stay closed (no free-form params\ndict); method-specific parameters belong in the contract's\n``parameters`` list, named per parameter.",
+      "properties": {
+        "method": {
+          "minLength": 1,
+          "title": "Method",
+          "type": "string"
+        }
+      },
+      "required": [
+        "method"
+      ],
+      "title": "QualityProperty",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Identity + five quality properties + supported assertion types.",
+  "properties": {
+    "auth_context": {
+      "minLength": 1,
+      "title": "Auth Context",
+      "type": "string"
+    },
+    "collector_version": {
+      "minLength": 1,
+      "title": "Collector Version",
+      "type": "string"
+    },
+    "contract_hash": {
+      "anyOf": [
+        {
+          "pattern": "^[a-f0-9]{64}$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Contract Hash"
+    },
+    "endpoint": {
+      "minLength": 1,
+      "title": "Endpoint",
+      "type": "string"
+    },
+    "integrity": {
+      "$ref": "#/$defs/QualityProperty"
+    },
+    "parameters": {
+      "default": [],
+      "items": {
+        "$ref": "#/$defs/Parameter"
+      },
+      "title": "Parameters",
+      "type": "array"
+    },
+    "population": {
+      "$ref": "#/$defs/QualityProperty"
+    },
+    "population_ref": {
+      "minLength": 1,
+      "title": "Population Ref",
+      "type": "string"
+    },
+    "provenance": {
+      "$ref": "#/$defs/QualityProperty"
+    },
+    "retrieved_at": {
+      "anyOf": [
+        {
+          "format": "date-time",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Retrieved At"
+    },
+    "schema_version": {
+      "minLength": 1,
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "semantics": {
+      "$ref": "#/$defs/QualityProperty"
+    },
+    "source_system": {
+      "minLength": 1,
+      "title": "Source System",
+      "type": "string"
+    },
+    "supported_assertion_types": {
+      "items": {
+        "$ref": "#/$defs/AssertionType"
+      },
+      "title": "Supported Assertion Types",
+      "type": "array",
+      "uniqueItems": true
+    },
+    "temporal_validity": {
+      "$ref": "#/$defs/QualityProperty"
+    },
+    "tenant": {
+      "minLength": 1,
+      "title": "Tenant",
+      "type": "string"
+    },
+    "time_window": {
+      "$ref": "#/$defs/Period"
+    }
+  },
+  "required": [
+    "source_system",
+    "tenant",
+    "population_ref",
+    "endpoint",
+    "time_window",
+    "schema_version",
+    "collector_version",
+    "auth_context",
+    "provenance",
+    "integrity",
+    "population",
+    "semantics",
+    "temporal_validity",
+    "supported_assertion_types"
+  ],
+  "title": "EvidenceQualityContract",
+  "type": "object"
+}

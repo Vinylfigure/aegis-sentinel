@@ -1,0 +1,21 @@
+{
+  "additionalProperties": false,
+  "description": "One named collection parameter (closed alternative to a dict).",
+  "properties": {
+    "name": {
+      "minLength": 1,
+      "title": "Name",
+      "type": "string"
+    },
+    "value": {
+      "title": "Value",
+      "type": "string"
+    }
+  },
+  "required": [
+    "name",
+    "value"
+  ],
+  "title": "Parameter",
+  "type": "object"
+}

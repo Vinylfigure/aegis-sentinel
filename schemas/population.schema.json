@@ -1,0 +1,230 @@
+{
+  "$defs": {
+    "AssuranceState": {
+      "description": "The assurance-state ladder (PRD-v3 \u00a72).",
+      "enum": [
+        "UNDEFINED",
+        "DEFINED",
+        "DISCOVERED",
+        "RECONCILED",
+        "RATIFIED",
+        "STALE"
+      ],
+      "title": "AssuranceState",
+      "type": "string"
+    },
+    "DerivationRule": {
+      "additionalProperties": false,
+      "description": "How the population's membership is constructed (the general case).\n\nThe degenerate case \u2014 a single AUTHORITATIVE source \u2014 is what the\nprior scaffold called ``authoritative_source`` (PRD \u00a78 D5). Use\n:meth:`from_authoritative_source` for that case; ``source_refs``\nname ``Source.source_id`` values declared on the owning Population.",
+      "properties": {
+        "rule_text": {
+          "minLength": 1,
+          "title": "Rule Text",
+          "type": "string"
+        },
+        "source_refs": {
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Source Refs",
+          "type": "array"
+        }
+      },
+      "required": [
+        "rule_text",
+        "source_refs"
+      ],
+      "title": "DerivationRule",
+      "type": "object"
+    },
+    "Exclusion": {
+      "additionalProperties": false,
+      "description": "A member deliberately excluded from the population \u2014 never silent.",
+      "properties": {
+        "member_id": {
+          "minLength": 1,
+          "title": "Member Id",
+          "type": "string"
+        },
+        "rationale": {
+          "minLength": 1,
+          "title": "Rationale",
+          "type": "string"
+        }
+      },
+      "required": [
+        "member_id",
+        "rationale"
+      ],
+      "title": "Exclusion",
+      "type": "object"
+    },
+    "OpenDeltaRef": {
+      "additionalProperties": false,
+      "description": "Reference to an undispositioned reconciliation delta and its owner.",
+      "properties": {
+        "delta_id": {
+          "minLength": 1,
+          "title": "Delta Id",
+          "type": "string"
+        },
+        "owner": {
+          "minLength": 1,
+          "title": "Owner",
+          "type": "string"
+        }
+      },
+      "required": [
+        "delta_id",
+        "owner"
+      ],
+      "title": "OpenDeltaRef",
+      "type": "object"
+    },
+    "Period": {
+      "additionalProperties": false,
+      "description": "Closed date interval a population (or evidence window) covers.",
+      "properties": {
+        "end": {
+          "format": "date",
+          "title": "End",
+          "type": "string"
+        },
+        "start": {
+          "format": "date",
+          "title": "Start",
+          "type": "string"
+        }
+      },
+      "required": [
+        "start",
+        "end"
+      ],
+      "title": "Period",
+      "type": "object"
+    },
+    "PopulationType": {
+      "description": "PRD-v3 \u00a72: entity (state), event (happened), relationship (join).",
+      "enum": [
+        "ENTITY",
+        "EVENT",
+        "RELATIONSHIP"
+      ],
+      "title": "PopulationType",
+      "type": "string"
+    },
+    "Source": {
+      "additionalProperties": false,
+      "description": "A named evidence source with its role in the population's derivation.",
+      "properties": {
+        "role": {
+          "$ref": "#/$defs/SourceRole"
+        },
+        "source_id": {
+          "minLength": 1,
+          "title": "Source Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "source_id",
+        "role"
+      ],
+      "title": "Source",
+      "type": "object"
+    },
+    "SourceRole": {
+      "description": "Source roles a population's derivation may lean on (PRD-v3 \u00a72).",
+      "enum": [
+        "AUTHORITATIVE",
+        "CONTRIBUTING",
+        "CORROBORATING",
+        "DISCOVERY",
+        "EXCLUSION"
+      ],
+      "title": "SourceRole",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "description": "A defined universe: definition, derivation, sources, period, state.\n\nConstructor-enforced: every ``source_refs`` entry in the derivation\nrule must name a declared source (PRD invariant 3 \u2014 no population\nwithout a derivation rule or authoritative source, and that rule\nmust be groundable in the declared sources).",
+  "properties": {
+    "definition": {
+      "minLength": 1,
+      "title": "Definition",
+      "type": "string"
+    },
+    "derivation_rule": {
+      "$ref": "#/$defs/DerivationRule"
+    },
+    "exclusions": {
+      "default": [],
+      "items": {
+        "$ref": "#/$defs/Exclusion"
+      },
+      "title": "Exclusions",
+      "type": "array"
+    },
+    "name": {
+      "minLength": 1,
+      "title": "Name",
+      "type": "string"
+    },
+    "open_deltas": {
+      "default": [],
+      "items": {
+        "$ref": "#/$defs/OpenDeltaRef"
+      },
+      "title": "Open Deltas",
+      "type": "array"
+    },
+    "period": {
+      "$ref": "#/$defs/Period"
+    },
+    "population_id": {
+      "minLength": 1,
+      "title": "Population Id",
+      "type": "string"
+    },
+    "size": {
+      "anyOf": [
+        {
+          "minimum": 0,
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Size"
+    },
+    "sources": {
+      "items": {
+        "$ref": "#/$defs/Source"
+      },
+      "minItems": 1,
+      "title": "Sources",
+      "type": "array"
+    },
+    "state": {
+      "$ref": "#/$defs/AssuranceState",
+      "default": "UNDEFINED"
+    },
+    "type": {
+      "$ref": "#/$defs/PopulationType"
+    }
+  },
+  "required": [
+    "population_id",
+    "name",
+    "type",
+    "definition",
+    "derivation_rule",
+    "sources",
+    "period"
+  ],
+  "title": "Population",
+  "type": "object"
+}

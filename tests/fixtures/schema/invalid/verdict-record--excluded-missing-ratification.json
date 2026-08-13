@@ -1,0 +1,19 @@
+{
+  "assertion_ref": "AM-06.a",
+  "claim_ref": "claim-termination-revocation",
+  "contract_hash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+  "d7_family": null,
+  "disposition_ref": null,
+  "evaluated_at": "2026-07-01T12:00:00Z",
+  "evidence_refs": [
+    "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+  ],
+  "manifest_version": "v1",
+  "message": null,
+  "population_ref": "pop-terminated-employees",
+  "ratification_ref": null,
+  "record_hash": null,
+  "snapshot_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "state": "EXCLUDED",
+  "why_code": null
+}

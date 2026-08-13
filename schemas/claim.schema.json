@@ -1,0 +1,120 @@
+{
+  "$defs": {
+    "Assertion": {
+      "additionalProperties": false,
+      "description": "One lettered, typed, testable attribute of a claim.",
+      "properties": {
+        "assertion_id": {
+          "pattern": "^[A-Z0-9][A-Z0-9-]*\\.[a-z]+$",
+          "title": "Assertion Id",
+          "type": "string"
+        },
+        "claim_ref": {
+          "minLength": 1,
+          "title": "Claim Ref",
+          "type": "string"
+        },
+        "population_ref": {
+          "minLength": 1,
+          "title": "Population Ref",
+          "type": "string"
+        },
+        "predicate_text": {
+          "minLength": 1,
+          "title": "Predicate Text",
+          "type": "string"
+        },
+        "type": {
+          "$ref": "#/$defs/AssertionType"
+        }
+      },
+      "required": [
+        "assertion_id",
+        "claim_ref",
+        "type",
+        "predicate_text",
+        "population_ref"
+      ],
+      "title": "Assertion",
+      "type": "object"
+    },
+    "AssertionType": {
+      "description": "The seven assertion types (PRD-v3 \u00a72); type constrains evidence.",
+      "enum": [
+        "STATE",
+        "EVENT",
+        "SEQUENCE",
+        "AGGREGATE",
+        "EXISTENCE",
+        "NON_EXISTENCE",
+        "TIMING"
+      ],
+      "title": "AssertionType",
+      "type": "string"
+    },
+    "FrameworkMapping": {
+      "additionalProperties": false,
+      "description": "A framework control projected onto a claim (frameworks are projections).",
+      "properties": {
+        "control_id": {
+          "minLength": 1,
+          "title": "Control Id",
+          "type": "string"
+        },
+        "framework": {
+          "minLength": 1,
+          "title": "Framework",
+          "type": "string"
+        }
+      },
+      "required": [
+        "framework",
+        "control_id"
+      ],
+      "title": "FrameworkMapping",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "The semantic unit: a testable proposition over a subject population.\n\nConstructor-enforced: every attached assertion's ``claim_ref`` must\nname this claim \u2014 an assertion cannot be smuggled onto a claim it\ndoes not decompose.",
+  "properties": {
+    "assertions": {
+      "default": [],
+      "items": {
+        "$ref": "#/$defs/Assertion"
+      },
+      "title": "Assertions",
+      "type": "array"
+    },
+    "claim_id": {
+      "minLength": 1,
+      "title": "Claim Id",
+      "type": "string"
+    },
+    "framework_mappings": {
+      "default": [],
+      "items": {
+        "$ref": "#/$defs/FrameworkMapping"
+      },
+      "title": "Framework Mappings",
+      "type": "array"
+    },
+    "population_ref": {
+      "minLength": 1,
+      "title": "Population Ref",
+      "type": "string"
+    },
+    "statement": {
+      "minLength": 1,
+      "title": "Statement",
+      "type": "string"
+    }
+  },
+  "required": [
+    "claim_id",
+    "statement",
+    "population_ref"
+  ],
+  "title": "Claim",
+  "type": "object"
+}

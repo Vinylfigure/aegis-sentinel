@@ -1,0 +1,22 @@
+{
+  "additionalProperties": false,
+  "description": "Reference to an undispositioned reconciliation delta and its owner.",
+  "properties": {
+    "delta_id": {
+      "minLength": 1,
+      "title": "Delta Id",
+      "type": "string"
+    },
+    "owner": {
+      "minLength": 1,
+      "title": "Owner",
+      "type": "string"
+    }
+  },
+  "required": [
+    "delta_id",
+    "owner"
+  ],
+  "title": "OpenDeltaRef",
+  "type": "object"
+}

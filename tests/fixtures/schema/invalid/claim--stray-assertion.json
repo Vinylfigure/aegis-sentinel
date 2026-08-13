@@ -1,0 +1,24 @@
+{
+  "assertions": [
+    {
+      "assertion_id": "AM-06.a",
+      "claim_ref": "some-other-claim",
+      "population_ref": "pop-terminated-employees",
+      "predicate_text": "production access revoked within five business days of termination",
+      "type": "TIMING"
+    }
+  ],
+  "claim_id": "claim-termination-revocation",
+  "framework_mappings": [
+    {
+      "control_id": "CC6.2",
+      "framework": "SOC2"
+    },
+    {
+      "control_id": "AM-06",
+      "framework": "internal"
+    }
+  ],
+  "population_ref": "pop-terminated-employees",
+  "statement": "Every terminated employee lost production access within five business days"
+}
