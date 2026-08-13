@@ -1,0 +1,69 @@
+{
+  "lane_id": "TA-BAD",
+  "name": "Control point references an edge the lane never declares",
+  "direction": "hris -> github",
+  "trigger": "termination event recorded in the HRIS",
+  "nodes": [
+    {
+      "node_id": "hris",
+      "label": "HRIS",
+      "system_ref": "hris",
+      "kind": "ACTOR"
+    },
+    {
+      "node_id": "github",
+      "label": "GitHub",
+      "system_ref": "github",
+      "kind": "SINK"
+    }
+  ],
+  "edges": [
+    {
+      "from_node": "hris",
+      "to_node": "github",
+      "event_kind": "deprovision"
+    }
+  ],
+  "control_points": [
+    {
+      "cp_id": "CP-1",
+      "name": "Sits on a phantom edge",
+      "edge_refs": ["okta->github"],
+      "nature": "AUTO",
+      "function": "DET",
+      "claim_template_refs": ["MIN.claim"]
+    }
+  ],
+  "population_templates": [
+    {
+      "template_id": "MIN.pop",
+      "name": "Terminated workers",
+      "type": "EVENT",
+      "definition": "Every worker whose engagement ended during the period",
+      "rule_text": "all members enumerated by authoritative source {hris}-termination-feed",
+      "source_templates": [
+        {
+          "source_id": "{hris}-termination-feed",
+          "role": "AUTHORITATIVE"
+        }
+      ],
+      "source_refs": ["{hris}-termination-feed"]
+    }
+  ],
+  "claim_templates": [
+    {
+      "template_id": "MIN.claim",
+      "statement": "Every terminated worker lost access within five business days",
+      "population_ref": "MIN.pop",
+      "assertion_prefix": "MIN",
+      "framework_mappings": [],
+      "assertions": [
+        {
+          "letter": "a",
+          "type": "TIMING",
+          "predicate_text": "deactivation occurred no more than five business days after termination"
+        }
+      ]
+    }
+  ]
+}

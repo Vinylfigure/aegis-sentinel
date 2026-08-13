@@ -1,0 +1,14 @@
+{
+  "template_id": "TERM.{system}.accounts",
+  "name": "{system} accounts",
+  "type": "ENTITY",
+  "definition": "Every account able to authenticate to {system}, including local accounts",
+  "rule_text": "all accounts enumerated by {system}-account-inventory",
+  "source_templates": [
+    {
+      "source_id": "{system}-account-inventory",
+      "role": "AUTHORITATIVE"
+    }
+  ],
+  "source_refs": ["{system}-account-inventory"]
+}

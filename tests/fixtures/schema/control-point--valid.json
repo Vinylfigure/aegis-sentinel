@@ -1,0 +1,8 @@
+{
+  "cp_id": "TA-1",
+  "name": "Term feed completeness",
+  "edge_refs": ["hris->okta"],
+  "nature": "AUTO",
+  "function": "DET",
+  "claim_template_refs": ["TERM.feed-completeness"]
+}

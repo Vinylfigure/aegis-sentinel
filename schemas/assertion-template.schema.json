@@ -1,0 +1,42 @@
+{
+  "$defs": {
+    "AssertionType": {
+      "description": "The seven assertion types (PRD-v3 \u00a72); type constrains evidence.",
+      "enum": [
+        "STATE",
+        "EVENT",
+        "SEQUENCE",
+        "AGGREGATE",
+        "EXISTENCE",
+        "NON_EXISTENCE",
+        "TIMING"
+      ],
+      "title": "AssertionType",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "description": "One lettered, typed assertion of a claim template.",
+  "properties": {
+    "letter": {
+      "pattern": "^[a-z]+$",
+      "title": "Letter",
+      "type": "string"
+    },
+    "predicate_text": {
+      "minLength": 1,
+      "title": "Predicate Text",
+      "type": "string"
+    },
+    "type": {
+      "$ref": "#/$defs/AssertionType"
+    }
+  },
+  "required": [
+    "letter",
+    "type",
+    "predicate_text"
+  ],
+  "title": "AssertionTemplate",
+  "type": "object"
+}
