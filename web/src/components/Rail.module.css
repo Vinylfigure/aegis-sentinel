@@ -1,0 +1,57 @@
+/* rail internals — lifted from workbench.html (.rail h2, .gauge, .bar, .regl)
+ * and scope-tool.html (.assert, .tallies, .tally, .reg) */
+.h2{font:700 10.5px var(--font-slab);letter-spacing:.13em;text-transform:uppercase;color:var(--purple);margin:18px 0 9px}
+.h2:first-child{margin-top:0}
+
+.gauge{background:var(--panel2);border-radius:9px;padding:11px 13px;margin-bottom:8px}
+.gauge .v{font:700 20px var(--font-slab)}
+.gauge .l{font-family:var(--font-mono-stack);font-size:9.5px;color:var(--faint);letter-spacing:.07em;text-transform:uppercase}
+.g .v{color:var(--green)}
+.a .v{color:var(--amber)}
+.p .v{color:var(--purple)}
+.c .v{color:var(--cyan)}
+.r .v{color:var(--red)}
+.bar{height:5px;border-radius:3px;background:var(--panel3);margin-top:7px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--green)}
+
+/* scope ledger (scope-tool.html) */
+.assert{border:1px solid var(--line);border-radius:10px;padding:14px;margin-bottom:14px;background:var(--panel2)}
+.assert .verdict{font:700 15px var(--font-slab);margin-bottom:4px}
+.blocked .verdict{color:var(--amber)}
+.clear .verdict{color:var(--green)}
+.assert p{font-size:11.5px;color:var(--dim)}
+.tallies{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-bottom:14px}
+.tally{background:var(--panel2);border-radius:8px;padding:9px;text-align:center}
+.tally b{display:block;font:700 19px var(--font-slab)}
+.tally span{font-family:var(--font-mono-stack);font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint)}
+.tIn b{color:var(--green)}
+.tUnk b{color:var(--amber)}
+.tOut b{color:var(--faint)}
+
+/* regimes (scope-tool.html .reg) */
+.reg{display:flex;align-items:baseline;gap:9px;padding:8px 0;border-bottom:1px dashed var(--line);opacity:.28}
+.reg.lit{opacity:1}
+.reg .dot{width:6px;height:6px;border-radius:50%;background:var(--faint);flex-shrink:0}
+.reg.lit .dot{background:var(--amber)}
+.reg b{font-size:12.5px;font-weight:600}
+.reg span{font-size:11px;color:var(--dim);display:block}
+
+/* process detail rail (process-graph.html) */
+.empty{color:var(--faint);font-size:12px;font-style:italic}
+.dt .code{font-family:var(--font-mono-stack);font-size:11px;color:var(--purple)}
+.dt h3{font:700 15px var(--font-slab);margin:2px 0 10px}
+.badges{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
+.bd{font:600 9.5px var(--font-mono-stack);letter-spacing:.06em;border-radius:12px;padding:3px 9px}
+.bdCfg{background:rgba(111,191,143,.14);color:var(--green)}
+.bdAuto{background:rgba(109,184,216,.14);color:var(--cyan)}
+.bdMan{background:rgba(224,113,111,.14);color:var(--red)}
+.bdPrev{background:rgba(139,127,245,.14);color:var(--purple)}
+.bdDet{background:rgba(154,157,178,.14);color:var(--dim)}
+.frow{margin-bottom:12px}
+.frow label{font-family:var(--font-mono-stack);font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);display:block;margin-bottom:3px}
+.frow div{font-size:12px;color:var(--dim)}
+.frow div b{color:var(--ink);font-weight:500}
+.frow code{font-family:var(--font-mono-stack);font-size:10.5px;color:var(--green);background:var(--bg);border-radius:5px;padding:2px 6px;display:inline-block;margin-top:2px;word-break:break-all}
+.gap{border-top:1px dashed var(--line);margin:16px 0;padding-top:14px}
+.gap b{color:var(--amber);font-size:11.5px}
+.gap p{font-size:11.5px;color:var(--dim);margin-top:3px}

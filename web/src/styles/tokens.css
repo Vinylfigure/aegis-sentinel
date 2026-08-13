@@ -1,0 +1,21 @@
+/* Design tokens — lifted verbatim from the Aegis prototypes (:root vars). */
+:root{
+  --bg:#0e0f14;
+  --panel:#161824;
+  --panel2:#1b1e2e;
+  --panel3:#232741;
+  --line:#2a2e42;
+  --ink:#e8e9f0;
+  --dim:#9a9db2;
+  --faint:#63667c;
+  --purple:#8b7ff5;
+  --amber:#e8b34b;
+  --green:#6fbf8f;
+  --red:#e0716f;
+  --cyan:#6db8d8;
+
+  /* font stacks — populated by next/font variables in layout.tsx */
+  --font-sans:var(--font-inter),'Inter',sans-serif;
+  --font-slab:var(--font-grotesk),'Space Grotesk',sans-serif;
+  --font-mono-stack:var(--font-mono),'IBM Plex Mono',monospace;
+}

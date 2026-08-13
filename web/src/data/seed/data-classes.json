@@ -1,0 +1,10 @@
+[
+  { "id": "tradeline", "name": "Tradeline / furnished credit data", "note": "Reported to bureaus", "tier": "Tier 1 — Regulated" },
+  { "id": "npi", "name": "Non-public personal info (NPI)", "note": "Financial account data", "tier": "Tier 1 — Regulated" },
+  { "id": "chd", "name": "Cardholder data", "note": "PAN, expiry, CVV", "tier": "Tier 1 — Regulated" },
+  { "id": "bank", "name": "Bank account / ACH details", "note": "Routing, account numbers", "tier": "Tier 1 — Regulated" },
+  { "id": "pii", "name": "Customer PII", "note": "Identity, contact, SSN", "tier": "Tier 2 — Confidential" },
+  { "id": "auth", "name": "Credentials & secrets", "note": "Keys, tokens, hashes", "tier": "Tier 1 — Regulated" },
+  { "id": "emp", "name": "Employee data", "note": "HR, payroll", "tier": "Tier 2 — Confidential" },
+  { "id": "none", "name": "No production customer data", "note": "Marketing, public content", "tier": "Tier 4 — Public" }
+]

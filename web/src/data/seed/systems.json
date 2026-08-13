@@ -1,0 +1,20 @@
+[
+  { "id": "gh", "name": "GitHub", "cat": "Engineering", "v": "in" },
+  { "id": "ci", "name": "CI/CD (Actions)", "cat": "Engineering", "v": "in" },
+  { "id": "gcp", "name": "GCP", "cat": "Infrastructure", "v": "in" },
+  { "id": "k8s", "name": "Kubernetes (GKE)", "cat": "Infrastructure", "v": "in" },
+  { "id": "kms", "name": "Cloud KMS", "cat": "Infrastructure", "v": "in" },
+  { "id": "dw", "name": "Data warehouse", "cat": "Infrastructure", "v": "unk" },
+  { "id": "okta", "name": "IdP / SSO", "cat": "Identity", "v": "in" },
+  { "id": "hris", "name": "HRIS", "cat": "People", "v": "in" },
+  { "id": "mdm", "name": "MDM", "cat": "Endpoints", "v": "in" },
+  { "id": "edr", "name": "EDR", "cat": "Endpoints", "v": "in" },
+  { "id": "jira", "name": "Ticketing", "cat": "Workflow", "v": "in" },
+  { "id": "anec", "name": "GRC platform", "cat": "GRC", "v": "in" },
+  { "id": "siem", "name": "SIEM / logs", "cat": "Observability", "v": "in" },
+  { "id": "mon", "name": "Monitoring/alerting", "cat": "Observability", "v": "in" },
+  { "id": "proc", "name": "Card processor", "cat": "Third parties", "v": "in" },
+  { "id": "bureau", "name": "Credit bureaus", "cat": "Third parties", "v": "in" },
+  { "id": "kyc", "name": "KYC vendor", "cat": "Third parties", "v": "unk" },
+  { "id": "vend", "name": "Vendor mgmt / TPRM", "cat": "GRC", "v": "in" }
+]

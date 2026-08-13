@@ -1,0 +1,26 @@
+name: web-verify
+
+on:
+  pull_request:
+    paths: ["web/**", "artifacts/**"]
+  push:
+    paths: ["web/**", "artifacts/**"]
+
+jobs:
+  web-verify:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: web
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - run: npm ci
+      - run: npx tsc --noEmit
+      - run: npm run build
+      # Placeholder: artifact-sync drift check (enable once artifacts/ exists)
+      # - run: node scripts/check-artifact-sync.mjs

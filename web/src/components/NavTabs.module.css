@@ -1,0 +1,7 @@
+/* stage tabs — lifted from workbench.html (.stages / .stage-tab) */
+.stages{display:flex;gap:0;margin-bottom:20px;border-bottom:1px solid var(--line)}
+.stageTab{background:none;border:0;color:var(--faint);font:600 12.5px var(--font-sans);padding:10px 16px 12px;cursor:pointer;border-bottom:2px solid transparent;display:flex;gap:8px;align-items:center;text-decoration:none}
+.stageTab .n{font-family:var(--font-mono-stack);font-size:10px;border:1px solid var(--line);border-radius:4px;padding:1px 5px}
+.stageTab:hover{color:var(--dim)}
+.stageTab.on{color:var(--ink);border-bottom-color:var(--purple)}
+.stageTab.on .n{border-color:var(--purple);color:var(--purple)}

@@ -1,0 +1,60 @@
+/* products + asset inventory — lifted from scope-tool.html */
+.prod{background:var(--panel);border:1px solid var(--line);border-radius:11px;margin-bottom:10px;overflow:hidden}
+.prod.on{border-color:var(--purple)}
+.phead{display:flex;align-items:center;gap:13px;padding:14px 16px;cursor:pointer;user-select:none}
+.phead:hover{background:var(--panel2)}
+.box{width:19px;height:19px;border-radius:5px;border:1.5px solid var(--faint);flex-shrink:0;display:grid;place-items:center;font-size:12px;color:var(--bg);transition:.12s}
+.prod.on .box{background:var(--purple);border-color:var(--purple)}
+.prod.on .box::after{content:"✓";font-weight:700}
+.pname{font:700 15px var(--font-slab)}
+.pdesc{font-size:12px;color:var(--dim)}
+.chev{margin-left:auto;color:var(--faint);font-size:11px;transition:.15s}
+.prod.open .chev{transform:rotate(90deg)}
+.pbody{display:none;border-top:1px solid var(--line);padding:4px 16px 16px}
+.prod.open.on .pbody{display:block}
+.pstep{font-family:var(--font-mono-stack);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--purple);display:flex;align-items:center;gap:10px}
+.pstep::after{content:"";flex:1;height:1px;background:var(--line)}
+
+/* data classes */
+.dcGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(215px,1fr));gap:8px;margin:12px 0 4px}
+.dc{background:var(--panel2);border:1px solid var(--line);border-left:3px solid var(--faint);border-radius:7px;padding:9px 11px;cursor:pointer}
+.dc:hover{background:var(--panel3)}
+.dc.on{border-left-color:var(--amber);background:var(--panel3)}
+.dc b{font-size:12.5px;display:block}
+.dc span{font-size:11px;color:var(--dim)}
+.dc .tier{font-family:var(--font-mono-stack);font-size:10px;color:var(--amber);opacity:0;margin-top:4px;display:block}
+.dc.on .tier{opacity:1}
+
+/* layers */
+.layer{border-top:1px solid var(--line)}
+.lhead{display:flex;align-items:center;gap:10px;padding:11px 2px;cursor:pointer;user-select:none}
+.lhead:hover .lname{color:var(--purple)}
+.lnum{font-family:var(--font-mono-stack);font-size:10.5px;color:var(--faint);width:20px}
+.lname{font-weight:600;font-size:13px;transition:.12s}
+.lcount{margin-left:auto;font-family:var(--font-mono-stack);font-size:10.5px;color:var(--faint)}
+.lcount b{color:var(--amber);font-weight:500}
+.lbody{display:none;padding:2px 0 12px 30px}
+.layer.open .lbody{display:block}
+
+.item{display:flex;align-items:flex-start;gap:11px;padding:7px 0}
+.itxt b{font-size:12.5px;font-weight:500;display:block}
+.itxt span{font-size:11.5px;color:var(--faint);font-style:italic}
+
+/* tri-state (shared by asset items + system registry) */
+.tri{display:flex;flex-shrink:0;border:1px solid var(--line);border-radius:6px;overflow:hidden;margin-top:1px}
+.tri button{background:var(--panel2);border:0;color:var(--faint);font:500 10px var(--font-mono-stack);padding:4px 7px;cursor:pointer;letter-spacing:.04em}
+.tri button:hover{color:var(--ink)}
+.tri button.selIn{background:var(--green);color:#0e0f14}
+.tri button.selUnk{background:var(--amber);color:#0e0f14}
+.tri button.selOut{background:var(--panel3);color:var(--dim)}
+
+/* system registry — lifted from workbench.html */
+.syscat{margin-bottom:4px}
+.syscat h4{font:600 12px var(--font-sans);color:var(--dim);margin:12px 0 6px}
+.sysgrid{display:flex;flex-wrap:wrap;gap:7px}
+.sys{display:flex;align-items:center;gap:8px;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:6px 8px 6px 11px}
+.sys b{font-size:12px;font-weight:500}
+.sys .tri{margin-top:0;border-radius:5px}
+.sys .tri button{padding:3px 6px;font-size:9.5px}
+.addsys{background:var(--panel2);border:1px dashed var(--line);border-radius:8px;color:var(--faint);font:500 11.5px var(--font-sans);padding:6px 12px;cursor:pointer}
+.addsys:hover{color:var(--ink)}

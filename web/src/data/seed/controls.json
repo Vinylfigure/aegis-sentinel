@@ -1,0 +1,157 @@
+[
+  {
+    "c": "AM-01", "n": "Source code access approval", "dom": "Access Management",
+    "d": "Repo access granted on approval, provisioner ≠ approver.",
+    "nat": "auto", "fn": "det", "comp": false, "sys": ["gh", "jira", "okta"],
+    "ds": [
+      { "sys": "gh", "art": "Repo access grants (population)", "ret": "api", "ca": "recon" },
+      { "sys": "jira", "art": "Access request tickets", "ret": "api", "ca": "trace" }
+    ]
+  },
+  {
+    "c": "AM-05", "n": "Access approval — in-scope systems", "dom": "Access Management",
+    "d": "New/modified access approved before grant.",
+    "nat": "auto", "fn": "det", "comp": false, "sys": ["okta", "jira"],
+    "ds": [
+      { "sys": "okta", "art": "Access grant events (population)", "ret": "api", "ca": "recon" },
+      { "sys": "jira", "art": "Access request tickets", "ret": "api", "ca": "trace" }
+    ]
+  },
+  {
+    "c": "AM-06", "n": "Terminations — access revocation", "dom": "Access Management",
+    "d": "Access revoked ≤5 business days from termination.",
+    "nat": "auto", "fn": "det", "comp": false, "sys": ["hris", "okta", "siem"],
+    "ds": [
+      { "sys": "hris", "art": "Termination feed", "ret": "api", "ca": "recon" },
+      { "sys": "okta", "art": "Deprovisioning events", "ret": "api", "ca": "hash" },
+      { "sys": "siem", "art": "Deprovisioning log query", "ret": "api", "ca": "hash" }
+    ]
+  },
+  {
+    "c": "AM-JIT", "n": "JIT elevation — time-bound access", "dom": "Access Management",
+    "d": "Elevation auto-granted on approval, auto-revoked at expiry.",
+    "nat": "cfg", "fn": "prev", "comp": false, "sys": ["okta", "gh"],
+    "ds": [
+      { "sys": "okta", "art": "JIT grant/revoke config + events", "ret": "api", "ca": "hash" }
+    ]
+  },
+  {
+    "c": "CM-03", "n": "Change approval SoD", "dom": "Change Management",
+    "d": "Branch protection: approver ≠ author before production merge.",
+    "nat": "cfg", "fn": "prev", "comp": false, "sys": ["gh"],
+    "ds": [
+      { "sys": "gh", "art": "Branch protection config (per repo)", "ret": "api", "ca": "hash" },
+      { "sys": "gh", "art": "Merged PR population", "ret": "api", "ca": "recon" }
+    ]
+  },
+  {
+    "c": "CM-05", "n": "Required checks before merge", "dom": "Change Management",
+    "d": "Security + functional CI checks required to pass pre-merge.",
+    "nat": "cfg", "fn": "prev", "comp": false, "sys": ["gh", "ci"],
+    "ds": [
+      { "sys": "gh", "art": "Branch protection config (per repo)", "ret": "api", "ca": "hash" },
+      { "sys": "ci", "art": "Required check run results", "ret": "api", "ca": "hash" }
+    ]
+  },
+  {
+    "c": "CM-04", "n": "Emergency changes", "dom": "Change Management",
+    "d": "Tested + approved by Eng Mgmt within 24h of implementation.",
+    "nat": "manual", "fn": "det", "comp": true, "sys": ["gh", "jira"],
+    "ds": [
+      { "sys": "jira", "art": "Emergency change tickets", "ret": "api", "ca": "trace" }
+    ]
+  },
+  {
+    "c": "CFG-03", "n": "Config drift monitoring", "dom": "Configuration Management",
+    "d": "Hardening drift detected, alerted, re-enforced.",
+    "nat": "auto", "fn": "det", "comp": false, "sys": ["gh", "mon"],
+    "ds": [
+      { "sys": "gh", "art": "Repo security config snapshots", "ret": "api", "ca": "hash" },
+      { "sys": "mon", "art": "Drift alert population", "ret": "api", "ca": "recon" }
+    ]
+  },
+  {
+    "c": "DP-04", "n": "Key storage encryption", "dom": "Key Management",
+    "d": "Signing/private keys stored encrypted in vault/KMS.",
+    "nat": "cfg", "fn": "prev", "comp": false, "sys": ["kms"],
+    "ds": [
+      { "sys": "kms", "art": "Key inventory + protection level", "ret": "api", "ca": "hash" }
+    ]
+  },
+  {
+    "c": "KM-ROT", "n": "Key rotation", "dom": "Key Management",
+    "d": "Keys rotated per lifecycle policy (generate→destroy).",
+    "nat": "cfg", "fn": "prev", "comp": false, "sys": ["kms"],
+    "ds": [
+      { "sys": "kms", "art": "Rotation schedule config", "ret": "api", "ca": "hash" }
+    ]
+  },
+  {
+    "c": "BR-01", "n": "Backup coverage & RPO", "dom": "Data & Resilience",
+    "d": "Eligible stores backed up; freshness within RPO.",
+    "nat": "cfg", "fn": "prev", "comp": false, "sys": ["gcp"],
+    "ds": [
+      { "sys": "gcp", "art": "Backup config per eligible store", "ret": "api", "ca": "recon" },
+      { "sys": "gcp", "art": "Last-successful-backup timestamps", "ret": "api", "ca": "hash" }
+    ]
+  },
+  {
+    "c": "BR-04", "n": "Restore validation", "dom": "Data & Resilience",
+    "d": "Periodic restore tests prove integrity + availability.",
+    "nat": "manual", "fn": "det", "comp": false, "sys": ["gcp", "jira"],
+    "ds": [
+      { "sys": "jira", "art": "Restore test records", "ret": "api", "ca": "trace" }
+    ]
+  },
+  {
+    "c": "IM-07", "n": "Incident triage & severity", "dom": "Incident Management",
+    "d": "Severity assigned at triage; tracked to closure per SLA.",
+    "nat": "auto", "fn": "det", "comp": false, "sys": ["jira", "siem"],
+    "ds": [
+      { "sys": "jira", "art": "Incident ticket population", "ret": "api", "ca": "recon" }
+    ]
+  },
+  {
+    "c": "IM-106", "n": "Materiality determination (Item 106)", "dom": "Incident Management",
+    "d": "Documented materiality step with legal; 4 business days to 8-K.",
+    "nat": "manual", "fn": "det", "comp": false, "sys": ["jira"],
+    "ds": [
+      { "sys": "jira", "art": "Incident ticket population", "ret": "api", "ca": "recon" }
+    ]
+  },
+  {
+    "c": "TVM-01", "n": "Vulnerability scanning coverage", "dom": "Vulnerability Management",
+    "d": "Weekly scans; denominator = asset inventory.",
+    "nat": "auto", "fn": "det", "comp": false, "sys": ["gcp", "gh"],
+    "ds": [
+      { "sys": "gcp", "art": "Asset inventory (CAI)", "ret": "api", "ca": "recon" },
+      { "sys": "gh", "art": "Dependabot/CodeQL findings", "ret": "api", "ca": "hash" }
+    ]
+  },
+  {
+    "c": "ASM-03", "n": "Endpoint protection (EDR)", "dom": "People & Endpoints",
+    "d": "EDR installed + reporting on all managed workstations.",
+    "nat": "cfg", "fn": "prev", "comp": false, "sys": ["mdm", "edr"],
+    "ds": [
+      { "sys": "mdm", "art": "Managed device population", "ret": "api", "ca": "recon" },
+      { "sys": "edr", "art": "Agent health status", "ret": "api", "ca": "hash" }
+    ]
+  },
+  {
+    "c": "TPRM-01", "n": "Vendor risk tiering & review", "dom": "Third-Party Risk",
+    "d": "Vendors tiered by data access; review depth per tier.",
+    "nat": "manual", "fn": "det", "comp": false, "sys": ["vend"],
+    "ds": [
+      { "sys": "vend", "art": "Vendor inventory + tiers", "ret": "api", "ca": "recon" }
+    ]
+  },
+  {
+    "c": "DLP-02", "n": "Data loss prevention", "dom": "Data Protection",
+    "d": "DLP rules per classification; alerts investigated.",
+    "nat": "auto", "fn": "det", "comp": false, "sys": ["siem", "mon"],
+    "ds": [
+      { "sys": "mon", "art": "DLP rule config", "ret": "shot", "ca": "hash" },
+      { "sys": "siem", "art": "DLP alert population", "ret": "api", "ca": "recon" }
+    ]
+  }
+]
