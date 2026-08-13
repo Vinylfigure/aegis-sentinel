@@ -33,6 +33,7 @@ def test_clean_claims_yield_plans(template, usable_view) -> None:
     assert {p.claim_ref for p in plans} == {
         "TERM.feed-completeness",
         "TERM.timely-revocation",
+        "TERM.attributability",
         "TERM.github.no-residual-access",
         "TERM.gcp.no-residual-access",
         "TERM.slack.no-residual-access",
@@ -46,13 +47,14 @@ def test_clean_claims_yield_plans(template, usable_view) -> None:
 
 def test_gate_is_per_claim_not_per_program(template, usable_view) -> None:
     """One claim failing must not suppress the others' plans — and the
-    failing claim must contribute nothing (all five other assertions
-    survive: 6 total minus TA-2's)."""
+    failing claim must contribute nothing (all six other assertions
+    survive: 7 total minus TA-2's)."""
     result = _compile(template, usable_view, SIX_MONTHS)
     plans = executable_collectors(result)
-    assert len(plans) == 5
+    assert len(plans) == 6
     assert {p.claim_ref for p in plans} == {
         "TERM.feed-completeness",
+        "TERM.attributability",
         "TERM.github.no-residual-access",
         "TERM.gcp.no-residual-access",
         "TERM.slack.no-residual-access",

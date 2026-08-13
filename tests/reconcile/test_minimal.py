@@ -54,7 +54,7 @@ def test_incomplete_basis_never_discovers_the_population(terminations_population
     )
     result = reconcile_population(terminations_population, [truncated])
     assert not result.basis_complete
-    assert result.basis_notes == ("trailer record missing after 2 page(s)",)
+    assert result.basis_notes == (f"{FEED_SOURCE}: trailer record missing after 2 page(s)",)
     assert result.members == ()
     assert result.population.size is None
     assert result.population.state is AssuranceState.DEFINED
@@ -81,9 +81,13 @@ def test_duplicate_sources_are_rejected(terminations_population) -> None:
         )
 
 
-def test_multi_source_refuses_until_rec01(terminations_population) -> None:
-    """Two declared sources provided: the skeleton refuses loudly, no fake join."""
-    with pytest.raises(ValueError, match="REC01"):
+def test_multi_source_without_typed_members_refuses(terminations_population) -> None:
+    """REC01 landed: N sources are joined — but only over typed members.
+
+    Bare member_ids carry no join keys, so pretending to set-reconcile
+    them would be a fake join; the reconciler refuses loudly instead.
+    """
+    with pytest.raises(ValueError, match="typed members"):
         reconcile_population(
             terminations_population,
             [

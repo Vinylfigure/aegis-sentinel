@@ -200,6 +200,29 @@
       ]
     },
     {
+      "template_id": "TERM.attributability",
+      "statement": "Every downstream account or access-holding identity on the lane is attributable through the canonical identity join to a worker the authoritative source accounts for — negative space is surfaced, never absorbed",
+      "population_ref": "TERM.identity-join",
+      "assertion_prefix": "TERM-JOIN",
+      "framework_mappings": [
+        {
+          "framework": "internal",
+          "control_id": "AM-06"
+        },
+        {
+          "framework": "SOC2",
+          "control_id": "CC6.2"
+        }
+      ],
+      "assertions": [
+        {
+          "letter": "a",
+          "type": "AGGREGATE",
+          "predicate_text": "the canonical-identity join across the lane's declared sources resolves with zero undispositioned deltas; identities present in contributing sources but absent from the authoritative source are first-class deltas, never silently dropped"
+        }
+      ]
+    },
+    {
       "template_id": "TERM.{system}.no-residual-access",
       "statement": "No terminated worker retains an active {system} account or group-derived access after revocation",
       "population_ref": "TERM.{system}.accounts",

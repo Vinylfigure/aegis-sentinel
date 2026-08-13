@@ -1,0 +1,32 @@
+{
+  "boundary": "termination lane: hris -> okta -> {github, gcp, slack}",
+  "engagement": "demo-engagement",
+  "manifest_version": "v1-skeleton",
+  "notes": "v1 ratified scope snapshot over the fixture tenant; the TIMING claim is evaluated over the re-scoped honest window 2026-02-01..2026-04-01 (the six-month ask stays as the E204 exhibit)",
+  "period": {
+    "end": "2026-06-30",
+    "start": "2026-01-01"
+  },
+  "ratified_at": "2026-06-30T18:00:00Z",
+  "ratified_by": "vinylfigure (Ratifier)",
+  "snapshot_hash": "b73c1e5754b3091df4f79ae6ea435cd0b0f405e4566f357e4d50f93dad82b027",
+  "summary": {
+    "claims": 6,
+    "compile_error_codes": [
+      "E204",
+      "E117"
+    ],
+    "populations_by_state": {
+      "DEFINED": 1,
+      "DISCOVERED": 3,
+      "RATIFIED": 1
+    },
+    "verdict_states_present": [
+      "EXCEPTION",
+      "EXCLUDED",
+      "FAIL",
+      "PASS",
+      "UNKNOWN"
+    ]
+  }
+}

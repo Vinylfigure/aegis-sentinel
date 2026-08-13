@@ -86,7 +86,7 @@ def test_sixty_day_period_compiles_clean(template, usable_view) -> None:
     assert result.errors == ()
 
     plans = executable_collectors(result)
-    assert len(plans) == 6  # one plan per lane assertion
+    assert len(plans) == 7  # one plan per lane assertion
     timing_plan = next(p for p in plans if p.assertion_ref == TIMING_ASSERTION)
     assert timing_plan.entry_id == OKTA_LOG
     assert timing_plan.temporal.window_days == 90

@@ -21,8 +21,13 @@ CURRENT = "capability-entry@0.1.0"
 STALE = "capability-entry@0.0.9"
 
 #: Claims whose populations consult okta.system_log (it yields the
-#: okta-system-log source declared on TERM.terminations).
-CONSULTING_CLAIMS = {"TERM.feed-completeness", "TERM.timely-revocation"}
+#: okta-system-log source declared on TERM.terminations and on
+#: TERM.identity-join).
+CONSULTING_CLAIMS = {
+    "TERM.feed-completeness",
+    "TERM.timely-revocation",
+    "TERM.attributability",
+}
 
 
 def _compile(template, usable_view, pins):

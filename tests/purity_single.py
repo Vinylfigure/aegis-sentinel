@@ -61,6 +61,9 @@ STRICT_FORBIDDEN_CALLS: frozenset[str] = frozenset(
 STRICT_FORBIDDEN_ATTRIBUTES: frozenset[str] = frozenset({"os.environ"})
 
 # The verdict-path packages under src/aegis_sentinel/ (HANDOFF section 3).
+# "engagement" (the deterministic demo-run orchestrator) joined with
+# VAL02: it drives compile/collect/reconcile/evaluate, so the same
+# no-LLM rules apply to it.
 VERDICT_PACKAGES: tuple[str, ...] = (
     "schema",
     "capability",
@@ -69,6 +72,7 @@ VERDICT_PACKAGES: tuple[str, ...] = (
     "evaluate",
     "compile",
     "manifest",
+    "engagement",
 )
 
 # Packages where the strict D-P3 determinism bans apply.

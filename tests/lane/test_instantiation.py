@@ -120,11 +120,12 @@ def test_claim_counts_and_assertion_ids(instantiated) -> None:
     assert [c.claim_id for c in claims] == [
         "TERM.feed-completeness",
         "TERM.timely-revocation",
+        "TERM.attributability",
         "TERM.github.no-residual-access",
         "TERM.gcp.no-residual-access",
         "TERM.slack.no-residual-access",
     ]
-    assert sum(len(c.assertions) for c in claims) == 6
+    assert sum(len(c.assertions) for c in claims) == 7
     by_id = {c.claim_id: c for c in claims}
     assert [a.assertion_id for a in by_id["TERM.feed-completeness"].assertions] == [
         "TERM-FEED.a",

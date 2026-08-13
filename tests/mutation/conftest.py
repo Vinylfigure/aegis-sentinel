@@ -31,11 +31,13 @@ from __future__ import annotations
 import json
 from dataclasses import dataclass
 from datetime import date
+from functools import cache
 from pathlib import Path
-from typing import Mapping, Protocol
+from typing import Callable, Mapping, Protocol
 
 from aegis_sentinel.capability import Registry
 from aegis_sentinel.compile import compile_program
+from aegis_sentinel.engagement import EngagementRun, run_demo_engagement
 from aegis_sentinel.manifest import instantiate_lane
 from aegis_sentinel.schema import (
     DerivationRule,
@@ -356,6 +358,122 @@ class BreakglassCompileRunner:
 
 
 register_runner("breakglass-cloud-account", BreakglassCompileRunner())
+
+
+# ---- VAL02: the five verdict-path poisons, against the REAL pipeline -----
+#
+# One deterministic engagement run (compile → collect → reconcile →
+# evaluate over the fixture tenants; aegis_sentinel.engagement.runner)
+# serves all five runners. Each runner first verifies that ITS poison's
+# specific driver is present (the delta / the named member in the
+# evidence), then reports the pipeline's verdict for the affected
+# assertion. If the driver is missing — the pipeline stopped seeing the
+# poison — the runner returns a silent PASS outcome, which the harness
+# scores undetected and the build gate turns red.
+
+
+@cache
+def _engagement_run() -> EngagementRun:
+    return run_demo_engagement(REPO_ROOT)
+
+
+def _verdict_outcome(record) -> Outcome:
+    return Outcome(
+        detection="VERDICT",
+        verdict_state=record.state,
+        why_code=record.why_code,
+        e_code=None,
+    )
+
+
+_SILENT_PASS = Outcome(
+    detection="VERDICT", verdict_state=VerdictState.PASS, why_code=None, e_code=None
+)
+
+
+@dataclass(frozen=True)
+class VerdictPoisonRunner:
+    """Reports one assertion's REAL verdict, gated on the poison's driver.
+
+    ``driver`` inspects the engagement run and returns True iff the
+    poison's specific footprint is present (e.g. the negative-space
+    delta exists, or the poisoned member is named in the verdict
+    evidence). No driver → silent PASS → undetected.
+    """
+
+    assertion_ref: str
+    driver: "Callable[[EngagementRun], bool]"
+
+    def run(self, fixture_dir: Path) -> Outcome:
+        run = _engagement_run()
+        record = run.verdict_for(self.assertion_ref)
+        if not self.driver(run):
+            return _SILENT_PASS
+        return _verdict_outcome(record)
+
+
+def _contractor_negative_space(run: EngagementRun) -> bool:
+    """The contractor's identity is a left_only negative-space delta:
+    present downstream, absent from the authoritative HRIS source, and
+    NOT dispositioned (the FAIL-vs-UNKNOWN ruling stands as UNKNOWN)."""
+    deltas = run.reconciliations["TERM.identity-join"].deltas
+    return any(
+        d.bucket == "left_only"
+        and d.member_key == "ctr.blake.morgan@example-vendor.com"
+        and "hris-termination-feed" in d.sources_absent
+        and d.disposition is None
+        for d in deltas
+    )
+
+
+def _dormant_local_account_named(run: EngagementRun) -> bool:
+    record = run.verdict_for("TERM-GITHUB.a")
+    return record.message is not None and "bm-legacy-bot" in record.message
+
+
+def _unresolvable_join(run: EngagementRun) -> bool:
+    """The maiden-name orphan lands in the unresolvable bucket AND the
+    affected member is named in the TERM-FEED.b evidence."""
+    deltas = run.reconciliations["TERM.identity-join"].deltas
+    orphan = any(d.bucket == "unresolvable" and "dana.kowalski" in d.member_key for d in deltas)
+    record = run.verdict_for("TERM-FEED.b")
+    return orphan and record.message is not None and "E-1033" in record.message
+
+
+def _delayed_revocation_named(run: EngagementRun) -> bool:
+    record = run.verdict_for("TERM-TIMING.a")
+    return (
+        record.message is not None
+        and "marcus.webb" in record.message
+        and "9 business day" in record.message
+    )
+
+
+def _exception_dispositioned(run: EngagementRun) -> bool:
+    record = run.verdict_for("TERM-SLACK.a")
+    return record.disposition_ref == "DISP-2026-114"
+
+
+register_runner(
+    "contractor-absent-hris",
+    VerdictPoisonRunner("TERM-JOIN.a", _contractor_negative_space),
+)
+register_runner(
+    "dormant-github-local-account",
+    VerdictPoisonRunner("TERM-GITHUB.a", _dormant_local_account_named),
+)
+register_runner(
+    "failed-identity-join",
+    VerdictPoisonRunner("TERM-FEED.b", _unresolvable_join),
+)
+register_runner(
+    "delayed-revocation",
+    VerdictPoisonRunner("TERM-TIMING.a", _delayed_revocation_named),
+)
+register_runner(
+    "legitimate-exception",
+    VerdictPoisonRunner("TERM-SLACK.a", _exception_dispositioned),
+)
 
 
 class MutationDetectionFailure(AssertionError):

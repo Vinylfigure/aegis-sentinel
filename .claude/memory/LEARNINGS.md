@@ -306,5 +306,5 @@ Rules for curators (`/evolve`):
 - Trigger: walking-skeleton build — pip's `__editable__.*.pth` got UF_HIDDEN re-applied within seconds on macOS, and Python 3.14's `site` skips hidden `.pth`, so `import aegis_sentinel` silently failed outside pytest while the suite stayed green (pytest `pythonpath` masked it)
 - Rule: after `pip install -e .` on macOS, run a bare `python -c "import <pkg>"` outside pytest; if it fails with the package present, check the venv's `.pth` for the hidden flag and symlink the package into site-packages as the workaround
 - Scope: portable
-- Evidence: 2
+- Evidence: 3 (recurred on the REC01/EVAL01/VAL02 finale worktree: bare import passed right after install, then UF_HIDDEN re-appeared on the `.pth` minutes later; symlink workaround applied)
 - Status: candidate

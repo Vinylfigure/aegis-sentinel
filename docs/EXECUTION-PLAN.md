@@ -59,15 +59,26 @@ redaction (D-R1), naming (D-N1). Open: lifecycle collapse (D-L1, due at SCH00 PR
   all five property methods named; each ships a seeded failing fixture it must detect.
   Six poisons seeded coherently across the fixture tenants
   (tests/fixtures/tenants/README.md poison-placement table, PRD §6).
-- [ ] **REC01** — canonical identity join + set reconciler; six delta buckets as
-  first-class objects with owner + disposition; DISCOVERED→RECONCILED blocked while any
-  delta is undispositioned.
-- [ ] **EVAL01** — typed assertion evaluator (pure; business-day math tested;
-  re-performance byte-identical; five verdict states distinct; D-7/D-8/D-9 citations).
-- [ ] **VAL02** — six poison fixtures per PRD §6 (expected: UNKNOWN_POPULATION-or-FAIL ·
-  NON-EXISTENCE FAIL · E117 compile error · unresolvable→UNKNOWN · TIMING FAIL ·
-  EXCEPTION). Assurance defect detection rate = 100%; emits the full
-  `artifacts/demo-engagement/*.json` set for the frontend.
+- [x] **REC01** — canonical identity join + set reconciler
+  (`src/aegis_sentinel/reconcile/{identity,setops,deltas}.py`): exact-key clustering
+  with employee_id > email > login precedence, D-8 conflicts (never guessed), six delta
+  buckets as first-class DeltaObjects (frontend-aligned fields) with owner + disposition
+  human-filled only; negative-space left_only deltas with sources_absent naming the
+  authoritative source; DISCOVERED→RECONCILED refused while any delta is
+  undispositioned; RECONCILED→RATIFIED only with a ratifier identity.
+- [x] **EVAL01** — typed assertion evaluator (`src/aegis_sentinel/evaluate/assertions.py`,
+  strict purity lane): TA-2 TIMING over the honest 60-day window (marcus.webb 9 business
+  days → FAIL; the six-month E204 stays as the compile exhibit), TA-3 NON_EXISTENCE per
+  system (dormant bm-legacy-bot → FAIL; kai.moreno → EXCEPTION under DISP-2026-114),
+  TERM-JOIN.a AGGREGATE over the identity join, ratified EXCLUDED record (RAT-2026-031);
+  sealed D-S1 records, re-performance byte-identical, five states distinct;
+  D-7/D-8 citations in code.
+- [x] **VAL02** — all six poisons run against the REAL pipeline
+  (`aegis_sentinel.engagement.run_demo_engagement`; runners in tests/mutation/conftest.py):
+  assurance defect detection rate = 6/6 = 100% with runnable=6 asserted; emits the full
+  `artifacts/demo-engagement/*.json` set (verdicts + compile errors, populations ladder,
+  reconciliation w/ negative space, capability registry, manifest, ten-stage proof
+  graph), drift-tested emit-twice + committed==regenerated.
 
 ## Frontend track (worktree; independent until Phase C)
 

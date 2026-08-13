@@ -51,13 +51,15 @@ from aegis_sentinel.schema import (
 
 MODULE_VERSION = "evaluate.minimal@0.1.0"
 
-_Outcome = tuple[VerdictState, str | None, UnknownWhyCode | None, D7Family | None]
+_Outcome = tuple[
+    VerdictState, str | None, UnknownWhyCode | None, D7Family | None, str | None
+]  # (state, message, why_code, d7_family, disposition_ref)
 
 
 def _population_unknown(reconciliation: ReconciliationResult) -> _Outcome:
     """Partial collection ⇒ population-level UNKNOWN, never a partial pass."""
     message = "population basis incomplete: " + "; ".join(reconciliation.basis_notes)
-    return VerdictState.UNKNOWN, message, UnknownWhyCode.UNKNOWN_POPULATION, None
+    return VerdictState.UNKNOWN, message, UnknownWhyCode.UNKNOWN_POPULATION, None, None
 
 
 def _aggregate_outcome(reconciliation: ReconciliationResult) -> _Outcome:
@@ -71,6 +73,7 @@ def _aggregate_outcome(reconciliation: ReconciliationResult) -> _Outcome:
             f"{len(deltas)} undispositioned reconciliation delta(s): {', '.join(deltas)}",
             None,
             None,
+            None,
         )
     return (
         VerdictState.PASS,
@@ -80,21 +83,38 @@ def _aggregate_outcome(reconciliation: ReconciliationResult) -> _Outcome:
         ),
         None,
         None,
+        None,
     )
 
 
 def _existence_outcome(
     reconciliation: ReconciliationResult,
     deprovisioned_member_ids: tuple[str, ...] | None,
+    unresolved_member_ids: tuple[str, ...] = (),
+    excepted_members: tuple[tuple[str, str], ...] = (),
 ) -> _Outcome:
     """TERM-FEED.b: every termination has a corresponding IdP deprovisioning event.
 
     ``deprovisioned_member_ids`` is the corroborating evidence set (Okta
     System Log deactivations, keyed by the population's canonical member
-    id). ``None`` means that evidence was never collected — this slice
-    ships only COL01 — which is exactly the ``basis_missing`` cause
-    family: the assertion has no evidence basis, so it is
-    ``UNKNOWN(UNKNOWN_EVIDENCE)``, never a pass by omission.
+    id). ``None`` means that evidence was never collected — which is
+    exactly the ``basis_missing`` cause family: the assertion has no
+    evidence basis, so it is ``UNKNOWN(UNKNOWN_EVIDENCE)``, never a pass
+    by omission.
+
+    EVAL01 member-level extensions:
+
+    - ``unresolved_member_ids`` — members whose canonical identity join
+      failed (REC01 unresolvable bucket): their events cannot be
+      attributed, so a missing event for them is the D-7
+      ``identity_fuzzy`` family → ``UNKNOWN(UNKNOWN_POPULATION)``,
+      routed to the human resolution queue, never guessed (D-8).
+    - ``excepted_members`` — ``(member_id, disposition_ref)`` pairs
+      covered by a pre-ratified disposition: a missing event for them is
+      a member-level EXCEPTION, distinct from PASS and from FAIL (D-V1).
+
+    Precedence: any hard-missing member → FAIL; else any unresolved →
+    UNKNOWN; else excepted-only → EXCEPTION; else PASS.
     """
     if not reconciliation.basis_complete:
         return _population_unknown(reconciliation)
@@ -107,18 +127,50 @@ def _existence_outcome(
             ),
             UnknownWhyCode.UNKNOWN_EVIDENCE,
             D7Family.BASIS_MISSING,
+            None,
         )
     deprovisioned = set(deprovisioned_member_ids)
+    unresolved = set(unresolved_member_ids)
+    excepted = dict(excepted_members)
     missing = tuple(m for m in reconciliation.members if m not in deprovisioned)
-    if missing:
+    hard_missing = tuple(m for m in missing if m not in unresolved and m not in excepted)
+    if hard_missing:
         return (
             VerdictState.FAIL,
             (
-                f"{len(missing)} terminated worker(s) with no identity-provider "
-                f"deprovisioning event: {', '.join(missing)}"
+                f"{len(hard_missing)} terminated worker(s) with no identity-provider "
+                f"deprovisioning event: {', '.join(hard_missing)}"
             ),
             None,
             None,
+            None,
+        )
+    fuzzy = tuple(m for m in missing if m in unresolved)
+    if fuzzy:
+        return (
+            VerdictState.UNKNOWN,
+            (
+                f"{len(fuzzy)} terminated worker(s) whose identity join failed; "
+                "deprovisioning events cannot be attributed to them "
+                f"(human resolution queue): {', '.join(fuzzy)}"
+            ),
+            UnknownWhyCode.UNKNOWN_POPULATION,
+            D7Family.IDENTITY_FUZZY,
+            None,
+        )
+    covered = tuple(m for m in missing if m in excepted)
+    if covered:
+        refs = sorted({excepted[m] for m in covered})
+        return (
+            VerdictState.EXCEPTION,
+            (
+                f"{len(covered)} terminated worker(s) without a deprovisioning event, "
+                f"each covered by a ratified disposition: "
+                + ", ".join(f"{m} ({excepted[m]})" for m in covered)
+            ),
+            None,
+            None,
+            ", ".join(refs),
         )
     return (
         VerdictState.PASS,
@@ -126,6 +178,7 @@ def _existence_outcome(
             f"all {len(reconciliation.members)} terminated workers have a "
             "corresponding identity-provider deprovisioning event"
         ),
+        None,
         None,
         None,
     )
@@ -140,6 +193,9 @@ def evaluate_feed_claim(
     collection_snapshot_hash: str,
     evaluated_at: datetime,
     deprovisioned_member_ids: tuple[str, ...] | None = None,
+    unresolved_member_ids: tuple[str, ...] = (),
+    excepted_members: tuple[tuple[str, str], ...] = (),
+    extra_evidence_refs: tuple[str, ...] = (),
 ) -> tuple[VerdictRecord, ...]:
     """Evaluate the feed-completeness claim's assertions; seal every record.
 
@@ -158,10 +214,15 @@ def evaluate_feed_claim(
                 "evidence contract does not declare support for that assertion type"
             )
         if assertion.type is AssertionType.AGGREGATE:
-            state, message, why_code, d7_family = _aggregate_outcome(reconciliation)
+            state, message, why_code, d7_family, disposition_ref = _aggregate_outcome(
+                reconciliation
+            )
         elif assertion.type is AssertionType.EXISTENCE:
-            state, message, why_code, d7_family = _existence_outcome(
-                reconciliation, deprovisioned_member_ids
+            state, message, why_code, d7_family, disposition_ref = _existence_outcome(
+                reconciliation,
+                deprovisioned_member_ids,
+                unresolved_member_ids,
+                excepted_members,
             )
         else:
             raise ValueError(
@@ -182,7 +243,11 @@ def evaluate_feed_claim(
                 message=message,
                 why_code=why_code,
                 d7_family=d7_family,
-                evidence_refs=(f"collection-snapshot:sha256:{collection_snapshot_hash}",),
+                disposition_ref=disposition_ref,
+                evidence_refs=(
+                    f"collection-snapshot:sha256:{collection_snapshot_hash}",
+                    *extra_evidence_refs,
+                ),
             ).sealed()
         )
     return tuple(records)

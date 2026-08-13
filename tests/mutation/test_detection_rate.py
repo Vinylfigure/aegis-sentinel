@@ -8,8 +8,6 @@ says so out loud — it never reports 100% over zero runnable fixtures.
 
 from __future__ import annotations
 
-import warnings
-
 from aegis_sentinel.schema.verdict import UnknownWhyCode, VerdictState
 
 from .conftest import (
@@ -52,27 +50,22 @@ def test_every_fixture_carries_provenance_readme():
 def test_assurance_defect_detection_rate():
     """The suite gate: 100% detection over runnable poisons, honestly.
 
-    - runnable > 0: every runnable poison must be detected (rate == 1.0).
-    - runnable == 0 (pipeline not built yet): pass, but emit an explicit
-      report line — the rate is None, never 100%.
+    VAL02 is landed: the REAL pipeline runs behind every poison, so all
+    six fixtures must be runnable and every one must be detected —
+    assurance defect detection rate = 6/6 = 100% (docs/PRD-v3.md §7).
     """
     fixtures = discover_fixtures()
     report = evaluate_suite(fixtures, RUNNER_REGISTRY)
     print()
     print(report.table())
 
-    rate = report.detection_rate
-    if not report.runnable:
-        assert rate is None  # NEVER 100% with zero runnable
-        warnings.warn(
-            f"0/{report.total} poisons runnable — detection rate not yet meaningful "
-            "(no PipelineRunner registered; VAL02 wires the real pipeline)",
-            stacklevel=1,
-        )
-        return
-
+    assert len(report.runnable) == 6, (
+        f"VAL02 requires all six poisons runnable against the real pipeline; "
+        f"only {len(report.runnable)}/{report.total} have runners"
+    )
     assert_suite_detects(report)
-    assert rate == 1.0
+    assert report.detection_rate == 1.0
+    assert report.detected_count == 6
 
 
 def test_zero_runnable_never_reports_100_percent():

@@ -6,6 +6,15 @@ explicit parameter. Enforced by tests/test_verdict_path_purity.py and
 scripts/check-purity.sh.
 """
 
+from aegis_sentinel.evaluate.assertions import (
+    AccountCase,
+    RatifiedScopeExclusion,
+    TimingCase,
+    evaluate_attributability_claim,
+    evaluate_non_existence_claim,
+    evaluate_ratified_exclusion,
+    evaluate_timing_claim,
+)
 from aegis_sentinel.evaluate.business_days import (
     business_days_between,
     is_business_day,
@@ -16,4 +25,12 @@ __all__ = [
     "is_business_day",
     "business_days_between",
     "evaluate_feed_claim",
+    # EVAL01 typed assertions
+    "TimingCase",
+    "AccountCase",
+    "RatifiedScopeExclusion",
+    "evaluate_timing_claim",
+    "evaluate_non_existence_claim",
+    "evaluate_attributability_claim",
+    "evaluate_ratified_exclusion",
 ]

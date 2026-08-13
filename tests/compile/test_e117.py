@@ -90,7 +90,7 @@ def test_e117_gates_the_poisoned_claim_entirely(template, usable_view) -> None:
     assert not compilation.ok  # ...but blocked
     plans = executable_collectors(result)
     assert all(p.claim_ref != POISONED_CLAIM for p in plans)
-    assert len(plans) == 5  # the other four claims' assertions still compile
+    assert len(plans) == 6  # the other five claims' assertions still compile
 
 
 def test_error_payload_aligns_with_poison_fixture(template, usable_view) -> None:
