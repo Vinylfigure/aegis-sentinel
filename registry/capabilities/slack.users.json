@@ -1,0 +1,53 @@
+{
+  "entry_id": "slack.users.web_api",
+  "system": "slack",
+  "surface": "Web API GET https://slack.com/api/users.list (deleted flag marks deactivated members)",
+  "access_modes": ["DIRECT_API"],
+  "populations_yielded": [
+    {"type": "ENTITY", "name": "slack-account-inventory"}
+  ],
+  "attributes": [
+    {
+      "population_name": "slack-account-inventory",
+      "fields_exposed": [
+        "id",
+        "team_id",
+        "name",
+        "deleted",
+        "is_bot",
+        "is_admin",
+        "is_owner",
+        "profile.email",
+        "updated"
+      ]
+    }
+  ],
+  "temporal": {"kind": "STATE_ONLY", "window_days": null},
+  "join_keys": ["email"],
+  "auth_scope": "users:read + users:read.email (bot token; profile.email is only returned with users:read.email)",
+  "pagination": {
+    "method": "CURSOR",
+    "exhaustion_method": "follow response_metadata.next_cursor until it is empty; limit=200"
+  },
+  "rate_limits": "Web API rate-limit Tier 2 (~20 requests/minute) for users.list; honor Retry-After on HTTP 429",
+  "history_caveats": [
+    "STATE only: the deleted flag shows current deactivation state, not when deactivation happened - timing evidence needs the Audit Logs API (Enterprise Grid only)"
+  ],
+  "provenance": {
+    "researched_by": "vinylfigure (Cartographer draft, hand-authored)",
+    "researched_at": "2026-08-12T00:00:00Z",
+    "source_citations": [
+      {
+        "url": "https://api.slack.com/methods/users.list",
+        "title": "Slack Web API — users.list method reference"
+      },
+      {
+        "url": "https://api.slack.com/apis/rate-limits",
+        "title": "Slack Web API rate limits (method tiers)"
+      }
+    ],
+    "doc_version": "api.slack.com Web API (docs as of 2026-06)",
+    "ratified_by": "vinylfigure (Ratifier)"
+  },
+  "schema_version": "capability-entry@0.1.0"
+}

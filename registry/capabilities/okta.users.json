@@ -1,0 +1,60 @@
+{
+  "entry_id": "okta.users.api_v1",
+  "system": "okta",
+  "surface": "Users API GET /api/v1/users (+ GET /api/v1/users/{userId}/groups for group-derived access)",
+  "access_modes": ["DIRECT_API"],
+  "populations_yielded": [
+    {"type": "ENTITY", "name": "okta-users"},
+    {"type": "RELATIONSHIP", "name": "okta-group-assignments"}
+  ],
+  "attributes": [
+    {
+      "population_name": "okta-users",
+      "fields_exposed": [
+        "id",
+        "status",
+        "created",
+        "activated",
+        "statusChanged",
+        "profile.login",
+        "profile.email"
+      ]
+    },
+    {
+      "population_name": "okta-group-assignments",
+      "fields_exposed": ["user.id", "group.id", "group.type", "group.profile.name"]
+    }
+  ],
+  "temporal": {"kind": "STATE_ONLY", "window_days": null},
+  "join_keys": ["email", "login"],
+  "auth_scope": "okta.users.read + okta.groups.read (read-only OAuth 2.0 scopes; no lifecycle or write scopes granted)",
+  "pagination": {
+    "method": "CURSOR",
+    "exhaustion_method": "follow the after cursor from the Link rel=\"next\" header until the header is absent; limit=200"
+  },
+  "rate_limits": "/api/v1/users org-tier rate-limit bucket; honor X-Rate-Limit-Remaining and X-Rate-Limit-Reset headers",
+  "history_caveats": [
+    "STATE only: statusChanged carries the most recent lifecycle transition timestamp, not the transition history - TIMING assertions need the System Log"
+  ],
+  "provenance": {
+    "researched_by": "vinylfigure (Cartographer draft, hand-authored)",
+    "researched_at": "2026-08-12T00:00:00Z",
+    "source_citations": [
+      {
+        "url": "https://developer.okta.com/docs/reference/api/users/",
+        "title": "Okta Users API reference"
+      },
+      {
+        "url": "https://developer.okta.com/docs/reference/api/groups/",
+        "title": "Okta Groups API reference (user group memberships)"
+      },
+      {
+        "url": "https://developer.okta.com/docs/reference/rate-limits/",
+        "title": "Okta rate limits overview"
+      }
+    ],
+    "doc_version": "okta-api 2026-06",
+    "ratified_by": "vinylfigure (Ratifier)"
+  },
+  "schema_version": "capability-entry@0.1.0"
+}

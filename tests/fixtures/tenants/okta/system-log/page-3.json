@@ -1,0 +1,6 @@
+{
+  "endpoint": "/api/v1/logs",
+  "page": 3,
+  "link_next": "after=evtcursor0003",
+  "items": []
+}

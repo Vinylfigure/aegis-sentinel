@@ -1,0 +1,22 @@
+{
+  "additionalProperties": false,
+  "description": "A member deliberately excluded from the population \u2014 never silent.",
+  "properties": {
+    "member_id": {
+      "minLength": 1,
+      "title": "Member Id",
+      "type": "string"
+    },
+    "rationale": {
+      "minLength": 1,
+      "title": "Rationale",
+      "type": "string"
+    }
+  },
+  "required": [
+    "member_id",
+    "rationale"
+  ],
+  "title": "Exclusion",
+  "type": "object"
+}

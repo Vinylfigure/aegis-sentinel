@@ -1,0 +1,5 @@
+{
+  "from_node": "hris",
+  "to_node": "okta",
+  "event_kind": "termination"
+}

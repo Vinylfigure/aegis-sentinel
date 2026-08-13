@@ -1,0 +1,25 @@
+{
+  "additionalProperties": false,
+  "description": "How the population's membership is constructed (the general case).\n\nThe degenerate case \u2014 a single AUTHORITATIVE source \u2014 is what the\nprior scaffold called ``authoritative_source`` (PRD \u00a78 D5). Use\n:meth:`from_authoritative_source` for that case; ``source_refs``\nname ``Source.source_id`` values declared on the owning Population.",
+  "properties": {
+    "rule_text": {
+      "minLength": 1,
+      "title": "Rule Text",
+      "type": "string"
+    },
+    "source_refs": {
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1,
+      "title": "Source Refs",
+      "type": "array"
+    }
+  },
+  "required": [
+    "rule_text",
+    "source_refs"
+  ],
+  "title": "DerivationRule",
+  "type": "object"
+}

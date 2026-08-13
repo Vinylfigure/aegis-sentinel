@@ -1,0 +1,45 @@
+{
+  "engagement": "demo-engagement",
+  "tenant": "meridian-financial",
+  "manifest_version": "v1-skeleton",
+  "ratified_manifest_snapshot_hash": "b73c1e5754b3091df4f79ae6ea435cd0b0f405e4566f357e4d50f93dad82b027",
+  "period": {"start": "2026-01-01", "end": "2026-06-30"},
+  "timing_window": {"start": "2026-02-01", "end": "2026-04-01"},
+  "retrieved_at": "2026-07-01T06:00:00Z",
+  "evaluated_at": "2026-07-01T06:05:00Z",
+  "identity_domain": "meridianfinancial.example",
+  "ratified_by": "vinylfigure (Ratifier)",
+  "ratified_at": "2026-06-30T18:00:00Z",
+  "boundary": "termination lane: hris -> okta -> {github, gcp, slack}",
+  "delta_dispositions": [
+    {
+      "disposition_ref": "DISP-2026-114",
+      "member_keys": ["CT-2044", "kai.moreno@meridianfinancial.example"],
+      "value": "NA_WITH_RATIONALE",
+      "justification": "contractor-to-advisor conversion effective 2026-06-19: retains Okta, GitHub, and Slack access under the ratified advisory agreement; revocation expectation does not apply for the review window",
+      "owner": "vinylfigure",
+      "review_date": "2026-09-30",
+      "ratified_by": "vinylfigure (Ratifier)"
+    },
+    {
+      "disposition_ref": "DISP-2026-102",
+      "member_keys": ["osprey-design-ext"],
+      "value": "VENDOR_MANAGED",
+      "justification": "contracted design vendor's outside collaborator; access governed by the vendor-access review, not the termination lane",
+      "owner": "vinylfigure",
+      "review_date": "2026-12-31",
+      "ratified_by": "vinylfigure (Ratifier)"
+    }
+  ],
+  "scope_exclusions": [
+    {
+      "ratification_ref": "RAT-2026-031",
+      "system": "corp-it",
+      "claim_ref": "TERM.corp-it.no-residual-access",
+      "assertion_ref": "TERM-CORP-IT.a",
+      "population_ref": "TERM.corp-it.accounts",
+      "rationale": "corp-IT endpoint management is out of the termination lane's TA-3 scope for this engagement; device deprovisioning is covered by the endpoint lane",
+      "ratified_by": "vinylfigure (Ratifier)"
+    }
+  ]
+}

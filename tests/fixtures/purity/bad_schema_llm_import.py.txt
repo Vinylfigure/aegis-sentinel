@@ -1,0 +1,8 @@
+# Seeded-bad fixture: a hypothetical verdict-path schema module that
+# imports an LLM client. Never importable (.py.txt). Must be flagged by
+# the BASE lane — LLM clients are banned everywhere in the verdict path.
+# Kept ruff-clean (import is used) so verify.sh quick reaches the purity
+# gate rather than failing at lint.
+import anthropic
+
+client = anthropic.Anthropic()

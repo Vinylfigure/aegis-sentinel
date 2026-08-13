@@ -1,0 +1,202 @@
+{
+  "engagement": "demo-engagement",
+  "populations": [
+    {
+      "definition": "Every worker (employee or contractor) whose engagement ended during the period, as enumerated by the hris termination feed",
+      "derivation_rule": {
+        "rule_text": "all members enumerated by authoritative source hris-termination-feed; okta-system-log deactivation events corroborate membership",
+        "source_refs": [
+          "hris-termination-feed"
+        ]
+      },
+      "exclusions": [],
+      "name": "Terminated workers",
+      "open_deltas": [],
+      "period": {
+        "end": "2026-06-30",
+        "start": "2026-01-01"
+      },
+      "population_id": "TERM.terminations",
+      "size": 15,
+      "sources": [
+        {
+          "role": "AUTHORITATIVE",
+          "source_id": "hris-termination-feed"
+        },
+        {
+          "role": "CORROBORATING",
+          "source_id": "okta-system-log"
+        }
+      ],
+      "state": "RATIFIED",
+      "type": "EVENT"
+    },
+    {
+      "definition": "Every account able to authenticate to github — SSO-provisioned and local (non-SSO) accounts alike — including access derived from group membership",
+      "derivation_rule": {
+        "rule_text": "all accounts enumerated by github-account-inventory, joined with group-derived access from okta-group-assignments",
+        "source_refs": [
+          "github-account-inventory",
+          "okta-group-assignments"
+        ]
+      },
+      "exclusions": [],
+      "name": "github accounts",
+      "open_deltas": [
+        {
+          "delta_id": "TERM.github.accounts#right_only#bm-legacy-bot",
+          "owner": "vinylfigure (Ratifier)"
+        }
+      ],
+      "period": {
+        "end": "2026-06-30",
+        "start": "2026-01-01"
+      },
+      "population_id": "TERM.github.accounts",
+      "size": 19,
+      "sources": [
+        {
+          "role": "AUTHORITATIVE",
+          "source_id": "github-account-inventory"
+        },
+        {
+          "role": "CONTRIBUTING",
+          "source_id": "okta-group-assignments"
+        }
+      ],
+      "state": "DISCOVERED",
+      "type": "ENTITY"
+    },
+    {
+      "definition": "Every account able to authenticate to gcp — SSO-provisioned and local (non-SSO) accounts alike — including access derived from group membership",
+      "derivation_rule": {
+        "rule_text": "all accounts enumerated by gcp-account-inventory, joined with group-derived access from okta-group-assignments; union break-glass accounts enumerated by breakglass.config",
+        "source_refs": [
+          "gcp-account-inventory",
+          "okta-group-assignments",
+          "breakglass.config"
+        ]
+      },
+      "exclusions": [],
+      "name": "gcp accounts",
+      "open_deltas": [],
+      "period": {
+        "end": "2026-06-30",
+        "start": "2026-01-01"
+      },
+      "population_id": "TERM.gcp.accounts",
+      "size": null,
+      "sources": [
+        {
+          "role": "AUTHORITATIVE",
+          "source_id": "gcp-account-inventory"
+        },
+        {
+          "role": "CONTRIBUTING",
+          "source_id": "okta-group-assignments"
+        },
+        {
+          "role": "CONTRIBUTING",
+          "source_id": "breakglass.config"
+        }
+      ],
+      "state": "DEFINED",
+      "type": "ENTITY"
+    },
+    {
+      "definition": "Every account able to authenticate to slack — SSO-provisioned and local (non-SSO) accounts alike — including access derived from group membership",
+      "derivation_rule": {
+        "rule_text": "all accounts enumerated by slack-account-inventory, joined with group-derived access from okta-group-assignments",
+        "source_refs": [
+          "slack-account-inventory",
+          "okta-group-assignments"
+        ]
+      },
+      "exclusions": [],
+      "name": "slack accounts",
+      "open_deltas": [
+        {
+          "delta_id": "TERM.slack.accounts#left_only#ctr.blake.morgan@example-vendor.com",
+          "owner": "vinylfigure (Ratifier)"
+        }
+      ],
+      "period": {
+        "end": "2026-06-30",
+        "start": "2026-01-01"
+      },
+      "population_id": "TERM.slack.accounts",
+      "size": 31,
+      "sources": [
+        {
+          "role": "AUTHORITATIVE",
+          "source_id": "slack-account-inventory"
+        },
+        {
+          "role": "CONTRIBUTING",
+          "source_id": "okta-group-assignments"
+        }
+      ],
+      "state": "DISCOVERED",
+      "type": "ENTITY"
+    },
+    {
+      "definition": "Canonical-identity join of every terminated worker to every downstream account attributable to them across the lane's target systems",
+      "derivation_rule": {
+        "rule_text": "canonical-identity join of hris-termination-feed members to each downstream system's account inventory, keyed through okta-system-log identities",
+        "source_refs": [
+          "hris-termination-feed",
+          "okta-system-log",
+          "github-account-inventory",
+          "gcp-account-inventory",
+          "slack-account-inventory"
+        ]
+      },
+      "exclusions": [],
+      "name": "Terminated worker to downstream accounts",
+      "open_deltas": [
+        {
+          "delta_id": "TERM.identity-join#left_only#bm-legacy-bot",
+          "owner": "vinylfigure (Ratifier)"
+        },
+        {
+          "delta_id": "TERM.identity-join#left_only#ctr.blake.morgan@example-vendor.com",
+          "owner": "vinylfigure (Ratifier)"
+        },
+        {
+          "delta_id": "TERM.identity-join#unresolvable#dana.kowalski@meridianfinancial.example",
+          "owner": "vinylfigure (Ratifier)"
+        }
+      ],
+      "period": {
+        "end": "2026-06-30",
+        "start": "2026-01-01"
+      },
+      "population_id": "TERM.identity-join",
+      "size": 15,
+      "sources": [
+        {
+          "role": "AUTHORITATIVE",
+          "source_id": "hris-termination-feed"
+        },
+        {
+          "role": "CONTRIBUTING",
+          "source_id": "okta-system-log"
+        },
+        {
+          "role": "CONTRIBUTING",
+          "source_id": "github-account-inventory"
+        },
+        {
+          "role": "CONTRIBUTING",
+          "source_id": "gcp-account-inventory"
+        },
+        {
+          "role": "CONTRIBUTING",
+          "source_id": "slack-account-inventory"
+        }
+      ],
+      "state": "DISCOVERED",
+      "type": "RELATIONSHIP"
+    }
+  ]
+}

@@ -1,0 +1,6 @@
+{
+  "rule_text": "all members enumerated by authoritative source hris-feed",
+  "source_refs": [
+    "hris-feed"
+  ]
+}

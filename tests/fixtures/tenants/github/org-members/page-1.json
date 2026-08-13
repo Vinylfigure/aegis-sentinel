@@ -1,0 +1,97 @@
+{
+  "endpoint": "/orgs/meridian-financial/members",
+  "page": 1,
+  "link_next": "<https://api.github.example/orgs/meridian-financial/members?per_page=100&page=2>; rel=\"next\"",
+  "items": [
+    {
+      "login": "amara-diallo",
+      "id": 90057,
+      "type": "User",
+      "site_admin": false,
+      "role": "member",
+      "saml_name_id": "amara.diallo@meridianfinancial.example",
+      "last_active": "2026-06-30"
+    },
+    {
+      "login": "bianca-rossi",
+      "id": 90099,
+      "type": "User",
+      "site_admin": false,
+      "role": "member",
+      "saml_name_id": "bianca.rossi@meridianfinancial.example",
+      "last_active": "2026-06-30"
+    },
+    {
+      "login": "blake-morgan-vendor",
+      "id": 91502,
+      "type": "User",
+      "site_admin": false,
+      "role": "member",
+      "saml_name_id": "ctr.blake.morgan@example-vendor.com",
+      "last_active": "2026-06-29"
+    },
+    {
+      "login": "bm-legacy-bot",
+      "id": 88011,
+      "type": "User",
+      "site_admin": false,
+      "role": "member",
+      "saml_name_id": null,
+      "last_active": "2025-11-02"
+    },
+    {
+      "login": "chloe-marchand",
+      "id": 90043,
+      "type": "User",
+      "site_admin": false,
+      "role": "member",
+      "saml_name_id": "chloe.marchand@meridianfinancial.example",
+      "last_active": "2026-06-30"
+    },
+    {
+      "login": "ethan-macleod",
+      "id": 90078,
+      "type": "User",
+      "site_admin": false,
+      "role": "member",
+      "saml_name_id": "ethan.macleod@meridianfinancial.example",
+      "last_active": "2026-06-30"
+    },
+    {
+      "login": "grace-lindqvist",
+      "id": 90015,
+      "type": "User",
+      "site_admin": false,
+      "role": "member",
+      "saml_name_id": "grace.lindqvist@meridianfinancial.example",
+      "last_active": "2026-06-30"
+    },
+    {
+      "login": "isla-donovan",
+      "id": 90085,
+      "type": "User",
+      "site_admin": false,
+      "role": "member",
+      "saml_name_id": "isla.donovan@meridianfinancial.example",
+      "last_active": "2026-06-30"
+    },
+    {
+      "login": "kai-moreno",
+      "id": 91501,
+      "type": "User",
+      "site_admin": false,
+      "role": "member",
+      "saml_name_id": "kai.moreno@meridianfinancial.example",
+      "last_active": "2026-06-30"
+    },
+    {
+      "login": "liam-hutchins",
+      "id": 90008,
+      "type": "User",
+      "site_admin": false,
+      "role": "member",
+      "saml_name_id": "liam.hutchins@meridianfinancial.example",
+      "last_active": "2026-06-30"
+    }
+  ]
+}

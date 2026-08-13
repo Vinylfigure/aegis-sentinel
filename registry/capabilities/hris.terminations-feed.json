@@ -1,0 +1,51 @@
+{
+  "entry_id": "hris.terminations_feed.export_v1",
+  "system": "hris",
+  "surface": "daily terminations export (SFTP flat-file drop, one CSV per day)",
+  "access_modes": ["CUSTOM_ADAPTER"],
+  "populations_yielded": [
+    {"type": "EVENT", "name": "hris-termination-feed"}
+  ],
+  "attributes": [
+    {
+      "population_name": "hris-termination-feed",
+      "fields_exposed": [
+        "employee_id",
+        "work_email",
+        "worker_type",
+        "termination_date",
+        "last_day_worked",
+        "termination_reason_code"
+      ]
+    }
+  ],
+  "temporal": {"kind": "SNAPSHOT_CADENCE", "window_days": null},
+  "join_keys": ["employee_id", "email"],
+  "auth_scope": "read-only SFTP service account restricted to the exports/terminations/ drop directory (no HRIS UI access, no write access)",
+  "pagination": {
+    "method": "NONE",
+    "exhaustion_method": "single daily file carries the full period-to-date termination set; compare row count against the trailer record's declared total before accepting the file"
+  },
+  "rate_limits": "batch cadence: one export generated per day; no interactive rate limit applies",
+  "history_caveats": [
+    "Daily snapshot cadence: the feed proves what the HRIS reported as of each export, not intra-day event timing",
+    "Contractors managed outside the HRIS never appear in this feed - population completeness needs a corroborating source"
+  ],
+  "provenance": {
+    "researched_by": "vinylfigure (Cartographer draft, hand-authored)",
+    "researched_at": "2026-08-12T00:00:00Z",
+    "source_citations": [
+      {
+        "url": "https://documentation.bamboohr.com/reference",
+        "title": "BambooHR API reference (representative HRIS employee/termination data surface)"
+      },
+      {
+        "url": "https://documentation.bamboohr.com/docs",
+        "title": "BambooHR developer documentation - reports and data export concepts"
+      }
+    ],
+    "doc_version": "fixture-generic HRIS feed; engagement feed is a daily SFTP CSV export (representative vendor docs cited)",
+    "ratified_by": "vinylfigure (Ratifier)"
+  },
+  "schema_version": "capability-entry@0.1.0"
+}

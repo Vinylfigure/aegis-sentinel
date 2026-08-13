@@ -1,0 +1,32 @@
+{
+  "$defs": {
+    "PopulationType": {
+      "description": "PRD-v3 \u00a72: entity (state), event (happened), relationship (join).",
+      "enum": [
+        "ENTITY",
+        "EVENT",
+        "RELATIONSHIP"
+      ],
+      "title": "PopulationType",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "description": "One population a surface can yield: its type and name (PRD-v3 \u00a73).",
+  "properties": {
+    "name": {
+      "minLength": 1,
+      "title": "Name",
+      "type": "string"
+    },
+    "type": {
+      "$ref": "#/$defs/PopulationType"
+    }
+  },
+  "required": [
+    "type",
+    "name"
+  ],
+  "title": "PopulationYield",
+  "type": "object"
+}

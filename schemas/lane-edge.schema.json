@@ -1,0 +1,28 @@
+{
+  "additionalProperties": false,
+  "description": "A directed flow between two nodes carrying one kind of event.",
+  "properties": {
+    "event_kind": {
+      "minLength": 1,
+      "title": "Event Kind",
+      "type": "string"
+    },
+    "from_node": {
+      "minLength": 1,
+      "title": "From Node",
+      "type": "string"
+    },
+    "to_node": {
+      "minLength": 1,
+      "title": "To Node",
+      "type": "string"
+    }
+  },
+  "required": [
+    "from_node",
+    "to_node",
+    "event_kind"
+  ],
+  "title": "LaneEdge",
+  "type": "object"
+}

@@ -1,0 +1,19 @@
+{
+  "template_id": "TERM.{system}.no-residual-access",
+  "statement": "No terminated worker retains an active {system} account after revocation",
+  "population_ref": "TERM.{system}.accounts",
+  "assertion_prefix": "TERM-{system}",
+  "framework_mappings": [
+    {
+      "framework": "internal",
+      "control_id": "AM-06"
+    }
+  ],
+  "assertions": [
+    {
+      "letter": "a",
+      "type": "NON_EXISTENCE",
+      "predicate_text": "no active {system} account exists for any terminated worker"
+    }
+  ]
+}

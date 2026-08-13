@@ -1,0 +1,69 @@
+{
+  "$defs": {
+    "ControlFunction": {
+      "description": "Preventative gates the flow; detective observes it after the fact.",
+      "enum": [
+        "PREV",
+        "DET"
+      ],
+      "title": "ControlFunction",
+      "type": "string"
+    },
+    "ControlNature": {
+      "description": "How the control operates: configuration, automation, or a human.",
+      "enum": [
+        "CFG",
+        "AUTO",
+        "MANUAL"
+      ],
+      "title": "ControlNature",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "description": "A diamond on the flow: where a control sits and what it claims.\n\n``claim_template_refs`` name the claim templates this control point\njustifies \u2014 the control point *is* the reason those claims exist.",
+  "properties": {
+    "claim_template_refs": {
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1,
+      "title": "Claim Template Refs",
+      "type": "array"
+    },
+    "cp_id": {
+      "minLength": 1,
+      "title": "Cp Id",
+      "type": "string"
+    },
+    "edge_refs": {
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1,
+      "title": "Edge Refs",
+      "type": "array"
+    },
+    "function": {
+      "$ref": "#/$defs/ControlFunction"
+    },
+    "name": {
+      "minLength": 1,
+      "title": "Name",
+      "type": "string"
+    },
+    "nature": {
+      "$ref": "#/$defs/ControlNature"
+    }
+  },
+  "required": [
+    "cp_id",
+    "name",
+    "edge_refs",
+    "nature",
+    "function",
+    "claim_template_refs"
+  ],
+  "title": "ControlPoint",
+  "type": "object"
+}

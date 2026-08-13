@@ -1,0 +1,40 @@
+{
+  "definition": "All employees terminated during the period",
+  "derivation_rule": {
+    "rule_text": "join against payroll",
+    "source_refs": [
+      "payroll-feed"
+    ]
+  },
+  "exclusions": [
+    {
+      "member_id": "emp-0042",
+      "rationale": "rehired within period; separate claim"
+    }
+  ],
+  "name": "Terminated employees",
+  "open_deltas": [
+    {
+      "delta_id": "delta-001",
+      "owner": "the Owner"
+    }
+  ],
+  "period": {
+    "end": "2026-06-30",
+    "start": "2026-01-01"
+  },
+  "population_id": "pop-terminated-employees",
+  "size": 42,
+  "sources": [
+    {
+      "role": "AUTHORITATIVE",
+      "source_id": "hris-feed"
+    },
+    {
+      "role": "CORROBORATING",
+      "source_id": "idp-deactivations"
+    }
+  ],
+  "state": "DEFINED",
+  "type": "EVENT"
+}

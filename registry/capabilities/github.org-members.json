@@ -1,0 +1,44 @@
+{
+  "entry_id": "github.org_members.rest_v3",
+  "system": "github",
+  "surface": "REST v3 GET /orgs/{org}/members + GET /orgs/{org}/outside_collaborators",
+  "access_modes": ["DIRECT_API"],
+  "populations_yielded": [
+    {"type": "ENTITY", "name": "github-account-inventory"}
+  ],
+  "attributes": [
+    {
+      "population_name": "github-account-inventory",
+      "fields_exposed": ["login", "id", "type", "site_admin", "role"]
+    }
+  ],
+  "temporal": {"kind": "STATE_ONLY", "window_days": null},
+  "join_keys": ["login"],
+  "auth_scope": "read:org (classic PAT) or fine-grained token with organization Members read-only permission",
+  "pagination": {
+    "method": "PAGE",
+    "exhaustion_method": "per_page=100; follow the Link rel=\"next\" header until absent, on both the members and outside_collaborators endpoints"
+  },
+  "rate_limits": "5000 requests/hour per authenticated principal (REST core limit)",
+  "history_caveats": [
+    "STATE only: current membership snapshot cannot prove when a member was removed",
+    "GitHub logins are platform-local and profile email is often private: the identity join to HRIS/IdP identities requires the SAML/SCIM external-identity mapping, and local (non-SSO) accounts may have no IdP counterpart at all"
+  ],
+  "provenance": {
+    "researched_by": "vinylfigure (Cartographer draft, hand-authored)",
+    "researched_at": "2026-08-12T00:00:00Z",
+    "source_citations": [
+      {
+        "url": "https://docs.github.com/en/rest/orgs/members",
+        "title": "GitHub REST API — Organization members"
+      },
+      {
+        "url": "https://docs.github.com/en/rest/orgs/outside-collaborators",
+        "title": "GitHub REST API — Outside collaborators"
+      }
+    ],
+    "doc_version": "api.github.com X-GitHub-Api-Version 2022-11-28",
+    "ratified_by": "vinylfigure (Ratifier)"
+  },
+  "schema_version": "capability-entry@0.1.0"
+}

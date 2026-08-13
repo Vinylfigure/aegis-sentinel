@@ -1,0 +1,429 @@
+{
+  "$defs": {
+    "AssertionTemplate": {
+      "additionalProperties": false,
+      "description": "One lettered, typed assertion of a claim template.",
+      "properties": {
+        "letter": {
+          "pattern": "^[a-z]+$",
+          "title": "Letter",
+          "type": "string"
+        },
+        "predicate_text": {
+          "minLength": 1,
+          "title": "Predicate Text",
+          "type": "string"
+        },
+        "type": {
+          "$ref": "#/$defs/AssertionType"
+        }
+      },
+      "required": [
+        "letter",
+        "type",
+        "predicate_text"
+      ],
+      "title": "AssertionTemplate",
+      "type": "object"
+    },
+    "AssertionType": {
+      "description": "The seven assertion types (PRD-v3 \u00a72); type constrains evidence.",
+      "enum": [
+        "STATE",
+        "EVENT",
+        "SEQUENCE",
+        "AGGREGATE",
+        "EXISTENCE",
+        "NON_EXISTENCE",
+        "TIMING"
+      ],
+      "title": "AssertionType",
+      "type": "string"
+    },
+    "ClaimTemplate": {
+      "additionalProperties": false,
+      "description": "A parameterized Claim with lettered typed assertions.\n\n``assertion_prefix`` becomes the id prefix after placeholder\nresolution and uppercasing (``TERM-{system}`` \u2192 ``TERM-GITHUB``),\nso instantiated ids satisfy ``ASSERTION_ID_PATTERN`` \u2014 the SCH01\npattern is never loosened to admit template ids.",
+      "properties": {
+        "assertion_prefix": {
+          "pattern": "^[A-Za-z0-9{}-]+$",
+          "title": "Assertion Prefix",
+          "type": "string"
+        },
+        "assertions": {
+          "items": {
+            "$ref": "#/$defs/AssertionTemplate"
+          },
+          "minItems": 1,
+          "title": "Assertions",
+          "type": "array"
+        },
+        "framework_mappings": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/FrameworkMapping"
+          },
+          "title": "Framework Mappings",
+          "type": "array"
+        },
+        "population_ref": {
+          "minLength": 1,
+          "title": "Population Ref",
+          "type": "string"
+        },
+        "statement": {
+          "minLength": 1,
+          "title": "Statement",
+          "type": "string"
+        },
+        "template_id": {
+          "minLength": 1,
+          "title": "Template Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "template_id",
+        "statement",
+        "population_ref",
+        "assertion_prefix",
+        "assertions"
+      ],
+      "title": "ClaimTemplate",
+      "type": "object"
+    },
+    "ControlFunction": {
+      "description": "Preventative gates the flow; detective observes it after the fact.",
+      "enum": [
+        "PREV",
+        "DET"
+      ],
+      "title": "ControlFunction",
+      "type": "string"
+    },
+    "ControlNature": {
+      "description": "How the control operates: configuration, automation, or a human.",
+      "enum": [
+        "CFG",
+        "AUTO",
+        "MANUAL"
+      ],
+      "title": "ControlNature",
+      "type": "string"
+    },
+    "ControlPoint": {
+      "additionalProperties": false,
+      "description": "A diamond on the flow: where a control sits and what it claims.\n\n``claim_template_refs`` name the claim templates this control point\njustifies \u2014 the control point *is* the reason those claims exist.",
+      "properties": {
+        "claim_template_refs": {
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Claim Template Refs",
+          "type": "array"
+        },
+        "cp_id": {
+          "minLength": 1,
+          "title": "Cp Id",
+          "type": "string"
+        },
+        "edge_refs": {
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Edge Refs",
+          "type": "array"
+        },
+        "function": {
+          "$ref": "#/$defs/ControlFunction"
+        },
+        "name": {
+          "minLength": 1,
+          "title": "Name",
+          "type": "string"
+        },
+        "nature": {
+          "$ref": "#/$defs/ControlNature"
+        }
+      },
+      "required": [
+        "cp_id",
+        "name",
+        "edge_refs",
+        "nature",
+        "function",
+        "claim_template_refs"
+      ],
+      "title": "ControlPoint",
+      "type": "object"
+    },
+    "FrameworkMapping": {
+      "additionalProperties": false,
+      "description": "A framework control projected onto a claim (frameworks are projections).",
+      "properties": {
+        "control_id": {
+          "minLength": 1,
+          "title": "Control Id",
+          "type": "string"
+        },
+        "framework": {
+          "minLength": 1,
+          "title": "Framework",
+          "type": "string"
+        }
+      },
+      "required": [
+        "framework",
+        "control_id"
+      ],
+      "title": "FrameworkMapping",
+      "type": "object"
+    },
+    "LaneEdge": {
+      "additionalProperties": false,
+      "description": "A directed flow between two nodes carrying one kind of event.",
+      "properties": {
+        "event_kind": {
+          "minLength": 1,
+          "title": "Event Kind",
+          "type": "string"
+        },
+        "from_node": {
+          "minLength": 1,
+          "title": "From Node",
+          "type": "string"
+        },
+        "to_node": {
+          "minLength": 1,
+          "title": "To Node",
+          "type": "string"
+        }
+      },
+      "required": [
+        "from_node",
+        "to_node",
+        "event_kind"
+      ],
+      "title": "LaneEdge",
+      "type": "object"
+    },
+    "LaneNode": {
+      "additionalProperties": false,
+      "description": "One system (or actor) on the lane. ``system_ref`` is generic \u2014\nthe role on the lane (``hris``), never a vendor or client name \u2014\nand is the key the instantiation systems mapping resolves.",
+      "properties": {
+        "kind": {
+          "$ref": "#/$defs/LaneNodeKind"
+        },
+        "label": {
+          "minLength": 1,
+          "title": "Label",
+          "type": "string"
+        },
+        "node_id": {
+          "minLength": 1,
+          "title": "Node Id",
+          "type": "string"
+        },
+        "system_ref": {
+          "minLength": 1,
+          "title": "System Ref",
+          "type": "string"
+        }
+      },
+      "required": [
+        "node_id",
+        "label",
+        "system_ref",
+        "kind"
+      ],
+      "title": "LaneNode",
+      "type": "object"
+    },
+    "LaneNodeKind": {
+      "description": "ACTOR originates events; SYSTEM relays; SINK is a fan-out target.",
+      "enum": [
+        "ACTOR",
+        "SYSTEM",
+        "SINK"
+      ],
+      "title": "LaneNodeKind",
+      "type": "string"
+    },
+    "PopulationTemplate": {
+      "additionalProperties": false,
+      "description": "A parameterized Population: same shape, placeholders unresolved.\n\n``source_refs`` must name declared source templates verbatim (the\nsame closed-reference rule Population enforces after resolution).",
+      "properties": {
+        "definition": {
+          "minLength": 1,
+          "title": "Definition",
+          "type": "string"
+        },
+        "name": {
+          "minLength": 1,
+          "title": "Name",
+          "type": "string"
+        },
+        "rule_text": {
+          "minLength": 1,
+          "title": "Rule Text",
+          "type": "string"
+        },
+        "source_refs": {
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Source Refs",
+          "type": "array"
+        },
+        "source_templates": {
+          "items": {
+            "$ref": "#/$defs/SourceTemplate"
+          },
+          "minItems": 1,
+          "title": "Source Templates",
+          "type": "array"
+        },
+        "template_id": {
+          "minLength": 1,
+          "title": "Template Id",
+          "type": "string"
+        },
+        "type": {
+          "$ref": "#/$defs/PopulationType"
+        }
+      },
+      "required": [
+        "template_id",
+        "name",
+        "type",
+        "definition",
+        "rule_text",
+        "source_templates",
+        "source_refs"
+      ],
+      "title": "PopulationTemplate",
+      "type": "object"
+    },
+    "PopulationType": {
+      "description": "PRD-v3 \u00a72: entity (state), event (happened), relationship (join).",
+      "enum": [
+        "ENTITY",
+        "EVENT",
+        "RELATIONSHIP"
+      ],
+      "title": "PopulationType",
+      "type": "string"
+    },
+    "SourceRole": {
+      "description": "Source roles a population's derivation may lean on (PRD-v3 \u00a72).",
+      "enum": [
+        "AUTHORITATIVE",
+        "CONTRIBUTING",
+        "CORROBORATING",
+        "DISCOVERY",
+        "EXCLUSION"
+      ],
+      "title": "SourceRole",
+      "type": "string"
+    },
+    "SourceTemplate": {
+      "additionalProperties": false,
+      "description": "A parameterized population source: id may carry placeholders.",
+      "properties": {
+        "role": {
+          "$ref": "#/$defs/SourceRole"
+        },
+        "source_id": {
+          "minLength": 1,
+          "title": "Source Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "source_id",
+        "role"
+      ],
+      "title": "SourceTemplate",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "A whole lane as data: graph + control points + typed templates.\n\nConstructor-enforced closure: edges reference declared nodes,\ncontrol points reference declared edges and claim templates, claim\ntemplates reference declared population templates. A template that\nnames a thing it does not declare cannot be constructed \u2014 the same\ndiscipline Population applies to its sources.",
+  "properties": {
+    "claim_templates": {
+      "items": {
+        "$ref": "#/$defs/ClaimTemplate"
+      },
+      "minItems": 1,
+      "title": "Claim Templates",
+      "type": "array"
+    },
+    "control_points": {
+      "items": {
+        "$ref": "#/$defs/ControlPoint"
+      },
+      "minItems": 1,
+      "title": "Control Points",
+      "type": "array"
+    },
+    "direction": {
+      "minLength": 1,
+      "title": "Direction",
+      "type": "string"
+    },
+    "edges": {
+      "items": {
+        "$ref": "#/$defs/LaneEdge"
+      },
+      "minItems": 1,
+      "title": "Edges",
+      "type": "array"
+    },
+    "lane_id": {
+      "minLength": 1,
+      "title": "Lane Id",
+      "type": "string"
+    },
+    "name": {
+      "minLength": 1,
+      "title": "Name",
+      "type": "string"
+    },
+    "nodes": {
+      "items": {
+        "$ref": "#/$defs/LaneNode"
+      },
+      "minItems": 1,
+      "title": "Nodes",
+      "type": "array"
+    },
+    "population_templates": {
+      "items": {
+        "$ref": "#/$defs/PopulationTemplate"
+      },
+      "minItems": 1,
+      "title": "Population Templates",
+      "type": "array"
+    },
+    "trigger": {
+      "minLength": 1,
+      "title": "Trigger",
+      "type": "string"
+    }
+  },
+  "required": [
+    "lane_id",
+    "name",
+    "direction",
+    "trigger",
+    "nodes",
+    "edges",
+    "control_points",
+    "population_templates",
+    "claim_templates"
+  ],
+  "title": "LaneTemplate",
+  "type": "object"
+}

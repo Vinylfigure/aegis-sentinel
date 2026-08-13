@@ -1,0 +1,40 @@
+{
+  "auth_context": "app-installation:read:org",
+  "collector_version": "github-members@0.1.0",
+  "contract_hash": null,
+  "endpoint": "GET /orgs/{org}/members",
+  "integrity": {
+    "method": "sha256-canonical + WORM store"
+  },
+  "parameters": [
+    {
+      "name": "per_page",
+      "value": "100"
+    }
+  ],
+  "population": {
+    "method": "exhaustive_pagination"
+  },
+  "population_ref": "pop-terminated-employees",
+  "provenance": {
+    "method": "authenticated API origin, app installation token"
+  },
+  "retrieved_at": null,
+  "schema_version": "0.1.0",
+  "semantics": {
+    "method": "schema contract + sampled trace"
+  },
+  "source_system": "github",
+  "supported_assertion_types": [
+    "EXISTENCE",
+    "STATE"
+  ],
+  "temporal_validity": {
+    "method": "snapshot window vs asserted period"
+  },
+  "tenant": "example-org",
+  "time_window": {
+    "end": "2026-06-30",
+    "start": "2026-01-01"
+  }
+}

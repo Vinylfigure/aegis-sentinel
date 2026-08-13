@@ -1,0 +1,32 @@
+{
+  "$defs": {
+    "PaginationMethod": {
+      "description": "Pagination mechanics of the surface (PRD-v3 \u00a73).",
+      "enum": [
+        "CURSOR",
+        "PAGE",
+        "NONE"
+      ],
+      "title": "PaginationMethod",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Pagination method plus how a collector proves exhaustion.\n\nExhaustion is named even for NONE (e.g. \"single response carries\nthe full set; compare returned count to reported total\") \u2014 the\npopulation quality property depends on it (PRD-v3 \u00a72).",
+  "properties": {
+    "exhaustion_method": {
+      "minLength": 1,
+      "title": "Exhaustion Method",
+      "type": "string"
+    },
+    "method": {
+      "$ref": "#/$defs/PaginationMethod"
+    }
+  },
+  "required": [
+    "method",
+    "exhaustion_method"
+  ],
+  "title": "Pagination",
+  "type": "object"
+}

@@ -1,0 +1,69 @@
+{
+  "lane_id": "TA-MIN",
+  "name": "Minimal termination lane",
+  "direction": "hris -> github",
+  "trigger": "termination event recorded in the HRIS",
+  "nodes": [
+    {
+      "node_id": "hris",
+      "label": "HRIS",
+      "system_ref": "hris",
+      "kind": "ACTOR"
+    },
+    {
+      "node_id": "github",
+      "label": "GitHub",
+      "system_ref": "github",
+      "kind": "SINK"
+    }
+  ],
+  "edges": [
+    {
+      "from_node": "hris",
+      "to_node": "github",
+      "event_kind": "deprovision"
+    }
+  ],
+  "control_points": [
+    {
+      "cp_id": "CP-1",
+      "name": "Downstream revocation verified",
+      "edge_refs": ["hris->github"],
+      "nature": "AUTO",
+      "function": "DET",
+      "claim_template_refs": ["MIN.{system}.no-residual-access"]
+    }
+  ],
+  "population_templates": [
+    {
+      "template_id": "MIN.{system}.accounts",
+      "name": "{system} accounts",
+      "type": "ENTITY",
+      "definition": "Every account able to authenticate to {system}",
+      "rule_text": "all accounts enumerated by {system}-account-inventory",
+      "source_templates": [
+        {
+          "source_id": "{system}-account-inventory",
+          "role": "AUTHORITATIVE"
+        }
+      ],
+      "source_refs": ["{system}-account-inventory"]
+    }
+  ],
+  "claim_templates": [
+    {
+      "template_id": "MIN.{system}.no-residual-access",
+      "statement": "No terminated worker retains an active {system} account",
+      "population_ref": "MIN.{system}.accounts",
+      "assertion_prefix": "MIN-{system}",
+      "framework_mappings": [],
+      "assertions": [
+        {
+          "letter": "a",
+          "type": "NON_EXISTENCE",
+          "predicate_text": "no active {system} account exists for any terminated worker"
+        }
+      ]
+    }
+  ]
+}

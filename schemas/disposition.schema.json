@@ -1,0 +1,41 @@
+{
+  "$defs": {
+    "DispositionValue": {
+      "description": "The six dispositions (PRD-v3 \u00a71).",
+      "enum": [
+        "IMPLEMENTED_LOCALLY",
+        "INHERITED",
+        "SHARED",
+        "VENDOR_MANAGED",
+        "COMPENSATING",
+        "NA_WITH_RATIONALE"
+      ],
+      "title": "DispositionValue",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "description": "A disposition, with rationale mandatory for N/A \u2014 never silent.",
+  "properties": {
+    "rationale": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Rationale"
+    },
+    "value": {
+      "$ref": "#/$defs/DispositionValue"
+    }
+  },
+  "required": [
+    "value"
+  ],
+  "title": "Disposition",
+  "type": "object"
+}

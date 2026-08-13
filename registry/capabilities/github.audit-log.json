@@ -1,0 +1,44 @@
+{
+  "entry_id": "github.audit_log.rest_v3",
+  "system": "github",
+  "surface": "REST v3 GET /orgs/{org}/audit-log (GitHub Enterprise Cloud; membership-removal events org.remove_member, org.remove_outside_collaborator)",
+  "access_modes": ["DIRECT_API"],
+  "populations_yielded": [
+    {"type": "EVENT", "name": "github-audit-log"}
+  ],
+  "attributes": [
+    {
+      "population_name": "github-audit-log",
+      "fields_exposed": ["@timestamp", "action", "actor", "user", "org", "created_at"]
+    }
+  ],
+  "temporal": {"kind": "EVENT_HISTORY", "window_days": 180},
+  "join_keys": ["user", "actor"],
+  "auth_scope": "read:audit_log scope on an organization-owner principal (the audit log is owner-visible only)",
+  "pagination": {
+    "method": "CURSOR",
+    "exhaustion_method": "follow the after cursor from the Link rel=\"next\" header until absent; per_page=100"
+  },
+  "rate_limits": "REST core limit (5000 requests/hour) plus a dedicated audit-log endpoint throttle; honor Retry-After on 403/429",
+  "history_caveats": [
+    "Audit log query window is 180 days for organization events on this plan (Git events only 7 days) - TIMING assertions beyond the window need audit log streaming or an exported archive",
+    "Membership-removal events exist only on GitHub Enterprise Cloud plans; plain org plans keep a shorter, UI-only audit trail"
+  ],
+  "provenance": {
+    "researched_by": "vinylfigure (Cartographer draft, hand-authored)",
+    "researched_at": "2026-08-12T00:00:00Z",
+    "source_citations": [
+      {
+        "url": "https://docs.github.com/en/enterprise-cloud@latest/rest/orgs/orgs#get-the-audit-log-for-an-organization",
+        "title": "GitHub REST API — Get the audit log for an organization (Enterprise Cloud)"
+      },
+      {
+        "url": "https://docs.github.com/en/organizations/keeping-your-organization-secure/managing-security-settings-for-your-organization/reviewing-the-audit-log-for-your-organization",
+        "title": "Reviewing the audit log for your organization (retention and searchable window)"
+      }
+    ],
+    "doc_version": "api.github.com X-GitHub-Api-Version 2022-11-28, Enterprise Cloud plan",
+    "ratified_by": "vinylfigure (Ratifier)"
+  },
+  "schema_version": "capability-entry@0.1.0"
+}

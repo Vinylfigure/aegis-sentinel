@@ -1,0 +1,74 @@
+{
+  "$defs": {
+    "SourceCitation": {
+      "additionalProperties": false,
+      "description": "One vendor-doc citation grounding the entry (Cartographer output).",
+      "properties": {
+        "title": {
+          "minLength": 1,
+          "title": "Title",
+          "type": "string"
+        },
+        "url": {
+          "pattern": "^https?://\\S+$",
+          "title": "Url",
+          "type": "string"
+        }
+      },
+      "required": [
+        "url",
+        "title"
+      ],
+      "title": "SourceCitation",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Who researched the entry, from what, and who ratified it.\n\n``ratified_by`` is the mechanical gate: ``None`` means draft, and\ndrafts never reach the compiler (Registry.usable). Cartographer\nproposals arrive with citations and ``ratified_by=None``; only a\nhuman sets the field.",
+  "properties": {
+    "doc_version": {
+      "minLength": 1,
+      "title": "Doc Version",
+      "type": "string"
+    },
+    "ratified_by": {
+      "anyOf": [
+        {
+          "minLength": 1,
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Ratified By"
+    },
+    "researched_at": {
+      "format": "date-time",
+      "title": "Researched At",
+      "type": "string"
+    },
+    "researched_by": {
+      "minLength": 1,
+      "title": "Researched By",
+      "type": "string"
+    },
+    "source_citations": {
+      "items": {
+        "$ref": "#/$defs/SourceCitation"
+      },
+      "minItems": 1,
+      "title": "Source Citations",
+      "type": "array"
+    }
+  },
+  "required": [
+    "researched_by",
+    "researched_at",
+    "source_citations",
+    "doc_version"
+  ],
+  "title": "Provenance",
+  "type": "object"
+}

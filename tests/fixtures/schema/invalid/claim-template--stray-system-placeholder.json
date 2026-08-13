@@ -1,0 +1,14 @@
+{
+  "template_id": "TERM.timely-revocation",
+  "statement": "Every terminated worker lost {system} access within five business days",
+  "population_ref": "TERM.terminations",
+  "assertion_prefix": "TERM-TIMING",
+  "framework_mappings": [],
+  "assertions": [
+    {
+      "letter": "a",
+      "type": "TIMING",
+      "predicate_text": "deactivation occurred no more than five business days after termination"
+    }
+  ]
+}

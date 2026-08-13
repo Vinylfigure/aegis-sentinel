@@ -1,0 +1,151 @@
+{
+  "endpoint": "/api/v1/logs",
+  "page": 2,
+  "link_next": "after=evtcursor0002",
+  "items": [
+    {
+      "uuid": "evt-deact-e-1052",
+      "eventType": "user.lifecycle.deactivate",
+      "published": "2026-04-07T17:04:00.000Z",
+      "actor": {
+        "id": "00uscimhris",
+        "alternateId": "mf-hris-provisioner@meridianfinancial.example"
+      },
+      "target": [
+        {
+          "id": "00ue1052",
+          "alternateId": "jae.park@meridianfinancial.example"
+        }
+      ],
+      "outcome": {
+        "result": "SUCCESS"
+      }
+    },
+    {
+      "uuid": "evt-deact-e-1060",
+      "eventType": "user.lifecycle.deactivate",
+      "published": "2026-04-20T17:04:00.000Z",
+      "actor": {
+        "id": "00uscimhris",
+        "alternateId": "mf-hris-provisioner@meridianfinancial.example"
+      },
+      "target": [
+        {
+          "id": "00ue1060",
+          "alternateId": "fatima.noor@meridianfinancial.example"
+        }
+      ],
+      "outcome": {
+        "result": "SUCCESS"
+      }
+    },
+    {
+      "uuid": "evt-deact-e-1066",
+      "eventType": "user.lifecycle.deactivate",
+      "published": "2026-04-29T17:04:00.000Z",
+      "actor": {
+        "id": "00uscimhris",
+        "alternateId": "mf-hris-provisioner@meridianfinancial.example"
+      },
+      "target": [
+        {
+          "id": "00ue1066",
+          "alternateId": "colin.drexler@meridianfinancial.example"
+        }
+      ],
+      "outcome": {
+        "result": "SUCCESS"
+      }
+    },
+    {
+      "uuid": "evt-deact-e-1073",
+      "eventType": "user.lifecycle.deactivate",
+      "published": "2026-05-11T17:04:00.000Z",
+      "actor": {
+        "id": "00uscimhris",
+        "alternateId": "mf-hris-provisioner@meridianfinancial.example"
+      },
+      "target": [
+        {
+          "id": "00ue1073",
+          "alternateId": "renata.vasquez@meridianfinancial.example"
+        }
+      ],
+      "outcome": {
+        "result": "SUCCESS"
+      }
+    },
+    {
+      "uuid": "evt-deact-e-1080",
+      "eventType": "user.lifecycle.deactivate",
+      "published": "2026-05-21T17:04:00.000Z",
+      "actor": {
+        "id": "00uscimhris",
+        "alternateId": "mf-hris-provisioner@meridianfinancial.example"
+      },
+      "target": [
+        {
+          "id": "00ue1080",
+          "alternateId": "oliver.grant@meridianfinancial.example"
+        }
+      ],
+      "outcome": {
+        "result": "SUCCESS"
+      }
+    },
+    {
+      "uuid": "evt-deact-e-1088",
+      "eventType": "user.lifecycle.deactivate",
+      "published": "2026-06-02T17:04:00.000Z",
+      "actor": {
+        "id": "00uscimhris",
+        "alternateId": "mf-hris-provisioner@meridianfinancial.example"
+      },
+      "target": [
+        {
+          "id": "00ue1088",
+          "alternateId": "sofia.marino@meridianfinancial.example"
+        }
+      ],
+      "outcome": {
+        "result": "SUCCESS"
+      }
+    },
+    {
+      "uuid": "evt-deact-e-1091",
+      "eventType": "user.lifecycle.deactivate",
+      "published": "2026-06-08T17:04:00.000Z",
+      "actor": {
+        "id": "00uscimhris",
+        "alternateId": "mf-hris-provisioner@meridianfinancial.example"
+      },
+      "target": [
+        {
+          "id": "00ue1091",
+          "alternateId": "hannah.beck@meridianfinancial.example"
+        }
+      ],
+      "outcome": {
+        "result": "SUCCESS"
+      }
+    },
+    {
+      "uuid": "evt-deact-e-1095",
+      "eventType": "user.lifecycle.deactivate",
+      "published": "2026-06-16T17:04:00.000Z",
+      "actor": {
+        "id": "00uscimhris",
+        "alternateId": "mf-hris-provisioner@meridianfinancial.example"
+      },
+      "target": [
+        {
+          "id": "00ue1095",
+          "alternateId": "devon.ellis@meridianfinancial.example"
+        }
+      ],
+      "outcome": {
+        "result": "SUCCESS"
+      }
+    }
+  ]
+}

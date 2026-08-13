@@ -26,7 +26,7 @@ case "$MODE" in
     case "$FILE" in
       *.sh) bash -n "$FILE" ;;
       *.json) if command -v jq >/dev/null 2>&1; then jq . "$FILE" >/dev/null; fi ;;
-      *.py) ruff check "$FILE" && ruff format --check "$FILE" ;;
+      *.py) ruff check "$FILE" && ruff format --check "$FILE" && "$(dirname "$0")/check-purity.sh" "$FILE" ;;
       # A dispatched agent's only shell grants are named runners like this
       # script, so a YAML file it writes is unverifiable unless the check
       # lives here. That gap cost a real run: the work order for the issue

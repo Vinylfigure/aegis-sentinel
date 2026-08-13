@@ -1,0 +1,171 @@
+{
+  "$defs": {
+    "D7Family": {
+      "description": "Prior-scaffold D-7 cause families (ride along per D-U1).",
+      "enum": [
+        "basis_missing",
+        "identity_fuzzy",
+        "no_basis_anywhere"
+      ],
+      "title": "D7Family",
+      "type": "string"
+    },
+    "UnknownWhyCode": {
+      "description": "Why an UNKNOWN is unknown (PRD-v3 \u00a72). Propagates; blocks ratification.",
+      "enum": [
+        "UNKNOWN_DISCOVERY",
+        "UNKNOWN_OWNER",
+        "UNKNOWN_POPULATION",
+        "UNKNOWN_EVIDENCE",
+        "UNKNOWN_TESTABILITY"
+      ],
+      "title": "UnknownWhyCode",
+      "type": "string"
+    },
+    "VerdictState": {
+      "description": "PASS \u00b7 FAIL \u00b7 UNKNOWN \u00b7 EXCLUDED \u00b7 EXCEPTION \u2014 never interchangeable.",
+      "enum": [
+        "PASS",
+        "FAIL",
+        "UNKNOWN",
+        "EXCLUDED",
+        "EXCEPTION"
+      ],
+      "title": "VerdictState",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "description": "One verdict over one (claim, assertion, population) triple.\n\nReferences ``(manifest_version, snapshot_hash, contract_hash)`` per\nD-S1 \u2014 the run refuses to start if the loaded snapshot hash has no\nratification row, one level up from the prior scaffold's\n``(spec_id, spec_hash, ratification_ref)``.\n\n``evaluated_at`` is an EXPLICIT input: the evaluator is pure and\nnever reads a clock (D-P3).\n\nConstructor-enforced state rules:\n- UNKNOWN requires ``why_code``; ``d7_family`` (when present) must\n  map to that why-code via ``D7_FAMILY``.\n- EXCLUDED requires ``ratification_ref`` (D-V1).\n- EXCEPTION requires ``disposition_ref`` (D-V1).\n- FAIL requires ``message`` (D-V1 carried requirement).\n- ``why_code``/``d7_family`` only on UNKNOWN; ``ratification_ref``\n  only on EXCLUDED; ``disposition_ref`` only on EXCEPTION \u2014 so a\n  PASS carries none of them.",
+  "properties": {
+    "assertion_ref": {
+      "minLength": 1,
+      "title": "Assertion Ref",
+      "type": "string"
+    },
+    "claim_ref": {
+      "minLength": 1,
+      "title": "Claim Ref",
+      "type": "string"
+    },
+    "contract_hash": {
+      "pattern": "^[a-f0-9]{64}$",
+      "title": "Contract Hash",
+      "type": "string"
+    },
+    "d7_family": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/D7Family"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "disposition_ref": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Disposition Ref"
+    },
+    "evaluated_at": {
+      "format": "date-time",
+      "title": "Evaluated At",
+      "type": "string"
+    },
+    "evidence_refs": {
+      "default": [],
+      "items": {
+        "type": "string"
+      },
+      "title": "Evidence Refs",
+      "type": "array"
+    },
+    "manifest_version": {
+      "minLength": 1,
+      "title": "Manifest Version",
+      "type": "string"
+    },
+    "message": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Message"
+    },
+    "population_ref": {
+      "minLength": 1,
+      "title": "Population Ref",
+      "type": "string"
+    },
+    "ratification_ref": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Ratification Ref"
+    },
+    "record_hash": {
+      "anyOf": [
+        {
+          "pattern": "^[a-f0-9]{64}$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Record Hash"
+    },
+    "snapshot_hash": {
+      "pattern": "^[a-f0-9]{64}$",
+      "title": "Snapshot Hash",
+      "type": "string"
+    },
+    "state": {
+      "$ref": "#/$defs/VerdictState"
+    },
+    "why_code": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/UnknownWhyCode"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    }
+  },
+  "required": [
+    "claim_ref",
+    "assertion_ref",
+    "population_ref",
+    "manifest_version",
+    "snapshot_hash",
+    "contract_hash",
+    "state",
+    "evaluated_at"
+  ],
+  "title": "VerdictRecord",
+  "type": "object"
+}

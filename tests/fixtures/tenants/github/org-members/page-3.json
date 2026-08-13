@@ -1,0 +1,15 @@
+{
+  "endpoint": "/orgs/meridian-financial/outside_collaborators",
+  "page": 1,
+  "items": [
+    {
+      "login": "osprey-design-ext",
+      "id": 93044,
+      "type": "User",
+      "site_admin": false,
+      "role": "outside_collaborator",
+      "saml_name_id": null,
+      "last_active": "2026-06-28"
+    }
+  ]
+}

@@ -1,0 +1,61 @@
+{
+  "feed": "hris-termination-feed",
+  "export_date": "2026-07-01",
+  "page": 1,
+  "rows": [
+    {
+      "record_type": "termination",
+      "employee_id": "E-1004",
+      "work_email": "avery.chen@meridianfinancial.example",
+      "worker_type": "employee",
+      "termination_date": "2026-01-16",
+      "last_day_worked": "2026-01-16",
+      "termination_reason_code": "VOL"
+    },
+    {
+      "record_type": "termination",
+      "employee_id": "E-1019",
+      "work_email": "priya.natarajan@meridianfinancial.example",
+      "worker_type": "employee",
+      "termination_date": "2026-01-30",
+      "last_day_worked": "2026-01-30",
+      "termination_reason_code": "VOL"
+    },
+    {
+      "record_type": "termination",
+      "employee_id": "E-1027",
+      "work_email": "marcus.webb@meridianfinancial.example",
+      "worker_type": "employee",
+      "termination_date": "2026-02-13",
+      "last_day_worked": "2026-02-13",
+      "termination_reason_code": "INVOL"
+    },
+    {
+      "record_type": "termination",
+      "employee_id": "E-1033",
+      "work_email": "dana.whitfield@meridianfinancial.example",
+      "worker_type": "employee",
+      "termination_date": "2026-02-27",
+      "last_day_worked": "2026-02-27",
+      "termination_reason_code": "RIF"
+    },
+    {
+      "record_type": "termination",
+      "employee_id": "E-1041",
+      "work_email": "tomas.rivera@meridianfinancial.example",
+      "worker_type": "employee",
+      "termination_date": "2026-03-06",
+      "last_day_worked": "2026-03-06",
+      "termination_reason_code": "VOL"
+    },
+    {
+      "record_type": "termination",
+      "employee_id": "E-1048",
+      "work_email": "ingrid.solberg@meridianfinancial.example",
+      "worker_type": "employee",
+      "termination_date": "2026-03-20",
+      "last_day_worked": "2026-03-20",
+      "termination_reason_code": "VOL"
+    }
+  ]
+}

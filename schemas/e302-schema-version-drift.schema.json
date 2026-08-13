@@ -1,0 +1,58 @@
+{
+  "additionalProperties": false,
+  "description": "A consulted entry's schema_version drifted from the ratified pin.",
+  "properties": {
+    "assertion_ref": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Assertion Ref"
+    },
+    "claim_ref": {
+      "minLength": 1,
+      "title": "Claim Ref",
+      "type": "string"
+    },
+    "code": {
+      "const": "E302",
+      "default": "E302",
+      "title": "Code",
+      "type": "string"
+    },
+    "entry_id": {
+      "minLength": 1,
+      "title": "Entry Id",
+      "type": "string"
+    },
+    "message": {
+      "minLength": 1,
+      "title": "Message",
+      "type": "string"
+    },
+    "observed": {
+      "minLength": 1,
+      "title": "Observed",
+      "type": "string"
+    },
+    "ratified": {
+      "minLength": 1,
+      "title": "Ratified",
+      "type": "string"
+    }
+  },
+  "required": [
+    "message",
+    "claim_ref",
+    "entry_id",
+    "observed",
+    "ratified"
+  ],
+  "title": "E302SchemaVersionDrift",
+  "type": "object"
+}

@@ -1,0 +1,7 @@
+{
+  "assertion_id": "AM-06.a",
+  "claim_ref": "claim-termination-revocation",
+  "population_ref": "pop-terminated-employees",
+  "predicate_text": "production access revoked within five business days of termination",
+  "type": "TIMING"
+}

@@ -1,0 +1,40 @@
+{
+  "additionalProperties": false,
+  "description": "Base shape of every E-code.\n\n``assertion_ref`` is ``None`` for claim-level errors (E117/E302,\nwhich attach to the claim through its populations and consulted\nentries) and set for assertion-level errors (E204).",
+  "properties": {
+    "assertion_ref": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Assertion Ref"
+    },
+    "claim_ref": {
+      "minLength": 1,
+      "title": "Claim Ref",
+      "type": "string"
+    },
+    "code": {
+      "minLength": 1,
+      "title": "Code",
+      "type": "string"
+    },
+    "message": {
+      "minLength": 1,
+      "title": "Message",
+      "type": "string"
+    }
+  },
+  "required": [
+    "code",
+    "message",
+    "claim_ref"
+  ],
+  "title": "CompileError",
+  "type": "object"
+}

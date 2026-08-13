@@ -1,0 +1,26 @@
+{
+  "entry_id": "okta.system_log.api_v1",
+  "system": "okta",
+  "surface": "System Log API GET /api/v1/logs",
+  "access_modes": ["DIRECT_API"],
+  "populations_yielded": [
+    {"type": "EVENT", "name": "audit events"}
+  ],
+  "attributes": [],
+  "temporal": {"kind": "EVENT_HISTORY", "window_days": null},
+  "join_keys": ["actor.alternateId"],
+  "auth_scope": "okta.logs.read",
+  "pagination": {"method": "CURSOR", "exhaustion_method": "follow after cursor until empty page"},
+  "rate_limits": "org-tier limit on /api/v1/logs",
+  "history_caveats": [],
+  "provenance": {
+    "researched_by": "vinylfigure (Cartographer draft, hand-authored)",
+    "researched_at": "2026-08-12T00:00:00Z",
+    "source_citations": [
+      {"url": "https://developer.okta.com/docs/reference/api/system-log/", "title": "System Log"}
+    ],
+    "doc_version": "okta-api 2026-06",
+    "ratified_by": null
+  },
+  "schema_version": "capability-entry@0.1.0"
+}

@@ -1,0 +1,171 @@
+{
+  "endpoint": "/api/v1/users",
+  "page": 2,
+  "items": [
+    {
+      "id": "00ue1002",
+      "status": "ACTIVE",
+      "created": "2023-06-23T09:00:00.000Z",
+      "activated": "2023-06-24T09:30:00.000Z",
+      "statusChanged": "2023-06-24T09:30:00.000Z",
+      "profile": {
+        "login": "liam.hutchins@meridianfinancial.example",
+        "email": "liam.hutchins@meridianfinancial.example"
+      }
+    },
+    {
+      "id": "00ue1036",
+      "status": "ACTIVE",
+      "created": "2024-03-25T09:00:00.000Z",
+      "activated": "2024-03-26T09:30:00.000Z",
+      "statusChanged": "2024-03-26T09:30:00.000Z",
+      "profile": {
+        "login": "lucas.ferraro@meridianfinancial.example",
+        "email": "lucas.ferraro@meridianfinancial.example"
+      }
+    },
+    {
+      "id": "00ue1027",
+      "status": "DEPROVISIONED",
+      "created": "2024-01-16T09:00:00.000Z",
+      "activated": "2024-01-17T09:30:00.000Z",
+      "statusChanged": "2026-02-26T17:04:00.000Z",
+      "profile": {
+        "login": "marcus.webb@meridianfinancial.example",
+        "email": "marcus.webb@meridianfinancial.example"
+      }
+    },
+    {
+      "id": "00ue1013",
+      "status": "ACTIVE",
+      "created": "2023-09-23T09:00:00.000Z",
+      "activated": "2023-09-24T09:30:00.000Z",
+      "statusChanged": "2023-09-24T09:30:00.000Z",
+      "profile": {
+        "login": "mei.tanaka@meridianfinancial.example",
+        "email": "mei.tanaka@meridianfinancial.example"
+      }
+    },
+    {
+      "id": "00ue1001",
+      "status": "ACTIVE",
+      "created": "2023-05-31T09:00:00.000Z",
+      "activated": "2023-06-01T09:30:00.000Z",
+      "statusChanged": "2023-06-01T09:30:00.000Z",
+      "profile": {
+        "login": "nora.okafor@meridianfinancial.example",
+        "email": "nora.okafor@meridianfinancial.example"
+      }
+    },
+    {
+      "id": "00ue1080",
+      "status": "DEPROVISIONED",
+      "created": "2024-12-26T09:00:00.000Z",
+      "activated": "2024-12-27T09:30:00.000Z",
+      "statusChanged": "2026-05-21T17:04:00.000Z",
+      "profile": {
+        "login": "oliver.grant@meridianfinancial.example",
+        "email": "oliver.grant@meridianfinancial.example"
+      }
+    },
+    {
+      "id": "00ue1019",
+      "status": "DEPROVISIONED",
+      "created": "2023-11-08T09:00:00.000Z",
+      "activated": "2023-11-09T09:30:00.000Z",
+      "statusChanged": "2026-02-02T17:04:00.000Z",
+      "profile": {
+        "login": "priya.natarajan@meridianfinancial.example",
+        "email": "priya.natarajan@meridianfinancial.example"
+      }
+    },
+    {
+      "id": "00ue1010",
+      "status": "ACTIVE",
+      "created": "2023-08-31T09:00:00.000Z",
+      "activated": "2023-09-01T09:30:00.000Z",
+      "statusChanged": "2023-09-01T09:30:00.000Z",
+      "profile": {
+        "login": "rafael.ortiz@meridianfinancial.example",
+        "email": "rafael.ortiz@meridianfinancial.example"
+      }
+    },
+    {
+      "id": "00ue1070",
+      "status": "ACTIVE",
+      "created": "2024-10-18T09:00:00.000Z",
+      "activated": "2024-10-19T09:30:00.000Z",
+      "statusChanged": "2024-10-19T09:30:00.000Z",
+      "profile": {
+        "login": "ravi.menon@meridianfinancial.example",
+        "email": "ravi.menon@meridianfinancial.example"
+      }
+    },
+    {
+      "id": "00ue1073",
+      "status": "DEPROVISIONED",
+      "created": "2024-11-10T09:00:00.000Z",
+      "activated": "2024-11-11T09:30:00.000Z",
+      "statusChanged": "2026-05-11T17:04:00.000Z",
+      "profile": {
+        "login": "renata.vasquez@meridianfinancial.example",
+        "email": "renata.vasquez@meridianfinancial.example"
+      }
+    },
+    {
+      "id": "00ue1016",
+      "status": "ACTIVE",
+      "created": "2023-10-16T09:00:00.000Z",
+      "activated": "2023-10-17T09:30:00.000Z",
+      "statusChanged": "2023-10-17T09:30:00.000Z",
+      "profile": {
+        "login": "samuel.adeyemi@meridianfinancial.example",
+        "email": "samuel.adeyemi@meridianfinancial.example"
+      }
+    },
+    {
+      "id": "00ue1088",
+      "status": "DEPROVISIONED",
+      "created": "2025-01-18T09:00:00.000Z",
+      "activated": "2025-01-19T09:30:00.000Z",
+      "statusChanged": "2026-06-02T17:04:00.000Z",
+      "profile": {
+        "login": "sofia.marino@meridianfinancial.example",
+        "email": "sofia.marino@meridianfinancial.example"
+      }
+    },
+    {
+      "id": "00ue1041",
+      "status": "DEPROVISIONED",
+      "created": "2024-04-17T09:00:00.000Z",
+      "activated": "2024-04-18T09:30:00.000Z",
+      "statusChanged": "2026-03-09T17:04:00.000Z",
+      "profile": {
+        "login": "tomas.rivera@meridianfinancial.example",
+        "email": "tomas.rivera@meridianfinancial.example"
+      }
+    },
+    {
+      "id": "00ue1025",
+      "status": "ACTIVE",
+      "created": "2023-12-24T09:00:00.000Z",
+      "activated": "2023-12-25T09:30:00.000Z",
+      "statusChanged": "2023-12-25T09:30:00.000Z",
+      "profile": {
+        "login": "viktor.petrov@meridianfinancial.example",
+        "email": "viktor.petrov@meridianfinancial.example"
+      }
+    },
+    {
+      "id": "00ue1044",
+      "status": "ACTIVE",
+      "created": "2024-05-10T09:00:00.000Z",
+      "activated": "2024-05-11T09:30:00.000Z",
+      "statusChanged": "2024-05-11T09:30:00.000Z",
+      "profile": {
+        "login": "zoe.sandoval@meridianfinancial.example",
+        "email": "zoe.sandoval@meridianfinancial.example"
+      }
+    }
+  ]
+}

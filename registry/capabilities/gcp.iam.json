@@ -1,0 +1,49 @@
+{
+  "entry_id": "gcp.iam.cloud_asset_v1",
+  "system": "gcp",
+  "surface": "Cloud Asset Inventory v1 GET https://cloudasset.googleapis.com/v1/{scope}:searchAllIamPolicies",
+  "access_modes": ["DIRECT_API"],
+  "populations_yielded": [
+    {"type": "ENTITY", "name": "gcp-account-inventory"},
+    {"type": "RELATIONSHIP", "name": "gcp-iam-bindings"}
+  ],
+  "attributes": [
+    {
+      "population_name": "gcp-account-inventory",
+      "fields_exposed": ["policy.bindings.members"]
+    },
+    {
+      "population_name": "gcp-iam-bindings",
+      "fields_exposed": ["resource", "project", "policy.bindings.role", "policy.bindings.members"]
+    }
+  ],
+  "temporal": {"kind": "STATE_ONLY", "window_days": null},
+  "join_keys": ["email"],
+  "auth_scope": "roles/cloudasset.viewer granted at the organization scope (read-only; confers no access to the underlying resources)",
+  "pagination": {
+    "method": "PAGE",
+    "exhaustion_method": "pass pageToken from the previous response's nextPageToken until the response omits it; pageSize=500"
+  },
+  "rate_limits": "cloudasset.googleapis.com search-API per-project quota; honor 429 RESOURCE_EXHAUSTED with exponential backoff",
+  "history_caveats": [
+    "STATE only: current IAM bindings cannot prove when access was removed - Admin Activity audit logs carry the change history",
+    "Principals with access outside IAM policy bindings (downloaded service-account keys, break-glass accounts provisioned out of band) do not appear in policy search"
+  ],
+  "provenance": {
+    "researched_by": "vinylfigure (Cartographer draft, hand-authored)",
+    "researched_at": "2026-08-12T00:00:00Z",
+    "source_citations": [
+      {
+        "url": "https://cloud.google.com/asset-inventory/docs/reference/rest/v1/TopLevel/searchAllIamPolicies",
+        "title": "Cloud Asset Inventory REST reference — searchAllIamPolicies"
+      },
+      {
+        "url": "https://cloud.google.com/asset-inventory/docs/searching-iam-policies",
+        "title": "Cloud Asset Inventory — Searching IAM policies (scope, permissions, pagination)"
+      }
+    ],
+    "doc_version": "cloudasset.googleapis.com v1 (docs as of 2026-06)",
+    "ratified_by": "vinylfigure (Ratifier)"
+  },
+  "schema_version": "capability-entry@0.1.0"
+}

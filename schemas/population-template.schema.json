@@ -1,0 +1,100 @@
+{
+  "$defs": {
+    "PopulationType": {
+      "description": "PRD-v3 \u00a72: entity (state), event (happened), relationship (join).",
+      "enum": [
+        "ENTITY",
+        "EVENT",
+        "RELATIONSHIP"
+      ],
+      "title": "PopulationType",
+      "type": "string"
+    },
+    "SourceRole": {
+      "description": "Source roles a population's derivation may lean on (PRD-v3 \u00a72).",
+      "enum": [
+        "AUTHORITATIVE",
+        "CONTRIBUTING",
+        "CORROBORATING",
+        "DISCOVERY",
+        "EXCLUSION"
+      ],
+      "title": "SourceRole",
+      "type": "string"
+    },
+    "SourceTemplate": {
+      "additionalProperties": false,
+      "description": "A parameterized population source: id may carry placeholders.",
+      "properties": {
+        "role": {
+          "$ref": "#/$defs/SourceRole"
+        },
+        "source_id": {
+          "minLength": 1,
+          "title": "Source Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "source_id",
+        "role"
+      ],
+      "title": "SourceTemplate",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "A parameterized Population: same shape, placeholders unresolved.\n\n``source_refs`` must name declared source templates verbatim (the\nsame closed-reference rule Population enforces after resolution).",
+  "properties": {
+    "definition": {
+      "minLength": 1,
+      "title": "Definition",
+      "type": "string"
+    },
+    "name": {
+      "minLength": 1,
+      "title": "Name",
+      "type": "string"
+    },
+    "rule_text": {
+      "minLength": 1,
+      "title": "Rule Text",
+      "type": "string"
+    },
+    "source_refs": {
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1,
+      "title": "Source Refs",
+      "type": "array"
+    },
+    "source_templates": {
+      "items": {
+        "$ref": "#/$defs/SourceTemplate"
+      },
+      "minItems": 1,
+      "title": "Source Templates",
+      "type": "array"
+    },
+    "template_id": {
+      "minLength": 1,
+      "title": "Template Id",
+      "type": "string"
+    },
+    "type": {
+      "$ref": "#/$defs/PopulationType"
+    }
+  },
+  "required": [
+    "template_id",
+    "name",
+    "type",
+    "definition",
+    "rule_text",
+    "source_templates",
+    "source_refs"
+  ],
+  "title": "PopulationTemplate",
+  "type": "object"
+}

@@ -1,0 +1,40 @@
+{
+  "$defs": {
+    "TemporalShapeKind": {
+      "description": "What history a surface can yield \u2014 the E204 axis (PRD-v3 \u00a73).",
+      "enum": [
+        "STATE_ONLY",
+        "EVENT_HISTORY",
+        "FULL_HISTORY",
+        "SNAPSHOT_CADENCE"
+      ],
+      "title": "TemporalShapeKind",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Temporal shape with its window: ``event-history(window=90d)``.\n\nConstructor-enforced iff: EVENT_HISTORY carries ``window_days``\n(a bounded log is only meaningful with its bound \u2014 Okta's 90-day\nSystem Log is the canonical trap); every other kind must leave it\nunset (a window on STATE_ONLY would be a claim the shape cannot\nhonor).",
+  "properties": {
+    "kind": {
+      "$ref": "#/$defs/TemporalShapeKind"
+    },
+    "window_days": {
+      "anyOf": [
+        {
+          "minimum": 1,
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Window Days"
+    }
+  },
+  "required": [
+    "kind"
+  ],
+  "title": "TemporalShape",
+  "type": "object"
+}
