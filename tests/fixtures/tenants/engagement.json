@@ -1,0 +1,9 @@
+{
+  "engagement": "demo-engagement",
+  "tenant": "meridian-financial",
+  "manifest_version": "v1-skeleton",
+  "ratified_manifest_snapshot_hash": "b73c1e5754b3091df4f79ae6ea435cd0b0f405e4566f357e4d50f93dad82b027",
+  "period": {"start": "2026-01-01", "end": "2026-06-30"},
+  "retrieved_at": "2026-07-01T06:00:00Z",
+  "evaluated_at": "2026-07-01T06:05:00Z"
+}

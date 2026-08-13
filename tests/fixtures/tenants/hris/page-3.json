@@ -1,0 +1,38 @@
+{
+  "feed": "hris-termination-feed",
+  "export_date": "2026-07-01",
+  "page": 3,
+  "rows": [
+    {
+      "record_type": "termination",
+      "employee_id": "E-1091",
+      "work_email": "hannah.beck@meridianfinancial.example",
+      "worker_type": "employee",
+      "termination_date": "2026-06-05",
+      "last_day_worked": "2026-06-05",
+      "termination_reason_code": "VOL"
+    },
+    {
+      "record_type": "termination",
+      "employee_id": "E-1095",
+      "work_email": "devon.ellis@meridianfinancial.example",
+      "worker_type": "employee",
+      "termination_date": "2026-06-12",
+      "last_day_worked": "2026-06-12",
+      "termination_reason_code": "VOL"
+    },
+    {
+      "record_type": "termination",
+      "employee_id": "CT-2044",
+      "work_email": "kai.moreno@meridianfinancial.example",
+      "worker_type": "contractor",
+      "termination_date": "2026-06-19",
+      "last_day_worked": "2026-06-19",
+      "termination_reason_code": "CONTRACT_END"
+    },
+    {
+      "record_type": "trailer",
+      "total_rows": 15
+    }
+  ]
+}

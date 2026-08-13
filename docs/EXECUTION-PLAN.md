@@ -49,9 +49,11 @@ redaction (D-R1), naming (D-N1). Open: lifecycle collapse (D-L1, due at SCH00 PR
   with unresolved E-codes. Acceptance: 6-month TIMING assertion vs Okta 90d fails with
   E204 and the correct suggestion. Bonus: the break-glass poison is now runnable in the
   VAL01 harness — the real compiler detects it with E117 (detection rate 1/1 runnable).
-- [ ] **WALKING SKELETON** — COL01 (HRIS) → one claim → minimal reconcile/evaluate →
-  one real verdict record → `artifacts/demo-engagement/verdicts.json` → rendered by
-  `web` `/verdicts`. First end-to-end milestone; ontology proof-of-fit.
+- [x] **WALKING SKELETON** — COL01 (HRIS) → one claim → minimal reconcile/evaluate →
+  one real verdict record → `artifacts/demo-engagement/verdicts.json` (rendering by
+  `web` `/verdicts` lands with B3). First end-to-end milestone; ontology proof-of-fit:
+  fixture tenant + seeded truncated-feed fixture (detected → population-level UNKNOWN);
+  emitted artifacts carry a real PASS, a real UNKNOWN, and the real E204.
 - [ ] **COL02–05** — Okta / GitHub / GCP / Slack collectors (worktrees): injected
   transport, fixture tenants only, pagination exhaustion, hashed raw responses, EQC with
   all five property methods named; each ships a seeded failing fixture it must detect.

@@ -41,11 +41,19 @@ VERDICT_PATH_FILES = [
     "src/aegis_sentinel/capability/__init__.py",
     "src/aegis_sentinel/capability/entry.py",
     "src/aegis_sentinel/capability/registry.py",
+    "src/aegis_sentinel/collectors/__init__.py",
+    "src/aegis_sentinel/collectors/base.py",
+    "src/aegis_sentinel/collectors/hris.py",
     "src/aegis_sentinel/compile/__init__.py",
     "src/aegis_sentinel/compile/errors.py",
     "src/aegis_sentinel/compile/typecheck.py",
+    "src/aegis_sentinel/evaluate/__init__.py",
+    "src/aegis_sentinel/evaluate/business_days.py",
+    "src/aegis_sentinel/evaluate/minimal.py",
     "src/aegis_sentinel/manifest/__init__.py",
     "src/aegis_sentinel/manifest/instantiate.py",
+    "src/aegis_sentinel/reconcile/__init__.py",
+    "src/aegis_sentinel/reconcile/minimal.py",
     "src/aegis_sentinel/schema/__init__.py",
     "src/aegis_sentinel/schema/canonical.py",
     "src/aegis_sentinel/schema/claim.py",
@@ -82,8 +90,9 @@ def test_verdict_path_purity(rel_path: str) -> None:
 def test_file_list_is_current() -> None:
     """If a new .py appears in a verdict package it must be added to
     VERDICT_PATH_FILES (and to .github/CODEOWNERS) deliberately.
-    compile/ landed with TYP01 (strict lane); evaluate/ does not exist
-    yet — the loop enforces it the moment it appears, and skips missing
+    compile/ landed with TYP01; collectors/, reconcile/, and evaluate/
+    (strict lane) landed with the walking skeleton. The loop enforces
+    any future package the moment it appears, and skips missing
     directories gracefully."""
     known = set(VERDICT_PATH_FILES)
     for pkg in VERDICT_PACKAGES:

@@ -1,0 +1,59 @@
+{
+  "compile_errors": [
+    {
+      "assertion_ref": "TERM-TIMING.a",
+      "capability_window_days": 90,
+      "claim_ref": "TERM.timely-revocation",
+      "code": "E204",
+      "message": "TIMING assertion \"identity-provider deactivation occurred no more than five business days after the termination date, tested across the full population\" (TERM-TIMING.a) requires historical transition timestamps covering 2026-01-01..2026-06-30 (181 days); capability okta.system_log.api_v1 (System Log API GET /api/v1/logs (deprovisioning events: user.lifecycle.deactivate, user.lifecycle.suspend, application.user_membership.remove)) yields event-history(window=90d) — 90 days short of 181. No usable capability combination covers the period.",
+      "rendered": "E204  TIMING assertion \"identity-provider deactivation occurred no more than five business days after the termination date, tested across the full population\" (TERM-TIMING.a) requires historical transition timestamps covering 2026-01-01..2026-06-30 (181 days); capability okta.system_log.api_v1 (System Log API GET /api/v1/logs (deprovisioning events: user.lifecycle.deactivate, user.lifecycle.suspend, application.user_membership.remove)) yields event-history(window=90d) — 90 days short of 181. No usable capability combination covers the period.",
+      "required_window": {
+        "end": "2026-06-30",
+        "start": "2026-01-01"
+      },
+      "satisfiable_via": []
+    }
+  ],
+  "engagement": "demo-engagement",
+  "manifest_version": "v1-skeleton",
+  "verdicts": [
+    {
+      "assertion_ref": "TERM-FEED.a",
+      "claim_ref": "TERM.feed-completeness",
+      "contract_hash": "c647887108368337ecbef46e097f5cfd96ed8513c9fc458248114fdcb05fcb1f",
+      "d7_family": null,
+      "disposition_ref": null,
+      "evaluated_at": "2026-07-01T06:05:00Z",
+      "evidence_refs": [
+        "collection-snapshot:sha256:a47f02e5f3c92a47d493dcf92d2da00ba1182d2ed3de195489145bfecd832c44"
+      ],
+      "manifest_version": "v1-skeleton",
+      "message": "population of 15 reconciled with zero undispositioned deltas",
+      "population_ref": "TERM.terminations",
+      "ratification_ref": null,
+      "record_hash": "32892fe32734e01f3bf048b15414a8e6fede9c94ea2dbe2ef84e652792bd1ab3",
+      "snapshot_hash": "b73c1e5754b3091df4f79ae6ea435cd0b0f405e4566f357e4d50f93dad82b027",
+      "state": "PASS",
+      "why_code": null
+    },
+    {
+      "assertion_ref": "TERM-FEED.b",
+      "claim_ref": "TERM.feed-completeness",
+      "contract_hash": "c647887108368337ecbef46e097f5cfd96ed8513c9fc458248114fdcb05fcb1f",
+      "d7_family": "basis_missing",
+      "disposition_ref": null,
+      "evaluated_at": "2026-07-01T06:05:00Z",
+      "evidence_refs": [
+        "collection-snapshot:sha256:a47f02e5f3c92a47d493dcf92d2da00ba1182d2ed3de195489145bfecd832c44"
+      ],
+      "manifest_version": "v1-skeleton",
+      "message": "corroborating identity-provider deprovisioning events not collected in this slice (COL02); evidence basis missing",
+      "population_ref": "TERM.terminations",
+      "ratification_ref": null,
+      "record_hash": "f370d2b3ef70918955371fab0dbf8fca9e99f6eca0963c223c7e8dca9ef6da65",
+      "snapshot_hash": "b73c1e5754b3091df4f79ae6ea435cd0b0f405e4566f357e4d50f93dad82b027",
+      "state": "UNKNOWN",
+      "why_code": "UNKNOWN_EVIDENCE"
+    }
+  ]
+}

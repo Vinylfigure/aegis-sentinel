@@ -1,0 +1,61 @@
+{
+  "feed": "hris-termination-feed",
+  "export_date": "2026-07-01",
+  "page": 2,
+  "rows": [
+    {
+      "record_type": "termination",
+      "employee_id": "E-1052",
+      "work_email": "jae.park@meridianfinancial.example",
+      "worker_type": "employee",
+      "termination_date": "2026-04-03",
+      "last_day_worked": "2026-04-03",
+      "termination_reason_code": "INVOL"
+    },
+    {
+      "record_type": "termination",
+      "employee_id": "E-1060",
+      "work_email": "fatima.noor@meridianfinancial.example",
+      "worker_type": "employee",
+      "termination_date": "2026-04-17",
+      "last_day_worked": "2026-04-17",
+      "termination_reason_code": "VOL"
+    },
+    {
+      "record_type": "termination",
+      "employee_id": "E-1066",
+      "work_email": "colin.drexler@meridianfinancial.example",
+      "worker_type": "employee",
+      "termination_date": "2026-04-24",
+      "last_day_worked": "2026-04-24",
+      "termination_reason_code": "RIF"
+    },
+    {
+      "record_type": "termination",
+      "employee_id": "E-1073",
+      "work_email": "renata.vasquez@meridianfinancial.example",
+      "worker_type": "employee",
+      "termination_date": "2026-05-08",
+      "last_day_worked": "2026-05-08",
+      "termination_reason_code": "VOL"
+    },
+    {
+      "record_type": "termination",
+      "employee_id": "E-1080",
+      "work_email": "oliver.grant@meridianfinancial.example",
+      "worker_type": "employee",
+      "termination_date": "2026-05-15",
+      "last_day_worked": "2026-05-15",
+      "termination_reason_code": "VOL"
+    },
+    {
+      "record_type": "termination",
+      "employee_id": "E-1088",
+      "work_email": "sofia.marino@meridianfinancial.example",
+      "worker_type": "employee",
+      "termination_date": "2026-05-29",
+      "last_day_worked": "2026-05-29",
+      "termination_reason_code": "INVOL"
+    }
+  ]
+}

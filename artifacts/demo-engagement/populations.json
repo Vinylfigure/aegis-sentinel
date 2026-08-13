@@ -1,0 +1,78 @@
+{
+  "engagement": "demo-engagement",
+  "populations": [
+    {
+      "basis_complete": true,
+      "basis_notes": [],
+      "conflicts": [],
+      "excluded": [],
+      "intersection": [
+        "CT-2044",
+        "E-1004",
+        "E-1019",
+        "E-1027",
+        "E-1033",
+        "E-1041",
+        "E-1048",
+        "E-1052",
+        "E-1060",
+        "E-1066",
+        "E-1073",
+        "E-1080",
+        "E-1088",
+        "E-1091",
+        "E-1095"
+      ],
+      "left_only": [],
+      "members": [
+        "CT-2044",
+        "E-1004",
+        "E-1019",
+        "E-1027",
+        "E-1033",
+        "E-1041",
+        "E-1048",
+        "E-1052",
+        "E-1060",
+        "E-1066",
+        "E-1073",
+        "E-1080",
+        "E-1088",
+        "E-1091",
+        "E-1095"
+      ],
+      "population": {
+        "definition": "Every worker (employee or contractor) whose engagement ended during the period, as enumerated by the hris termination feed",
+        "derivation_rule": {
+          "rule_text": "all members enumerated by authoritative source hris-termination-feed; okta-system-log deactivation events corroborate membership",
+          "source_refs": [
+            "hris-termination-feed"
+          ]
+        },
+        "exclusions": [],
+        "name": "Terminated workers",
+        "open_deltas": [],
+        "period": {
+          "end": "2026-06-30",
+          "start": "2026-01-01"
+        },
+        "population_id": "TERM.terminations",
+        "size": 15,
+        "sources": [
+          {
+            "role": "AUTHORITATIVE",
+            "source_id": "hris-termination-feed"
+          },
+          {
+            "role": "CORROBORATING",
+            "source_id": "okta-system-log"
+          }
+        ],
+        "state": "DISCOVERED",
+        "type": "EVENT"
+      },
+      "right_only": [],
+      "unresolvable": []
+    }
+  ]
+}
