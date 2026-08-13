@@ -1,0 +1,18 @@
+# The review gate confers the safety; the tool that typed the code does not.
+# Any merge touching the verdict path requires @Vinylfigure approval.
+# Scoped, not global: LLM-lane code and docs stay unowned so agent drafts
+# flow, while every path that can change a verdict needs the Owner's eyes.
+# Enforce with branch protection on main: 1 approving review + required
+# verify check, CODEOWNERS enforced.
+# Shape adapted from the prior scaffold's .github/CODEOWNERS to the v3
+# src-layout (src/aegis_sentinel/).
+
+/src/aegis_sentinel/                 @Vinylfigure
+/schemas/                            @Vinylfigure
+/registry/                           @Vinylfigure
+/manifests/                          @Vinylfigure
+/templates/                          @Vinylfigure
+/tests/fixtures/                     @Vinylfigure
+/tests/test_verdict_path_purity.py   @Vinylfigure
+/scripts/                            @Vinylfigure
+/.github/                            @Vinylfigure

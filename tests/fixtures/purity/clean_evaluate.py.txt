@@ -1,0 +1,11 @@
+# Clean fixture: a deterministic evaluator shape. Clock values arrive as
+# explicit inputs (D-P3); datetime TYPES are fine, wall-clock CALLS are not.
+from datetime import datetime, timedelta
+
+
+def within_window(observed_at: datetime, deadline: datetime) -> bool:
+    return observed_at <= deadline
+
+
+def deadline_for(event_at: datetime, days: int) -> datetime:
+    return event_at + timedelta(days=days)
