@@ -1,0 +1,71 @@
+{
+  "endpoint": "/orgs/meridian-financial/audit-log",
+  "page": 1,
+  "link_next": "<https://api.github.example/orgs/meridian-financial/audit-log?after=auditcursor0001>; rel=\"next\"",
+  "items": [
+    {
+      "@timestamp": 1768932000000,
+      "action": "org.remove_member",
+      "actor": "mf-okta-scim",
+      "user": "avery-chen",
+      "org": "meridian-financial",
+      "created_at": 1768932000000
+    },
+    {
+      "@timestamp": 1770055200000,
+      "action": "org.remove_member",
+      "actor": "mf-okta-scim",
+      "user": "priya-natarajan",
+      "org": "meridian-financial",
+      "created_at": 1770055200000
+    },
+    {
+      "@timestamp": 1772128800000,
+      "action": "org.remove_member",
+      "actor": "mf-okta-scim",
+      "user": "marcus-webb",
+      "org": "meridian-financial",
+      "created_at": 1772128800000
+    },
+    {
+      "@timestamp": 1772560800000,
+      "action": "org.remove_member",
+      "actor": "mf-okta-scim",
+      "user": "dana-kowalski",
+      "org": "meridian-financial",
+      "created_at": 1772560800000
+    },
+    {
+      "@timestamp": 1773079200000,
+      "action": "org.remove_member",
+      "actor": "mf-okta-scim",
+      "user": "tomas-rivera",
+      "org": "meridian-financial",
+      "created_at": 1773079200000
+    },
+    {
+      "@timestamp": 1774461600000,
+      "action": "org.remove_member",
+      "actor": "mf-okta-scim",
+      "user": "ingrid-solberg",
+      "org": "meridian-financial",
+      "created_at": 1774461600000
+    },
+    {
+      "@timestamp": 1775584800000,
+      "action": "org.remove_member",
+      "actor": "mf-okta-scim",
+      "user": "jae-park",
+      "org": "meridian-financial",
+      "created_at": 1775584800000
+    },
+    {
+      "@timestamp": 1776708000000,
+      "action": "org.remove_member",
+      "actor": "mf-okta-scim",
+      "user": "fatima-noor",
+      "org": "meridian-financial",
+      "created_at": 1776708000000
+    }
+  ]
+}

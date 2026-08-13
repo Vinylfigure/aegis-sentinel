@@ -1,0 +1,78 @@
+{
+  "endpoint": "/orgs/meridian-financial/members",
+  "page": 2,
+  "items": [
+    {
+      "login": "lucas-ferraro",
+      "id": 90064,
+      "type": "User",
+      "site_admin": false,
+      "role": "member",
+      "saml_name_id": "lucas.ferraro@meridianfinancial.example",
+      "last_active": "2026-06-30"
+    },
+    {
+      "login": "mei-tanaka",
+      "id": 90029,
+      "type": "User",
+      "site_admin": false,
+      "role": "member",
+      "saml_name_id": "mei.tanaka@meridianfinancial.example",
+      "last_active": "2026-06-30"
+    },
+    {
+      "login": "nora-okafor",
+      "id": 90001,
+      "type": "User",
+      "site_admin": false,
+      "role": "admin",
+      "saml_name_id": "nora.okafor@meridianfinancial.example",
+      "last_active": "2026-06-30"
+    },
+    {
+      "login": "rafael-ortiz",
+      "id": 90022,
+      "type": "User",
+      "site_admin": false,
+      "role": "member",
+      "saml_name_id": "rafael.ortiz@meridianfinancial.example",
+      "last_active": "2026-06-30"
+    },
+    {
+      "login": "ravi-menon",
+      "id": 90092,
+      "type": "User",
+      "site_admin": false,
+      "role": "member",
+      "saml_name_id": "ravi.menon@meridianfinancial.example",
+      "last_active": "2026-06-30"
+    },
+    {
+      "login": "samuel-adeyemi",
+      "id": 90036,
+      "type": "User",
+      "site_admin": false,
+      "role": "member",
+      "saml_name_id": "samuel.adeyemi@meridianfinancial.example",
+      "last_active": "2026-06-30"
+    },
+    {
+      "login": "viktor-petrov",
+      "id": 90050,
+      "type": "User",
+      "site_admin": false,
+      "role": "member",
+      "saml_name_id": "viktor.petrov@meridianfinancial.example",
+      "last_active": "2026-06-30"
+    },
+    {
+      "login": "zoe-sandoval",
+      "id": 90071,
+      "type": "User",
+      "site_admin": false,
+      "role": "member",
+      "saml_name_id": "zoe.sandoval@meridianfinancial.example",
+      "last_active": "2026-06-30"
+    }
+  ]
+}

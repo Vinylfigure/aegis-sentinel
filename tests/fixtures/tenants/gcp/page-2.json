@@ -1,0 +1,20 @@
+{
+  "results": [
+    {
+      "resource": "//cloudresourcemanager.googleapis.com/projects/mf-staging",
+      "project": "projects/mf-staging",
+      "policy": {
+        "bindings": [
+          {
+            "role": "roles/editor",
+            "members": [
+              "user:lucas.ferraro@meridianfinancial.example",
+              "user:zoe.sandoval@meridianfinancial.example",
+              "serviceAccount:ci-deployer@mf-staging.iam.gserviceaccount.com"
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

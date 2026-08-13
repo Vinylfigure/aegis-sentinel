@@ -54,9 +54,11 @@ redaction (D-R1), naming (D-N1). Open: lifecycle collapse (D-L1, due at SCH00 PR
   `web` `/verdicts` lands with B3). First end-to-end milestone; ontology proof-of-fit:
   fixture tenant + seeded truncated-feed fixture (detected → population-level UNKNOWN);
   emitted artifacts carry a real PASS, a real UNKNOWN, and the real E204.
-- [ ] **COL02–05** — Okta / GitHub / GCP / Slack collectors (worktrees): injected
+- [x] **COL02–05** — Okta / GitHub / GCP / Slack collectors (worktrees): injected
   transport, fixture tenants only, pagination exhaustion, hashed raw responses, EQC with
   all five property methods named; each ships a seeded failing fixture it must detect.
+  Six poisons seeded coherently across the fixture tenants
+  (tests/fixtures/tenants/README.md poison-placement table, PRD §6).
 - [ ] **REC01** — canonical identity join + set reconciler; six delta buckets as
   first-class objects with owner + disposition; DISCOVERED→RECONCILED blocked while any
   delta is undispositioned.

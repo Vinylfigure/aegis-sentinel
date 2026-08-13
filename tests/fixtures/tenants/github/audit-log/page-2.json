@@ -1,0 +1,54 @@
+{
+  "endpoint": "/orgs/meridian-financial/audit-log",
+  "page": 2,
+  "items": [
+    {
+      "@timestamp": 1777485600000,
+      "action": "org.remove_member",
+      "actor": "mf-okta-scim",
+      "user": "colin-drexler",
+      "org": "meridian-financial",
+      "created_at": 1777485600000
+    },
+    {
+      "@timestamp": 1778522400000,
+      "action": "org.remove_member",
+      "actor": "mf-okta-scim",
+      "user": "renata-vasquez",
+      "org": "meridian-financial",
+      "created_at": 1778522400000
+    },
+    {
+      "@timestamp": 1779386400000,
+      "action": "org.remove_member",
+      "actor": "mf-okta-scim",
+      "user": "oliver-grant",
+      "org": "meridian-financial",
+      "created_at": 1779386400000
+    },
+    {
+      "@timestamp": 1780423200000,
+      "action": "org.remove_member",
+      "actor": "mf-okta-scim",
+      "user": "sofia-marino",
+      "org": "meridian-financial",
+      "created_at": 1780423200000
+    },
+    {
+      "@timestamp": 1780941600000,
+      "action": "org.remove_member",
+      "actor": "mf-okta-scim",
+      "user": "hannah-beck",
+      "org": "meridian-financial",
+      "created_at": 1780941600000
+    },
+    {
+      "@timestamp": 1781632800000,
+      "action": "org.remove_member",
+      "actor": "mf-okta-scim",
+      "user": "devon-ellis",
+      "org": "meridian-financial",
+      "created_at": 1781632800000
+    }
+  ]
+}

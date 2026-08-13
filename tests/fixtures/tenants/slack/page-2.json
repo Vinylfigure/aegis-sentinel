@@ -1,0 +1,201 @@
+{
+  "ok": true,
+  "members": [
+    {
+      "id": "U04MF0017",
+      "team_id": "T04MERIDIAN",
+      "name": "lucasferraro",
+      "deleted": false,
+      "is_bot": false,
+      "is_admin": false,
+      "is_owner": false,
+      "profile": {
+        "email": "lucas.ferraro@meridianfinancial.example"
+      },
+      "updated": 1782820800
+    },
+    {
+      "id": "U04MF0018",
+      "team_id": "T04MERIDIAN",
+      "name": "marcuswebb",
+      "deleted": true,
+      "is_bot": false,
+      "is_admin": false,
+      "is_owner": false,
+      "profile": {
+        "email": "marcus.webb@meridianfinancial.example"
+      },
+      "updated": 1772125560
+    },
+    {
+      "id": "U04MF0019",
+      "team_id": "T04MERIDIAN",
+      "name": "meitanaka",
+      "deleted": false,
+      "is_bot": false,
+      "is_admin": false,
+      "is_owner": false,
+      "profile": {
+        "email": "mei.tanaka@meridianfinancial.example"
+      },
+      "updated": 1782820800
+    },
+    {
+      "id": "U04MF0020",
+      "team_id": "T04MERIDIAN",
+      "name": "noraokafor",
+      "deleted": false,
+      "is_bot": false,
+      "is_admin": true,
+      "is_owner": false,
+      "profile": {
+        "email": "nora.okafor@meridianfinancial.example"
+      },
+      "updated": 1782820800
+    },
+    {
+      "id": "U04MF0021",
+      "team_id": "T04MERIDIAN",
+      "name": "olivergrant",
+      "deleted": true,
+      "is_bot": false,
+      "is_admin": false,
+      "is_owner": false,
+      "profile": {
+        "email": "oliver.grant@meridianfinancial.example"
+      },
+      "updated": 1779383160
+    },
+    {
+      "id": "U04MF0022",
+      "team_id": "T04MERIDIAN",
+      "name": "priyanatarajan",
+      "deleted": true,
+      "is_bot": false,
+      "is_admin": false,
+      "is_owner": false,
+      "profile": {
+        "email": "priya.natarajan@meridianfinancial.example"
+      },
+      "updated": 1770051960
+    },
+    {
+      "id": "U04MF0023",
+      "team_id": "T04MERIDIAN",
+      "name": "rafaelortiz",
+      "deleted": false,
+      "is_bot": false,
+      "is_admin": false,
+      "is_owner": false,
+      "profile": {
+        "email": "rafael.ortiz@meridianfinancial.example"
+      },
+      "updated": 1782820800
+    },
+    {
+      "id": "U04MF0024",
+      "team_id": "T04MERIDIAN",
+      "name": "ravimenon",
+      "deleted": false,
+      "is_bot": false,
+      "is_admin": false,
+      "is_owner": false,
+      "profile": {
+        "email": "ravi.menon@meridianfinancial.example"
+      },
+      "updated": 1782820800
+    },
+    {
+      "id": "U04MF0025",
+      "team_id": "T04MERIDIAN",
+      "name": "renatavasquez",
+      "deleted": true,
+      "is_bot": false,
+      "is_admin": false,
+      "is_owner": false,
+      "profile": {
+        "email": "renata.vasquez@meridianfinancial.example"
+      },
+      "updated": 1778519160
+    },
+    {
+      "id": "U04MF0026",
+      "team_id": "T04MERIDIAN",
+      "name": "samueladeyemi",
+      "deleted": false,
+      "is_bot": false,
+      "is_admin": false,
+      "is_owner": false,
+      "profile": {
+        "email": "samuel.adeyemi@meridianfinancial.example"
+      },
+      "updated": 1782820800
+    },
+    {
+      "id": "U04MF0027",
+      "team_id": "T04MERIDIAN",
+      "name": "sofiamarino",
+      "deleted": true,
+      "is_bot": false,
+      "is_admin": false,
+      "is_owner": false,
+      "profile": {
+        "email": "sofia.marino@meridianfinancial.example"
+      },
+      "updated": 1780419960
+    },
+    {
+      "id": "U04MF0028",
+      "team_id": "T04MERIDIAN",
+      "name": "tomasrivera",
+      "deleted": true,
+      "is_bot": false,
+      "is_admin": false,
+      "is_owner": false,
+      "profile": {
+        "email": "tomas.rivera@meridianfinancial.example"
+      },
+      "updated": 1773075960
+    },
+    {
+      "id": "U04MF0029",
+      "team_id": "T04MERIDIAN",
+      "name": "viktorpetrov",
+      "deleted": false,
+      "is_bot": false,
+      "is_admin": false,
+      "is_owner": false,
+      "profile": {
+        "email": "viktor.petrov@meridianfinancial.example"
+      },
+      "updated": 1782820800
+    },
+    {
+      "id": "U04MF0030",
+      "team_id": "T04MERIDIAN",
+      "name": "zoesandoval",
+      "deleted": false,
+      "is_bot": false,
+      "is_admin": false,
+      "is_owner": false,
+      "profile": {
+        "email": "zoe.sandoval@meridianfinancial.example"
+      },
+      "updated": 1782820800
+    },
+    {
+      "id": "U04MFBOT01",
+      "team_id": "T04MERIDIAN",
+      "name": "mf-deploybot",
+      "deleted": false,
+      "is_bot": true,
+      "is_admin": false,
+      "is_owner": false,
+      "profile": {},
+      "updated": 1782820800
+    }
+  ],
+  "response_metadata": {
+    "next_cursor": ""
+  }
+}

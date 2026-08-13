@@ -31,7 +31,7 @@ import json
 from abc import ABC, abstractmethod
 from datetime import datetime
 from pathlib import Path
-from typing import Any, ClassVar, Protocol
+from typing import Any, ClassVar, Mapping, Protocol
 
 from pydantic import Field, model_validator
 
@@ -102,15 +102,27 @@ class FixtureTransport:
     no live-tenant calls (docs/HANDOFF.md §4). A missing file is the end
     of the feed and returns ``None``; the collector's completeness check
     decides whether what was fetched proves exhaustion.
+
+    Systems with more than one collected surface (COL02 Okta users vs
+    system log; COL03 GitHub org roster vs audit log) pass ``surfaces``,
+    a mapping from a capability entry's ``surface`` string to the
+    fixture subdirectory for that surface's pages:
+    ``<root>/<system>/<subdir>/page-<n>.json``. Single-surface systems
+    (HRIS, GCP, Slack) omit it and keep the flat layout.
     """
 
-    __slots__ = ("_root",)
+    __slots__ = ("_root", "_surfaces")
 
-    def __init__(self, root: str | Path) -> None:
+    def __init__(self, root: str | Path, surfaces: Mapping[str, str] | None = None) -> None:
         self._root = Path(root)
+        self._surfaces = dict(surfaces) if surfaces else {}
 
     def fetch_page(self, request: PageRequest) -> dict[str, Any] | None:
-        path = self._root / request.system / f"page-{request.page_index}.json"
+        base = self._root / request.system
+        subdir = self._surfaces.get(request.surface)
+        if subdir is not None:
+            base = base / subdir
+        path = base / f"page-{request.page_index}.json"
         if not path.is_file():
             return None
         return json.loads(path.read_text(encoding="utf-8"))

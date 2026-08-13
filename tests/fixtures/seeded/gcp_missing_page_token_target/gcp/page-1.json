@@ -1,0 +1,49 @@
+{
+  "results": [
+    {
+      "resource": "//cloudresourcemanager.googleapis.com/projects/mf-prod-core",
+      "project": "projects/mf-prod-core",
+      "policy": {
+        "bindings": [
+          {
+            "role": "roles/owner",
+            "members": [
+              "serviceAccount:breakglass-admin@example-prod.iam.gserviceaccount.com",
+              "user:nora.okafor@meridianfinancial.example"
+            ]
+          },
+          {
+            "role": "roles/editor",
+            "members": [
+              "user:rafael.ortiz@meridianfinancial.example",
+              "user:mei.tanaka@meridianfinancial.example",
+              "user:ravi.menon@meridianfinancial.example"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "resource": "//cloudresourcemanager.googleapis.com/projects/mf-prod-data",
+      "project": "projects/mf-prod-data",
+      "policy": {
+        "bindings": [
+          {
+            "role": "roles/bigquery.dataViewer",
+            "members": [
+              "group:analytics@meridianfinancial.example",
+              "user:isla.donovan@meridianfinancial.example"
+            ]
+          },
+          {
+            "role": "roles/viewer",
+            "members": [
+              "user:ethan.macleod@meridianfinancial.example"
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "nextPageToken": "CiAKGjBpNDd2Nmp2Zml2cXRwYjBpOTA"
+}

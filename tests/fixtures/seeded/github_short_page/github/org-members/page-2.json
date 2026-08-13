@@ -1,0 +1,7 @@
+{
+  "endpoint": "/orgs/meridian-financial/members",
+  "page": 2,
+  "status": 404,
+  "message": "Not Found",
+  "documentation_url": "https://docs.github.example/rest/orgs/members"
+}
