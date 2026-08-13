@@ -39,9 +39,10 @@ case "$MODE" in
     ;;
   full)
     # janus:bootstrap:full:start
-    # Scaffold plumbing fixtures, then the real Python suite: lint, format
-    # check, tests.
+    # Scaffold plumbing fixtures, redaction gate, then the real Python
+    # suite: lint, format check, tests.
     "$(dirname "$0")/test-hooks.sh" \
+      && "$(dirname "$0")/check-redaction.sh" \
       && ruff check . \
       && ruff format --check . \
       && pytest

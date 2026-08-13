@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Scope Determination — product-first</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0e0f14;--panel:#161824;--panel2:#1b1e2e;--panel3:#212437;--line:#2a2e42;
+  --ink:#e8e9f0;--dim:#9a9db2;--faint:#63667c;
+  --purple:#8b7ff5;--amber:#e8b34b;--green:#6fbf8f;--red:#e0716f;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font:14px/1.55 'Inter',sans-serif}
+.mono{font-family:'IBM Plex Mono',monospace}
+.wrap{display:grid;grid-template-columns:1fr 330px;gap:0;min-height:100vh}
+.main{padding:26px 30px 60px;max-width:1000px}
+h1{font:700 20px 'Space Grotesk',sans-serif}
+h1 span{color:var(--purple)}
+.sub{color:var(--dim);font-size:13px;margin:5px 0 22px;max-width:70ch}
+
+/* ---------- step headers ---------- */
+.step{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--purple);margin:26px 0 10px;display:flex;align-items:center;gap:10px}
+.step::after{content:"";flex:1;height:1px;background:var(--line)}
+
+/* ---------- products ---------- */
+.prod{background:var(--panel);border:1px solid var(--line);border-radius:11px;margin-bottom:10px;overflow:hidden}
+.prod.on{border-color:var(--purple)}
+.phead{display:flex;align-items:center;gap:13px;padding:14px 16px;cursor:pointer;user-select:none}
+.phead:hover{background:var(--panel2)}
+.box{width:19px;height:19px;border-radius:5px;border:1.5px solid var(--faint);flex-shrink:0;display:grid;place-items:center;font-size:12px;color:var(--bg);transition:.12s}
+.prod.on .box{background:var(--purple);border-color:var(--purple)}
+.prod.on .box::after{content:"✓";font-weight:700}
+.pname{font:700 15px 'Space Grotesk',sans-serif}
+.pdesc{font-size:12px;color:var(--dim)}
+.chev{margin-left:auto;color:var(--faint);font-size:11px;transition:.15s}
+.prod.open .chev{transform:rotate(90deg)}
+.pbody{display:none;border-top:1px solid var(--line);padding:4px 16px 16px}
+.prod.open.on .pbody{display:block}
+
+/* ---------- data classes ---------- */
+.dc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(215px,1fr));gap:8px;margin:12px 0 4px}
+.dc{background:var(--panel2);border:1px solid var(--line);border-left:3px solid var(--faint);border-radius:7px;padding:9px 11px;cursor:pointer}
+.dc:hover{background:var(--panel3)}
+.dc.on{border-left-color:var(--amber);background:var(--panel3)}
+.dc b{font-size:12.5px;display:block}
+.dc span{font-size:11px;color:var(--dim)}
+.dc .tier{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--amber);opacity:0;margin-top:4px;display:block}
+.dc.on .tier{opacity:1}
+
+/* ---------- layers ---------- */
+.layer{border-top:1px solid var(--line)}
+.lhead{display:flex;align-items:center;gap:10px;padding:11px 2px;cursor:pointer;user-select:none}
+.lhead:hover .lname{color:var(--purple)}
+.lnum{font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:var(--faint);width:20px}
+.lname{font-weight:600;font-size:13px;transition:.12s}
+.lcount{margin-left:auto;font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:var(--faint)}
+.lcount b{color:var(--amber);font-weight:500}
+.lbody{display:none;padding:2px 0 12px 30px}
+.layer.open .lbody{display:block}
+
+.item{display:flex;align-items:flex-start;gap:11px;padding:7px 0}
+.tri{display:flex;flex-shrink:0;border:1px solid var(--line);border-radius:6px;overflow:hidden;margin-top:1px}
+.tri button{background:var(--panel2);border:0;color:var(--faint);font:500 10px 'IBM Plex Mono',monospace;padding:4px 7px;cursor:pointer;letter-spacing:.04em}
+.tri button:hover{color:var(--ink)}
+.tri button.sel[data-v="in"]{background:var(--green);color:#0e0f14}
+.tri button.sel[data-v="unk"]{background:var(--amber);color:#0e0f14}
+.tri button.sel[data-v="out"]{background:var(--panel3);color:var(--dim)}
+.itxt b{font-size:12.5px;font-weight:500;display:block}
+.itxt span{font-size:11.5px;color:var(--faint);font-style:italic}
+
+/* ---------- ledger ---------- */
+.rail{border-left:1px solid var(--line);background:var(--panel);padding:26px 22px;position:sticky;top:0;height:100vh;overflow-y:auto}
+.rail h2{font:700 11px 'Space Grotesk',sans-serif;letter-spacing:.13em;text-transform:uppercase;color:var(--purple);margin-bottom:12px}
+.assert{border:1px solid var(--line);border-radius:10px;padding:14px;margin-bottom:20px;background:var(--panel2)}
+.assert .verdict{font:700 15px 'Space Grotesk',sans-serif;margin-bottom:4px}
+.assert.blocked .verdict{color:var(--amber)}
+.assert.clear .verdict{color:var(--green)}
+.assert p{font-size:11.5px;color:var(--dim)}
+.tallies{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-bottom:22px}
+.tally{background:var(--panel2);border-radius:8px;padding:9px;text-align:center}
+.tally b{display:block;font:700 19px 'Space Grotesk',sans-serif}
+.tally span{font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint)}
+.tally.in b{color:var(--green)}.tally.unk b{color:var(--amber)}.tally.out b{color:var(--faint)}
+.reg{display:flex;align-items:baseline;gap:9px;padding:8px 0;border-bottom:1px dashed var(--line);opacity:.28}
+.reg.lit{opacity:1}
+.reg .dot{width:6px;height:6px;border-radius:50%;background:var(--faint);flex-shrink:0}
+.reg.lit .dot{background:var(--amber)}
+.reg b{font-size:12.5px;font-weight:600}
+.reg span{font-size:11px;color:var(--dim);display:block}
+.btn{width:100%;margin-top:18px;background:var(--purple);color:#0e0f14;border:0;border-radius:8px;padding:10px;font:600 12.5px 'Inter',sans-serif;cursor:pointer}
+.btn:hover{background:#9d92f7}
+.btn.ghost{background:transparent;border:1px solid var(--line);color:var(--dim);margin-top:8px}
+.btn.ghost:hover{color:var(--ink);border-color:var(--faint)}
+#out{margin-top:14px;width:100%;height:150px;background:var(--bg);border:1px solid var(--line);border-radius:8px;color:var(--dim);font:11px/1.5 'IBM Plex Mono',monospace;padding:10px;display:none;resize:vertical}
+@media(max-width:980px){.wrap{grid-template-columns:1fr}.rail{position:static;height:auto;border-left:0;border-top:1px solid var(--line)}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="main">
+  <h1>Scope determination <span>·</span> product-first</h1>
+  <p class="sub">Scope is decided by product and by the data that product carries — not by framework. Select the products that carry a commitment, declare the data classes each one handles, then walk the asset stack. Every asset is <b>in</b>, <b>unknown</b>, or <b>out</b>; unknowns block the scope assertion rather than defaulting into it.</p>
+
+  <div class="step">1 · Products carrying a commitment</div>
+  <div id="products"></div>
+
+  <div class="step">2 · What the ledger says</div>
+  <p class="sub" style="margin-bottom:0">The regime panel on the right lights up from the data classes you declared, not from a framework wishlist. The assertion stays blocked until every asset is resolved — an unresolved asset is a gap in the population, not an absence of risk.</p>
+</div>
+
+<div class="rail">
+  <h2>Scope ledger</h2>
+  <div class="assert blocked" id="assert">
+    <div class="verdict" id="verdict">Not started</div>
+    <p id="verdictNote">Select at least one product to begin.</p>
+  </div>
+  <div class="tallies">
+    <div class="tally in"><b id="tIn">0</b><span>In</span></div>
+    <div class="tally unk"><b id="tUnk">0</b><span>Unknown</span></div>
+    <div class="tally out"><b id="tOut">0</b><span>Out</span></div>
+  </div>
+  <h2>Regimes triggered</h2>
+  <div id="regimes"></div>
+  <button class="btn" onclick="summarize()">Build scope summary</button>
+  <button class="btn ghost" onclick="resetAll()">Reset</button>
+  <textarea id="out" readonly></textarea>
+</div>
+</div>
+
+<script>
+const DATA_CLASSES = [
+  {id:'tradeline', name:'Tradeline / furnished credit data', note:'Reported to bureaus', tier:'Tier 1 — Regulated'},
+  {id:'npi',  name:'Non-public personal info (NPI)', note:'Financial account data', tier:'Tier 1 — Regulated'},
+  {id:'chd',  name:'Cardholder data', note:'PAN, expiry, CVV', tier:'Tier 1 — Regulated'},
+  {id:'bank', name:'Bank account / ACH details', note:'Routing, account numbers', tier:'Tier 1 — Regulated'},
+  {id:'pii',  name:'Customer PII', note:'Identity, contact, SSN', tier:'Tier 2 — Confidential'},
+  {id:'auth', name:'Credentials & secrets', note:'Keys, tokens, hashes', tier:'Tier 1 — Regulated'},
+  {id:'emp',  name:'Employee data', note:'HR, payroll', tier:'Tier 2 — Confidential'},
+  {id:'none', name:'No production customer data', note:'Marketing, public content', tier:'Tier 4 — Public'}
+];
+
+const REGIMES = [
+  {id:'fcra', name:'FCRA — furnisher obligations', why:'Accuracy, dispute handling, audit trail on what was furnished when', on:['tradeline']},
+  {id:'glba', name:'GLBA Safeguards Rule', why:'Written program, access controls, encryption, vendor oversight', on:['npi','bank','chd']},
+  {id:'pci',  name:'PCI DSS', why:'SAQ level or ROC falls out of verified CHD flows and volume', on:['chd']},
+  {id:'soc2', name:'SOC 2 (Security TSC)', why:'Customer commitment — confirm the system description covers this product', on:['tradeline','npi','chd','bank','pii']},
+  {id:'iso',  name:'ISO 27001', why:'Same control set, mapped out — ISMS governance is the delta', on:['tradeline','npi','chd','bank','pii']},
+  {id:'106',  name:'Reg S-K Item 106', why:'Materiality determination with legal; 4 business days to the 8-K', on:['tradeline','npi','chd','bank','pii','auth']}
+];
+
+const LAYERS = [
+  {n:'Data stores', items:[
+    ['Primary transactional databases','Which instances, which regions?'],
+    ['Read replicas & caches','Do replicas carry the same class of data?'],
+    ['Data warehouse / analytics','Analytics copies are the most commonly missed store'],
+    ['Object storage & file shares','Exports, statements, document uploads'],
+    ['Backups & snapshots','Same classification as the source — and same retention?'],
+    ['Logs & SIEM','Do logs contain the data itself, or references to it?']
+  ]},
+  {n:'Applications & services', items:[
+    ['Customer-facing application','Web and mobile surfaces'],
+    ['Internal admin / back-office tooling','Support consoles usually have the broadest read'],
+    ['APIs & integrations','Partner-facing and internal'],
+    ['Batch & scheduled jobs','The furnishing job is a control point, not plumbing'],
+    ['Reporting & decisioning logic','Underwriting, eligibility, scoring']
+  ]},
+  {n:'Compute & platform', items:[
+    ['Kubernetes clusters / node pools','Which clusters host in-scope workloads?'],
+    ['Serverless & managed runtimes','Functions, managed jobs'],
+    ['CI/CD pipelines & runners','The path to production is in scope even if it holds no data'],
+    ['Infrastructure-as-code state','State files contain the topology — and sometimes secrets']
+  ]},
+  {n:'Network & boundary', items:[
+    ['VPCs and segmentation','Segmentation is the primary scope-reduction lever'],
+    ['Ingress / egress paths','Public endpoints, load balancers, egress controls'],
+    ['Partner connections','Bureau links, bank partner, processor connectivity'],
+    ['Remote access paths','VPN, bastion, admin access to production']
+  ]},
+  {n:'Identity, access & keys', items:[
+    ['Identity provider & SSO','The source of the access population'],
+    ['Service accounts & machine identities','Usually the largest ungoverned population'],
+    ['Privileged & break-glass access','Elevation path, time-bound, logged'],
+    ['KMS keys & secrets management','Generation, use, rotation, retention, destruction'],
+    ['Certificates & signing material','Code signing, TLS, artifact signing']
+  ]},
+  {n:'Third parties & subservice orgs', items:[
+    ['Cloud provider','Carve-out or inclusive method — decide deliberately'],
+    ['Bureaus & data recipients','Contractual security requirements flow down'],
+    ['Bank partner / processor','Their exam expectations become your control requirements'],
+    ['KYC / identity verification vendors','They hold the same Tier 1 data'],
+    ['Subprocessors with production access','Support vendors, offshore contractors']
+  ]},
+  {n:'Non-production environments', items:[
+    ['Staging & QA','In scope the moment production data reaches it'],
+    ['Test data provenance','Synthetic, masked, or a copy of production?'],
+    ['Developer sandboxes','Where does the data come from, and who can reach it?']
+  ]},
+  {n:'People & endpoints', items:[
+    ['Personnel with production access','The population your access reviews must reconcile to'],
+    ['Endpoints reaching production','Managed devices, posture requirements'],
+    ['Support & operations tooling','Screen sharing, session recording, ticket attachments']
+  ]}
+];
+
+const PRODUCTS = [
+  {id:'cb',   name:'Credit Builder', desc:'Core subscription product; furnishes tradelines to the bureaus'},
+  {id:'card', name:'Credit-building card', desc:'Card product — the PCI scope question lives here'},
+  {id:'cash', name:'Cash advance / EWA', desc:'Second revenue line — confirm whether it is inside the existing boundary'},
+  {id:'corp', name:'Corporate IT & internal systems', desc:'Supports the service without being the service'},
+  {id:'mkt',  name:'Marketing site & top of funnel', desc:'Candidate for exclusion — prove it holds no production data'}
+];
+
+const state = {};
+PRODUCTS.forEach(p => state[p.id] = {on:false, open:false, classes:new Set(), items:{}, layersOpen:{}});
+
+function itemKey(li, ii){ return li + ':' + ii; }
+
+function render(){
+  document.getElementById('products').innerHTML = PRODUCTS.map(p => {
+    const s = state[p.id];
+    return `<div class="prod ${s.on?'on':''} ${s.open?'open':''}">
+      <div class="phead" onclick="toggleProd('${p.id}',event)">
+        <div class="box"></div>
+        <div><div class="pname">${p.name}</div><div class="pdesc">${p.desc}</div></div>
+        <div class="chev">▶</div>
+      </div>
+      <div class="pbody">
+        <div class="step" style="margin:14px 0 0;font-size:10px">Data classes this product carries</div>
+        <div class="dc-grid">${DATA_CLASSES.map(d=>`
+          <div class="dc ${s.classes.has(d.id)?'on':''}" onclick="toggleClass('${p.id}','${d.id}')">
+            <b>${d.name}</b><span>${d.note}</span><span class="tier">${d.tier}</span>
+          </div>`).join('')}</div>
+        <div class="step" style="margin:18px 0 2px;font-size:10px">Asset inventory</div>
+        ${LAYERS.map((L,li)=>{
+          const counts = L.items.reduce((a,_,ii)=>{const v=s.items[itemKey(li,ii)]||'unk';a[v]++;return a;},{in:0,unk:0,out:0});
+          return `<div class="layer ${s.layersOpen[li]?'open':''}">
+            <div class="lhead" onclick="toggleLayer('${p.id}',${li})">
+              <span class="lnum">${String(li+1).padStart(2,'0')}</span>
+              <span class="lname">${L.n}</span>
+              <span class="lcount">${counts.in} in · <b>${counts.unk} unknown</b> · ${counts.out} out</span>
+            </div>
+            <div class="lbody">${L.items.map((it,ii)=>{
+              const v = s.items[itemKey(li,ii)]||'unk';
+              return `<div class="item">
+                <div class="tri">
+                  <button data-v="in"  class="${v==='in'?'sel':''}"  onclick="setItem('${p.id}',${li},${ii},'in')">IN</button>
+                  <button data-v="unk" class="${v==='unk'?'sel':''}" onclick="setItem('${p.id}',${li},${ii},'unk')">?</button>
+                  <button data-v="out" class="${v==='out'?'sel':''}" onclick="setItem('${p.id}',${li},${ii},'out')">OUT</button>
+                </div>
+                <div class="itxt"><b>${it[0]}</b><span>${it[1]}</span></div>
+              </div>`;}).join('')}</div>
+          </div>`;}).join('')}
+      </div>
+    </div>`;
+  }).join('');
+  ledger();
+}
+
+function toggleProd(id,e){
+  const s = state[id];
+  if(e.target.classList.contains('box')){ s.on = !s.on; if(s.on) s.open = true; }
+  else if(s.on){ s.open = !s.open; }
+  else { s.on = true; s.open = true; }
+  render();
+}
+function toggleClass(pid,cid){ const c=state[pid].classes; c.has(cid)?c.delete(cid):c.add(cid); render(); }
+function toggleLayer(pid,li){ state[pid].layersOpen[li] = !state[pid].layersOpen[li]; render(); }
+function setItem(pid,li,ii,v){ state[pid].items[itemKey(li,ii)] = v; render(); }
+
+function activeClasses(){
+  const set = new Set();
+  PRODUCTS.forEach(p => { if(state[p.id].on) state[p.id].classes.forEach(c=>set.add(c)); });
+  return set;
+}
+
+function ledger(){
+  let tIn=0,tUnk=0,tOut=0, activeProducts=0, totalItems=0;
+  PRODUCTS.forEach(p=>{
+    const s=state[p.id]; if(!s.on) return;
+    activeProducts++;
+    LAYERS.forEach((L,li)=>L.items.forEach((_,ii)=>{
+      totalItems++;
+      const v=s.items[itemKey(li,ii)]||'unk';
+      if(v==='in')tIn++; else if(v==='out')tOut++; else tUnk++;
+    }));
+  });
+  tIn_.textContent=tIn; tUnk_.textContent=tUnk; tOut_.textContent=tOut;
+
+  const cls = activeClasses();
+  document.getElementById('regimes').innerHTML = REGIMES.map(r=>{
+    const lit = r.on.some(c=>cls.has(c));
+    return `<div class="reg ${lit?'lit':''}"><div class="dot"></div><div><b>${r.name}</b><span>${r.why}</span></div></div>`;
+  }).join('');
+
+  const a=document.getElementById('assert'), v=document.getElementById('verdict'), n=document.getElementById('verdictNote');
+  if(!activeProducts){ a.className='assert blocked'; v.textContent='Not started'; n.textContent='Select at least one product to begin.'; }
+  else if(tUnk>0){ a.className='assert blocked'; v.textContent='Assertion blocked';
+    n.textContent=`${tUnk} of ${totalItems} assets unresolved across ${activeProducts} product${activeProducts>1?'s':''}. Scope cannot be asserted while any asset is unknown — resolve or explicitly exclude each one, with the reason.`; }
+  else { a.className='assert clear'; v.textContent='Scope assertable';
+    n.textContent=`${tIn} assets in boundary, ${tOut} excluded with rationale, zero unresolved. Document the exclusions — the auditor will re-litigate them annually.`; }
+}
+const tIn_=document.getElementById('tIn'), tUnk_=document.getElementById('tUnk'), tOut_=document.getElementById('tOut');
+
+function summarize(){
+  const cls=activeClasses(); const lines=['SCOPE DETERMINATION',''];
+  PRODUCTS.filter(p=>state[p.id].on).forEach(p=>{
+    const s=state[p.id];
+    lines.push(`▸ ${p.name}`);
+    const cnames=[...s.classes].map(c=>DATA_CLASSES.find(d=>d.id===c).name);
+    lines.push(`  data: ${cnames.length?cnames.join(', '):'— none declared —'}`);
+    LAYERS.forEach((L,li)=>{
+      const ins=[],unks=[];
+      L.items.forEach((it,ii)=>{const v=s.items[itemKey(li,ii)]||'unk'; if(v==='in')ins.push(it[0]); if(v==='unk')unks.push(it[0]);});
+      if(ins.length) lines.push(`  ${L.n} — IN: ${ins.join('; ')}`);
+      if(unks.length) lines.push(`  ${L.n} — UNRESOLVED: ${unks.join('; ')}`);
+    });
+    lines.push('');
+  });
+  lines.push('REGIMES TRIGGERED');
+  REGIMES.filter(r=>r.on.some(c=>cls.has(c))).forEach(r=>lines.push(`  • ${r.name} — ${r.why}`));
+  const o=document.getElementById('out'); o.style.display='block'; o.value=lines.join('\n');
+}
+function resetAll(){ PRODUCTS.forEach(p=>{state[p.id]={on:false,open:false,classes:new Set(),items:{},layersOpen:{}};}); document.getElementById('out').style.display='none'; render(); }
+
+render();
+</script>
+</body>
+</html>
