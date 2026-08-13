@@ -1,141 +1,126 @@
-"use client";
-
-/* Verdict table grouped by claim → assertion rows, rendered from the
- * REAL pipeline verdicts (identity = record_hash; rows route on its
- * URL-safe prefix). Five verdict states with unmistakably distinct
- * treatments; compile-error rows render the compiler's `rendered`
- * string verbatim — an assertion that cannot be proven does not run
- * and lie; it fails to compile. */
-
 import Link from "next/link";
-import { loadEngagement, verdictSlug } from "@/lib/data/engagement";
-import type { CompileError } from "@/lib/types/artifacts";
-import type { VerdictRecord } from "@/lib/types/ontology";
-import { MiniChip, VerdictBadge } from "@/components/engagement/Badges";
-import MutationScorecard from "@/components/engagement/MutationScorecard";
-import SchemaDriftBanner from "@/components/engagement/SchemaDriftBanner";
+import type { Metadata } from "next";
+import { loadEngagement, proofGraphFor, verdictSlug } from "@/lib/data/engagement";
+import { detectionRate, mutationPoisons } from "@/lib/data/mutations";
 import styles from "./Verdicts.module.css";
 
-interface ClaimGroup {
-  claim_ref: string;
-  population_ref: string | null;
-  verdicts: VerdictRecord[];
-  errors: CompileError[];
-}
-
-function groupByClaim(
-  verdicts: VerdictRecord[],
-  errors: CompileError[]
-): ClaimGroup[] {
-  const order: string[] = [];
-  const byClaim = new Map<string, ClaimGroup>();
-  const groupFor = (claim_ref: string): ClaimGroup => {
-    let g = byClaim.get(claim_ref);
-    if (!g) {
-      g = { claim_ref, population_ref: null, verdicts: [], errors: [] };
-      byClaim.set(claim_ref, g);
-      order.push(claim_ref);
-    }
-    return g;
-  };
-  for (const v of verdicts) {
-    const g = groupFor(v.claim_ref);
-    g.verdicts.push(v);
-    g.population_ref ??= v.population_ref;
-  }
-  for (const e of errors) groupFor(e.claim_ref).errors.push(e);
-  return order.map((c) => byClaim.get(c)!);
-}
+export const metadata: Metadata = { title: "Verdict ledger — Aegis" };
 
 export default function VerdictsPage() {
   const load = loadEngagement();
   const { verdicts, compile_errors } = load.artifacts;
-  const groups = groupByClaim(verdicts, compile_errors);
+  const poisons = mutationPoisons(load);
+  const rate = detectionRate(load);
 
   return (
-    <div>
-      <SchemaDriftBanner drift={load.drift} />
-      <p className="sub">
-        One sealed record per (claim, assertion, population) triple, produced by
-        the pure evaluator against the ratified snapshot — {verdicts.length}{" "}
-        records, identity = record_hash. PASS · FAIL · UNKNOWN · EXCLUDED ·
-        EXCEPTION — never interchangeable. An assertion that cannot be proven
-        does not run and lie; it fails to compile.
+    <main className="page">
+      <div className="page-kicker">ledger</div>
+      <h1>Sealed verdicts</h1>
+      <p className="page-sub">
+        Every row is a deterministic verdict record sealed under manifest{" "}
+        {load.artifacts.manifest.manifest_version} — re-performable from the same
+        snapshot, same contract, same code. Nothing here was written by an agent.
       </p>
 
-      {groups.map((group) => (
-        <div key={group.claim_ref} className={styles.claim}>
-          <div className={styles.claimHead}>
-            <code className={styles.claimId}>{group.claim_ref}</code>
-            {group.population_ref && (
-              <span className={styles.maps}>
-                <MiniChip tone="cyan">{group.population_ref}</MiniChip>
-              </span>
-            )}
-          </div>
+      <div className="section-label">verdict records · {verdicts.length}</div>
+      <div className={styles.tableWrap}>
+        <table className={styles.table}>
+          <thead>
+            <tr>
+              <th>State</th>
+              <th>Assertion</th>
+              <th>Finding</th>
+              <th>Population</th>
+              <th>Record hash</th>
+              <th>Lineage</th>
+            </tr>
+          </thead>
+          <tbody>
+            {verdicts.map((v) => {
+              const proof = proofGraphFor(load, v.record_hash);
+              return (
+                <tr key={v.record_hash}>
+                  <td>
+                    <span className={`state-badge state-${v.state}`}>{v.state}</span>
+                  </td>
+                  <td>
+                    <div className={styles.assertion}>{v.assertion_ref}</div>
+                    <div className={styles.claim}>
+                      {v.claim_ref}
+                      {v.why_code && <> · {v.why_code}</>}
+                      {v.d7_family && <> · D-7 {v.d7_family}</>}
+                      {v.disposition_ref && <> · {v.disposition_ref}</>}
+                      {v.ratification_ref && <> · {v.ratification_ref}</>}
+                    </div>
+                  </td>
+                  <td>
+                    <div className={`${styles.msg} ${styles.msgClamp}`} title={v.message ?? ""}>
+                      {v.message}
+                    </div>
+                  </td>
+                  <td className={styles.refCell}>{v.population_ref}</td>
+                  <td className={styles.hashCell}>{v.record_hash.slice(0, 12)}…</td>
+                  <td>
+                    {proof ? (
+                      <Link href={`/proof/${verdictSlug(v)}`} className={styles.proofLink}>
+                        proof →
+                      </Link>
+                    ) : (
+                      <span className={styles.noProof}>none emitted</span>
+                    )}
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
 
-          {group.verdicts.map((v) => {
-            const slug = verdictSlug(v);
-            return (
-              <Link key={v.record_hash} href={`/proof/${slug}`} className={styles.rowLink}>
-                <div className={styles.row} data-verdict-row={slug}>
-                  <div className={styles.rowL}>
-                    <code className={styles.aid}>{v.assertion_ref}</code>
-                    <code className={styles.hash} title={`record_hash ${v.record_hash}`}>
-                      {slug}…
-                    </code>
-                  </div>
-                  <div className={styles.pred}>
-                    {v.message && <span className={styles.msg}>{v.message}</span>}
-                  </div>
-                  <div className={styles.rowR}>
-                    <VerdictBadge state={v.state} />
-                    {v.state === "UNKNOWN" && v.why_code && (
-                      <MiniChip tone="amber">{v.why_code}</MiniChip>
-                    )}
-                    {v.state === "UNKNOWN" && v.d7_family && (
-                      <MiniChip tone="dim" title="D-7 cause family">
-                        {v.d7_family}
-                      </MiniChip>
-                    )}
-                    {v.state === "EXCLUDED" && v.ratification_ref && (
-                      <MiniChip tone="dim">{v.ratification_ref}</MiniChip>
-                    )}
-                    {v.state === "EXCEPTION" && v.disposition_ref && (
-                      <MiniChip tone="purple">{v.disposition_ref}</MiniChip>
-                    )}
-                  </div>
-                </div>
-              </Link>
-            );
-          })}
-
-          {group.errors.map((err) => (
-            <div
-              key={`${err.code}-${err.assertion_ref ?? err.claim_ref}`}
-              className={styles.errRow}
-              data-testid="compile-error-row"
-            >
-              <div className={styles.errBody}>
-                <span className={styles.errAssert}>
-                  {err.assertion_ref ?? err.claim_ref} — did not compile
-                  {err.code === "E204" && group.verdicts.length > 0
-                    ? " as asked; the verdict above covers the re-scoped honest window"
-                    : ""}
-                </span>
-                <pre className={styles.errRendered}>{err.rendered}</pre>
-                {err.satisfiable_via && err.satisfiable_via.length > 0 && (
-                  <p className={styles.errSuggest}>
-                    ↳ satisfiable via {err.satisfiable_via.join(", ")}
-                  </p>
-                )}
-              </div>
-            </div>
-          ))}
+      <div className="section-label">compile errors · claims that refused to evaluate</div>
+      {compile_errors.map((e) => (
+        <div key={e.code + e.claim_ref} className={styles.ecodeRow}>
+          <span className={styles.ecode}>{e.code}</span>
+          <span className={styles.ecodeText}>{e.rendered.replace(/^E\d+\s+/, "")}</span>
         </div>
       ))}
 
-      <MutationScorecard />
-    </div>
+      <div className="section-label">mutation scorecard · seeded-poison detection</div>
+      <div className={styles.scoreHead}>
+        <div className={styles.scoreStat}>
+          <span className={styles.scoreNum}>
+            {rate.detected}
+            <small>/{rate.total}</small>
+          </span>
+          <span className={styles.scoreMeter} aria-hidden>
+            {Array.from({ length: rate.total }).map((_, i) => (
+              <span
+                key={i}
+                className={`${styles.scoreSeg} ${i < rate.detected ? styles.scoreSegOn : ""}`}
+              />
+            ))}
+          </span>
+          <span className={styles.scoreLabel}>
+            seeded defects that produced a compile error, UNKNOWN, or FAIL — a silent
+            PASS is a build-stopping bug
+          </span>
+        </div>
+      </div>
+      <div className={styles.poisonGrid}>
+        {poisons.map((p) => (
+          <div key={p.id} className={styles.poisonRow}>
+            <div className={styles.poisonName}>
+              {p.poison}
+              <div className={styles.poisonNote}>{p.detector.note}</div>
+            </div>
+            <span className={styles.detectorChip}>
+              {p.detector.kind === "verdict" && <>caught by {p.detector.state}</>}
+              {p.detector.kind === "ecode" && <>caught at compile · {p.detector.code}</>}
+              {p.detector.kind === "missing" && <>NOT DETECTED</>}
+            </span>
+            <span className={styles.detected}>{p.detected ? "✓ detected" : "✗ missed"}</span>
+          </div>
+        ))}
+      </div>
+    </main>
   );
 }

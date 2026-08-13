@@ -1,23 +1,141 @@
-.head{display:flex;gap:22px;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;margin-bottom:14px}
-.headL{min-width:0;flex:1}
-.badges{display:flex;gap:8px;align-items:center}
-.title{font:700 18px var(--font-slab);margin-top:8px}
-.pid{font-family:var(--font-mono-stack);font-size:10px;color:var(--purple)}
-.def{font-size:12px;color:var(--dim);margin-top:6px;max-width:64ch;line-height:1.55}
+.layout { display: grid; grid-template-columns: minmax(0, 1fr) 330px; gap: 28px; align-items: start; }
+@media (max-width: 1100px) { .layout { grid-template-columns: 1fr; } }
 
-.headR{display:flex;gap:9px;flex-shrink:0}
-.kpi{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px 15px;text-align:center;min-width:86px}
-.kpi b{display:block;font:700 18px var(--font-slab)}
-.kpi span{font:500 8.5px var(--font-mono-stack);letter-spacing:.07em;text-transform:uppercase;color:var(--faint)}
-.dash{color:var(--faint)}
-.green{color:var(--green)}
+.ladderWrap { margin: 26px 0 6px; max-width: 640px; }
 
-.norecon{font-size:12px;color:var(--faint);font-style:italic;padding:14px 0}
+.sourceStrip { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 18px; }
+.sourceChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font: 400 11px/1 var(--font-mono-stack);
+  color: var(--dim);
+  background: var(--surface1);
+  border: 1px solid var(--line-soft);
+  border-radius: 999px;
+  padding: 6px 11px;
+}
+.sourceChip b { color: var(--ink); font-weight: 500; }
 
-.exclusion{display:flex;gap:12px;align-items:baseline;background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:10px 14px;margin-bottom:8px}
-.exclusion code{font-family:var(--font-mono-stack);font-size:10.5px;color:var(--amber);flex-shrink:0}
-.exclusion span{font-size:11.5px;color:var(--dim);line-height:1.5}
+/* ---- delta cards: negative space is the hero ---- */
+.deltaCard {
+  background: var(--surface1);
+  border: 1px solid var(--line-soft);
+  border-radius: var(--radius-m);
+  box-shadow: var(--shadow-card);
+  padding: 18px 20px;
+}
+.deltaCard + .deltaCard { margin-top: 12px; }
+.deltaCardOpen { border-color: color-mix(in srgb, var(--v-unknown) 40%, var(--line)); }
 
-/* E117 blocker — compiler output, verbatim */
-.blocker{background:var(--bg);border:1px solid var(--red);border-radius:10px;padding:12px 16px;margin-bottom:12px}
-.blocker pre{font:400 11px/1.55 var(--font-mono-stack);color:var(--red);white-space:pre-wrap;word-break:break-word}
+.deltaHead { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.deltaMember { font: 500 14px/1.2 var(--font-mono-stack); color: var(--ink); }
+.bucketTag {
+  font: 500 9.5px/1 var(--font-mono-stack);
+  letter-spacing: 0.1em;
+  padding: 4px 8px;
+  border-radius: 4px;
+  color: var(--v-unknown);
+  background: var(--v-unknown-soft);
+  border: 1px solid color-mix(in srgb, var(--v-unknown) 40%, transparent);
+}
+.bucketTagExcluded {
+  color: var(--v-excluded);
+  background: var(--v-excluded-soft);
+  border-color: color-mix(in srgb, var(--v-excluded) 40%, transparent);
+}
+.bucketTagUnresolvable {
+  color: var(--v-fail);
+  background: var(--v-fail-soft);
+  border-color: color-mix(in srgb, var(--v-fail) 40%, transparent);
+}
+.deltaId { font: 400 9.5px/1 var(--font-mono-stack); color: var(--faint); margin-left: auto; }
+
+.presence { display: grid; grid-template-columns: 1fr 1.2fr; gap: 14px; margin-top: 14px; }
+.presCol {}
+.presLabel {
+  font: 500 9.5px/1 var(--font-mono-stack);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+.presLabelGhost { color: var(--faint); }
+.presLabelAbsent { color: var(--v-unknown); }
+.presChips { display: flex; flex-direction: column; gap: 6px; }
+.presChip {
+  font: 400 11px/1.3 var(--font-mono-stack);
+  padding: 7px 10px;
+  border-radius: var(--radius-s);
+}
+.presChipGhost {
+  color: var(--faint);
+  background: var(--bg0);
+  border: 1px solid var(--line-soft);
+}
+.presChipAbsent {
+  color: var(--v-unknown);
+  background: var(--v-unknown-soft);
+  border: 1px dashed color-mix(in srgb, var(--v-unknown) 55%, transparent);
+  font-weight: 500;
+}
+.presChipAbsent::before { content: "∅ "; opacity: 0.7; }
+.presEmpty { font: 400 11px/1.4 var(--font-sans); font-style: italic; color: var(--faint); padding: 7px 0; }
+
+.deltaFoot {
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid var(--line-soft);
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  flex-wrap: wrap;
+  font-size: 11.5px;
+  color: var(--dim);
+}
+.undisp { color: var(--v-unknown); font: 500 11px/1 var(--font-mono-stack); }
+.dispRef { color: var(--brand); font: 500 11px/1 var(--font-mono-stack); }
+.dispJust { line-height: 1.55; }
+.ownerTag { font: 400 10.5px/1 var(--font-mono-stack); color: var(--faint); }
+
+/* intersection + clean buckets */
+.memberGrid { display: flex; flex-wrap: wrap; gap: 6px; }
+.memberChip {
+  font: 400 10.5px/1 var(--font-mono-stack);
+  color: var(--dim);
+  background: var(--surface1);
+  border: 1px solid var(--line-soft);
+  border-radius: 5px;
+  padding: 5px 8px;
+}
+.emptyBucket { font-size: 12px; color: var(--faint); font-style: italic; }
+
+/* ---- why-complete narrative panel ---- */
+.why {
+  position: sticky;
+  top: 28px;
+  background: var(--surface1);
+  border: 1px solid var(--line-soft);
+  border-radius: var(--radius-m);
+  box-shadow: var(--shadow-card);
+  padding: 20px 22px;
+}
+.whyTitle { font: 700 14px/1.2 var(--font-display); margin-bottom: 4px; }
+.whyBasis {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font: 500 10.5px/1 var(--font-mono-stack);
+  color: var(--v-pass);
+  margin: 8px 0 12px;
+}
+.whyBasis::before { content: "✓"; }
+.whyText { font-size: 12px; color: var(--dim); line-height: 1.65; }
+.whyText b { color: var(--ink); font-weight: 600; }
+.whyText .mono { font-size: 11px; }
+.whyList { margin: 10px 0 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 7px; }
+.whyList li { font-size: 11.5px; color: var(--dim); line-height: 1.5; padding-left: 14px; position: relative; }
+.whyList li::before { content: "·"; position: absolute; left: 2px; color: var(--brand); }
+
+.diagList { margin-top: 8px; display: flex; flex-direction: column; gap: 5px; }
+.diagItem { font: 400 10px/1.5 var(--font-mono-stack); color: var(--faint); }
+.diagMore { font-size: 11px; color: var(--faint); font-style: italic; margin-top: 4px; }

@@ -1,148 +1,242 @@
-"use client";
-
-/* THE acceptance screen: a practitioner looks at this and says "now I
- * know why the population is complete." Ladder stepper (open
- * dispositions visibly block DISCOVERED→RECONCILED), identity-join
- * panel, and the six-bucket set-reconciliation board. The rail carries
- * the assembled WhyCompletePanel narrative; clicking a delta focuses
- * its story there. */
-
-import { useEffect } from "react";
-import Link from "next/link";
-import { useParams } from "next/navigation";
-import {
-  blockingCompileError,
-  loadEngagement,
-  populationById,
-  reconciliationFor,
-} from "@/lib/data/engagement";
-import { useEngagementStore } from "@/lib/state/engagementStore";
-import { LadderChip, Tip, TypeBadge } from "@/components/engagement/Badges";
-import LadderStepper from "@/components/engagement/LadderStepper";
-import IdentityJoinPanel from "@/components/engagement/IdentityJoinPanel";
-import ReconciliationBoard from "@/components/engagement/ReconciliationBoard";
-import SchemaDriftBanner from "@/components/engagement/SchemaDriftBanner";
+import { notFound } from "next/navigation";
+import type { Metadata } from "next";
+import { loadEngagement, populationById, reconciliationFor } from "@/lib/data/engagement";
+import type { DeltaObject } from "@/lib/types/artifacts";
+import Ladder from "@/components/ui/Ladder";
 import styles from "./PopulationDetail.module.css";
 
-export default function PopulationDetailPage() {
-  const params = useParams<{ populationId: string }>();
-  const populationId = decodeURIComponent(params?.populationId ?? "");
+export const metadata: Metadata = { title: "Reconciliation board — Aegis" };
+
+export function generateStaticParams() {
   const load = loadEngagement();
-  const population = populationById(load, populationId);
-  const recon = reconciliationFor(load, populationId);
-  const selectDelta = useEngagementStore((s) => s.selectDelta);
+  return load.artifacts.reconciliations.map((r) => ({
+    populationId: r.population_ref,
+  }));
+}
 
-  // Reset delta focus when switching populations.
-  useEffect(() => {
-    selectDelta(null);
-  }, [populationId, selectDelta]);
-
-  if (!population) {
-    return (
-      <div>
-        <SchemaDriftBanner drift={load.drift} />
-        <p className="sub">
-          No population <code>{populationId}</code> in the engagement bundle.{" "}
-          <Link href="/reconciliation">Back to the index.</Link>
-        </p>
+function DeltaCard({ delta }: { delta: DeltaObject }) {
+  const open = !delta.disposition;
+  const bucketClass =
+    delta.bucket === "excluded"
+      ? styles.bucketTagExcluded
+      : delta.bucket === "unresolvable"
+        ? styles.bucketTagUnresolvable
+        : "";
+  return (
+    <article className={`${styles.deltaCard} ${open ? styles.deltaCardOpen : ""}`}>
+      <div className={styles.deltaHead}>
+        <span className={styles.deltaMember}>{delta.display_name}</span>
+        <span className={`${styles.bucketTag} ${bucketClass}`}>{delta.bucket}</span>
+        <span className={styles.deltaId}>{delta.delta_id}</span>
       </div>
-    );
-  }
 
-  const openDispositions = recon
-    ? recon.deltas.filter((d) => d.bucket !== "intersection" && !d.disposition).length
-    : population.open_deltas.length;
-  const ratified = population.state === "RATIFIED";
-  const blocker = blockingCompileError(load, population);
+      <div className={styles.presence}>
+        <div className={styles.presCol}>
+          <div className={`${styles.presLabel} ${styles.presLabelGhost}`}>present in</div>
+          <div className={styles.presChips}>
+            {delta.sources_present.length ? (
+              delta.sources_present.map((s) => (
+                <span key={s} className={`${styles.presChip} ${styles.presChipGhost}`}>
+                  {s}
+                </span>
+              ))
+            ) : (
+              <span className={styles.presEmpty}>nowhere</span>
+            )}
+          </div>
+        </div>
+        <div className={styles.presCol}>
+          <div className={`${styles.presLabel} ${styles.presLabelAbsent}`}>
+            absent from — the negative space
+          </div>
+          <div className={styles.presChips}>
+            {delta.sources_absent.length ? (
+              delta.sources_absent.map((s) => (
+                <span key={s} className={`${styles.presChip} ${styles.presChipAbsent}`}>
+                  {s}
+                </span>
+              ))
+            ) : (
+              <span className={styles.presEmpty}>present everywhere expected</span>
+            )}
+          </div>
+        </div>
+      </div>
+
+      <div className={styles.deltaFoot}>
+        {delta.disposition ? (
+          <>
+            <span className={styles.dispRef}>
+              {delta.disposition_ref} · {delta.disposition.value}
+            </span>
+            <span className={styles.dispJust}>{delta.disposition.justification}</span>
+            <span className={styles.ownerTag}>
+              owner {delta.disposition.owner} · review {delta.disposition.review_date}
+            </span>
+          </>
+        ) : (
+          <>
+            <span className={styles.undisp}>UNDISPOSITIONED</span>
+            <span>
+              blocks RECONCILED — a population with an unowned delta cannot be shown
+              complete
+            </span>
+            <span className={styles.ownerTag}>owner {delta.owner ?? "unassigned"}</span>
+          </>
+        )}
+      </div>
+    </article>
+  );
+}
+
+export default async function PopulationDetail({
+  params,
+}: {
+  params: Promise<{ populationId: string }>;
+}) {
+  const { populationId } = await params;
+  const id = decodeURIComponent(populationId);
+  const load = loadEngagement();
+  const rec = reconciliationFor(load, id);
+  const pop = populationById(load, id);
+  if (!rec) notFound();
+
+  const openDeltas = rec.deltas.filter((d) => !d.disposition);
+  const dispositioned = rec.deltas.filter((d) => d.disposition);
+  const blocked = openDeltas.length > 0;
+  const shownDiags = rec.diagnostics.slice(0, 4);
 
   return (
-    <div>
-      <SchemaDriftBanner drift={load.drift} />
+    <main className="page">
+      <div className="page-kicker">reconciliation board</div>
+      <h1>{pop?.name ?? id}</h1>
+      <p className="page-sub">{pop?.definition}</p>
 
-      <div className={styles.head}>
-        <div className={styles.headL}>
-          <div className={styles.badges}>
-            <TypeBadge type={population.type} />
-            <LadderChip state={population.state} />
-          </div>
-          <h2 className={styles.title}>{population.name}</h2>
-          <code className={styles.pid}>{population.population_id}</code>
-          <p className={styles.def}>{population.definition}</p>
-        </div>
-        <div className={styles.headR}>
-          <div className={styles.kpi}>
-            {ratified && population.size !== null ? (
-              <b>{population.size}</b>
-            ) : (
-              <b className={styles.dash}>
-                <Tip tip="Size is withheld until the denominator is RATIFIED — no count is published against an unratified population.">
-                  —
-                </Tip>
-              </b>
-            )}
-            <span>size</span>
-          </div>
-          <div className={styles.kpi} data-testid="coverage-kpi">
-            {ratified ? (
-              <b className={styles.green}>100%</b>
-            ) : (
-              <b className={styles.dash}>
-                <Tip tip="Coverage percentages are never computed against an unratified denominator. This population must reach RATIFIED — every non-intersection delta dispositioned, then a human ratifies the snapshot — before any % renders here.">
-                  —
-                </Tip>
-              </b>
-            )}
-            <span>coverage</span>
-          </div>
-          <div className={styles.kpi}>
-            <b>
-              {population.period.start.slice(5)}–{population.period.end.slice(5)}
-            </b>
-            <span>period {population.period.start.slice(0, 4)}</span>
-          </div>
-        </div>
+      <div className={styles.ladderWrap}>
+        <Ladder
+          current={rec.ladder_state}
+          blockedAfter={blocked ? "DISCOVERED" : undefined}
+          blockedLabel={blocked ? `${openDeltas.length} open` : undefined}
+        />
       </div>
 
-      <LadderStepper
-        state={population.state}
-        openDispositions={openDispositions}
-        ratifiedBy={load.artifacts.manifest.ratified_by}
-        manifestVersion={load.artifacts.manifest.manifest_version}
-      />
+      <div className={styles.sourceStrip}>
+        {Object.entries(rec.source_counts).map(([src, n]) => (
+          <span key={src} className={styles.sourceChip}>
+            {src} <b>{n}</b>
+          </span>
+        ))}
+        <span className={styles.sourceChip}>
+          keys <b>{rec.canonical_identity_keys.join(" · ")}</b>
+        </span>
+      </div>
 
-      <IdentityJoinPanel population={population} recon={recon} />
-
-      <div className="slab">Set reconciliation — six buckets</div>
-      {recon ? (
-        <ReconciliationBoard recon={recon} />
-      ) : (
-        <>
-          <p className={styles.norecon}>
-            No reconciliation run recorded for this population — the reconciler
-            runs at DISCOVERED, and this population is {population.state}
-            {blocker
-              ? ": its derivation rule names a source with no ratified capability entry, so discovery refuses to compile."
-              : "."}
-          </p>
-          {blocker && (
-            <div className={styles.blocker} data-testid="population-blocker">
-              <pre>{blocker.rendered}</pre>
-            </div>
+      <div className={styles.layout}>
+        <div>
+          {openDeltas.length > 0 && (
+            <>
+              <div className="section-label">
+                open deltas · {openDeltas.length} — what the sources cannot account for
+              </div>
+              {openDeltas.map((d) => (
+                <DeltaCard key={d.delta_id} delta={d} />
+              ))}
+            </>
           )}
-        </>
-      )}
 
-      {population.exclusions.length > 0 && (
-        <>
-          <div className="slab">Exclusions — never silent</div>
-          {population.exclusions.map((x) => (
-            <div key={x.member_id} className={styles.exclusion}>
-              <code>{x.member_id}</code>
-              <span>{x.rationale}</span>
+          {dispositioned.length > 0 && (
+            <>
+              <div className="section-label">
+                dispositioned · {dispositioned.length} — owned, justified, dated
+              </div>
+              {dispositioned.map((d) => (
+                <DeltaCard key={d.delta_id} delta={d} />
+              ))}
+            </>
+          )}
+
+          <div className="section-label">
+            intersection · {rec.buckets.intersection.length} members in every expected
+            source
+          </div>
+          {rec.buckets.intersection.length ? (
+            <div className={styles.memberGrid}>
+              {rec.buckets.intersection.map((m) => (
+                <span key={m} className={styles.memberChip}>
+                  {m}
+                </span>
+              ))}
             </div>
-          ))}
-        </>
-      )}
-    </div>
+          ) : (
+            <p className={styles.emptyBucket}>empty</p>
+          )}
+
+          <div className="section-label">conflicts · {rec.buckets.conflicts.length}</div>
+          {rec.buckets.conflicts.length ? (
+            <div className={styles.memberGrid}>
+              {rec.buckets.conflicts.map((m) => (
+                <span key={m} className={styles.memberChip}>
+                  {m}
+                </span>
+              ))}
+            </div>
+          ) : (
+            <p className={styles.emptyBucket}>no attribute conflicts between sources</p>
+          )}
+        </div>
+
+        <aside className={styles.why}>
+          <div className={styles.whyTitle}>Why this board is complete</div>
+          {rec.basis_complete && (
+            <div className={styles.whyBasis}>basis complete</div>
+          )}
+          <p className={styles.whyText}>
+            Every declared source was collected <b>to exhaustion</b> — pagination
+            drained, counts checked — before a single member was compared. The board
+            derives from{" "}
+            {Object.entries(rec.source_counts)
+              .map(([s, n]) => `${s} (${n})`)
+              .join(", ")}
+            , joined on{" "}
+            <span className="mono">{rec.canonical_identity_keys.join(", ")}</span>.
+          </p>
+          <ul className={styles.whyList}>
+            <li>
+              <b>{rec.members.length}</b> members resolved into the population
+            </li>
+            <li>
+              <b>{rec.buckets.intersection.length}</b> corroborated by every expected
+              source
+            </li>
+            <li>
+              <b>{rec.deltas.length}</b> delta{rec.deltas.length === 1 ? "" : "s"} —{" "}
+              {openDeltas.length} open, {dispositioned.length} dispositioned; a delta
+              is never silently dropped
+            </li>
+            <li>
+              open deltas <b>block the ladder</b>: {blocked ? "this population holds at DISCOVERED until every delta is owned or ratified away" : "none — the board can advance"}
+            </li>
+          </ul>
+          {rec.diagnostics.length > 0 && (
+            <>
+              <div className="section-label">diagnostics · non-blocking</div>
+              <div className={styles.diagList}>
+                {shownDiags.map((d) => (
+                  <span key={d} className={styles.diagItem}>
+                    {d}
+                  </span>
+                ))}
+              </div>
+              {rec.diagnostics.length > shownDiags.length && (
+                <div className={styles.diagMore}>
+                  + {rec.diagnostics.length - shownDiags.length} more out-of-scope
+                  observations
+                </div>
+              )}
+            </>
+          )}
+        </aside>
+      </div>
+    </main>
   );
 }

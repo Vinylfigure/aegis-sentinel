@@ -1,5 +1,5 @@
-import { redirect } from "next/navigation";
+import FlowWorkbench from "@/components/flow/FlowWorkbench";
 
-export default function Home() {
-  redirect("/scope");
+export default function FlowPage() {
+  return <FlowWorkbench />;
 }

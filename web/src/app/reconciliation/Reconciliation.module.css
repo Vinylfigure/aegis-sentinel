@@ -1,16 +1,44 @@
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:12px}
+/* index */
+.grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+@media (max-width: 1100px) { .grid { grid-template-columns: 1fr; } }
 
-.card{display:block;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px;text-decoration:none;color:inherit;transition:border-color .12s}
-.card:hover{border-color:var(--purple)}
+.popCard {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 20px 22px;
+  background: var(--surface1);
+  border: 1px solid var(--line-soft);
+  border-radius: var(--radius-m);
+  box-shadow: var(--shadow-card);
+  transition: border-color 140ms ease, transform 140ms ease;
+}
+.popCard:hover { border-color: color-mix(in srgb, var(--brand) 40%, var(--line)); transform: translateY(-1px); }
+.popHead { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+.popName { font: 700 16px/1.2 var(--font-display); }
+.popId { font: 400 10.5px/1 var(--font-mono-stack); color: var(--faint); }
+.popMeta { display: flex; gap: 14px; font: 400 11px/1 var(--font-mono-stack); color: var(--dim); flex-wrap: wrap; }
+.popMeta b { color: var(--ink); font-weight: 500; }
+.deltaWarn { color: var(--v-unknown); }
+.deltaClean { color: var(--v-pass); }
 
-.cardTop{display:flex;align-items:center;justify-content:space-between;gap:8px}
-.name{font:700 14px var(--font-slab);margin-top:9px}
-.pid{font-family:var(--font-mono-stack);font-size:9.5px;color:var(--purple)}
-.def{font-size:11px;color:var(--dim);margin-top:7px;line-height:1.5;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+/* ladder distribution (populations by assurance state) */
+.dist { display: flex; flex-direction: column; gap: 8px; max-width: 560px; }
+.distRow { display: flex; align-items: center; gap: 12px; }
+.distLabel { width: 110px; flex-shrink: 0; font: 500 10px/1 var(--font-mono-stack); letter-spacing: 0.08em; color: var(--dim); text-align: right; }
+.distTrack { flex: 1; display: flex; align-items: center; gap: 8px; }
+.distBar { height: 14px; border-radius: 4px 4px 4px 4px; background: var(--brand); min-width: 3px; }
+.distBarZero { background: var(--ladder-pending); width: 3px !important; }
+.distCount { font: 500 11px/1 var(--font-mono-stack); color: var(--ink); }
 
-.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-top:11px;border-top:1px dashed var(--line);padding-top:10px}
-.stat{text-align:center}
-.stat b{display:block;font:700 16px var(--font-slab)}
-.stat span{font:500 8.5px var(--font-mono-stack);letter-spacing:.06em;text-transform:uppercase;color:var(--faint)}
-.dash{color:var(--faint)}
-.openWarn{color:var(--amber)}
+/* no-reconciliation (E117) note card */
+.blockedCard {
+  padding: 18px 22px;
+  background: var(--bg0);
+  border: 1px dashed color-mix(in srgb, var(--v-fail) 45%, var(--line));
+  border-radius: var(--radius-m);
+  font-size: 12.5px;
+  color: var(--dim);
+  line-height: 1.6;
+}
+.blockedCard b { color: var(--v-fail); font-weight: 600; }

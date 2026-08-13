@@ -1,21 +1,58 @@
-/* Design tokens — lifted verbatim from the Aegis prototypes (:root vars). */
-:root{
-  --bg:#0e0f14;
-  --panel:#161824;
-  --panel2:#1b1e2e;
-  --panel3:#232741;
-  --line:#2a2e42;
-  --ink:#e8e9f0;
-  --dim:#9a9db2;
-  --faint:#63667c;
-  --purple:#8b7ff5;
-  --amber:#e8b34b;
-  --green:#6fbf8f;
-  --red:#e0716f;
-  --cyan:#6db8d8;
+/* Aegis design tokens — flow-first redesign. Built fresh (no prototype lineage).
+ *
+ * Verdict palette is SEMANTICALLY FIXED — these five hues mean the five
+ * verdict states and are never reused as series or accent colors. Every
+ * verdict color always ships with a text label or glyph (never color alone;
+ * PASS/FAIL are deutan-close, so gates also carry ✓/× glyphs and state text).
+ */
+:root {
+  /* ---- surfaces (near-black, blue-cast) ---- */
+  --bg0: #0a0b10;      /* canvas ground */
+  --bg1: #0d0f16;      /* page ground */
+  --surface1: #11131c; /* cards, rails */
+  --surface2: #161927; /* raised cards, drawer */
+  --surface3: #1c2033; /* hover / active tier */
+  --line: #262b3d;     /* hard border */
+  --line-soft: #1b1f2e;/* soft border */
+  --grid-dot: #1e2231; /* canvas dot grid */
 
-  /* font stacks — populated by next/font variables in layout.tsx */
-  --font-sans:var(--font-inter),'Inter',sans-serif;
-  --font-slab:var(--font-grotesk),'Space Grotesk',sans-serif;
-  --font-mono-stack:var(--font-mono),'IBM Plex Mono',monospace;
+  /* ---- ink ---- */
+  --ink: #eceef6;
+  --dim: #9aa0b6;
+  --faint: #626880;
+
+  /* ---- brand (ONE accent) ---- */
+  --brand: #8b7ff5;
+  --brand-ink: #0a0b10;
+  --brand-soft: rgba(139, 127, 245, 0.14);
+
+  /* ---- verdict palette (semantic, fixed) ---- */
+  --v-pass: #6fbf8f;
+  --v-fail: #e0716f;
+  --v-unknown: #e8b34b;
+  --v-exception: #c084fc; /* violet, deliberately distinct from --brand */
+  --v-excluded: #7d8296;
+
+  --v-pass-soft: rgba(111, 191, 143, 0.13);
+  --v-fail-soft: rgba(224, 113, 111, 0.13);
+  --v-unknown-soft: rgba(232, 179, 75, 0.13);
+  --v-exception-soft: rgba(192, 132, 252, 0.13);
+  --v-excluded-soft: rgba(125, 130, 150, 0.13);
+
+  /* ---- ladder (assurance states use brand-neutral tints, not verdict hues) */
+  --ladder-done: #8b7ff5;
+  --ladder-pending: #3a4059;
+
+  /* ---- type ---- */
+  --font-sans: var(--font-inter), "Inter", sans-serif;
+  --font-display: var(--font-grotesk), "Space Grotesk", sans-serif;
+  --font-mono-stack: var(--font-mono), "IBM Plex Mono", monospace;
+
+  /* ---- geometry ---- */
+  --rail-w: 56px;
+  --radius-s: 6px;
+  --radius-m: 10px;
+  --radius-l: 14px;
+  --shadow-drawer: -24px 0 60px rgba(4, 5, 9, 0.55);
+  --shadow-card: 0 1px 0 rgba(255, 255, 255, 0.03) inset, 0 8px 28px rgba(4, 5, 9, 0.35);
 }

@@ -1,136 +1,152 @@
-"use client";
-
-/* Capability Registry: what evidence each system is capable of yielding,
- * Cartographer-proposed, human-ratified. History caveats render
- * prominently amber — the 90-day trap is the whole point. Unresolved
- * E-codes render as compiler output — the `rendered` strings verbatim. */
-
+import type { Metadata } from "next";
 import { loadEngagement } from "@/lib/data/engagement";
-import { MiniChip, TypeBadge } from "@/components/engagement/Badges";
-import SchemaDriftBanner from "@/components/engagement/SchemaDriftBanner";
 import styles from "./Registry.module.css";
+
+export const metadata: Metadata = { title: "Capability registry — Aegis" };
+
+const SYSTEM_NAMES: Record<string, string> = {
+  gcp: "GCP",
+  hris: "HRIS",
+  github: "GitHub",
+  okta: "Okta",
+  slack: "Slack",
+};
 
 export default function RegistryPage() {
   const load = loadEngagement();
-  const { capability_registry, compile_errors } = load.artifacts;
+  const entries = load.artifacts.capability_registry;
+  const errors = load.artifacts.compile_errors;
+  const e204 = errors.find((e) => e.code === "E204");
+  const okta = entries.find((e) => e.entry_id === "okta.system_log.api_v1");
 
   return (
-    <div>
-      <SchemaDriftBanner drift={load.drift} />
-      <p className="sub">
-        Per system, per surface: what populations it yields, its temporal shape,
-        join keys, least-privilege scope, and — most load-bearing — its history
-        caveats. The compiler type-checks every (claim, assertion, population)
-        triple against these entries; the agent maps the territory, it does not
-        annex it.
+    <main className="page">
+      <div className="page-kicker">capability registry</div>
+      <h1>What can actually be collected</h1>
+      <p className="page-sub">
+        Every entry is a researched, human-ratified description of a real API
+        surface — its temporal shape, its pagination, its caveats. Claims compile
+        against these physics, not against wishes.
       </p>
 
-      {compile_errors.length > 0 && (
-        <>
-          <div className="slab">Unresolved E-codes — the program does not fully compile</div>
-          <div className={styles.compiler} data-testid="ecode-block">
-            {compile_errors.map((e) => (
-              <div key={e.code + (e.assertion_ref ?? e.claim_ref)} className={styles.ecode}>
-                <div className={styles.ebody}>
-                  <pre className={styles.erendered}>{e.rendered}</pre>
-                  {e.satisfiable_via && e.satisfiable_via.length > 0 && (
-                    <p className={styles.esuggest}>
-                      ↳ satisfiable via {e.satisfiable_via.join(", ")}
-                    </p>
-                  )}
-                  <p className={styles.eref}>
-                    at {e.claim_ref}
-                    {e.assertion_ref ? ` · ${e.assertion_ref}` : ""}
-                  </p>
-                </div>
+      <div className="section-label">the 90-day wall · why the six-month ask refused to compile</div>
+      <div className={styles.exhibit}>
+        <div className={styles.exhibitLeft}>
+          <div className={styles.exhibitTitle}>
+            Okta System Log retains <b>90 days</b>. The assertion needed 181.
+          </div>
+          <p className={styles.exhibitText}>
+            <span className="mono">{okta?.entry_id}</span> yields{" "}
+            <span className="mono">
+              event-history(window={okta?.temporal.window_days}d)
+            </span>
+            . The TIMING assertion asked for transition timestamps across the full
+            period {e204?.required_window?.start}..{e204?.required_window?.end}. No
+            usable capability combination covers it — so the claim was re-scoped to
+            an honest window, and the six-month ask stays on the books as the E204
+            exhibit below.
+          </p>
+          <div className={styles.windowViz} aria-label="Required 181-day window vs available 90-day retention">
+            <div className={styles.windowTrack}>
+              <span className={styles.windowNeed} />
+              <span className={styles.windowHave} />
+            </div>
+            <div className={styles.windowLegend}>
+              <span>
+                required <b>181 days</b> (2026-01-01 → 2026-06-30)
+              </span>
+              <span>
+                available <b>90 days</b> of retention
+              </span>
+            </div>
+          </div>
+        </div>
+        <div className={styles.exhibitRight}>
+          <b>E204</b> {e204?.rendered.replace(/^E\d+\s+/, "")}
+        </div>
+      </div>
+
+      <div className="section-label">ratified entries · {entries.length}</div>
+      <div className={styles.entryGrid}>
+        {entries.map((e) => (
+          <article key={e.entry_id} className={styles.entry}>
+            <div className={styles.entryHead}>
+              <span className={styles.entrySystem}>{SYSTEM_NAMES[e.system] ?? e.system}</span>
+              <span className={styles.entryId}>{e.entry_id}</span>
+              <span
+                className={`${styles.temporalChip} ${
+                  e.temporal.window_days != null ? styles.temporalWindow : ""
+                }`}
+              >
+                {e.temporal.kind}
+                {e.temporal.window_days != null && ` · ${e.temporal.window_days}d`}
+              </span>
+            </div>
+            <div className={styles.entrySurface}>{e.surface}</div>
+            <div className={styles.entryMeta}>
+              <div className={styles.metaRow}>
+                <span className={styles.metaKey}>yields</span>
+                <span className={styles.metaVal}>
+                  {e.populations_yielded.map((p) => `${p.name} (${p.type})`).join(" · ")}
+                </span>
+              </div>
+              <div className={styles.metaRow}>
+                <span className={styles.metaKey}>join keys</span>
+                <span className={`${styles.metaVal} mono`}>{e.join_keys.join(", ")}</span>
+              </div>
+              <div className={styles.metaRow}>
+                <span className={styles.metaKey}>auth</span>
+                <span className={styles.metaVal}>{e.auth_scope}</span>
+              </div>
+              <div className={styles.metaRow}>
+                <span className={styles.metaKey}>pagination</span>
+                <span className={styles.metaVal}>
+                  {e.pagination.method} — {e.pagination.exhaustion_method}
+                </span>
+              </div>
+              <div className={styles.metaRow}>
+                <span className={styles.metaKey}>rate limits</span>
+                <span className={styles.metaVal}>{e.rate_limits}</span>
+              </div>
+            </div>
+            {e.history_caveats.map((c) => (
+              <div key={c} className={styles.caveat}>
+                {c}
               </div>
             ))}
-          </div>
-        </>
-      )}
-
-      <div className="slab">Ratified capability entries — {capability_registry.length}</div>
-      <div className={styles.grid}>
-        {capability_registry.map((e) => (
-          <div key={e.entry_id} className={styles.card} data-entry={e.entry_id}>
-            <div className={styles.cardHead}>
-              <b className={styles.system}>{e.system}</b>
-              <code className={styles.entryId}>{e.entry_id}</code>
-            </div>
-            <code className={styles.surface}>{e.surface}</code>
-
-            <div className={styles.modes}>
-              {e.access_modes.map((m) => (
-                <MiniChip key={m} tone={m === "DIRECT_API" ? "green" : "cyan"}>
-                  {m}
-                </MiniChip>
+            <div className={styles.provenance}>
+              {e.provenance.doc_version} · ratified by {e.provenance.ratified_by} ·{" "}
+              {e.provenance.source_citations.map((s, i) => (
+                <span key={s.url}>
+                  {i > 0 && " · "}
+                  <a href={s.url} target="_blank" rel="noreferrer">
+                    {s.title}
+                  </a>
+                </span>
               ))}
-              <MiniChip tone="purple">
-                {e.temporal.kind}
-                {e.temporal.window_days != null ? ` · ${e.temporal.window_days}d` : ""}
-              </MiniChip>
             </div>
-
-            <div className={styles.pops}>
-              {e.populations_yielded.map((p) => {
-                const attrs = e.attributes.find((a) => a.population_name === p.name);
-                return (
-                  <span key={p.name} className={styles.pop}>
-                    <TypeBadge type={p.type} /> {p.name}
-                    {attrs && (
-                      <em className={styles.fields}>
-                        {attrs.fields_exposed.length} field
-                        {attrs.fields_exposed.length === 1 ? "" : "s"}
-                      </em>
-                    )}
-                  </span>
-                );
-              })}
-            </div>
-
-            <div className={styles.meta}>
-              <div className={styles.mrow}>
-                <label>join keys</label>
-                <div>
-                  {e.join_keys.map((k) => (
-                    <code key={k}>{k}</code>
-                  ))}
-                </div>
-              </div>
-              <div className={styles.mrow}>
-                <label>pagination</label>
-                <div>
-                  <b className={styles.pmethod}>{e.pagination.method}</b> —{" "}
-                  {e.pagination.exhaustion_method}
-                </div>
-              </div>
-              <div className={styles.mrow}>
-                <label>auth scope</label>
-                <div>{e.auth_scope}</div>
-              </div>
-              <div className={styles.mrow}>
-                <label>rate limits</label>
-                <div>{e.rate_limits}</div>
-              </div>
-            </div>
-
-            {e.history_caveats.length > 0 && (
-              <div className={styles.caveats}>
-                {e.history_caveats.map((c, i) => (
-                  <p key={i}>⚠ {c}</p>
-                ))}
-              </div>
-            )}
-
-            <div className={styles.prov}>
-              {e.provenance.researched_by} · {e.provenance.researched_at.slice(0, 10)} ·{" "}
-              {e.provenance.doc_version} · {e.provenance.source_citations.length}{" "}
-              citation{e.provenance.source_citations.length === 1 ? "" : "s"} — ratified
-              by <b>{e.provenance.ratified_by ?? "— UNRATIFIED (mechanically unusable)"}</b>
-            </div>
-          </div>
+          </article>
         ))}
       </div>
-    </div>
+
+      <div className="section-label">compile errors · the registry saying no</div>
+      {errors.map((e) => (
+        <div key={e.code + e.claim_ref} className={styles.ecodeCard}>
+          <span className={styles.ecodeTag}>{e.code}</span>
+          <div className={styles.ecodeBody}>
+            <div className={styles.ecodeName}>
+              {e.code === "E204"
+                ? "Assertion window exceeds capability retention"
+                : e.code === "E117"
+                  ? "Derivation source has no ratified capability entry"
+                  : "Compile error"}
+              {" · "}
+              {e.claim_ref}
+            </div>
+            <div className={styles.ecodeText}>{e.rendered.replace(/^E\d+\s+/, "")}</div>
+          </div>
+        </div>
+      ))}
+    </main>
   );
 }
