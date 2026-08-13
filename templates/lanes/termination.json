@@ -1,0 +1,226 @@
+{
+  "lane_id": "TA",
+  "name": "Termination — access revocation",
+  "direction": "hris -> okta -> downstream fan-out (github, gcp, slack)",
+  "trigger": "termination event recorded in the HRIS",
+  "nodes": [
+    {
+      "node_id": "hris",
+      "label": "HRIS",
+      "system_ref": "hris",
+      "kind": "ACTOR"
+    },
+    {
+      "node_id": "okta",
+      "label": "Okta",
+      "system_ref": "okta",
+      "kind": "SYSTEM"
+    },
+    {
+      "node_id": "github",
+      "label": "GitHub",
+      "system_ref": "github",
+      "kind": "SINK"
+    },
+    {
+      "node_id": "gcp",
+      "label": "GCP",
+      "system_ref": "gcp",
+      "kind": "SINK"
+    },
+    {
+      "node_id": "slack",
+      "label": "Slack",
+      "system_ref": "slack",
+      "kind": "SINK"
+    }
+  ],
+  "edges": [
+    {
+      "from_node": "hris",
+      "to_node": "okta",
+      "event_kind": "termination"
+    },
+    {
+      "from_node": "okta",
+      "to_node": "github",
+      "event_kind": "deprovision"
+    },
+    {
+      "from_node": "okta",
+      "to_node": "gcp",
+      "event_kind": "deprovision"
+    },
+    {
+      "from_node": "okta",
+      "to_node": "slack",
+      "event_kind": "deprovision"
+    }
+  ],
+  "control_points": [
+    {
+      "cp_id": "TA-1",
+      "name": "Term feed completeness",
+      "edge_refs": ["hris->okta"],
+      "nature": "AUTO",
+      "function": "DET",
+      "claim_template_refs": ["TERM.feed-completeness"]
+    },
+    {
+      "cp_id": "TA-2",
+      "name": "Revoked within five business days",
+      "edge_refs": ["okta->github", "okta->gcp", "okta->slack"],
+      "nature": "AUTO",
+      "function": "DET",
+      "claim_template_refs": ["TERM.timely-revocation"]
+    },
+    {
+      "cp_id": "TA-3",
+      "name": "Downstream revocation verified",
+      "edge_refs": ["okta->github", "okta->gcp", "okta->slack"],
+      "nature": "AUTO",
+      "function": "DET",
+      "claim_template_refs": ["TERM.{system}.no-residual-access"]
+    }
+  ],
+  "population_templates": [
+    {
+      "template_id": "TERM.terminations",
+      "name": "Terminated workers",
+      "type": "EVENT",
+      "definition": "Every worker (employee or contractor) whose engagement ended during the period, as enumerated by the {hris} termination feed",
+      "rule_text": "all members enumerated by authoritative source {hris}-termination-feed; {okta}-system-log deactivation events corroborate membership",
+      "source_templates": [
+        {
+          "source_id": "{hris}-termination-feed",
+          "role": "AUTHORITATIVE"
+        },
+        {
+          "source_id": "{okta}-system-log",
+          "role": "CORROBORATING"
+        }
+      ],
+      "source_refs": ["{hris}-termination-feed"]
+    },
+    {
+      "template_id": "TERM.{system}.accounts",
+      "name": "{system} accounts",
+      "type": "ENTITY",
+      "definition": "Every account able to authenticate to {system} — SSO-provisioned and local (non-SSO) accounts alike — including access derived from group membership",
+      "rule_text": "all accounts enumerated by {system}-account-inventory, joined with group-derived access from {okta}-group-assignments",
+      "source_templates": [
+        {
+          "source_id": "{system}-account-inventory",
+          "role": "AUTHORITATIVE"
+        },
+        {
+          "source_id": "{okta}-group-assignments",
+          "role": "CONTRIBUTING"
+        }
+      ],
+      "source_refs": ["{system}-account-inventory", "{okta}-group-assignments"]
+    },
+    {
+      "template_id": "TERM.identity-join",
+      "name": "Terminated worker to downstream accounts",
+      "type": "RELATIONSHIP",
+      "definition": "Canonical-identity join of every terminated worker to every downstream account attributable to them across the lane's target systems",
+      "rule_text": "canonical-identity join of {hris}-termination-feed members to each downstream system's account inventory, keyed through {okta}-system-log identities",
+      "source_templates": [
+        {
+          "source_id": "{hris}-termination-feed",
+          "role": "AUTHORITATIVE"
+        },
+        {
+          "source_id": "{okta}-system-log",
+          "role": "CONTRIBUTING"
+        },
+        {
+          "source_id": "{system}-account-inventory",
+          "role": "CONTRIBUTING"
+        }
+      ],
+      "source_refs": [
+        "{hris}-termination-feed",
+        "{okta}-system-log",
+        "{system}-account-inventory"
+      ]
+    }
+  ],
+  "claim_templates": [
+    {
+      "template_id": "TERM.feed-completeness",
+      "statement": "Every termination recorded in the HRIS enters the deprovisioning queue — the population control everything downstream depends on",
+      "population_ref": "TERM.terminations",
+      "assertion_prefix": "TERM-FEED",
+      "framework_mappings": [
+        {
+          "framework": "internal",
+          "control_id": "AM-06"
+        },
+        {
+          "framework": "SOC2",
+          "control_id": "CC6.2"
+        }
+      ],
+      "assertions": [
+        {
+          "letter": "a",
+          "type": "AGGREGATE",
+          "predicate_text": "termination-feed membership reconciles set-wise against the HR-reported termination population for the period, with zero undispositioned deltas"
+        },
+        {
+          "letter": "b",
+          "type": "EXISTENCE",
+          "predicate_text": "every termination in the feed has a corresponding deprovisioning event in the identity provider"
+        }
+      ]
+    },
+    {
+      "template_id": "TERM.timely-revocation",
+      "statement": "Every terminated worker lost access within five business days of the termination date",
+      "population_ref": "TERM.terminations",
+      "assertion_prefix": "TERM-TIMING",
+      "framework_mappings": [
+        {
+          "framework": "internal",
+          "control_id": "AM-06"
+        },
+        {
+          "framework": "SOC2",
+          "control_id": "CC6.3"
+        }
+      ],
+      "assertions": [
+        {
+          "letter": "a",
+          "type": "TIMING",
+          "predicate_text": "identity-provider deactivation occurred no more than five business days after the termination date, tested across the full population"
+        }
+      ]
+    },
+    {
+      "template_id": "TERM.{system}.no-residual-access",
+      "statement": "No terminated worker retains an active {system} account or group-derived access after revocation",
+      "population_ref": "TERM.{system}.accounts",
+      "assertion_prefix": "TERM-{system}",
+      "framework_mappings": [
+        {
+          "framework": "internal",
+          "control_id": "AM-06"
+        },
+        {
+          "framework": "SOC2",
+          "control_id": "CC6.3"
+        }
+      ],
+      "assertions": [
+        {
+          "letter": "a",
+          "type": "NON_EXISTENCE",
+          "predicate_text": "no active {system} account — SSO-provisioned, local, or reachable through group membership — exists for any terminated worker"
+        }
+      ]
+    }
+  ]
+}

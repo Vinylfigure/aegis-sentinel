@@ -10,23 +10,34 @@ from datetime import date, datetime, timezone
 
 from aegis_sentinel.schema import (
     Assertion,
+    AssertionTemplate,
     AssertionType,
     AssuranceState,
     Claim,
+    ClaimTemplate,
+    ControlFunction,
+    ControlNature,
+    ControlPoint,
     DerivationRule,
     Disposition,
     DispositionValue,
     EvidenceQualityContract,
     Exclusion,
     FrameworkMapping,
+    LaneEdge,
+    LaneNode,
+    LaneNodeKind,
+    LaneTemplate,
     OpenDeltaRef,
     Parameter,
     Period,
     Population,
+    PopulationTemplate,
     PopulationType,
     QualityProperty,
     Source,
     SourceRole,
+    SourceTemplate,
     UnknownWhyCode,
     VerdictRecord,
     VerdictState,
@@ -125,6 +136,62 @@ VERDICT_UNKNOWN = VerdictRecord(
     evaluated_at=datetime(2026, 7, 1, 12, 0, 0, tzinfo=timezone.utc),
 )
 
+LANE_NODE = LaneNode(node_id="hris", label="HRIS", system_ref="hris", kind=LaneNodeKind.ACTOR)
+
+LANE_EDGE = LaneEdge(from_node="hris", to_node="github", event_kind="deprovision")
+
+CONTROL_POINT = ControlPoint(
+    cp_id="TA-3",
+    name="Downstream revocation verified",
+    edge_refs=("hris->github",),
+    nature=ControlNature.AUTO,
+    function=ControlFunction.DET,
+    claim_template_refs=("MIN.{system}.no-residual-access",),
+)
+
+SOURCE_TEMPLATE = SourceTemplate(
+    source_id="{system}-account-inventory", role=SourceRole.AUTHORITATIVE
+)
+
+POPULATION_TEMPLATE = PopulationTemplate(
+    template_id="MIN.{system}.accounts",
+    name="{system} accounts",
+    type=PopulationType.ENTITY,
+    definition="Every account able to authenticate to {system}, including local accounts",
+    rule_text="all accounts enumerated by {system}-account-inventory",
+    source_templates=(SOURCE_TEMPLATE,),
+    source_refs=("{system}-account-inventory",),
+)
+
+ASSERTION_TEMPLATE = AssertionTemplate(
+    letter="a",
+    type=AssertionType.NON_EXISTENCE,
+    predicate_text="no active {system} account exists for any terminated worker",
+)
+
+CLAIM_TEMPLATE = ClaimTemplate(
+    template_id="MIN.{system}.no-residual-access",
+    statement="No terminated worker retains an active {system} account",
+    population_ref="MIN.{system}.accounts",
+    assertion_prefix="MIN-{system}",
+    assertions=(ASSERTION_TEMPLATE,),
+)
+
+LANE_TEMPLATE = LaneTemplate(
+    lane_id="TA-MIN",
+    name="Minimal termination lane",
+    direction="hris -> github",
+    trigger="termination event recorded in the HRIS",
+    nodes=(
+        LANE_NODE,
+        LaneNode(node_id="github", label="GitHub", system_ref="github", kind=LaneNodeKind.SINK),
+    ),
+    edges=(LANE_EDGE,),
+    control_points=(CONTROL_POINT,),
+    population_templates=(POPULATION_TEMPLATE,),
+    claim_templates=(CLAIM_TEMPLATE,),
+)
+
 DISPOSITION = Disposition(
     value=DispositionValue.NA_WITH_RATIONALE,
     rationale="vendor operates the change control; their report covers it",
@@ -148,4 +215,12 @@ SAMPLES = [
     VERDICT_UNKNOWN,
     DISPOSITION,
     Disposition(value=DispositionValue.INHERITED, rationale=None),
+    LANE_NODE,
+    LANE_EDGE,
+    CONTROL_POINT,
+    SOURCE_TEMPLATE,
+    POPULATION_TEMPLATE,
+    ASSERTION_TEMPLATE,
+    CLAIM_TEMPLATE,
+    LANE_TEMPLATE,
 ]

@@ -1,0 +1,7 @@
+{
+  "node_id": "hris",
+  "label": "HRIS",
+  "system_ref": "hris",
+  "kind": "ACTOR",
+  "vendor": "smuggled-through-an-open-schema"
+}

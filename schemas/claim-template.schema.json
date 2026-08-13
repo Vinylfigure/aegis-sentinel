@@ -1,0 +1,115 @@
+{
+  "$defs": {
+    "AssertionTemplate": {
+      "additionalProperties": false,
+      "description": "One lettered, typed assertion of a claim template.",
+      "properties": {
+        "letter": {
+          "pattern": "^[a-z]+$",
+          "title": "Letter",
+          "type": "string"
+        },
+        "predicate_text": {
+          "minLength": 1,
+          "title": "Predicate Text",
+          "type": "string"
+        },
+        "type": {
+          "$ref": "#/$defs/AssertionType"
+        }
+      },
+      "required": [
+        "letter",
+        "type",
+        "predicate_text"
+      ],
+      "title": "AssertionTemplate",
+      "type": "object"
+    },
+    "AssertionType": {
+      "description": "The seven assertion types (PRD-v3 \u00a72); type constrains evidence.",
+      "enum": [
+        "STATE",
+        "EVENT",
+        "SEQUENCE",
+        "AGGREGATE",
+        "EXISTENCE",
+        "NON_EXISTENCE",
+        "TIMING"
+      ],
+      "title": "AssertionType",
+      "type": "string"
+    },
+    "FrameworkMapping": {
+      "additionalProperties": false,
+      "description": "A framework control projected onto a claim (frameworks are projections).",
+      "properties": {
+        "control_id": {
+          "minLength": 1,
+          "title": "Control Id",
+          "type": "string"
+        },
+        "framework": {
+          "minLength": 1,
+          "title": "Framework",
+          "type": "string"
+        }
+      },
+      "required": [
+        "framework",
+        "control_id"
+      ],
+      "title": "FrameworkMapping",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "A parameterized Claim with lettered typed assertions.\n\n``assertion_prefix`` becomes the id prefix after placeholder\nresolution and uppercasing (``TERM-{system}`` \u2192 ``TERM-GITHUB``),\nso instantiated ids satisfy ``ASSERTION_ID_PATTERN`` \u2014 the SCH01\npattern is never loosened to admit template ids.",
+  "properties": {
+    "assertion_prefix": {
+      "pattern": "^[A-Za-z0-9{}-]+$",
+      "title": "Assertion Prefix",
+      "type": "string"
+    },
+    "assertions": {
+      "items": {
+        "$ref": "#/$defs/AssertionTemplate"
+      },
+      "minItems": 1,
+      "title": "Assertions",
+      "type": "array"
+    },
+    "framework_mappings": {
+      "default": [],
+      "items": {
+        "$ref": "#/$defs/FrameworkMapping"
+      },
+      "title": "Framework Mappings",
+      "type": "array"
+    },
+    "population_ref": {
+      "minLength": 1,
+      "title": "Population Ref",
+      "type": "string"
+    },
+    "statement": {
+      "minLength": 1,
+      "title": "Statement",
+      "type": "string"
+    },
+    "template_id": {
+      "minLength": 1,
+      "title": "Template Id",
+      "type": "string"
+    }
+  },
+  "required": [
+    "template_id",
+    "statement",
+    "population_ref",
+    "assertion_prefix",
+    "assertions"
+  ],
+  "title": "ClaimTemplate",
+  "type": "object"
+}

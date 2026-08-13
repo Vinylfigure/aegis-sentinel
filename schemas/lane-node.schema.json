@@ -1,0 +1,44 @@
+{
+  "$defs": {
+    "LaneNodeKind": {
+      "description": "ACTOR originates events; SYSTEM relays; SINK is a fan-out target.",
+      "enum": [
+        "ACTOR",
+        "SYSTEM",
+        "SINK"
+      ],
+      "title": "LaneNodeKind",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "description": "One system (or actor) on the lane. ``system_ref`` is generic \u2014\nthe role on the lane (``hris``), never a vendor or client name \u2014\nand is the key the instantiation systems mapping resolves.",
+  "properties": {
+    "kind": {
+      "$ref": "#/$defs/LaneNodeKind"
+    },
+    "label": {
+      "minLength": 1,
+      "title": "Label",
+      "type": "string"
+    },
+    "node_id": {
+      "minLength": 1,
+      "title": "Node Id",
+      "type": "string"
+    },
+    "system_ref": {
+      "minLength": 1,
+      "title": "System Ref",
+      "type": "string"
+    }
+  },
+  "required": [
+    "node_id",
+    "label",
+    "system_ref",
+    "kind"
+  ],
+  "title": "LaneNode",
+  "type": "object"
+}

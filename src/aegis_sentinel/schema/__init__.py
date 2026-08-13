@@ -27,6 +27,20 @@ from aegis_sentinel.schema.disposition import (
     Disposition,
     DispositionValue,
 )
+from aegis_sentinel.schema.lane import (
+    SYSTEM_PLACEHOLDER,
+    AssertionTemplate,
+    ClaimTemplate,
+    ControlFunction,
+    ControlNature,
+    ControlPoint,
+    LaneEdge,
+    LaneNode,
+    LaneNodeKind,
+    LaneTemplate,
+    PopulationTemplate,
+    SourceTemplate,
+)
 from aegis_sentinel.schema.population import (
     AssuranceState,
     DerivationRule,
@@ -82,4 +96,17 @@ __all__ = [
     # disposition
     "DispositionValue",
     "Disposition",
+    # lane
+    "SYSTEM_PLACEHOLDER",
+    "LaneNodeKind",
+    "ControlNature",
+    "ControlFunction",
+    "LaneNode",
+    "LaneEdge",
+    "ControlPoint",
+    "SourceTemplate",
+    "PopulationTemplate",
+    "AssertionTemplate",
+    "ClaimTemplate",
+    "LaneTemplate",
 ]
