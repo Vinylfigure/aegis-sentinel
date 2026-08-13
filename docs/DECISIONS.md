@@ -54,6 +54,13 @@ is a draft delta against the current frozen manifest snapshot; ratifying it prod
 v(N+1) frozen; v(N) becomes superseded). Changes the v2 contract's four-state enum —
 held for explicit Owner ruling at the SCH00 PR, never resolved silently.
 
+## D-S1 · 2026-08-12 · ADOPTED
+
+**Unit of ratification is the manifest snapshot.** Per-collector evidence-contract
+hashes are leaves inside the ratified snapshot; verdict records reference
+`(manifest_version, snapshot_hash, contract_hash)` where the v2 contract had
+`(spec_id, spec_hash, ratification_ref)`. See `docs/manifest-reconciliation.md` §2.
+
 ## D-P1 · 2026-08-12 · ADOPTED
 
 **Schemas as pydantic v2** (`pydantic>=2.8,<3`), `extra="forbid"`, `frozen=True` on
