@@ -11,14 +11,20 @@ one evidence surface of one system, validated against
 ```
 registry/
   capabilities/
-    <system>--<surface-slug>.json   # one CapabilityEntry per file
+    <system>.<surface-slug>.json    # one CapabilityEntry per file
 ```
 
 Entries are loaded with `Registry.load("registry/capabilities")`
 (`src/aegis_sentinel/capability/registry.py`). Loading validates every
-file; one invalid entry fails the whole load. The directory is empty
-until CAP01 lands the five lane entries (HRIS/Workday, Okta, GitHub,
-GCP, Slack).
+file; one invalid entry fails the whole load. CAP01 landed the seven
+V1 termination-lane entries across the five lane systems (HRIS feed,
+Okta users + System Log, GitHub org members + audit log, GCP IAM via
+Cloud Asset Inventory, Slack users), each with vendor-doc citations and
+`ratified_by: "vinylfigure (Ratifier)"`. An entry's
+`populations_yielded[].name` values are the source ids that lane
+populations declare — that name equality is how the compiler (TYP01)
+resolves a derivation-rule source to a surface, and a source no usable
+entry yields is compile error E117.
 
 ## Ratification is mechanical, not convention
 

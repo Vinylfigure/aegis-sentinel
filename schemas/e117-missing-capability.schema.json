@@ -1,0 +1,46 @@
+{
+  "additionalProperties": false,
+  "description": "A derivation-rule source has no usable capability entry.\n\n``missing_source`` names the source exactly as the derivation rule\nreferences it \u2014 the break-glass poison's compile-time detection\n(tests/fixtures/mutations/breakglass-cloud-account/).",
+  "properties": {
+    "assertion_ref": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Assertion Ref"
+    },
+    "claim_ref": {
+      "minLength": 1,
+      "title": "Claim Ref",
+      "type": "string"
+    },
+    "code": {
+      "const": "E117",
+      "default": "E117",
+      "title": "Code",
+      "type": "string"
+    },
+    "message": {
+      "minLength": 1,
+      "title": "Message",
+      "type": "string"
+    },
+    "missing_source": {
+      "minLength": 1,
+      "title": "Missing Source",
+      "type": "string"
+    }
+  },
+  "required": [
+    "message",
+    "claim_ref",
+    "missing_source"
+  ],
+  "title": "E117MissingCapability",
+  "type": "object"
+}

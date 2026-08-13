@@ -41,6 +41,9 @@ VERDICT_PATH_FILES = [
     "src/aegis_sentinel/capability/__init__.py",
     "src/aegis_sentinel/capability/entry.py",
     "src/aegis_sentinel/capability/registry.py",
+    "src/aegis_sentinel/compile/__init__.py",
+    "src/aegis_sentinel/compile/errors.py",
+    "src/aegis_sentinel/compile/typecheck.py",
     "src/aegis_sentinel/manifest/__init__.py",
     "src/aegis_sentinel/manifest/instantiate.py",
     "src/aegis_sentinel/schema/__init__.py",
@@ -79,8 +82,9 @@ def test_verdict_path_purity(rel_path: str) -> None:
 def test_file_list_is_current() -> None:
     """If a new .py appears in a verdict package it must be added to
     VERDICT_PATH_FILES (and to .github/CODEOWNERS) deliberately.
-    evaluate/ and compile/ do not exist yet; the loop enforces them the
-    moment they appear, and skips missing directories gracefully."""
+    compile/ landed with TYP01 (strict lane); evaluate/ does not exist
+    yet — the loop enforces it the moment it appears, and skips missing
+    directories gracefully."""
     known = set(VERDICT_PATH_FILES)
     for pkg in VERDICT_PACKAGES:
         pkg_dir = SRC / pkg

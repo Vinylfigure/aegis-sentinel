@@ -1,0 +1,92 @@
+{
+  "$defs": {
+    "Period": {
+      "additionalProperties": false,
+      "description": "Closed date interval a population (or evidence window) covers.",
+      "properties": {
+        "end": {
+          "format": "date",
+          "title": "End",
+          "type": "string"
+        },
+        "start": {
+          "format": "date",
+          "title": "Start",
+          "type": "string"
+        }
+      },
+      "required": [
+        "start",
+        "end"
+      ],
+      "title": "Period",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "The assertion needs history the matched capability cannot yield.\n\n``required_window`` is the population's period; ``capability_window_days``\nis the best insufficient candidate's event-history window (``None``\nwhen the best candidate yields no event history at all, e.g. STATE\nonly \u2014 the PRD \u00a73 github.members case). ``satisfiable_via`` lists\ncapability-entry-id combinations, drawn ONLY from actually-usable\nregistry entries, that would cover the period; empty means no usable\ncombination does, and the message says so honestly.",
+  "properties": {
+    "assertion_ref": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Assertion Ref"
+    },
+    "capability_window_days": {
+      "anyOf": [
+        {
+          "minimum": 1,
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Capability Window Days"
+    },
+    "claim_ref": {
+      "minLength": 1,
+      "title": "Claim Ref",
+      "type": "string"
+    },
+    "code": {
+      "const": "E204",
+      "default": "E204",
+      "title": "Code",
+      "type": "string"
+    },
+    "message": {
+      "minLength": 1,
+      "title": "Message",
+      "type": "string"
+    },
+    "required_window": {
+      "$ref": "#/$defs/Period"
+    },
+    "satisfiable_via": {
+      "default": [],
+      "items": {
+        "items": {
+          "type": "string"
+        },
+        "type": "array"
+      },
+      "title": "Satisfiable Via",
+      "type": "array"
+    }
+  },
+  "required": [
+    "message",
+    "claim_ref",
+    "required_window"
+  ],
+  "title": "E204TemporalInsufficiency",
+  "type": "object"
+}

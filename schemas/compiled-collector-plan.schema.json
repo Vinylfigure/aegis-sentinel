@@ -1,0 +1,189 @@
+{
+  "$defs": {
+    "AssertionType": {
+      "description": "The seven assertion types (PRD-v3 \u00a72); type constrains evidence.",
+      "enum": [
+        "STATE",
+        "EVENT",
+        "SEQUENCE",
+        "AGGREGATE",
+        "EXISTENCE",
+        "NON_EXISTENCE",
+        "TIMING"
+      ],
+      "title": "AssertionType",
+      "type": "string"
+    },
+    "Pagination": {
+      "additionalProperties": false,
+      "description": "Pagination method plus how a collector proves exhaustion.\n\nExhaustion is named even for NONE (e.g. \"single response carries\nthe full set; compare returned count to reported total\") \u2014 the\npopulation quality property depends on it (PRD-v3 \u00a72).",
+      "properties": {
+        "exhaustion_method": {
+          "minLength": 1,
+          "title": "Exhaustion Method",
+          "type": "string"
+        },
+        "method": {
+          "$ref": "#/$defs/PaginationMethod"
+        }
+      },
+      "required": [
+        "method",
+        "exhaustion_method"
+      ],
+      "title": "Pagination",
+      "type": "object"
+    },
+    "PaginationMethod": {
+      "description": "Pagination mechanics of the surface (PRD-v3 \u00a73).",
+      "enum": [
+        "CURSOR",
+        "PAGE",
+        "NONE"
+      ],
+      "title": "PaginationMethod",
+      "type": "string"
+    },
+    "Period": {
+      "additionalProperties": false,
+      "description": "Closed date interval a population (or evidence window) covers.",
+      "properties": {
+        "end": {
+          "format": "date",
+          "title": "End",
+          "type": "string"
+        },
+        "start": {
+          "format": "date",
+          "title": "Start",
+          "type": "string"
+        }
+      },
+      "required": [
+        "start",
+        "end"
+      ],
+      "title": "Period",
+      "type": "object"
+    },
+    "TemporalShape": {
+      "additionalProperties": false,
+      "description": "Temporal shape with its window: ``event-history(window=90d)``.\n\nConstructor-enforced iff: EVENT_HISTORY carries ``window_days``\n(a bounded log is only meaningful with its bound \u2014 Okta's 90-day\nSystem Log is the canonical trap); every other kind must leave it\nunset (a window on STATE_ONLY would be a claim the shape cannot\nhonor).",
+      "properties": {
+        "kind": {
+          "$ref": "#/$defs/TemporalShapeKind"
+        },
+        "window_days": {
+          "anyOf": [
+            {
+              "minimum": 1,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Window Days"
+        }
+      },
+      "required": [
+        "kind"
+      ],
+      "title": "TemporalShape",
+      "type": "object"
+    },
+    "TemporalShapeKind": {
+      "description": "What history a surface can yield \u2014 the E204 axis (PRD-v3 \u00a73).",
+      "enum": [
+        "STATE_ONLY",
+        "EVENT_HISTORY",
+        "FULL_HISTORY",
+        "SNAPSHOT_CADENCE"
+      ],
+      "title": "TemporalShapeKind",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "description": "One capability entry serving one assertion.\n\nThreads the EQC-relevant fields (PRD-v3 \u00a72 contract identity) from\nthe matched entry: surface/endpoint, least-privilege auth scope,\npagination + exhaustion method (the population quality property),\ntemporal shape (temporal validity), join keys (identity), and the\ntime window the evidence must represent.",
+  "properties": {
+    "assertion_ref": {
+      "minLength": 1,
+      "title": "Assertion Ref",
+      "type": "string"
+    },
+    "assertion_type": {
+      "$ref": "#/$defs/AssertionType"
+    },
+    "auth_scope": {
+      "minLength": 1,
+      "title": "Auth Scope",
+      "type": "string"
+    },
+    "claim_ref": {
+      "minLength": 1,
+      "title": "Claim Ref",
+      "type": "string"
+    },
+    "entry_id": {
+      "minLength": 1,
+      "title": "Entry Id",
+      "type": "string"
+    },
+    "join_keys": {
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1,
+      "title": "Join Keys",
+      "type": "array"
+    },
+    "pagination": {
+      "$ref": "#/$defs/Pagination"
+    },
+    "population_ref": {
+      "minLength": 1,
+      "title": "Population Ref",
+      "type": "string"
+    },
+    "source_id": {
+      "minLength": 1,
+      "title": "Source Id",
+      "type": "string"
+    },
+    "surface": {
+      "minLength": 1,
+      "title": "Surface",
+      "type": "string"
+    },
+    "system": {
+      "minLength": 1,
+      "title": "System",
+      "type": "string"
+    },
+    "temporal": {
+      "$ref": "#/$defs/TemporalShape"
+    },
+    "time_window": {
+      "$ref": "#/$defs/Period"
+    }
+  },
+  "required": [
+    "claim_ref",
+    "assertion_ref",
+    "assertion_type",
+    "population_ref",
+    "source_id",
+    "entry_id",
+    "system",
+    "surface",
+    "auth_scope",
+    "pagination",
+    "temporal",
+    "join_keys",
+    "time_window"
+  ],
+  "title": "CompiledCollectorPlan",
+  "type": "object"
+}

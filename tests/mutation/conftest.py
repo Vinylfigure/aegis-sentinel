@@ -13,8 +13,10 @@ Design:
   closed-shape ``expected_outcome.json`` (parsed by :class:`Outcome`).
 - A :class:`PipelineRunner` (protocol) turns a fixture directory into an
   observed :class:`Outcome`. Runners are registered per poison in
-  :data:`RUNNER_REGISTRY` by later tasks (VAL02 wires the real
-  pipeline); the registry ships empty.
+  :data:`RUNNER_REGISTRY` by the tasks that build the pipeline. TYP01
+  registered the first real runner (:class:`BreakglassCompileRunner` —
+  the break-glass poison is detected by the actual compiler); VAL02
+  wires the rest.
 - A fixture with no registered runner is counted ``runnable=False``
   (pending) — it is **never** silently counted as detected, and the
   detection rate is computed only over runnable fixtures. With zero
@@ -28,9 +30,20 @@ from __future__ import annotations
 
 import json
 from dataclasses import dataclass
+from datetime import date
 from pathlib import Path
 from typing import Mapping, Protocol
 
+from aegis_sentinel.capability import Registry
+from aegis_sentinel.compile import compile_program
+from aegis_sentinel.manifest import instantiate_lane
+from aegis_sentinel.schema import (
+    DerivationRule,
+    LaneTemplate,
+    Period,
+    Source,
+    SourceRole,
+)
 from aegis_sentinel.schema.verdict import UnknownWhyCode, VerdictState
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -133,8 +146,9 @@ class PipelineRunner(Protocol):
     def run(self, fixture_dir: Path) -> Outcome: ...  # pragma: no cover
 
 
-#: poison name -> implemented runner. Ships empty by design: VAL01 is
-#: the harness; later tasks register real runners here.
+#: poison name -> implemented runner. VAL01 shipped this empty; tasks
+#: that build the pipeline register real runners below (TYP01: the
+#: break-glass compile runner; VAL02 wires the rest).
 RUNNER_REGISTRY: dict[str, PipelineRunner] = {}
 
 
@@ -286,6 +300,62 @@ def evaluate_suite(
             )
         )
     return SuiteReport(results=tuple(results))
+
+
+class BreakglassCompileRunner:
+    """Runs the REAL compiler (TYP01) against the break-glass poison.
+
+    The poison (docs/PRD-v3.md §6; this fixture's README): a break-glass
+    GCP account provisioned outside every IdP-derived population. Encoded
+    as the mutation the README describes — the GCP accounts population's
+    derivation rule references ``breakglass.config``, a source with no
+    ratified capability entry — so the claim over that population must
+    refuse to compile with E117 before any collector runs.
+
+    Honest by construction: if the compiler someday stopped erroring,
+    this runner returns a silent PASS outcome, which the harness scores
+    undetected and the build gate turns red.
+    """
+
+    _MISSING_SOURCE = "breakglass.config"
+    _POISONED_POPULATION = "TERM.gcp.accounts"
+    _SYSTEMS = {"hris": "hris", "okta": "okta", "github": "github", "gcp": "gcp", "slack": "slack"}
+
+    def run(self, fixture_dir: Path) -> Outcome:
+        template_path = REPO_ROOT / "templates" / "lanes" / "termination.json"
+        template = LaneTemplate.model_validate_json(template_path.read_text(encoding="utf-8"))
+        period = Period(start=date(2026, 5, 1), end=date(2026, 6, 29))  # inside Okta's 90d
+        populations, claims = instantiate_lane(template, self._SYSTEMS, period)
+        poisoned = [self._poison(p) for p in populations]
+        view = Registry.load(REPO_ROOT / "registry" / "capabilities").usable()
+        result = compile_program(claims, poisoned, view)
+        errors = [e for compilation in result.claims for e in compilation.errors]
+        if not errors:  # poison missed -> silent PASS -> scored undetected
+            return Outcome(
+                detection="VERDICT", verdict_state=VerdictState.PASS, why_code=None, e_code=None
+            )
+        return Outcome(
+            detection="COMPILE_ERROR", verdict_state=None, why_code=None, e_code=errors[0].code
+        )
+
+    def _poison(self, population):
+        if population.population_id != self._POISONED_POPULATION:
+            return population
+        rule = population.derivation_rule
+        return population.model_copy(
+            update={
+                "sources": population.sources
+                + (Source(source_id=self._MISSING_SOURCE, role=SourceRole.CONTRIBUTING),),
+                "derivation_rule": DerivationRule(
+                    rule_text=rule.rule_text
+                    + "; union break-glass accounts enumerated by breakglass.config",
+                    source_refs=rule.source_refs + (self._MISSING_SOURCE,),
+                ),
+            }
+        )
+
+
+register_runner("breakglass-cloud-account", BreakglassCompileRunner())
 
 
 class MutationDetectionFailure(AssertionError):

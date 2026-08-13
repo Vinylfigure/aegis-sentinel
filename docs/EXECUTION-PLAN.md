@@ -41,13 +41,14 @@ redaction (D-R1), naming (D-N1). Open: lifecycle collapse (D-L1, due at SCH00 PR
 
 ## Phase 1 — the termination lane, made nasty
 
-- [ ] **CAP01** — 7 capability entries across HRIS/Okta/GitHub/GCP/Slack with vendor-doc
+- [x] **CAP01** — 7 capability entries across HRIS/Okta/GitHub/GCP/Slack with vendor-doc
   citations; Okta System Log 90-day window recorded as history caveat;
   `ratified_by: "vinylfigure (Ratifier)"`.
-- [ ] **TYP01** — type checker + E-codes (E204 temporal insufficiency w/ satisfiable-via
+- [x] **TYP01** — type checker + E-codes (E204 temporal insufficiency w/ satisfiable-via
   suggestion, E117 missing capability, E302 schema drift); zero collectors executable
   with unresolved E-codes. Acceptance: 6-month TIMING assertion vs Okta 90d fails with
-  E204 and the correct suggestion.
+  E204 and the correct suggestion. Bonus: the break-glass poison is now runnable in the
+  VAL01 harness — the real compiler detects it with E117 (detection rate 1/1 runnable).
 - [ ] **WALKING SKELETON** — COL01 (HRIS) → one claim → minimal reconcile/evaluate →
   one real verdict record → `artifacts/demo-engagement/verdicts.json` → rendered by
   `web` `/verdicts`. First end-to-end milestone; ontology proof-of-fit.

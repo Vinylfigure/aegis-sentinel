@@ -2,7 +2,8 @@
 """Export committed JSON Schemas for every public ontology model.
 
 Writes ``model_json_schema()`` output for each public pydantic model in
-``aegis_sentinel.schema`` and ``aegis_sentinel.capability`` (SCH02) to
+``aegis_sentinel.schema``, ``aegis_sentinel.capability`` (SCH02), and
+``aegis_sentinel.compile`` (TYP01) to
 ``schemas/<kebab-name>.schema.json``
 (sorted keys, two-space indent, trailing newline). The committed files
 are kept honest by tests/schema/test_generated_schemas_current.py
@@ -20,12 +21,13 @@ from pathlib import Path
 from pydantic import BaseModel
 
 import aegis_sentinel.capability as capability_pkg
+import aegis_sentinel.compile as compile_pkg
 import aegis_sentinel.schema as schema_pkg
 
 ROOT = Path(__file__).resolve().parents[1]
 SCHEMAS_DIR = ROOT / "schemas"
 
-PACKAGES = (schema_pkg, capability_pkg)
+PACKAGES = (schema_pkg, capability_pkg, compile_pkg)
 
 
 def kebab(name: str) -> str:

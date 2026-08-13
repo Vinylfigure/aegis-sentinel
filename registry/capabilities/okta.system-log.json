@@ -1,0 +1,52 @@
+{
+  "entry_id": "okta.system_log.api_v1",
+  "system": "okta",
+  "surface": "System Log API GET /api/v1/logs (deprovisioning events: user.lifecycle.deactivate, user.lifecycle.suspend, application.user_membership.remove)",
+  "access_modes": ["DIRECT_API"],
+  "populations_yielded": [
+    {"type": "EVENT", "name": "okta-system-log"}
+  ],
+  "attributes": [
+    {
+      "population_name": "okta-system-log",
+      "fields_exposed": [
+        "uuid",
+        "eventType",
+        "published",
+        "actor.id",
+        "actor.alternateId",
+        "target.id",
+        "target.alternateId",
+        "outcome.result"
+      ]
+    }
+  ],
+  "temporal": {"kind": "EVENT_HISTORY", "window_days": 90},
+  "join_keys": ["actor.alternateId", "target.alternateId"],
+  "auth_scope": "okta.logs.read (read-only System Log scope; no user or admin scopes granted)",
+  "pagination": {
+    "method": "CURSOR",
+    "exhaustion_method": "follow the after cursor from the Link rel=\"next\" header until a page returns zero events"
+  },
+  "rate_limits": "/api/v1/logs org-tier rate-limit bucket; honor X-Rate-Limit-Remaining and X-Rate-Limit-Reset headers",
+  "history_caveats": [
+    "Okta System Log retains 90 days — TIMING assertions beyond window need exported archive"
+  ],
+  "provenance": {
+    "researched_by": "vinylfigure (Cartographer draft, hand-authored)",
+    "researched_at": "2026-08-12T00:00:00Z",
+    "source_citations": [
+      {
+        "url": "https://developer.okta.com/docs/reference/api/system-log/",
+        "title": "Okta System Log API reference"
+      },
+      {
+        "url": "https://developer.okta.com/docs/reference/api/event-types/",
+        "title": "Okta event types catalog (user.lifecycle.* deprovisioning events)"
+      }
+    ],
+    "doc_version": "okta-api 2026-06",
+    "ratified_by": "vinylfigure (Ratifier)"
+  },
+  "schema_version": "capability-entry@0.1.0"
+}
