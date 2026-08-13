@@ -38,11 +38,17 @@ CHECK_PURITY = ROOT / "scripts" / "check-purity.sh"
 # manifest}. A new module joins this list (and .github/CODEOWNERS)
 # deliberately — test_file_list_is_current fails until it does.
 VERDICT_PATH_FILES = [
+    "src/aegis_sentinel/capability/__init__.py",
+    "src/aegis_sentinel/capability/entry.py",
+    "src/aegis_sentinel/capability/registry.py",
+    "src/aegis_sentinel/manifest/__init__.py",
+    "src/aegis_sentinel/manifest/instantiate.py",
     "src/aegis_sentinel/schema/__init__.py",
     "src/aegis_sentinel/schema/canonical.py",
     "src/aegis_sentinel/schema/claim.py",
     "src/aegis_sentinel/schema/contract.py",
     "src/aegis_sentinel/schema/disposition.py",
+    "src/aegis_sentinel/schema/lane.py",
     "src/aegis_sentinel/schema/population.py",
     "src/aegis_sentinel/schema/verdict.py",
 ]

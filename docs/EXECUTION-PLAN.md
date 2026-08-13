@@ -19,24 +19,24 @@ redaction (D-R1), naming (D-N1). Open: lifecycle collapse (D-L1, due at SCH00 PR
   the Build Execution PRD v2 plan→freeze→execute contract
   (`knowledge/01_corpus/04_build_prds/Sentinel_Build_Execution_PRD.md`). Presents D-L1
   for ruling. **Hard gate: no P1 task starts before this merges.**
-- [ ] **SCH01** — core ontology as pydantic v2 models in `src/aegis_sentinel/schema/`
+- [x] **SCH01** — core ontology as pydantic v2 models in `src/aegis_sentinel/schema/`
   (Population ×3 + assurance ladder + derivation rules + source roles; Claim; Assertion
   ×7; Evidence Quality Contract identity + 5 properties; Verdict ×5 + why-codes;
   Disposition ×6). Generated JSON schemas committed under `schemas/`; `docs/invariants.md`
   merges PRD-v3's six invariants with the prior scaffold's eight (recording D-V1/D-U1).
   Tests: round-trip byte-identical, fixture triads (invalid fixtures REJECTED), ladder
   transitions, schema drift. Owner reviews before Phase 1.
-- [ ] **SCH02** — capability entry schema + versioned registry (`registry/capabilities/`);
+- [x] **SCH02** — capability entry schema + versioned registry (`registry/capabilities/`);
   unratified entries mechanically unusable (`Registry.usable()` excludes them; tested).
 - [ ] **SCH03** — manifest snapshots + human-readable diff + `PROPOSED_SCOPE_CHANGE`
   (transition requires a ratifier identity; structural-exclusion pattern).
 - [x] **VAL01** — mutation harness in `tests/mutation/` (detection rate computed;
   a deliberately-silent-PASS stub proves the harness turns the build red).
-- [ ] **INFRA01** — verdict-path purity tests (AST import/impurity bans + registered
+- [x] **INFRA01** — verdict-path purity tests (AST import/impurity bans + registered
   file roster), per-file purity check script wired into `verify.sh quick`,
   `.github/CODEOWNERS`. Owner: enable branch protection (required checks
   `verify` + `web-verify`, CODEOWNERS, 1 review).
-- [ ] **LANE01** — termination-lane template as data (`templates/lanes/termination.json`)
+- [x] **LANE01** — termination-lane template as data (`templates/lanes/termination.json`)
   + instantiation into populations/claims.
 
 ## Phase 1 — the termination lane, made nasty
@@ -66,16 +66,16 @@ redaction (D-R1), naming (D-N1). Open: lifecycle collapse (D-L1, due at SCH00 PR
 
 ## Frontend track (worktree; independent until Phase C)
 
-- [ ] **A1** — Next.js 15 scaffold in `web/` (CSS Modules + token sheet from the
+- [x] **A1** — Next.js 15 scaffold in `web/` (CSS Modules + token sheet from the
   prototypes; fonts via next/font; AppShell + NavTabs + GaugesRail), Aegis branding,
   `.github/workflows/web-verify.yml` (npm ci, tsc, build, artifact-sync drift check),
   Vercel project (root `web/`, ignored-build-step diffing `web/ artifacts/`).
-- [ ] **A2** — seed data ported from prototypes into `web/src/data/seed/*.json`,
+- [x] **A2** — seed data ported from prototypes into `web/src/data/seed/*.json`,
   genericized to a neutral demo company (Meridian Financial).
-- [ ] **A3** — `/scope` (merged scope-tool + workbench stage 1) + ledger/regime rail.
-- [ ] **A4** — `/controls`, `/datasets` (derived registry), `/overlord` (generated
+- [x] **A3** — `/scope` (merged scope-tool + workbench stage 1) + ledger/regime rail.
+- [x] **A4** — `/controls`, `/datasets` (derived registry), `/overlord` (generated
   missions + manifest export) + posture/dataset/agent gauges.
-- [ ] **A5** — `/process` lanes + control-point detail rail.
+- [x] **A5** — `/process` lanes + control-point detail rail.
 - [ ] **B1** — TS ontology/artifact types + hand-authored mock
   `web/src/data/engagement/*.json` encoding the six poisons (doubles as the review
   artifact for SCH01/REC01 output shapes).
