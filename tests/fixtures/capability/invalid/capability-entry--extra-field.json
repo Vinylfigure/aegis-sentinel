@@ -1,0 +1,27 @@
+{
+  "entry_id": "github.org_members.rest_v3",
+  "system": "github",
+  "surface": "REST v3 GET /orgs/{org}/members",
+  "access_modes": ["DIRECT_API"],
+  "populations_yielded": [
+    {"type": "ENTITY", "name": "org members"}
+  ],
+  "attributes": [],
+  "temporal": {"kind": "STATE_ONLY", "window_days": null},
+  "join_keys": ["login"],
+  "auth_scope": "read:org",
+  "pagination": {"method": "PAGE", "exhaustion_method": "follow Link rel=next until absent"},
+  "rate_limits": "5000 requests/hour",
+  "history_caveats": [],
+  "provenance": {
+    "researched_by": "vinylfigure (Cartographer draft, hand-authored)",
+    "researched_at": "2026-08-12T00:00:00Z",
+    "source_citations": [
+      {"url": "https://docs.github.com/en/rest/orgs/members", "title": "Org members"}
+    ],
+    "doc_version": "2022-11-28",
+    "ratified_by": "vinylfigure (Ratifier)"
+  },
+  "schema_version": "capability-entry@0.1.0",
+  "smuggled_note": "closed schemas reject unknown fields; this must never validate"
+}

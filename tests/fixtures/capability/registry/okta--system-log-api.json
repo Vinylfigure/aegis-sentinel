@@ -1,0 +1,39 @@
+{
+  "entry_id": "okta.system_log.api_v1",
+  "system": "okta",
+  "surface": "System Log API GET /api/v1/logs",
+  "access_modes": ["DIRECT_API", "OFFICIAL_MCP"],
+  "populations_yielded": [
+    {"type": "EVENT", "name": "audit events"}
+  ],
+  "attributes": [
+    {
+      "population_name": "audit events",
+      "fields_exposed": ["uuid", "eventType", "published", "actor.id", "target.id", "outcome.result"]
+    }
+  ],
+  "temporal": {"kind": "EVENT_HISTORY", "window_days": 90},
+  "join_keys": ["actor.alternateId"],
+  "auth_scope": "okta.logs.read (read-only System Log scope)",
+  "pagination": {
+    "method": "CURSOR",
+    "exhaustion_method": "follow after cursor from Link rel=\"next\" until an empty page is returned"
+  },
+  "rate_limits": "org-tier limit on /api/v1/logs; honor X-Rate-Limit-Remaining/Reset headers",
+  "history_caveats": [
+    "Okta System Log retains 90 days — TIMING assertions beyond window need exported archive"
+  ],
+  "provenance": {
+    "researched_by": "vinylfigure (Cartographer draft, hand-authored)",
+    "researched_at": "2026-08-12T00:00:00Z",
+    "source_citations": [
+      {
+        "url": "https://developer.okta.com/docs/reference/api/system-log/",
+        "title": "Okta System Log API reference"
+      }
+    ],
+    "doc_version": "okta-api 2026-06",
+    "ratified_by": null
+  },
+  "schema_version": "capability-entry@0.1.0"
+}

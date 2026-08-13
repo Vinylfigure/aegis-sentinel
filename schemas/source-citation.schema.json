@@ -1,0 +1,22 @@
+{
+  "additionalProperties": false,
+  "description": "One vendor-doc citation grounding the entry (Cartographer output).",
+  "properties": {
+    "title": {
+      "minLength": 1,
+      "title": "Title",
+      "type": "string"
+    },
+    "url": {
+      "pattern": "^https?://\\S+$",
+      "title": "Url",
+      "type": "string"
+    }
+  },
+  "required": [
+    "url",
+    "title"
+  ],
+  "title": "SourceCitation",
+  "type": "object"
+}

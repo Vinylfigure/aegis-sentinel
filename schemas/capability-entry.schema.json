@@ -1,0 +1,310 @@
+{
+  "$defs": {
+    "AccessMode": {
+      "description": "How a surface can be reached (PRD-v3 \u00a73 access_modes).\n\nThird-party MCP servers are an access mode *recorded* here \u2014\nverdict-path collection defaults to DIRECT_API; MCP modes are for\nthe LLM lane, or verdict-path only when pinned (PRD-v3 \u00a73, \"MCP,\nprecisely positioned\").",
+      "enum": [
+        "DIRECT_API",
+        "OFFICIAL_MCP",
+        "COMMUNITY_MCP",
+        "CUSTOM_ADAPTER",
+        "PLAYWRIGHT"
+      ],
+      "title": "AccessMode",
+      "type": "string"
+    },
+    "Pagination": {
+      "additionalProperties": false,
+      "description": "Pagination method plus how a collector proves exhaustion.\n\nExhaustion is named even for NONE (e.g. \"single response carries\nthe full set; compare returned count to reported total\") \u2014 the\npopulation quality property depends on it (PRD-v3 \u00a72).",
+      "properties": {
+        "exhaustion_method": {
+          "minLength": 1,
+          "title": "Exhaustion Method",
+          "type": "string"
+        },
+        "method": {
+          "$ref": "#/$defs/PaginationMethod"
+        }
+      },
+      "required": [
+        "method",
+        "exhaustion_method"
+      ],
+      "title": "Pagination",
+      "type": "object"
+    },
+    "PaginationMethod": {
+      "description": "Pagination mechanics of the surface (PRD-v3 \u00a73).",
+      "enum": [
+        "CURSOR",
+        "PAGE",
+        "NONE"
+      ],
+      "title": "PaginationMethod",
+      "type": "string"
+    },
+    "PopulationAttributes": {
+      "additionalProperties": false,
+      "description": "Fields the surface exposes for one yielded population.",
+      "properties": {
+        "fields_exposed": {
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Fields Exposed",
+          "type": "array"
+        },
+        "population_name": {
+          "minLength": 1,
+          "title": "Population Name",
+          "type": "string"
+        }
+      },
+      "required": [
+        "population_name",
+        "fields_exposed"
+      ],
+      "title": "PopulationAttributes",
+      "type": "object"
+    },
+    "PopulationType": {
+      "description": "PRD-v3 \u00a72: entity (state), event (happened), relationship (join).",
+      "enum": [
+        "ENTITY",
+        "EVENT",
+        "RELATIONSHIP"
+      ],
+      "title": "PopulationType",
+      "type": "string"
+    },
+    "PopulationYield": {
+      "additionalProperties": false,
+      "description": "One population a surface can yield: its type and name (PRD-v3 \u00a73).",
+      "properties": {
+        "name": {
+          "minLength": 1,
+          "title": "Name",
+          "type": "string"
+        },
+        "type": {
+          "$ref": "#/$defs/PopulationType"
+        }
+      },
+      "required": [
+        "type",
+        "name"
+      ],
+      "title": "PopulationYield",
+      "type": "object"
+    },
+    "Provenance": {
+      "additionalProperties": false,
+      "description": "Who researched the entry, from what, and who ratified it.\n\n``ratified_by`` is the mechanical gate: ``None`` means draft, and\ndrafts never reach the compiler (Registry.usable). Cartographer\nproposals arrive with citations and ``ratified_by=None``; only a\nhuman sets the field.",
+      "properties": {
+        "doc_version": {
+          "minLength": 1,
+          "title": "Doc Version",
+          "type": "string"
+        },
+        "ratified_by": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Ratified By"
+        },
+        "researched_at": {
+          "format": "date-time",
+          "title": "Researched At",
+          "type": "string"
+        },
+        "researched_by": {
+          "minLength": 1,
+          "title": "Researched By",
+          "type": "string"
+        },
+        "source_citations": {
+          "items": {
+            "$ref": "#/$defs/SourceCitation"
+          },
+          "minItems": 1,
+          "title": "Source Citations",
+          "type": "array"
+        }
+      },
+      "required": [
+        "researched_by",
+        "researched_at",
+        "source_citations",
+        "doc_version"
+      ],
+      "title": "Provenance",
+      "type": "object"
+    },
+    "SourceCitation": {
+      "additionalProperties": false,
+      "description": "One vendor-doc citation grounding the entry (Cartographer output).",
+      "properties": {
+        "title": {
+          "minLength": 1,
+          "title": "Title",
+          "type": "string"
+        },
+        "url": {
+          "pattern": "^https?://\\S+$",
+          "title": "Url",
+          "type": "string"
+        }
+      },
+      "required": [
+        "url",
+        "title"
+      ],
+      "title": "SourceCitation",
+      "type": "object"
+    },
+    "TemporalShape": {
+      "additionalProperties": false,
+      "description": "Temporal shape with its window: ``event-history(window=90d)``.\n\nConstructor-enforced iff: EVENT_HISTORY carries ``window_days``\n(a bounded log is only meaningful with its bound \u2014 Okta's 90-day\nSystem Log is the canonical trap); every other kind must leave it\nunset (a window on STATE_ONLY would be a claim the shape cannot\nhonor).",
+      "properties": {
+        "kind": {
+          "$ref": "#/$defs/TemporalShapeKind"
+        },
+        "window_days": {
+          "anyOf": [
+            {
+              "minimum": 1,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Window Days"
+        }
+      },
+      "required": [
+        "kind"
+      ],
+      "title": "TemporalShape",
+      "type": "object"
+    },
+    "TemporalShapeKind": {
+      "description": "What history a surface can yield \u2014 the E204 axis (PRD-v3 \u00a73).",
+      "enum": [
+        "STATE_ONLY",
+        "EVENT_HISTORY",
+        "FULL_HISTORY",
+        "SNAPSHOT_CADENCE"
+      ],
+      "title": "TemporalShapeKind",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "description": "One evidence surface of one system, fully described (PRD-v3 \u00a73).\n\nConstructor-enforced: every ``attributes`` block must name a\ndeclared yielded population (attributes cannot be smuggled onto a\npopulation the surface does not yield).",
+  "properties": {
+    "access_modes": {
+      "items": {
+        "$ref": "#/$defs/AccessMode"
+      },
+      "minItems": 1,
+      "title": "Access Modes",
+      "type": "array"
+    },
+    "attributes": {
+      "default": [],
+      "items": {
+        "$ref": "#/$defs/PopulationAttributes"
+      },
+      "title": "Attributes",
+      "type": "array"
+    },
+    "auth_scope": {
+      "minLength": 1,
+      "title": "Auth Scope",
+      "type": "string"
+    },
+    "entry_id": {
+      "minLength": 1,
+      "title": "Entry Id",
+      "type": "string"
+    },
+    "history_caveats": {
+      "default": [],
+      "items": {
+        "type": "string"
+      },
+      "title": "History Caveats",
+      "type": "array"
+    },
+    "join_keys": {
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1,
+      "title": "Join Keys",
+      "type": "array"
+    },
+    "pagination": {
+      "$ref": "#/$defs/Pagination"
+    },
+    "populations_yielded": {
+      "items": {
+        "$ref": "#/$defs/PopulationYield"
+      },
+      "minItems": 1,
+      "title": "Populations Yielded",
+      "type": "array"
+    },
+    "provenance": {
+      "$ref": "#/$defs/Provenance"
+    },
+    "rate_limits": {
+      "minLength": 1,
+      "title": "Rate Limits",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "capability-entry@0.1.0",
+      "default": "capability-entry@0.1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "surface": {
+      "minLength": 1,
+      "title": "Surface",
+      "type": "string"
+    },
+    "system": {
+      "minLength": 1,
+      "title": "System",
+      "type": "string"
+    },
+    "temporal": {
+      "$ref": "#/$defs/TemporalShape"
+    }
+  },
+  "required": [
+    "entry_id",
+    "system",
+    "surface",
+    "access_modes",
+    "populations_yielded",
+    "temporal",
+    "join_keys",
+    "auth_scope",
+    "pagination",
+    "rate_limits",
+    "provenance"
+  ],
+  "title": "CapabilityEntry",
+  "type": "object"
+}

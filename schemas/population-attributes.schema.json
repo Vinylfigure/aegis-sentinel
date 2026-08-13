@@ -1,0 +1,25 @@
+{
+  "additionalProperties": false,
+  "description": "Fields the surface exposes for one yielded population.",
+  "properties": {
+    "fields_exposed": {
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1,
+      "title": "Fields Exposed",
+      "type": "array"
+    },
+    "population_name": {
+      "minLength": 1,
+      "title": "Population Name",
+      "type": "string"
+    }
+  },
+  "required": [
+    "population_name",
+    "fields_exposed"
+  ],
+  "title": "PopulationAttributes",
+  "type": "object"
+}
