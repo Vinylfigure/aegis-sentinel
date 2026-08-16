@@ -1,0 +1,159 @@
+{
+  "company": {
+    "id": "meridian",
+    "name": "Meridian Financial",
+    "description": "Demo fintech: credit-building subscription, card product, and cash advance lines. All names and people in the seed data are invented."
+  },
+  "products": [
+    {
+      "id": "cb",
+      "name": "Credit Builder",
+      "description": "Core subscription product; furnishes tradelines to the bureaus",
+      "dataClasses": ["tradeline", "pii", "bank"],
+      "inScope": true
+    },
+    {
+      "id": "card",
+      "name": "Credit-building card",
+      "description": "Card product — the PCI scope question lives here",
+      "dataClasses": ["chd", "pii"],
+      "inScope": true
+    },
+    {
+      "id": "cash",
+      "name": "Cash advance / EWA",
+      "description": "Second revenue line — confirm whether it is inside the existing boundary",
+      "dataClasses": ["bank", "pii"],
+      "inScope": true
+    },
+    {
+      "id": "corp",
+      "name": "Corporate IT & internal systems",
+      "description": "Supports the service without being the service",
+      "dataClasses": ["emp"],
+      "inScope": false
+    },
+    {
+      "id": "mkt",
+      "name": "Marketing site & top of funnel",
+      "description": "Candidate for exclusion — prove it holds no production data",
+      "dataClasses": ["none"],
+      "inScope": false
+    }
+  ],
+  "dataClasses": [
+    { "id": "tradeline", "name": "Tradeline / furnished credit data", "note": "Reported to bureaus", "tier": "Tier 1 — Regulated" },
+    { "id": "npi", "name": "Non-public personal info (NPI)", "note": "Financial account data", "tier": "Tier 1 — Regulated" },
+    { "id": "chd", "name": "Cardholder data", "note": "PAN, expiry, CVV", "tier": "Tier 1 — Regulated" },
+    { "id": "bank", "name": "Bank account / ACH details", "note": "Routing, account numbers", "tier": "Tier 1 — Regulated" },
+    { "id": "pii", "name": "Customer PII", "note": "Identity, contact, SSN", "tier": "Tier 2 — Confidential" },
+    { "id": "auth", "name": "Credentials & secrets", "note": "Keys, tokens, hashes", "tier": "Tier 1 — Regulated" },
+    { "id": "emp", "name": "Employee data", "note": "HR, payroll", "tier": "Tier 2 — Confidential" },
+    { "id": "none", "name": "No production customer data", "note": "Marketing, public content", "tier": "Tier 4 — Public" }
+  ],
+  "regimes": [
+    { "id": "fcra", "name": "FCRA — furnisher obligations", "why": "Accuracy, dispute handling, audit trail on what was furnished when", "triggeredBy": ["tradeline"] },
+    { "id": "glba", "name": "GLBA Safeguards Rule", "why": "Written program, access controls, encryption, vendor oversight", "triggeredBy": ["npi", "bank", "chd"] },
+    { "id": "pci", "name": "PCI DSS", "why": "SAQ level or ROC falls out of verified CHD flows and volume", "triggeredBy": ["chd"] },
+    { "id": "soc2", "name": "SOC 2 (Security TSC)", "why": "Customer commitment — confirm the system description covers this product", "triggeredBy": ["tradeline", "npi", "chd", "bank", "pii"] },
+    { "id": "iso", "name": "ISO 27001", "why": "Same control set, mapped out — ISMS governance is the delta", "triggeredBy": ["tradeline", "npi", "chd", "bank", "pii"] },
+    { "id": "106", "name": "Reg S-K Item 106", "why": "Materiality determination with legal; 4 business days to the 8-K", "triggeredBy": ["tradeline", "npi", "chd", "bank", "pii", "auth"] }
+  ],
+  "assetLayers": [
+    {
+      "name": "Data stores",
+      "items": [
+        { "name": "Primary transactional databases", "prompt": "Which instances, which regions?" },
+        { "name": "Read replicas & caches", "prompt": "Do replicas carry the same class of data?" },
+        { "name": "Data warehouse / analytics", "prompt": "Analytics copies are the most commonly missed store" },
+        { "name": "Object storage & file shares", "prompt": "Exports, statements, document uploads" },
+        { "name": "Backups & snapshots", "prompt": "Same classification as the source — and same retention?" },
+        { "name": "Logs & SIEM", "prompt": "Do logs contain the data itself, or references to it?" }
+      ]
+    },
+    {
+      "name": "Applications & services",
+      "items": [
+        { "name": "Customer-facing application", "prompt": "Web and mobile surfaces" },
+        { "name": "Internal admin / back-office tooling", "prompt": "Support consoles usually have the broadest read" },
+        { "name": "APIs & integrations", "prompt": "Partner-facing and internal" },
+        { "name": "Batch & scheduled jobs", "prompt": "The furnishing job is a control point, not plumbing" },
+        { "name": "Reporting & decisioning logic", "prompt": "Underwriting, eligibility, scoring" }
+      ]
+    },
+    {
+      "name": "Compute & platform",
+      "items": [
+        { "name": "Kubernetes clusters / node pools", "prompt": "Which clusters host in-scope workloads?" },
+        { "name": "Serverless & managed runtimes", "prompt": "Functions, managed jobs" },
+        { "name": "CI/CD pipelines & runners", "prompt": "The path to production is in scope even if it holds no data" },
+        { "name": "Infrastructure-as-code state", "prompt": "State files contain the topology — and sometimes secrets" }
+      ]
+    },
+    {
+      "name": "Network & boundary",
+      "items": [
+        { "name": "VPCs and segmentation", "prompt": "Segmentation is the primary scope-reduction lever" },
+        { "name": "Ingress / egress paths", "prompt": "Public endpoints, load balancers, egress controls" },
+        { "name": "Partner connections", "prompt": "Bureau links, bank partner, processor connectivity" },
+        { "name": "Remote access paths", "prompt": "VPN, bastion, admin access to production" }
+      ]
+    },
+    {
+      "name": "Identity, access & keys",
+      "items": [
+        { "name": "Identity provider & SSO", "prompt": "The source of the access population" },
+        { "name": "Service accounts & machine identities", "prompt": "Usually the largest ungoverned population" },
+        { "name": "Privileged & break-glass access", "prompt": "Elevation path, time-bound, logged" },
+        { "name": "KMS keys & secrets management", "prompt": "Generation, use, rotation, retention, destruction" },
+        { "name": "Certificates & signing material", "prompt": "Code signing, TLS, artifact signing" }
+      ]
+    },
+    {
+      "name": "Third parties & subservice orgs",
+      "items": [
+        { "name": "Cloud provider", "prompt": "Carve-out or inclusive method — decide deliberately" },
+        { "name": "Bureaus & data recipients", "prompt": "Contractual security requirements flow down" },
+        { "name": "Bank partner / processor", "prompt": "Their exam expectations become your control requirements" },
+        { "name": "KYC / identity verification vendors", "prompt": "They hold the same Tier 1 data" },
+        { "name": "Subprocessors with production access", "prompt": "Support vendors, offshore contractors" }
+      ]
+    },
+    {
+      "name": "Non-production environments",
+      "items": [
+        { "name": "Staging & QA", "prompt": "In scope the moment production data reaches it" },
+        { "name": "Test data provenance", "prompt": "Synthetic, masked, or a copy of production?" },
+        { "name": "Developer sandboxes", "prompt": "Where does the data come from, and who can reach it?" }
+      ]
+    },
+    {
+      "name": "People & endpoints",
+      "items": [
+        { "name": "Personnel with production access", "prompt": "The population your access reviews must reconcile to" },
+        { "name": "Endpoints reaching production", "prompt": "Managed devices, posture requirements" },
+        { "name": "Support & operations tooling", "prompt": "Screen sharing, session recording, ticket attachments" }
+      ]
+    }
+  ],
+  "systems": [
+    { "id": "gh", "name": "GitHub", "category": "Engineering", "scope": "in" },
+    { "id": "ci", "name": "CI/CD (Actions)", "category": "Engineering", "scope": "in" },
+    { "id": "gcp", "name": "GCP", "category": "Infrastructure", "scope": "in" },
+    { "id": "k8s", "name": "Kubernetes (GKE)", "category": "Infrastructure", "scope": "in" },
+    { "id": "kms", "name": "Cloud KMS", "category": "Infrastructure", "scope": "in" },
+    { "id": "dw", "name": "Data warehouse", "category": "Infrastructure", "scope": "unknown" },
+    { "id": "okta", "name": "IdP / SSO", "category": "Identity", "scope": "in" },
+    { "id": "hris", "name": "HRIS", "category": "People", "scope": "in" },
+    { "id": "mdm", "name": "MDM", "category": "Endpoints", "scope": "in" },
+    { "id": "edr", "name": "EDR", "category": "Endpoints", "scope": "in" },
+    { "id": "jira", "name": "Ticketing", "category": "Workflow", "scope": "in" },
+    { "id": "grc", "name": "GRC platform", "category": "GRC", "scope": "in" },
+    { "id": "siem", "name": "SIEM / logs", "category": "Observability", "scope": "in" },
+    { "id": "mon", "name": "Monitoring / alerting", "category": "Observability", "scope": "in" },
+    { "id": "proc", "name": "Card processor", "category": "Third parties", "scope": "in" },
+    { "id": "bureau", "name": "Credit bureaus", "category": "Third parties", "scope": "in" },
+    { "id": "kyc", "name": "KYC vendor", "category": "Third parties", "scope": "unknown" },
+    { "id": "vend", "name": "Vendor mgmt / TPRM", "category": "GRC", "scope": "in" }
+  ]
+}

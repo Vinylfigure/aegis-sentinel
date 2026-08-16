@@ -1,0 +1,250 @@
+[
+  {
+    "chain_prev": null,
+    "collected_at": "2026-12-31T23:59:59Z",
+    "completeness_ref": "reconciliations/pop-termination-events.json",
+    "control_id": "AM-06",
+    "evidence_refs": [
+      "mock/fixtures/hris_terminations.json#sha256=8b3ad32506ae38a4e158cc2312978a6541f4b8aa15153f7c5bc5dfa64e265211"
+    ],
+    "message": "population pop-termination-events is DISCOVERED; no verdict against a denominator left of RECONCILED (assurance-state ladder)",
+    "population_count": 6,
+    "population_id": "pop-termination-events",
+    "record_hash": "7b382fe93045c6f2a7fde138c7e91e1d76130409053e45bae9fd0864c5a536b1",
+    "record_id": "vr-mock-existence-0001",
+    "run_id": "run-mock-engagement-0001",
+    "schema_version": "0.1.0",
+    "severity": "high",
+    "source": "hris-termination-collector",
+    "source_version": "0.1.0",
+    "spec_hash": "f04320b7d13eaabd6cd1c4e367d7f1f731b2d47db133386d8ef7de9cf8667ac5",
+    "spec_id": "spec-meridian-hris-existence-v1",
+    "status": "UNKNOWN",
+    "support": {
+      "field_values": {
+        "population_state": "DISCOVERED"
+      },
+      "record_hashes": [
+        "8b3ad32506ae38a4e158cc2312978a6541f4b8aa15153f7c5bc5dfa64e265211"
+      ]
+    },
+    "test_function_version": "0.1.0",
+    "unknown_cause": "UNKNOWN_POPULATION"
+  },
+  {
+    "chain_prev": null,
+    "collected_at": "2026-12-31T23:59:59Z",
+    "completeness_ref": "reconciliations/pop-termination-events.json",
+    "control_id": "AM-06",
+    "evidence_refs": [
+      "mock/fixtures/github_members.json#sha256=1363d8462a032ae336078e209d495c3ae5785a60a74263f5362a1916f5a6784f"
+    ],
+    "message": "1 terminated member(s) still hold access in github — residual access is a NON-EXISTENCE failure",
+    "population_count": 6,
+    "population_id": "pop-termination-events",
+    "record_hash": "1fca26e4de5b7ca3eaa15650b9e74a6c26684d662f5ce75d7d8367c352024149",
+    "record_id": "vr-mock-nonexistence-0001",
+    "run_id": "run-mock-engagement-0001",
+    "schema_version": "0.1.0",
+    "severity": "high",
+    "source": "github-members-collector",
+    "source_version": "0.1.0",
+    "spec_hash": "2b7ad928d09b7e50051a52879c4ac3d4c91e43b43aa27de565eefaf18382f342",
+    "spec_id": "spec-meridian-github-nonexistence-v1",
+    "status": "FAIL",
+    "support": {
+      "field_values": {
+        "residual_access_members": ["elena.marsh@meridian.example"]
+      },
+      "record_hashes": [
+        "1363d8462a032ae336078e209d495c3ae5785a60a74263f5362a1916f5a6784f"
+      ]
+    },
+    "test_function_version": "0.1.0"
+  },
+  {
+    "chain_prev": null,
+    "collected_at": "2026-12-31T23:59:59Z",
+    "completeness_ref": "reconciliations/pop-termination-events.json",
+    "control_id": "AM-06",
+    "evidence_refs": [
+      "mock/fixtures/okta_system_log.json#sha256=432b767faec47af82a127794437919c1116fa24ce74421a1572f4927bfc71f40"
+    ],
+    "message": "breakglass-admin@meridian-prod.iam.gserviceaccount.com is outside the ratified boundary (boundary/meridian-v1#break-glass); no timing verdict owed (D-V1)",
+    "population_count": 8,
+    "population_id": "pop-termination-events",
+    "ratification_ref": "boundary/meridian-v1#break-glass",
+    "record_hash": "5780a4768df0a2259c7c80d6b4535822e0de42bd4380d916e0bd8e074d608207",
+    "record_id": "vr-mock-timing-0001-breakglass-admin@meridian-prod.iam.gserviceaccount.com",
+    "run_id": "run-mock-engagement-0001",
+    "schema_version": "0.1.0",
+    "severity": "high",
+    "source": "okta-system-log-collector",
+    "source_version": "0.1.0",
+    "spec_hash": "064a09f67846882790fc63207b6500ce93b946c69d46f1ab0019de1c35e1d280",
+    "spec_id": "spec-meridian-idp-timing-v1",
+    "status": "EXCLUDED",
+    "test_function_version": "0.1.0"
+  },
+  {
+    "chain_prev": "5780a4768df0a2259c7c80d6b4535822e0de42bd4380d916e0bd8e074d608207",
+    "collected_at": "2026-12-31T23:59:59Z",
+    "completeness_ref": "reconciliations/pop-termination-events.json",
+    "control_id": "AM-06",
+    "evidence_refs": [
+      "mock/fixtures/okta_system_log.json#sha256=432b767faec47af82a127794437919c1116fa24ce74421a1572f4927bfc71f40"
+    ],
+    "message": "revocation for avery.stone@meridian.example within 2 business days (constraint: 5, D-P4)",
+    "population_count": 8,
+    "population_id": "pop-termination-events",
+    "record_hash": "cad288480ffc1f1026e9a37db9ef5b375604a76b1134ce1465f44249dc3cee42",
+    "record_id": "vr-mock-timing-0001-avery.stone@meridian.example",
+    "run_id": "run-mock-engagement-0001",
+    "schema_version": "0.1.0",
+    "severity": "high",
+    "source": "okta-system-log-collector",
+    "source_version": "0.1.0",
+    "spec_hash": "064a09f67846882790fc63207b6500ce93b946c69d46f1ab0019de1c35e1d280",
+    "spec_id": "spec-meridian-idp-timing-v1",
+    "status": "PASS",
+    "test_function_version": "0.1.0"
+  },
+  {
+    "chain_prev": "cad288480ffc1f1026e9a37db9ef5b375604a76b1134ce1465f44249dc3cee42",
+    "collected_at": "2026-12-31T23:59:59Z",
+    "completeness_ref": "reconciliations/pop-termination-events.json",
+    "control_id": "AM-06",
+    "evidence_refs": [
+      "mock/fixtures/okta_system_log.json#sha256=432b767faec47af82a127794437919c1116fa24ce74421a1572f4927bfc71f40"
+    ],
+    "message": "revocation for brooke.lin@meridian.example within 1 business days (constraint: 5, D-P4)",
+    "population_count": 8,
+    "population_id": "pop-termination-events",
+    "record_hash": "4fc174d33fbe50f065cc1eb3a5268808bdf8a26dca7a4aecaa6c328d09e9c920",
+    "record_id": "vr-mock-timing-0001-brooke.lin@meridian.example",
+    "run_id": "run-mock-engagement-0001",
+    "schema_version": "0.1.0",
+    "severity": "high",
+    "source": "okta-system-log-collector",
+    "source_version": "0.1.0",
+    "spec_hash": "064a09f67846882790fc63207b6500ce93b946c69d46f1ab0019de1c35e1d280",
+    "spec_id": "spec-meridian-idp-timing-v1",
+    "status": "PASS",
+    "test_function_version": "0.1.0"
+  },
+  {
+    "chain_prev": "4fc174d33fbe50f065cc1eb3a5268808bdf8a26dca7a4aecaa6c328d09e9c920",
+    "collected_at": "2026-12-31T23:59:59Z",
+    "completeness_ref": "reconciliations/pop-termination-events.json",
+    "control_id": "AM-06",
+    "evidence_refs": [
+      "mock/fixtures/okta_system_log.json#sha256=432b767faec47af82a127794437919c1116fa24ce74421a1572f4927bfc71f40"
+    ],
+    "message": "revocation for carmen.ortiz@meridian.example within 1 business days (constraint: 5, D-P4)",
+    "population_count": 8,
+    "population_id": "pop-termination-events",
+    "record_hash": "2fceb28fcef57f6bec21aecd297b96b269141fd3b69ee4569283facd1040eef5",
+    "record_id": "vr-mock-timing-0001-carmen.ortiz@meridian.example",
+    "run_id": "run-mock-engagement-0001",
+    "schema_version": "0.1.0",
+    "severity": "high",
+    "source": "okta-system-log-collector",
+    "source_version": "0.1.0",
+    "spec_hash": "064a09f67846882790fc63207b6500ce93b946c69d46f1ab0019de1c35e1d280",
+    "spec_id": "spec-meridian-idp-timing-v1",
+    "status": "PASS",
+    "test_function_version": "0.1.0"
+  },
+  {
+    "chain_prev": "2fceb28fcef57f6bec21aecd297b96b269141fd3b69ee4569283facd1040eef5",
+    "collected_at": "2026-12-31T23:59:59Z",
+    "completeness_ref": "reconciliations/pop-termination-events.json",
+    "control_id": "AM-06",
+    "evidence_refs": [
+      "mock/fixtures/okta_system_log.json#sha256=432b767faec47af82a127794437919c1116fa24ce74421a1572f4927bfc71f40"
+    ],
+    "message": "revocation for devin.hale@meridian.example took 9 business days, exceeding the 5-business-day constraint (D-P4)",
+    "population_count": 8,
+    "population_id": "pop-termination-events",
+    "record_hash": "4b29ea7f917ab98831b540bb9314ec9d949a43048abeb6cc429a39ff6082b3c8",
+    "record_id": "vr-mock-timing-0001-devin.hale@meridian.example",
+    "run_id": "run-mock-engagement-0001",
+    "schema_version": "0.1.0",
+    "severity": "high",
+    "source": "okta-system-log-collector",
+    "source_version": "0.1.0",
+    "spec_hash": "064a09f67846882790fc63207b6500ce93b946c69d46f1ab0019de1c35e1d280",
+    "spec_id": "spec-meridian-idp-timing-v1",
+    "status": "FAIL",
+    "support": {
+      "field_values": {
+        "constraint_business_days": 5,
+        "elapsed_business_days": 9,
+        "member": "devin.hale@meridian.example",
+        "revocation_date": "2026-11-06",
+        "termination_date": "2026-10-26"
+      },
+      "record_hashes": [
+        "432b767faec47af82a127794437919c1116fa24ce74421a1572f4927bfc71f40"
+      ]
+    },
+    "test_function_version": "0.1.0"
+  },
+  {
+    "chain_prev": "4b29ea7f917ab98831b540bb9314ec9d949a43048abeb6cc429a39ff6082b3c8",
+    "collected_at": "2026-12-31T23:59:59Z",
+    "completeness_ref": "reconciliations/pop-termination-events.json",
+    "control_id": "AM-06",
+    "disposition_ref": "dispositions/mock/farid-nazari-phased-offboarding.json",
+    "evidence_refs": [
+      "mock/fixtures/okta_system_log.json#sha256=432b767faec47af82a127794437919c1116fa24ce74421a1572f4927bfc71f40"
+    ],
+    "message": "farid.nazari@meridian.example carries dispositioned exception dispositions/mock/farid-nazari-phased-offboarding.json (D-V1: EXCEPTION, never a silent PASS)",
+    "population_count": 8,
+    "population_id": "pop-termination-events",
+    "record_hash": "5b74af1388e7e8b47576c9322b5a076ecaa324cc90417297bb860da1065ad741",
+    "record_id": "vr-mock-timing-0001-farid.nazari@meridian.example",
+    "run_id": "run-mock-engagement-0001",
+    "schema_version": "0.1.0",
+    "severity": "high",
+    "source": "okta-system-log-collector",
+    "source_version": "0.1.0",
+    "spec_hash": "064a09f67846882790fc63207b6500ce93b946c69d46f1ab0019de1c35e1d280",
+    "spec_id": "spec-meridian-idp-timing-v1",
+    "status": "EXCEPTION",
+    "test_function_version": "0.1.0"
+  },
+  {
+    "chain_prev": "5b74af1388e7e8b47576c9322b5a076ecaa324cc90417297bb860da1065ad741",
+    "collected_at": "2026-12-31T23:59:59Z",
+    "completeness_ref": "reconciliations/pop-termination-events.json",
+    "control_id": "AM-06",
+    "evidence_refs": [
+      "mock/fixtures/okta_system_log.json#sha256=432b767faec47af82a127794437919c1116fa24ce74421a1572f4927bfc71f40"
+    ],
+    "message": "no revocation event for gwen.pryce@meridian.example inside the covered window 2026-10-01T00:00:00+00:00..2026-12-31T00:00:00+00:00 — D-7 basis_missing → UNKNOWN_EVIDENCE (D-U1)",
+    "population_count": 8,
+    "population_id": "pop-termination-events",
+    "record_hash": "00c8519cc06e1655e1a69bb51c2e1206614155fd30c6be5a662dea0ae40d2a01",
+    "record_id": "vr-mock-timing-0001-gwen.pryce@meridian.example",
+    "run_id": "run-mock-engagement-0001",
+    "schema_version": "0.1.0",
+    "severity": "high",
+    "source": "okta-system-log-collector",
+    "source_version": "0.1.0",
+    "spec_hash": "064a09f67846882790fc63207b6500ce93b946c69d46f1ab0019de1c35e1d280",
+    "spec_id": "spec-meridian-idp-timing-v1",
+    "status": "UNKNOWN",
+    "support": {
+      "field_values": {
+        "member": "gwen.pryce@meridian.example",
+        "termination_date": "2026-11-09"
+      },
+      "record_hashes": [
+        "432b767faec47af82a127794437919c1116fa24ce74421a1572f4927bfc71f40"
+      ]
+    },
+    "test_function_version": "0.1.0",
+    "unknown_cause": "UNKNOWN_EVIDENCE"
+  }
+]

@@ -1,0 +1,33 @@
+{
+  "sections": [
+    {
+      "title": "Scope",
+      "gauges": [
+        { "id": "systemsIn", "label": "systems in scope", "tone": "green", "kind": "count", "metric": "scope.systems.in", "showBar": false },
+        { "id": "systemsUnresolved", "label": "unresolved — taints mappings", "tone": "amber", "kind": "count", "metric": "scope.systems.unknown", "showBar": false }
+      ]
+    },
+    {
+      "title": "Control posture",
+      "gauges": [
+        { "id": "cfgPreventative", "label": "configurable · preventative", "tone": "green", "kind": "percent", "metric": "controls.cfgPreventativeShare", "showBar": true },
+        { "id": "manualControls", "label": "manual controls — automation backlog", "tone": "red", "kind": "count", "metric": "controls.manualCount", "showBar": false },
+        { "id": "noDataset", "label": "controls with no dataset", "tone": "amber", "kind": "count", "metric": "controls.withoutDataset", "showBar": false }
+      ]
+    },
+    {
+      "title": "Datasets",
+      "gauges": [
+        { "id": "uniqueDatasets", "label": "unique datasets", "tone": "cyan", "kind": "count", "metric": "datasets.uniqueCount", "showBar": false },
+        { "id": "avgReuse", "label": "avg controls per dataset", "tone": "purple", "kind": "ratio", "metric": "datasets.avgControlsPerDataset", "showBar": false }
+      ]
+    },
+    {
+      "title": "Agents",
+      "gauges": [
+        { "id": "deterministicCollectors", "label": "deterministic collectors", "tone": "green", "kind": "count", "metric": "agents.deterministicCount", "showBar": false },
+        { "id": "llmLaneTasks", "label": "llm-lane tasks (non-verdict)", "tone": "purple", "kind": "count", "metric": "agents.llmLaneCount", "showBar": false }
+      ]
+    }
+  ]
+}
