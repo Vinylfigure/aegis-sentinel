@@ -1,0 +1,47 @@
+{
+  "rate_limits": null,
+  "history_caveats": [
+    "DRAFT: users endpoint not verbatim-verified this session (System Log page confirmed; Users page unread) \u2014 verify before ratification"
+  ],
+  "ratified_by": null,
+  "lifecycle": "draft",
+  "id": "okta.users",
+  "system": "okta",
+  "surface": "Users API GET /api/v1/users",
+  "access_modes": [
+    "direct-api"
+  ],
+  "populations_yielded": [
+    {
+      "type": "entity",
+      "description": "directory users with lifecycle status",
+      "attributes": [
+        "id",
+        "status",
+        "profile.email",
+        "profile.login",
+        "statusChanged"
+      ]
+    }
+  ],
+  "temporal": {
+    "kind": "state-only"
+  },
+  "join_keys": [
+    "email",
+    "employee_id"
+  ],
+  "auth_scope": "okta.users.read",
+  "pagination": {
+    "method": "cursor",
+    "exhaustion_method": "follow Link rel=next 'after' cursor until absent"
+  },
+  "provenance": {
+    "researched_by": "vinylfigure",
+    "researched_at": "2026-08-16T00:00:00Z",
+    "citations": [
+      "https://developer.okta.com/docs/reference/api/users/"
+    ],
+    "doc_version": null
+  }
+}

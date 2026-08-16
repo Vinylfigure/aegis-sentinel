@@ -2,28 +2,47 @@
   "id": "okta.system_log",
   "system": "okta",
   "surface": "System Log API GET /api/v1/logs",
-  "access_modes": ["direct-api"],
+  "access_modes": [
+    "direct-api"
+  ],
   "populations_yielded": [
     {
       "type": "event",
       "description": "identity lifecycle events incl. user.lifecycle.deactivate",
-      "attributes": ["eventType", "published", "actor", "target", "outcome"]
+      "attributes": [
+        "eventType",
+        "published",
+        "actor",
+        "target",
+        "outcome"
+      ]
     }
   ],
-  "temporal": { "kind": "event-history", "window_days": 90 },
-  "join_keys": ["email", "employee_id"],
+  "temporal": {
+    "kind": "event-history",
+    "window_days": 90
+  },
+  "join_keys": [
+    "email",
+    "employee_id"
+  ],
   "auth_scope": "okta.logs.read",
-  "pagination": { "method": "cursor", "exhaustion_method": "follow 'after' cursor until empty page; record cursor chain" },
+  "pagination": {
+    "method": "cursor",
+    "exhaustion_method": "follow Link rel=next 'after' cursor until absent; record cursor chain"
+  },
   "rate_limits": "varies by org tier; honor X-Rate-Limit headers",
   "history_caveats": [
-    "System Log retains 90 days — TIMING assertions beyond the window need an exported archive (E204 trap on the termination lane)"
+    "System Log retains 90 days \u2014 TIMING assertions beyond the window need an exported archive (E204 trap on the termination lane). The 90-day figure is corpus-asserted (SOC2 matrix prior art); the doc page read 2026-08-16 confirmed endpoint and cursor but not the retention number \u2014 Surveyor verification of actual depth required."
   ],
   "provenance": {
     "researched_by": "vinylfigure",
     "researched_at": "2026-08-16T00:00:00Z",
-    "citations": ["https://developer.okta.com/docs/reference/api/system-log/"],
+    "citations": [
+      "https://developer.okta.com/docs/api/openapi/okta-management/management/tags/systemlog/other/listlogevents"
+    ],
     "doc_version": null
   },
-  "ratified_by": null,
-  "lifecycle": "draft"
+  "ratified_by": "vinylfigure (Ratifier)",
+  "lifecycle": "frozen"
 }

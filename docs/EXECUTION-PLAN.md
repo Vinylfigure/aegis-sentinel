@@ -43,7 +43,7 @@ ratification is the freeze — draft → frozen(=ratified) → superseded).
 
 ## Phase 1 — the termination lane, made nasty
 
-- [ ] **CAP01** — 7 capability entries across HRIS/Okta/GitHub/GCP/Slack with vendor-doc
+- [x] **CAP01** — 7 capability entries across HRIS/Okta/GitHub/GCP/Slack with vendor-doc
   citations; Okta System Log 90-day window recorded as history caveat;
   `ratified_by: "vinylfigure (Ratifier)"`.
 - [ ] **TYP01** — type checker + E-codes (E204 temporal insufficiency w/ satisfiable-via

@@ -1,0 +1,46 @@
+{
+  "rate_limits": null,
+  "history_caveats": [
+    "DRAFT: developer.workday.com documentation is tenant-gated \u2014 surface shape is corpus-sourced (AM-06 prior art) and MUST be verified against the reference tenant before ratification",
+    "contractor coverage depends on tenant config \u2014 the mutation playbook's contractor-absent poison targets exactly this gap"
+  ],
+  "ratified_by": null,
+  "lifecycle": "draft",
+  "id": "workday.terminated_workers",
+  "system": "workday",
+  "surface": "RaaS custom report / Workers API terminations feed",
+  "access_modes": [
+    "custom-adapter"
+  ],
+  "populations_yielded": [
+    {
+      "type": "event",
+      "description": "termination events with effective dates",
+      "attributes": [
+        "worker_id",
+        "termination_date",
+        "worker_type"
+      ]
+    }
+  ],
+  "temporal": {
+    "kind": "full-history"
+  },
+  "join_keys": [
+    "employee_id",
+    "email"
+  ],
+  "auth_scope": "ISU account scoped to the terminations report only",
+  "pagination": {
+    "method": "none",
+    "exhaustion_method": "single report extract; row count asserted against report metadata"
+  },
+  "provenance": {
+    "researched_by": "vinylfigure",
+    "researched_at": "2026-08-16T00:00:00Z",
+    "citations": [
+      "https://developer.workday.com/ (tenant-gated)"
+    ],
+    "doc_version": null
+  }
+}
