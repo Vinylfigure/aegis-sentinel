@@ -1,0 +1,34 @@
+{
+  "id": "github.members",
+  "system": "github",
+  "surface": "REST v3 GET /orgs/{org}/members",
+  "access_modes": ["direct-api"],
+  "populations_yielded": [
+    {
+      "type": "entity",
+      "description": "org members (current state)",
+      "attributes": ["login", "id", "type", "site_admin"]
+    },
+    {
+      "type": "relationship",
+      "description": "member-to-org membership via role filter",
+      "attributes": ["login", "role"]
+    }
+  ],
+  "temporal": { "kind": "state-only" },
+  "join_keys": ["login", "email"],
+  "auth_scope": "read:org (GitHub App: Organization members, read-only)",
+  "pagination": { "method": "page", "exhaustion_method": "follow Link rel=next until absent; record page count" },
+  "rate_limits": "5000 req/h (app installation)",
+  "history_caveats": [
+    "STATE only — supports no TIMING assertion by itself; pair with an event-history source (E204 lane)"
+  ],
+  "provenance": {
+    "researched_by": "vinylfigure",
+    "researched_at": "2026-08-16T00:00:00Z",
+    "citations": ["https://docs.github.com/en/rest/orgs/members?apiVersion=2022-11-28"],
+    "doc_version": "2022-11-28"
+  },
+  "ratified_by": "vinylfigure (Ratifier)",
+  "lifecycle": "frozen"
+}

@@ -26,7 +26,11 @@ case "$MODE" in
     case "$FILE" in
       *.sh) bash -n "$FILE" ;;
       *.json) if command -v jq >/dev/null 2>&1; then jq . "$FILE" >/dev/null; fi ;;
-      *.py) ruff check "$FILE" && ruff format --check "$FILE" ;;
+      # INFRA01: the purity gate rides the inner loop — an AI-client or
+      # network import in the verdict path fails at edit time (stdlib-only
+      # script, so the hook's system python3 suffices).
+      *.py) ruff check "$FILE" && ruff format --check "$FILE" \
+        && python3 "$(dirname "$0")/check_purity.py" "$FILE" ;;
       # A dispatched agent's only shell grants are named runners like this
       # script, so a YAML file it writes is unverifiable unless the check
       # lives here. That gap cost a real run: the work order for the issue

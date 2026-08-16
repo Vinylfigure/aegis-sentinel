@@ -151,6 +151,8 @@ mkdir -p "$SANDBOX/fixtures"
 printf '#!/usr/bin/env bash\nexit 0\n' > "$SANDBOX/fixtures/good.sh"
 printf '#!/usr/bin/env bash\nif true; then\n' > "$SANDBOX/fixtures/bad.sh"
 printf '{ "unterminated":\n' > "$SANDBOX/fixtures/bad.json"
+# Repo-specific (aegis-sentinel): the *.yml quick arm exists because a work
+# order once burned 50 turns unable to verify YAML (L-039) — keep it guarded.
 printf 'name: fine\nbody:\n  - type: markdown\n' > "$SANDBOX/fixtures/good.yml"
 printf 'name: broken\nbody:\n  - type: [unclosed\n' > "$SANDBOX/fixtures/bad.yml"
 "$ROOT/scripts/verify.sh" quick "$SANDBOX/fixtures/good.sh" >/dev/null 2>&1 && pass "quick: valid .sh -> exit 0" || fail "quick: valid .sh -> exit 0"
@@ -205,6 +207,18 @@ out=$(echo '{"source":"startup"}' | "$SANDBOX/.claude/hooks/session-start.sh")
 echo "$out" | grep -q "consider /evolve" && fail "non-candidate Evidence must not leak to next entry (got: $out)" || pass "non-candidate Evidence must not leak to next entry"
 out=$(echo '{"source":"compact"}' | "$SANDBOX/.claude/hooks/session-start.sh")
 echo "$out" | grep -qi "compacted" && pass "compact source -> workspace-rescue line" || fail "compact source -> workspace-rescue line (got: $out)"
+
+echo "== session-start.sh: build-plan continuation =="
+mkdir -p "$SANDBOX/docs"
+printf -- '- [x] **T-DONE** — finished\n- [ ] **T-NEXT** — first open task\n- [ ] **T-LATER** — second open task\n' > "$SANDBOX/docs/EXECUTION-PLAN.md"
+out=$(echo '{"source":"startup"}' | "$SANDBOX/.claude/hooks/session-start.sh")
+echo "$out" | grep -q "next unblocked task is T-NEXT" && pass "plan present -> first unticked task surfaced" || fail "plan present -> first unticked task surfaced (got: $out)"
+printf -- '- [x] **T-DONE** — finished\n- [x] **T-NEXT** — also finished\n' > "$SANDBOX/docs/EXECUTION-PLAN.md"
+out=$(echo '{"source":"startup"}' | "$SANDBOX/.claude/hooks/session-start.sh")
+echo "$out" | grep -q "Build plan" && fail "all boxes ticked -> silent (got: $out)" || pass "all boxes ticked -> silent"
+rm -f "$SANDBOX/docs/EXECUTION-PLAN.md"
+out=$(echo '{"source":"startup"}' | "$SANDBOX/.claude/hooks/session-start.sh")
+echo "$out" | grep -q "Build plan" && fail "no plan file -> silent (got: $out)" || pass "no plan file -> silent"
 
 echo "== session-start.sh: recalibration staleness =="
 STAMPF="$SANDBOX/.claude/memory/recalibrated-at"

@@ -1,0 +1,148 @@
+{
+  "$defs": {
+    "CollectorGrant": {
+      "additionalProperties": false,
+      "description": "A collector and the permissions the ratified scope grants it \u2014\na deployment fact promoted into reviewed data.",
+      "properties": {
+        "id": {
+          "minLength": 1,
+          "title": "Id",
+          "type": "string"
+        },
+        "permissions": {
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Permissions",
+          "type": "array"
+        }
+      },
+      "required": [
+        "id",
+        "permissions"
+      ],
+      "title": "CollectorGrant",
+      "type": "object"
+    },
+    "LifecycleState": {
+      "description": "D-L1 (RATIFIED): ratification IS the freeze \u2014 one lifecycle for\ncollection specs, capability entries, and manifest snapshots.",
+      "enum": [
+        "draft",
+        "frozen",
+        "superseded"
+      ],
+      "title": "LifecycleState",
+      "type": "string"
+    },
+    "ManifestBlocks": {
+      "additionalProperties": false,
+      "properties": {
+        "boundary": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Boundary",
+          "type": "array"
+        },
+        "capabilities": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Capabilities",
+          "type": "array"
+        },
+        "claims": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Claims",
+          "type": "array"
+        },
+        "collectors": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/CollectorGrant"
+          },
+          "title": "Collectors",
+          "type": "array"
+        },
+        "evidence_contracts": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Evidence Contracts",
+          "type": "array"
+        },
+        "populations": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Populations",
+          "type": "array"
+        },
+        "tests": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Tests",
+          "type": "array"
+        }
+      },
+      "title": "ManifestBlocks",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "blocks": {
+      "$ref": "#/$defs/ManifestBlocks"
+    },
+    "lifecycle": {
+      "$ref": "#/$defs/LifecycleState",
+      "default": "draft"
+    },
+    "ratified_at": {
+      "anyOf": [
+        {
+          "format": "date-time",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Ratified At"
+    },
+    "ratified_by": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Ratified By"
+    },
+    "version": {
+      "minimum": 1,
+      "title": "Version",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "version",
+    "blocks"
+  ],
+  "title": "ManifestSnapshot",
+  "type": "object"
+}

@@ -1,0 +1,14 @@
+{
+  "name": "m06_capture_unreadable",
+  "capture": {
+    "repository": "Vinylfigure/aegis-sentinel",
+    "branch": "main",
+    "collected_at": "2026-08-16T00:00:00Z",
+    "status_code": 403,
+    "error": "Resource not accessible"
+  },
+  "required_checks": [
+    "verify"
+  ],
+  "expected_status": "UNKNOWN"
+}

@@ -1,0 +1,288 @@
+{
+  "$defs": {
+    "AccessMode": {
+      "enum": [
+        "direct-api",
+        "official-mcp",
+        "community-mcp",
+        "custom-adapter",
+        "playwright"
+      ],
+      "title": "AccessMode",
+      "type": "string"
+    },
+    "LifecycleState": {
+      "description": "D-L1 (RATIFIED): ratification IS the freeze \u2014 one lifecycle for\ncollection specs, capability entries, and manifest snapshots.",
+      "enum": [
+        "draft",
+        "frozen",
+        "superseded"
+      ],
+      "title": "LifecycleState",
+      "type": "string"
+    },
+    "Pagination": {
+      "additionalProperties": false,
+      "properties": {
+        "exhaustion_method": {
+          "minLength": 1,
+          "title": "Exhaustion Method",
+          "type": "string"
+        },
+        "method": {
+          "$ref": "#/$defs/PaginationMethod"
+        }
+      },
+      "required": [
+        "method",
+        "exhaustion_method"
+      ],
+      "title": "Pagination",
+      "type": "object"
+    },
+    "PaginationMethod": {
+      "enum": [
+        "cursor",
+        "page",
+        "none"
+      ],
+      "title": "PaginationMethod",
+      "type": "string"
+    },
+    "PopulationType": {
+      "enum": [
+        "entity",
+        "event",
+        "relationship"
+      ],
+      "title": "PopulationType",
+      "type": "string"
+    },
+    "Provenance": {
+      "additionalProperties": false,
+      "description": "Who researched this, when, from what documentation \u2014 citations are\nthe Cartographer's whole authority (it maps, never annexes).",
+      "properties": {
+        "citations": {
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Citations",
+          "type": "array"
+        },
+        "doc_version": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Doc Version"
+        },
+        "researched_at": {
+          "format": "date-time",
+          "title": "Researched At",
+          "type": "string"
+        },
+        "researched_by": {
+          "minLength": 1,
+          "title": "Researched By",
+          "type": "string"
+        }
+      },
+      "required": [
+        "researched_by",
+        "researched_at",
+        "citations"
+      ],
+      "title": "Provenance",
+      "type": "object"
+    },
+    "TemporalCoverage": {
+      "additionalProperties": false,
+      "properties": {
+        "cadence": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Cadence"
+        },
+        "kind": {
+          "$ref": "#/$defs/TemporalKind"
+        },
+        "window_days": {
+          "anyOf": [
+            {
+              "minimum": 1,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Window Days"
+        }
+      },
+      "required": [
+        "kind"
+      ],
+      "title": "TemporalCoverage",
+      "type": "object"
+    },
+    "TemporalKind": {
+      "enum": [
+        "state-only",
+        "event-history",
+        "full-history",
+        "snapshot-cadence"
+      ],
+      "title": "TemporalKind",
+      "type": "string"
+    },
+    "YieldedPopulation": {
+      "additionalProperties": false,
+      "properties": {
+        "attributes": {
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Attributes",
+          "type": "array"
+        },
+        "description": {
+          "minLength": 1,
+          "title": "Description",
+          "type": "string"
+        },
+        "type": {
+          "$ref": "#/$defs/PopulationType"
+        }
+      },
+      "required": [
+        "type",
+        "description",
+        "attributes"
+      ],
+      "title": "YieldedPopulation",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "access_modes": {
+      "items": {
+        "$ref": "#/$defs/AccessMode"
+      },
+      "minItems": 1,
+      "title": "Access Modes",
+      "type": "array"
+    },
+    "auth_scope": {
+      "minLength": 1,
+      "title": "Auth Scope",
+      "type": "string"
+    },
+    "history_caveats": {
+      "default": [],
+      "items": {
+        "type": "string"
+      },
+      "title": "History Caveats",
+      "type": "array"
+    },
+    "id": {
+      "minLength": 1,
+      "pattern": "^[a-z0-9_-]+\\.[a-z0-9_.-]+$",
+      "title": "Id",
+      "type": "string"
+    },
+    "join_keys": {
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1,
+      "title": "Join Keys",
+      "type": "array"
+    },
+    "lifecycle": {
+      "$ref": "#/$defs/LifecycleState",
+      "default": "draft"
+    },
+    "pagination": {
+      "$ref": "#/$defs/Pagination"
+    },
+    "populations_yielded": {
+      "items": {
+        "$ref": "#/$defs/YieldedPopulation"
+      },
+      "minItems": 1,
+      "title": "Populations Yielded",
+      "type": "array"
+    },
+    "provenance": {
+      "$ref": "#/$defs/Provenance"
+    },
+    "rate_limits": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Rate Limits"
+    },
+    "ratified_by": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Ratified By"
+    },
+    "surface": {
+      "minLength": 1,
+      "title": "Surface",
+      "type": "string"
+    },
+    "system": {
+      "minLength": 1,
+      "title": "System",
+      "type": "string"
+    },
+    "temporal": {
+      "$ref": "#/$defs/TemporalCoverage"
+    }
+  },
+  "required": [
+    "id",
+    "system",
+    "surface",
+    "access_modes",
+    "populations_yielded",
+    "temporal",
+    "join_keys",
+    "auth_scope",
+    "pagination",
+    "provenance"
+  ],
+  "title": "CapabilityEntry",
+  "type": "object"
+}

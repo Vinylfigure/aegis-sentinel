@@ -9,8 +9,11 @@ import json
 import sys
 from pathlib import Path
 
+from aegis_sentinel.capability import REGISTRY_MODELS
+from aegis_sentinel.manifest import MANIFEST_MODELS
 from aegis_sentinel.schema import ONTOLOGY_MODELS
 
+ALL_MODELS = ONTOLOGY_MODELS + REGISTRY_MODELS + MANIFEST_MODELS
 OUT = Path(__file__).resolve().parent.parent / "schemas" / "ontology"
 
 
@@ -24,7 +27,7 @@ def render(model) -> str:
 
 def main() -> int:
     OUT.mkdir(parents=True, exist_ok=True)
-    for model in ONTOLOGY_MODELS:
+    for model in ALL_MODELS:
         path = OUT / f"{snake(model.__name__)}.schema.json"
         path.write_text(render(model))
         print(f"wrote {path}")

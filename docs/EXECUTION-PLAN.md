@@ -28,13 +28,13 @@ ratification is the freeze — draft → frozen(=ratified) → superseded).
   merges PRD-v3's six invariants with the prior scaffold's eight (recording D-V1/D-U1).
   Tests: round-trip byte-identical, fixture triads (invalid fixtures REJECTED), ladder
   transitions, schema drift. Owner reviews before Phase 1.
-- [ ] **SCH02** — capability entry schema + versioned registry (`registry/capabilities/`);
+- [x] **SCH02** — capability entry schema + versioned registry (`registry/capabilities/`);
   unratified entries mechanically unusable (`Registry.usable()` excludes them; tested).
-- [ ] **SCH03** — manifest snapshots + human-readable diff + `PROPOSED_SCOPE_CHANGE`
+- [x] **SCH03** — manifest snapshots + human-readable diff + `PROPOSED_SCOPE_CHANGE`
   (transition requires a ratifier identity; structural-exclusion pattern).
-- [ ] **VAL01** — mutation harness in `tests/mutation/` (detection rate computed;
+- [x] **VAL01** — mutation harness in `tests/mutation/` (detection rate computed;
   a deliberately-silent-PASS stub proves the harness turns the build red).
-- [ ] **INFRA01** — verdict-path purity tests (AST import/impurity bans + registered
+- [x] **INFRA01** — verdict-path purity tests (AST import/impurity bans + registered
   file roster), per-file purity check script wired into `verify.sh quick`,
   `.github/CODEOWNERS`. Owner: enable branch protection (required checks
   `verify` + `web-verify`, CODEOWNERS, 1 review).
