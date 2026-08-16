@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://github.com/Vinylfigure/aegis-sentinel/schemas/verdict-record.schema.json",
   "title": "Aegis Sentinel verdict record",
-  "description": "One population-scoped control verdict with its full audit trail. Conventions forked from GRCEngClub finding.schema.json v1.0.0 (knowledge/01_corpus/05_prior_art/Aegis_Prior_Art_GRCEngClub_Toolkit.md §3.1): const-pinned schema_version, closed objects, conditional requirements, the source/source_version/run_id/collected_at reproducibility tuple, severity independent of status. Deltas per docs/EVALUATION.md §2: record_hash + chain_prev, population_id/population_count/completeness_ref, spec_id + spec_hash, test_function_version, ratification_ref, and unknown_cause as the required companion of UNKNOWN. skipped is deliberately absent: a population-testing system has no skip state that is not either NOT_APPLICABLE or a completeness failure.",
+  "description": "One population-scoped control verdict with its full audit trail. Conventions forked from GRCEngClub finding.schema.json v1.0.0 (knowledge/01_corpus/05_prior_art/Aegis_Prior_Art_GRCEngClub_Toolkit.md §3.1): const-pinned schema_version, closed objects, conditional requirements, the source/source_version/run_id/collected_at reproducibility tuple, severity independent of status. Deltas per docs/EVALUATION.md §2: record_hash + chain_prev, population_id/population_count/completeness_ref, spec_id + spec_hash, test_function_version, ratification_ref, and unknown_cause as the required companion of UNKNOWN. Verdict vocabulary and UNKNOWN why-codes follow the ratified rulings docs/DECISIONS.md D-V1 and D-U1 (PRD-v3 §2). skipped is deliberately absent: a population-testing system has no skip state that is not either EXCLUDED or a completeness failure. Hand-authored for the first milestone; superseded by the pydantic-generated schemas when SCH01 lands (D-P1).",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -35,10 +35,19 @@
       "minLength": 1,
       "description": "Control identifier from the testing library, e.g. CM-03"
     },
-    "status": { "enum": ["PASS", "FAIL", "UNKNOWN", "NOT_APPLICABLE"] },
+    "status": {
+      "enum": ["PASS", "FAIL", "UNKNOWN", "EXCLUDED", "EXCEPTION"],
+      "description": "The five ratified verdict states (docs/DECISIONS.md D-V1, PRD-v3 §2): EXCLUDED is the former NOT_APPLICABLE and keeps its ratification_ref requirement; EXCEPTION is a dispositioned legitimate exception and requires disposition_ref"
+    },
     "unknown_cause": {
-      "enum": ["basis_missing", "identity_fuzzy", "no_basis_anywhere"],
-      "description": "Required companion of status=UNKNOWN (D-7): which family of missing basis"
+      "enum": [
+        "UNKNOWN_DISCOVERY",
+        "UNKNOWN_OWNER",
+        "UNKNOWN_POPULATION",
+        "UNKNOWN_EVIDENCE",
+        "UNKNOWN_TESTABILITY"
+      ],
+      "description": "Required companion of status=UNKNOWN. PRD-v3 why-codes per docs/DECISIONS.md D-U1; D-7 cause families map in as basis_missing→UNKNOWN_EVIDENCE, identity_fuzzy→UNKNOWN_POPULATION, no_basis_anywhere→UNKNOWN_TESTABILITY"
     },
     "message": { "type": "string", "minLength": 1 },
     "severity": {
@@ -98,7 +107,12 @@
     "ratification_ref": {
       "type": "string",
       "minLength": 1,
-      "description": "Pointer to the hashed human sign-off; required when status=NOT_APPLICABLE"
+      "description": "Pointer to the hashed human sign-off; required when status=EXCLUDED (D-V1)"
+    },
+    "disposition_ref": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Pointer to the dispositioned-exception record (REI: justification + owner + review date); required when status=EXCEPTION"
     },
     "evidence_refs": {
       "type": "array",
@@ -116,8 +130,12 @@
       "then": { "required": ["message", "unknown_cause", "support"] }
     },
     {
-      "if": { "properties": { "status": { "const": "NOT_APPLICABLE" } }, "required": ["status"] },
+      "if": { "properties": { "status": { "const": "EXCLUDED" } }, "required": ["status"] },
       "then": { "required": ["ratification_ref"] }
+    },
+    {
+      "if": { "properties": { "status": { "const": "EXCEPTION" } }, "required": ["status"] },
+      "then": { "required": ["message", "disposition_ref"] }
     }
   ]
 }

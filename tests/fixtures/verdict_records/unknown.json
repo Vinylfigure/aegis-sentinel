@@ -3,7 +3,7 @@
   "record_id": "vr-2026-08-16-0003",
   "control_id": "CM-03",
   "status": "UNKNOWN",
-  "unknown_cause": "basis_missing",
+  "unknown_cause": "UNKNOWN_EVIDENCE",
   "message": "capture is not a successful read: no basis to evaluate",
   "support": {
     "field_values": {

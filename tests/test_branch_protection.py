@@ -5,10 +5,10 @@ import json
 from pathlib import Path
 
 from aegis_sentinel.controls.branch_protection import (
-    BASIS_MISSING,
     FAIL,
     PASS,
     UNKNOWN,
+    UNKNOWN_EVIDENCE,
     Verdict,
     evaluate,
 )
@@ -39,7 +39,7 @@ def test_unreadable_capture_is_unknown_not_a_guess():
     capture = load("branch_protection/capture_unreadable.json")
     verdict = evaluate(capture, required_checks=SPEC_REQUIRED_CHECKS)
     assert verdict.status == UNKNOWN
-    assert verdict.unknown_cause == BASIS_MISSING
+    assert verdict.unknown_cause == UNKNOWN_EVIDENCE
 
 
 def test_missing_reviews_fails_on_a_successful_capture():

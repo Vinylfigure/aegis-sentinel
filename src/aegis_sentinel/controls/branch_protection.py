@@ -9,7 +9,7 @@ evidence, not branch config, and is out of this function's scope.
 
 Pure and deterministic: same capture in, same verdict out. The capture is
 taken elsewhere; a capture the collector could not take (non-200, body
-absent) is UNKNOWN(basis_missing), never a guess. A 200 capture with a
+absent) is UNKNOWN(UNKNOWN_EVIDENCE), never a guess. A 200 capture with a
 setting absent means the setting is off — that is a FAIL, not an UNKNOWN.
 """
 
@@ -22,7 +22,10 @@ PASS = "PASS"
 FAIL = "FAIL"
 UNKNOWN = "UNKNOWN"
 
-BASIS_MISSING = "basis_missing"
+# Why-code per docs/DECISIONS.md D-U1: the D-7 basis_missing family
+# (knowledge/01_corpus/02_design_decisions/Aegis_Design_Fix_D7_UNKNOWN_Decomposition.md)
+# maps to PRD-v3's UNKNOWN_EVIDENCE.
+UNKNOWN_EVIDENCE = "UNKNOWN_EVIDENCE"
 
 
 @dataclass(frozen=True)
@@ -48,7 +51,7 @@ def evaluate(
         return Verdict(
             status=UNKNOWN,
             reasons=("capture is not a successful read: no basis to evaluate",),
-            unknown_cause=BASIS_MISSING,
+            unknown_cause=UNKNOWN_EVIDENCE,
         )
 
     protection = capture["protection"]

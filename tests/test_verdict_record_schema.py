@@ -50,18 +50,28 @@ def test_fail_without_support_is_rejected():
     assert not VALIDATOR.is_valid(record)
 
 
-def test_not_applicable_requires_ratification_ref():
+def test_excluded_requires_ratification_ref():
     record = load("pass.json")
-    record["status"] = "NOT_APPLICABLE"
+    record["status"] = "EXCLUDED"
     assert not VALIDATOR.is_valid(record)
     record["ratification_ref"] = "ratifications/2026-08-scope.json"
     assert VALIDATOR.is_valid(record)
 
 
-def test_skipped_is_not_a_status():
+def test_exception_requires_disposition_ref():
     record = load("pass.json")
-    record["status"] = "skipped"
+    record["status"] = "EXCEPTION"
+    record["message"] = "legitimate exception: documented break-glass account"
     assert not VALIDATOR.is_valid(record)
+    record["disposition_ref"] = "dispositions/2026-08-break-glass.json"
+    assert VALIDATOR.is_valid(record)
+
+
+def test_retired_statuses_are_rejected():
+    for status in ("skipped", "NOT_APPLICABLE", "basis_missing"):
+        record = load("pass.json")
+        record["status"] = status
+        assert not VALIDATOR.is_valid(record), f"{status} accepted"
 
 
 def test_garbage_collected_at_is_rejected():
