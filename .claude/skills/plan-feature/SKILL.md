@@ -15,6 +15,7 @@ the actual reasoning.
 2. "Done means" is an exact command or observation, not a vibe ("tests pass after `verify.sh full`", not "it works").
 3. Subagents explore; this thread decides. Do not fill this context with file dumps.
 4. Simple tasks skip ceremony: if this is genuinely a one-file, obvious change, say so and just do it with the inner verify loop.
+5. The plan is an audit artifact: the Predicted-failure-modes section and its end-of-run accounting are how someone who wasn't in the room — the verifier included — confirms the adversarial pass actually ran.
 
 ## Steps
 
@@ -24,7 +25,7 @@ the actual reasoning.
 4. Write the plan: **Approach** (the design, the key tradeoff you made, and the alternative you rejected — one line on why), files to touch, sequencing, **Predicted failure modes:** 2–3 falsifiable predictions ranked by likelihood, drawn from ledger history and the task's shape ("the merge will conflict in X", never "merges are risky"), **Unknowns:** anything still open and the route that resolves it, and **Done means:** the exact command(s)/observation(s) that prove success.
 5. Get sign-off — plan-mode exit or an explicit user OK. If the user redirects, that is a learning signal; remember it for `/reflect`.
 6. Implement. The PostToolUse hook gives you per-edit feedback; fix failures as they surface rather than batching them.
-7. Hand the "done means" criteria to `/verify-loop` and drive it to green.
+7. Hand the "done means" criteria to `/verify-loop` and drive it to green. Hand the verifier the plan too: a missing Predicted-failure-modes section, or a finish that never accounts for those predictions, is a FAIL — the ritual is auditable, not optional.
 
 ## Before finishing
 

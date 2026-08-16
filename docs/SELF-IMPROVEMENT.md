@@ -37,13 +37,20 @@ anecdote. `Evidence: 2` (or explicit user confirmation) is the threshold.
 The session-start hook surfaces ripe entries so they don't rot.
 
 **4. Promotion.** `/evolve` (analysis delegated to the `memory-curator`
-agent) moves qualifying lessons up:
-- Rule-shaped, global → a bullet in CLAUDE.md's `janus:rules` block, citing its id.
+agent) moves qualifying lessons up an *enforcement ladder* — each lesson
+lands on the highest rung that can actually hold it (L-040):
+- Mechanically checkable (an artifact's presence, a forbidden string, a
+  count, an exit code) → a hook or CI fixture, fixture-tested itself (L-001).
+- Verification-shaped (confirmable from evidence after the fact) → a check
+  in the verifier agent's brief.
+- Procedure-shaped → a skill, via `/add-skill`.
 - Rule-shaped, path-local → `.claude/rules/<topic>.md` with `paths:` glob
   frontmatter — it loads only when Claude touches matching files, so it
   spends no CLAUDE.md budget.
-- Procedure-shaped → a skill, via `/add-skill` (procedures and path-local
-  rules load on demand; global rules must not grow past the cap).
+- Rule-shaped global judgment → a bullet in CLAUDE.md's `janus:rules` block,
+  citing its id. Prose is the rung of last resort (procedures and path-local
+  rules load on demand; global rules must not grow past the cap), and a
+  prose rule whose recurrences reveal a checkable core is escalated upward.
 - It is also the garbage collector: rules contradicted by newer entries are
   retired, and the CLAUDE.md caps (≤20 concepts, ≤12 rules) are asserted at
   the end of every run. **Adding requires room; room comes from merging or
