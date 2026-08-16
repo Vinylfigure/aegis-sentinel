@@ -1,0 +1,14 @@
+{
+  "org": "meridian-financial-fixtures",
+  "endpoint": "REST v3 GET /orgs/meridian-financial-fixtures/members",
+  "api_version": "2022-11-28",
+  "captured_at": "2026-12-31T23:59:59Z",
+  "page": 2,
+  "per_page": 3,
+  "link_next": "page_3",
+  "rows": [
+    { "login": "dev-rao", "id": 5004, "type": "User", "site_admin": false, "sso_identity": "dev.rao@example.com" },
+    { "login": "meridian-deploy[bot]", "id": 5005, "type": "Bot", "site_admin": false, "sso_identity": null },
+    { "login": "elif-kaya", "id": 5006, "type": "User", "site_admin": false, "sso_identity": "elif.kaya@example.com" }
+  ]
+}

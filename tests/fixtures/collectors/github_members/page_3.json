@@ -1,0 +1,13 @@
+{
+  "org": "meridian-financial-fixtures",
+  "endpoint": "REST v3 GET /orgs/meridian-financial-fixtures/members",
+  "api_version": "2022-11-28",
+  "captured_at": "2026-12-31T23:59:59Z",
+  "page": 3,
+  "per_page": 3,
+  "link_next": null,
+  "rows": [
+    { "login": "finn-doyle", "id": 5007, "type": "User", "site_admin": false, "sso_identity": "finn.doyle@example.com" },
+    { "login": "gh-legacy-onboarder", "id": 5008, "type": "User", "site_admin": false, "sso_identity": null }
+  ]
+}
