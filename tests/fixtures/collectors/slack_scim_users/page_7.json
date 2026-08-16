@@ -1,0 +1,16 @@
+{
+  "schemas": ["urn:ietf:params:scim:api:messages:2.0:ListResponse"],
+  "workspace": "T-MERIDIAN-FIX",
+  "totalResults": 7,
+  "startIndex": 7,
+  "itemsPerPage": 1,
+  "Resources": [
+    {
+      "id": "U-2007",
+      "userName": "greer.osei",
+      "emails": [{"value": "greer.osei@example.com", "primary": true}],
+      "active": true,
+      "samlIdentity": "greer.osei@idp.example.com"
+    }
+  ]
+}

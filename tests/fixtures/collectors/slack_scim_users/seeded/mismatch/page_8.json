@@ -1,0 +1,8 @@
+{
+  "schemas": ["urn:ietf:params:scim:api:messages:2.0:ListResponse"],
+  "workspace": "T-MERIDIAN-FIX",
+  "totalResults": 8,
+  "startIndex": 8,
+  "itemsPerPage": 0,
+  "Resources": []
+}

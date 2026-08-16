@@ -1,0 +1,30 @@
+{
+  "schemas": ["urn:ietf:params:scim:api:messages:2.0:ListResponse"],
+  "workspace": "T-MERIDIAN-FIX",
+  "totalResults": 8,
+  "startIndex": 1,
+  "itemsPerPage": 3,
+  "Resources": [
+    {
+      "id": "U-2001",
+      "userName": "avery.hale",
+      "emails": [{"value": "avery.hale@example.com", "primary": true}],
+      "active": true,
+      "samlIdentity": "avery.hale@idp.example.com"
+    },
+    {
+      "id": "U-2002",
+      "userName": "blair.quinn",
+      "emails": [{"value": "blair.quinn@example.com", "primary": true}],
+      "active": true,
+      "samlIdentity": "blair.quinn@idp.example.com"
+    },
+    {
+      "id": "U-2003",
+      "userName": "casey.morgan",
+      "emails": [{"value": "casey.morgan@example.com", "primary": true}],
+      "active": false,
+      "samlIdentity": "casey.morgan@idp.example.com"
+    }
+  ]
+}
