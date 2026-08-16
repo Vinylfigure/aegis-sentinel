@@ -58,10 +58,10 @@ ratification is the freeze — draft → frozen(=ratified) → superseded).
 - [x] **COL02–05** — Okta / GitHub / GCP / Slack collectors (worktrees): injected
   transport, fixture tenants only, pagination exhaustion, hashed raw responses, EQC with
   all five property methods named; each ships a seeded failing fixture it must detect.
-- [ ] **REC01** — canonical identity join + set reconciler; six delta buckets as
+- [x] **REC01** — canonical identity join + set reconciler; six delta buckets as
   first-class objects with owner + disposition; DISCOVERED→RECONCILED blocked while any
   delta is undispositioned.
-- [ ] **EVAL01** — typed assertion evaluator (pure; business-day math tested;
+- [x] **EVAL01** — typed assertion evaluator (pure; business-day math tested;
   re-performance byte-identical; five verdict states distinct; D-7/D-8/D-9 citations).
 - [ ] **VAL02** — six poison fixtures per PRD §6 (expected: UNKNOWN_POPULATION-or-FAIL ·
   NON-EXISTENCE FAIL · E117 compile error · unresolvable→UNKNOWN · TIMING FAIL ·

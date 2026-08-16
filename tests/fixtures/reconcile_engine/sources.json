@@ -1,0 +1,41 @@
+{
+  "_comment": "REC01 demo member-sets: hris authoritative + two contributing. Expected buckets: ada+ben intersection; cleo+ed left_only (ed pins absence-dominates-mismatch precedence); mira right_only; dora conflict (okta says active); worker:W-1099 (garbled email) + okta:00u7 (null email) unresolvable; svc-deploy excluded per ratified boundary v3.",
+  "sources": [
+    {
+      "name": "hris",
+      "role": "authoritative",
+      "members": [
+        { "ref": "worker:W-1001", "email": "ada@example.com", "attributes": { "status": "deactivated" } },
+        { "ref": "worker:W-1002", "email": "  BEN@Example.COM ", "attributes": { "status": "deactivated" } },
+        { "ref": "worker:W-1003", "email": "cleo@example.com", "attributes": { "status": "deactivated" } },
+        { "ref": "worker:W-1004", "email": "dora@example.com", "attributes": { "status": "deactivated" } },
+        { "ref": "worker:W-1005", "email": "ed@example.com", "attributes": { "status": "deactivated" } },
+        { "ref": "worker:W-1099", "email": "not-an-email", "attributes": {} }
+      ]
+    },
+    {
+      "name": "okta",
+      "role": "contributing",
+      "members": [
+        { "ref": "okta:00u1", "email": "ada@example.com", "attributes": { "status": "deactivated" } },
+        { "ref": "okta:00u2", "email": "ben@example.com", "attributes": { "status": "deactivated" } },
+        { "ref": "okta:00u4", "email": "dora@example.com", "attributes": { "status": "active" } },
+        { "ref": "okta:00u5", "email": "ed@example.com", "attributes": { "status": "active" } },
+        { "ref": "okta:00u9", "email": "mira@example.com", "attributes": { "status": "active" } },
+        { "ref": "okta:00svc", "email": "svc-deploy@example.com", "attributes": { "status": "active" } },
+        { "ref": "okta:00u7", "email": null, "attributes": {} }
+      ]
+    },
+    {
+      "name": "github",
+      "role": "contributing",
+      "members": [
+        { "ref": "github:ada", "email": "ada@example.com", "attributes": { "status": "deactivated" } },
+        { "ref": "github:ben", "email": "Ben@example.com", "attributes": { "status": "deactivated" } },
+        { "ref": "github:dora", "email": "dora@example.com", "attributes": { "status": "deactivated" } },
+        { "ref": "github:mira", "email": "mira@example.com", "attributes": { "status": "active" } },
+        { "ref": "github:svc-deploy", "email": "svc-deploy@example.com", "attributes": { "status": "active" } }
+      ]
+    }
+  ]
+}
