@@ -6,7 +6,10 @@ requires-python = ">=3.12"
 dependencies = ["pydantic>=2.8,<3"]
 
 [project.optional-dependencies]
-dev = ["ruff", "pytest", "pyyaml", "jsonschema"]
+# mcp stays optional: the core package must import and work without it.
+# dev includes it so the test suite (and CI) exercises the MCP server.
+mcp = ["mcp"]
+dev = ["ruff", "pytest", "pyyaml", "jsonschema", "mcp"]
 
 [build-system]
 requires = ["setuptools>=68"]
