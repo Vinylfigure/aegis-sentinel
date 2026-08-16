@@ -46,7 +46,7 @@ ratification is the freeze — draft → frozen(=ratified) → superseded).
 - [x] **CAP01** — 7 capability entries across HRIS/Okta/GitHub/GCP/Slack with vendor-doc
   citations; Okta System Log 90-day window recorded as history caveat;
   `ratified_by: "vinylfigure (Ratifier)"`.
-- [ ] **TYP01** — type checker + E-codes (E204 temporal insufficiency w/ satisfiable-via
+- [x] **TYP01** — type checker + E-codes (E204 temporal insufficiency w/ satisfiable-via
   suggestion, E117 missing capability, E302 schema drift); zero collectors executable
   with unresolved E-codes. Acceptance: 6-month TIMING assertion vs Okta 90d fails with
   E204 and the correct suggestion.
