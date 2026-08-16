@@ -74,15 +74,19 @@ ratification is the freeze — draft → frozen(=ratified) → superseded).
   prototypes; fonts via next/font; AppShell + NavTabs + GaugesRail), Aegis branding,
   `.github/workflows/web-verify.yml` (npm ci, tsc, build, artifact-sync drift check),
   Vercel project (root `web/`, ignored-build-step diffing `web/ artifacts/`).
-- [ ] **A2** — seed data ported from prototypes into `web/src/data/seed/*.json`,
-  genericized to a neutral demo company (Meridian Financial).
+- [x] **A2** — seed data ported from prototypes into `web/src/data/seed/*.json`
+  (scope/controls/process/gauges), genericized to Meridian Financial (redaction
+  gate green; fictional `@meridian.example` people).
 - [ ] **A3** — `/scope` (merged scope-tool + workbench stage 1) + ledger/regime rail.
 - [ ] **A4** — `/controls`, `/datasets` (derived registry), `/overlord` (generated
   missions + manifest export) + posture/dataset/agent gauges.
 - [ ] **A5** — `/process` lanes + control-point detail rail.
-- [ ] **B1** — TS ontology/artifact types + hand-authored mock
-  `web/src/data/engagement/*.json` encoding the six poisons (doubles as the review
-  artifact for SCH01/REC01 output shapes).
+- [x] **B1** — TS ontology/artifact types (`web/src/data/types.ts`) + hand-authored
+  mock `web/src/data/engagement/*.json` encoding the six poisons; JSON wired
+  through `checked<T>(json: Widen<T>)` assignability so tsc checks every record
+  (enum VALUES stay unchecked until C1 codegen — JSON inference widens strings);
+  shape divergences recorded in `web/README.md` "SCH01/REC01 shape review
+  questions" — the review artifact for the backend output shapes.
 - [ ] **B2** — `/reconciliation` + `/reconciliation/[populationId]` (ladder stepper,
   identity join panel, six-bucket board, why-complete rail).
 - [ ] **B3** — `/verdicts` (five distinct states, why-code chips, mutation scorecard)
