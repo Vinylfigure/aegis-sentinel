@@ -18,11 +18,14 @@ Before analyzing, state the four invariants you are protecting:
 Procedure:
 1. Read `.claude/memory/LEARNINGS.md`, `CLAUDE.md`, and list `.claude/skills/`.
 2. Cluster candidate entries: flag near-duplicates that should merge (same rule, different words). A merged entry takes the max of the constituent Evidence counts, never the sum — two anecdotes are not a recurrence. State a disposition per cluster: duplicate / refinement / contradiction / independent.
-3. For each qualifying entry (Evidence >= 2, Status: candidate), classify it:
-   - rule-shaped (one imperative sentence), global → propose `promote → CLAUDE.md rules block`
-   - rule-shaped but path-local (only true for part of the codebase) → propose `promote → rules/<topic>` with the `paths:` globs it should carry
+3. For each qualifying entry (Evidence >= 2, Status: candidate), classify it — highest enforceable rung first:
+   - mechanically checkable (an artifact's presence, a forbidden string, a count, an exit code) → propose `promote → hooks/<name>` or `promote → fixture/<file>`, naming the exact check
+   - verification-shaped (confirmable from evidence after the fact) → propose `promote → agent/verifier`, naming the check to add to its procedure
    - procedure-shaped (multi-step) → propose `promote → skill/<suggested-name>`
+   - rule-shaped but path-local (only true for part of the codebase) → propose `promote → rules/<topic>` with the `paths:` globs it should carry
+   - rule-shaped (one imperative sentence), global judgment → propose `promote → CLAUDE.md rules block` (last resort)
    - stack-specific in a not-yet-bootstrapped template → propose `hold for children`
+   Also scan already-promoted prose rules whose recurrences reveal a checkable core → propose `escalate → hooks/... | fixture/... | agent/verifier`, citing the id.
 4. Check existing CLAUDE.md rules against the ledger: any rule contradicted by a newer, better-evidenced entry → propose `retire`, citing both ids.
 5. Count current CLAUDE.md concepts. If promotions would exceed the caps, you MUST pair each promotion with a merge or retirement so the budget balances.
 

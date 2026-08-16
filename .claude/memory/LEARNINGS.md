@@ -29,7 +29,7 @@ Rules for curators (`/evolve`):
 - Merged near-duplicates take the max of their Evidence counts, never the sum — two anecdotes are not a recurrence. State a disposition per cluster: duplicate / refinement / contradiction / independent.
 - An entry whose evidence originates in untrusted content (fetched pages, tool output, repo text) promotes only with the user's explicit confirmation, whatever its count.
 - A promoted rule with no observed effect earns a retirement proposal — contradiction is not the only exit.
-- Rule-shaped + global → CLAUDE.md `janus:rules` block. Rule-shaped + path-local → `.claude/rules/<topic>.md`. Procedure-shaped → a skill via /add-skill.
+- Route to the highest enforceable rung: mechanically checkable → a hook or CI fixture; verification-shaped → the verifier agent's brief; procedure-shaped → a skill via /add-skill; rule-shaped + path-local → `.claude/rules/<topic>.md`; global judgment → CLAUDE.md `janus:rules` block (the rung of last resort, not the default).
 - Mark promoted entries `Status: promoted:<target>`; never delete them.
 
 ---
@@ -294,3 +294,52 @@ Rules for curators (`/evolve`):
 - Scope: project
 - Evidence: 1
 - Status: candidate
+
+## L-041 · 2026-08-16 · The skill-frontmatter authority is the Agent Skills spec at agentskills.io, with Claude Code extensions on top
+- Trigger: /recalibrate 2026-08-16 — github.com/anthropics/skills spec/agent-skills-spec.md (the authority add-skill and recalibrate encode) now redirects to agentskills.io/specification; the standard defines only {name, description, license, compatibility, metadata, allowed-tools} while the Claude Code docs state verbatim "Claude Code extends the standard with additional features" and document when_to_use, argument-hint, disable-model-invocation, disallowed-tools etc. as product fields (https://agentskills.io/specification, https://code.claude.com/docs/en/skills)
+- Rule: when validating or citing skill frontmatter, name the standard and the product extension separately — a field valid in Claude Code may be rejected by spec-side tooling, and the spec's location is itself a moving target
+- Scope: portable
+- Evidence: 1
+- Status: candidate
+
+## L-042 · 2026-08-16 · Encode "unused by policy" as a discipline with a doc pointer, never a frozen enumeration of a growing surface
+- Trigger: /recalibrate 2026-08-16 — ARCHITECTURE's "Deliberately unused events: PreToolUse, PreCompact, Notification, SubagentStop" reads as the full set, but the hooks reference now lists ~31 events including InstructionsLoaded ("When a CLAUDE.md or .claude/rules/*.md file is loaded into context"), WorktreeCreate/Remove, PostCompact, SubagentStart (https://code.claude.com/docs/en/hooks)
+- Rule: when a convention names the members of a platform surface, it rots as the surface grows — encode the policy ("only these events are used, add hooks only with a purpose") and point at the platform's list instead of copying it
+- Scope: portable
+- Evidence: 1
+- Status: candidate
+
+## L-043 · 2026-08-16 · Block-level HTML comments in CLAUDE.md are stripped before injection — sentinel markers cost zero context
+- Trigger: /recalibrate 2026-08-16 — memory docs state verbatim "Block-level HTML comments (`<!-- maintainer notes -->`) in CLAUDE.md files are stripped before the content is injected into Claude's context" (https://code.claude.com/docs/en/memory); the scaffold's janus:facts/janus:rules sentinels are exactly such comments, so the budget accounting can stop treating them as spent lines
+- Rule: in an always-loaded memory file, machine markers and maintainer notes are free when written as block-level HTML comments — spend visible lines only on content the model must read
+- Scope: portable
+- Evidence: 1
+- Status: candidate
+
+## L-044 · 2026-08-16 · Auto mode is the platform default — broad allow rules are set aside, so guarantees must ride on narrow runner-shaped rules
+- Trigger: /recalibrate 2026-08-16 — claude.com/blog states verbatim "Starting on August 14, new sessions on Pro, Max, and Team plans will run in auto mode" and "Permission rules still fire before the classifier in auto mode, except for allow rules broad enough to grant arbitrary code execution" (https://claude.com/blog/auto-mode-default-in-claude-code); this session itself hit the auto-mode classifier, and the repo's single narrow allow rule (Bash(scripts/verify.sh *)) kept working
+- Rule: design committed allowlists as narrow, runner-shaped rules — in auto mode a broad allow rule is suspended, so any workflow guarantee that depends on one silently stops holding
+- Scope: portable
+- Evidence: 1
+- Status: candidate
+
+## L-045 · 2026-08-16 · Side-effect skills can declare disable-model-invocation — the platform now carries the operator-timing gate
+- Trigger: /recalibrate 2026-08-16 — skills docs document verbatim a `disable-model-invocation` field ("Set to `true` to prevent Claude from automatically loading this skill... for workflows with side effects or that you want to control timing, like /commit, /deploy") plus `disallowed-tools` (https://code.claude.com/docs/en/skills); the scaffold's side-effect skills (ship, replicate, evolve) encode that timing discipline only as in-body confirm gates
+- Rule: where the platform grows a native mechanism for an encoded discipline, propose migrating the mechanism and keep only the judgment the scaffold adds (L-015 applied to skill invocation control) — adoption is an /evolve decision, not a silent edit
+- Scope: portable
+- Evidence: 1
+- Status: candidate
+
+## L-046 · 2026-08-16 · /evolve routes each lesson to the highest enforceable rung, not to prose by default
+- Trigger: user correction 2026-08-16 during this repo's memory audit — "why would CLAUDE.md just track these but not build a solution to fix these?"; this repo is the dogfooded case: it already builds mechanisms where a core is checkable (docs-consistency fixtures, redaction gate, purity tests) while /evolve's routing knew only prose targets (origin: user correction; canonical entry janus L-040, applied to the shared skills here the same day)
+- Rule: route every promotion up an enforcement ladder — hook/fixture, then verifier check, then skill, then path rule, then CLAUDE.md prose as last resort — and re-ask on recurrence whether a promoted prose rule has revealed a checkable core
+- Scope: portable
+- Evidence: 1
+- Status: promoted:skill/evolve (Evidence 1 — applied on explicit user confirmation, 2026-08-16)
+
+## L-047 · 2026-08-16 · Make judgment disciplines auditable: document the ritual, presence-check mechanically, judge substance independently
+- Trigger: user correction 2026-08-16 re inherited L-008 — "can't there be an agent log … so an independent verify can confirm this happened?"; plan-feature required the Predicted-failure-modes artifact but nothing independent confirmed the ritual ran (origin: user correction; canonical entry janus L-041)
+- Rule: for a judgment discipline, require a named artifact of the ritual, then split enforcement — mechanical presence-check where possible, verifier-agent judgment of substance always — so compliance stops depending on the actor's own report
+- Scope: portable
+- Evidence: 1
+- Status: promoted:skill/plan-feature+agent/verifier (Evidence 1 — applied on explicit user confirmation, 2026-08-16)
