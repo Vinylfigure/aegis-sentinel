@@ -151,9 +151,15 @@ mkdir -p "$SANDBOX/fixtures"
 printf '#!/usr/bin/env bash\nexit 0\n' > "$SANDBOX/fixtures/good.sh"
 printf '#!/usr/bin/env bash\nif true; then\n' > "$SANDBOX/fixtures/bad.sh"
 printf '{ "unterminated":\n' > "$SANDBOX/fixtures/bad.json"
+# Repo-specific (aegis-sentinel): the *.yml quick arm exists because a work
+# order once burned 50 turns unable to verify YAML (L-039) — keep it guarded.
+printf 'name: fine\nbody:\n  - type: markdown\n' > "$SANDBOX/fixtures/good.yml"
+printf 'name: broken\nbody:\n  - type: [unclosed\n' > "$SANDBOX/fixtures/bad.yml"
 "$ROOT/scripts/verify.sh" quick "$SANDBOX/fixtures/good.sh" >/dev/null 2>&1 && pass "quick: valid .sh -> exit 0" || fail "quick: valid .sh -> exit 0"
 "$ROOT/scripts/verify.sh" quick "$SANDBOX/fixtures/bad.sh" >/dev/null 2>&1 && fail "quick: broken .sh -> nonzero" || pass "quick: broken .sh -> nonzero"
 "$ROOT/scripts/verify.sh" quick "$SANDBOX/fixtures/bad.json" >/dev/null 2>&1 && fail "quick: broken .json -> nonzero" || pass "quick: broken .json -> nonzero"
+"$ROOT/scripts/verify.sh" quick "$SANDBOX/fixtures/good.yml" >/dev/null 2>&1 && pass "quick: valid .yml -> exit 0" || fail "quick: valid .yml -> exit 0"
+"$ROOT/scripts/verify.sh" quick "$SANDBOX/fixtures/bad.yml" >/dev/null 2>&1 && fail "quick: broken .yml -> nonzero" || pass "quick: broken .yml -> nonzero"
 "$ROOT/scripts/verify.sh" bogus >/dev/null 2>&1
 rc=$?
 [ "$rc" -eq 64 ] && pass "unknown mode -> exit 64" || fail "unknown mode -> exit 64 (got $rc)"

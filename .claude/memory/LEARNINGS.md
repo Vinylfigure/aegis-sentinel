@@ -350,3 +350,10 @@ Rules for curators (`/evolve`):
 - Scope: portable
 - Evidence: 1
 - Status: promoted:hooks/session-start (Evidence 1 — applied on explicit user confirmation, 2026-08-16)
+
+## L-049 · 2026-08-16 · Mirroring a shared scaffold file between repos by blind copy clobbers repo-specific divergence
+- Trigger: two incidents this session — copying janus's SELF-IMPROVEMENT.md over aegis-sentinel's reverted the corrected CI wording (caught by own L-007 sweep), and copying janus's test-hooks.sh deleted this repo's *.yml quick-arm fixtures undisclosed (caught by the adversarial verifier post-commit); both from `cp` of a diverged file (origin: verify failure + verifier report, confirmed against git history)
+- Rule: before mirroring a scaffold file across repos, diff it against the destination and port the change as a patch — a diverged file is never safely replaced whole
+- Scope: portable
+- Evidence: 1
+- Status: candidate

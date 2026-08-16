@@ -49,6 +49,11 @@ def forbidden_uses(path: Path, in_determinism_scope: bool) -> list[str]:
             base = node.value
             if isinstance(base, ast.Name) and (base.id, node.attr) in DETERMINISM_BANNED_CALLS:
                 problems.append(f"line {node.lineno}: {base.id}.{node.attr} banned (D-P3)")
+            # Alias-proof over-approximation: any .now()/.today() attribute
+            # access is a clock read regardless of what the base is bound to
+            # (dt.datetime.now, date.today, ...). Clocks are explicit inputs.
+            elif node.attr in ("now", "today"):
+                problems.append(f"line {node.lineno}: .{node.attr} clock access banned (D-P3)")
     return problems
 
 
