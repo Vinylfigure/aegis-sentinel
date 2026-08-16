@@ -357,3 +357,10 @@ Rules for curators (`/evolve`):
 - Scope: portable
 - Evidence: 1
 - Status: candidate
+
+## L-050 · 2026-08-16 · Piping verify output through tail launders the exit code — evidence of L-038 recurring
+- Trigger: `verify.sh full 2>&1 | tail -4 && git commit` committed and pushed a red suite this session — the pipeline's exit status is tail's, not verify's, so the && gate held a door that was already open; caught one command later and amended (origin: verify failure, own observation). observed: 2026-08-16 — L-038 ("gate the commit on the verifier's exit in the same command chain") fired in spirit but its rule assumed the exit code reaches the chain; a pipe breaks that assumption
+- Rule: never pipe a gating command's output before using its exit status — run the gate bare (redirect to a file if output is needed) or set pipefail in the same shell, then chain the commit
+- Scope: portable
+- Evidence: 1
+- Status: candidate
