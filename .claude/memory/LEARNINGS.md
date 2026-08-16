@@ -364,3 +364,17 @@ Rules for curators (`/evolve`):
 - Scope: portable
 - Evidence: 1
 - Status: candidate
+
+## L-051 · 2026-08-16 · Worktree subagents deliver untracked files — integrate by clobber-checked copy, never by branch merge
+- Trigger: the first collector-wave integration ran `git merge worktree-agent-...` and got a silently empty merge — worktree subagents are told not to commit, so their branches carry no commits and the deliverables sit untracked in the worktree directory; the working pattern (repeated 6x this session) is: list the worktree's `git status --porcelain` untracked paths, refuse any path that already exists in the destination (L-049's clobber guard), copy the rest, re-verify in the main checkout (origin: own observation, verify failure)
+- Rule: to integrate a no-commit worktree subagent's work, copy its untracked new files with a per-path exists-check and re-run the full suite in the destination — merging its branch integrates nothing
+- Scope: portable
+- Evidence: 1
+- Status: candidate
+
+## L-052 · 2026-08-16 · The shell's working directory resets between tool calls — anchor every compound command
+- Trigger: four separate commands this session failed with "not a git repository" / "No such file or directory" because the session cwd had silently reverted to the home directory between calls (worker restarts and environment reconnects reset it); each failure cost a retry with an explicit cd (origin: own observation, repeated)
+- Rule: start every compound shell command with an absolute-path cd (or use absolute paths throughout) — never assume the previous call's working directory survived
+- Scope: portable
+- Evidence: 1
+- Status: candidate

@@ -1,0 +1,26 @@
+.tabs {
+  display: flex;
+  gap: 0;
+  border-bottom: 1px solid var(--line);
+  overflow-x: auto;
+}
+
+.tab {
+  color: var(--faint);
+  font-family: var(--font-body);
+  font-size: var(--fs-sub);
+  font-weight: 600;
+  padding: 10px 16px 12px;
+  border-bottom: 2px solid transparent;
+  white-space: nowrap;
+}
+
+.tab:hover {
+  color: var(--dim);
+  text-decoration: none;
+}
+
+.tab.on {
+  color: var(--ink);
+  border-bottom-color: var(--accent);
+}

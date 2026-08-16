@@ -1,0 +1,143 @@
+{
+  "id": "ap-automation",
+  "name": "AP-automation lane",
+  "event_role": "source-of-truth",
+  "event_description": "vendor invoices reaching approved status in the period",
+  "downstream_roles": ["approval-workflow", "payment-execution", "vendor-master"],
+  "nodes": [
+    {
+      "role": "source-of-truth",
+      "kind": "system",
+      "description": "ERP / AP subledger emitting approved-invoice events"
+    },
+    {
+      "role": "approval-workflow",
+      "kind": "system",
+      "description": "invoice approval routing tool recording who approved what, and when"
+    },
+    {
+      "role": "payment-execution",
+      "kind": "system",
+      "description": "banking / payment rails executing vendor payments"
+    },
+    {
+      "role": "vendor-master",
+      "kind": "system",
+      "description": "vendor master records, including remit-to bank details"
+    },
+    {
+      "role": "ap-clerk",
+      "kind": "actor",
+      "description": "enters vendor invoices into the ERP"
+    },
+    {
+      "role": "approver",
+      "kind": "actor",
+      "description": "approves routed invoices in the approval workflow"
+    }
+  ],
+  "edges": [
+    { "source": "ap-clerk", "target": "source-of-truth", "trigger": "invoice entered" },
+    {
+      "source": "source-of-truth",
+      "target": "approval-workflow",
+      "trigger": "invoice routed for approval"
+    },
+    { "source": "approver", "target": "approval-workflow", "trigger": "approval recorded" },
+    {
+      "source": "approval-workflow",
+      "target": "source-of-truth",
+      "trigger": "approval written back; invoice becomes an approved-invoice event"
+    },
+    {
+      "source": "vendor-master",
+      "target": "source-of-truth",
+      "trigger": "vendor identity and remit-to details furnished for invoice and payment"
+    },
+    {
+      "source": "source-of-truth",
+      "target": "payment-execution",
+      "trigger": "approved invoice released for payment"
+    }
+  ],
+  "control_points": [
+    {
+      "id": "cp-approval-capture",
+      "at_role": "source-of-truth",
+      "statement_template": "every approved invoice in {system} carries an approval captured in the approval workflow",
+      "assertions": [
+        {
+          "attribute": "A",
+          "type": "EVENT",
+          "description_template": "an approval event exists in the approval workflow for each approved invoice in {system}"
+        }
+      ]
+    },
+    {
+      "id": "cp-payment-discipline",
+      "at_role": "source-of-truth",
+      "statement_template": "every approved invoice in {system} was paid only after its approval and within the payment window",
+      "assertions": [
+        {
+          "attribute": "A",
+          "type": "SEQUENCE",
+          "description_template": "for each approved invoice in {system}, the approval event precedes the corresponding payment execution (payment leg is prose-only; see docs/lane-fit-notes.md FIT-002)"
+        },
+        {
+          "attribute": "B",
+          "type": "TIMING",
+          "description_template": "payment was executed within 10 business days of the {system} approval",
+          "timing_days": 10
+        }
+      ]
+    },
+    {
+      "id": "cp-vendor-validity",
+      "at_role": "source-of-truth",
+      "statement_template": "every approved invoice in {system} names a vendor with an active vendor-master record",
+      "assertions": [
+        {
+          "attribute": "A",
+          "type": "EXISTENCE",
+          "description_template": "the vendor on each approved invoice in {system} exists as an active record in the vendor master"
+        }
+      ]
+    },
+    {
+      "id": "cp-approval-access",
+      "at_role": "approval-workflow",
+      "statement_template": "approval rights in {system} are held only by identities on the authorized approver roster",
+      "assertions": [
+        {
+          "attribute": "A",
+          "type": "NON-EXISTENCE",
+          "description_template": "no identity outside the authorized approver roster appears among {system} access holders"
+        }
+      ]
+    },
+    {
+      "id": "cp-payment-access",
+      "at_role": "payment-execution",
+      "statement_template": "payment-release rights in {system} are held only by authorized treasury identities, none of whom enter invoices",
+      "assertions": [
+        {
+          "attribute": "A",
+          "type": "NON-EXISTENCE",
+          "description_template": "no identity outside the authorized payment-release roster, and no invoice-entry identity, appears among {system} access holders"
+        }
+      ]
+    },
+    {
+      "id": "cp-vendor-master-access",
+      "at_role": "vendor-master",
+      "statement_template": "vendor bank-detail edit rights in {system} are held only by authorized vendor-data identities",
+      "assertions": [
+        {
+          "attribute": "A",
+          "type": "NON-EXISTENCE",
+          "description_template": "no identity outside the authorized vendor-data roster appears among {system} access holders"
+        }
+      ]
+    }
+  ]
+}

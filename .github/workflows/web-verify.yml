@@ -1,0 +1,35 @@
+# Frontend verification. The job name `web-verify` is load-bearing:
+# branch protection on main lists it as a required check (issue #20).
+name: web-verify
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "web/**"
+      - "artifacts/**"
+  pull_request:
+    paths:
+      - "web/**"
+      - "artifacts/**"
+
+jobs:
+  web-verify:
+    name: web-verify
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: web
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - name: Install
+        run: npm ci
+      - name: Typecheck
+        run: npx tsc --noEmit
+      - name: Build
+        run: npm run build

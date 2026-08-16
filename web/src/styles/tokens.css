@@ -1,0 +1,58 @@
+/*
+ * Aegis token sheet — extracted from the design prototypes at
+ * docs/prototypes/{scope-tool,workbench,process-graph}.html.
+ * All three prototypes share one palette; where they diverged
+ * (--panel3: #212437 in scope-tool vs #232741 in the other two)
+ * the majority value won. Do not invent new colors here — extend
+ * only when a prototype or ratified design does.
+ */
+:root {
+  /* surfaces (dark, single-theme by design) */
+  --bg: #0e0f14;
+  --panel: #161824;
+  --panel2: #1b1e2e;
+  --panel3: #232741;
+  --line: #2a2e42;
+
+  /* text */
+  --ink: #e8e9f0;
+  --dim: #9a9db2;
+  --faint: #63667c;
+
+  /* accents (prototype names kept verbatim) */
+  --purple: #8b7ff5;
+  --purple-hover: #9d92f7;
+  --amber: #e8b34b;
+  --green: #6fbf8f;
+  --red: #e0716f;
+  --cyan: #6db8d8;
+
+  /* alpha tints — the prototypes' badge/control-point fills */
+  --purple-tint: rgba(139, 127, 245, 0.12);
+  --amber-tint: rgba(232, 179, 75, 0.12);
+  --green-tint: rgba(111, 191, 143, 0.14);
+  --red-tint: rgba(224, 113, 111, 0.12);
+  --cyan-tint: rgba(109, 184, 216, 0.12);
+  --dim-tint: rgba(154, 157, 178, 0.14);
+
+  /* semantic aliases — components use these; the raw accents stay stable */
+  --accent: var(--purple);
+  --accent-hover: var(--purple-hover);
+  --ok: var(--green);
+  --warn: var(--amber);
+  --fail: var(--red);
+  --info: var(--cyan);
+
+  /* type — families loaded via next/font in the root layout */
+  --font-body: var(--font-inter, "Inter"), system-ui, sans-serif;
+  --font-display: var(--font-space-grotesk, "Space Grotesk"), var(--font-body);
+  --font-mono: var(--font-plex-mono, "IBM Plex Mono"), ui-monospace, monospace;
+
+  /* scale — the prototypes' recurring values */
+  --fs-body: 13.5px;
+  --fs-sub: 12.5px;
+  --fs-label: 10.5px;
+  --radius: 10px;
+  --radius-sm: 6px;
+  --rail-width: 320px;
+}
