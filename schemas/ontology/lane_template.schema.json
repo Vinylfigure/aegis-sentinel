@@ -1,0 +1,224 @@
+{
+  "$defs": {
+    "AssertionSpec": {
+      "additionalProperties": false,
+      "description": "A control point's testable attribute, template-side: everything an\nAssertion needs except the concrete system names.",
+      "properties": {
+        "attribute": {
+          "minLength": 1,
+          "title": "Attribute",
+          "type": "string"
+        },
+        "description_template": {
+          "minLength": 1,
+          "title": "Description Template",
+          "type": "string"
+        },
+        "timing_business_days": {
+          "default": true,
+          "title": "Timing Business Days",
+          "type": "boolean"
+        },
+        "timing_days": {
+          "anyOf": [
+            {
+              "minimum": 1,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Timing Days"
+        },
+        "type": {
+          "$ref": "#/$defs/AssertionType"
+        }
+      },
+      "required": [
+        "attribute",
+        "type",
+        "description_template"
+      ],
+      "title": "AssertionSpec",
+      "type": "object"
+    },
+    "AssertionType": {
+      "description": "The assertion type determines what evidence *can* prove it.",
+      "enum": [
+        "STATE",
+        "EVENT",
+        "SEQUENCE",
+        "AGGREGATE",
+        "EXISTENCE",
+        "NON-EXISTENCE",
+        "TIMING"
+      ],
+      "title": "AssertionType",
+      "type": "string"
+    },
+    "ControlPoint": {
+      "additionalProperties": false,
+      "properties": {
+        "assertions": {
+          "items": {
+            "$ref": "#/$defs/AssertionSpec"
+          },
+          "minItems": 1,
+          "title": "Assertions",
+          "type": "array"
+        },
+        "at_role": {
+          "minLength": 1,
+          "title": "At Role",
+          "type": "string"
+        },
+        "id": {
+          "minLength": 1,
+          "title": "Id",
+          "type": "string"
+        },
+        "per_downstream": {
+          "default": false,
+          "title": "Per Downstream",
+          "type": "boolean"
+        },
+        "statement_template": {
+          "minLength": 1,
+          "title": "Statement Template",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "at_role",
+        "statement_template",
+        "assertions"
+      ],
+      "title": "ControlPoint",
+      "type": "object"
+    },
+    "LaneEdge": {
+      "additionalProperties": false,
+      "properties": {
+        "source": {
+          "minLength": 1,
+          "title": "Source",
+          "type": "string"
+        },
+        "target": {
+          "minLength": 1,
+          "title": "Target",
+          "type": "string"
+        },
+        "trigger": {
+          "minLength": 1,
+          "title": "Trigger",
+          "type": "string"
+        }
+      },
+      "required": [
+        "source",
+        "target",
+        "trigger"
+      ],
+      "title": "LaneEdge",
+      "type": "object"
+    },
+    "LaneNode": {
+      "additionalProperties": false,
+      "properties": {
+        "description": {
+          "minLength": 1,
+          "title": "Description",
+          "type": "string"
+        },
+        "kind": {
+          "pattern": "^(system|actor)$",
+          "title": "Kind",
+          "type": "string"
+        },
+        "role": {
+          "minLength": 1,
+          "title": "Role",
+          "type": "string"
+        }
+      },
+      "required": [
+        "role",
+        "kind",
+        "description"
+      ],
+      "title": "LaneNode",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "control_points": {
+      "items": {
+        "$ref": "#/$defs/ControlPoint"
+      },
+      "minItems": 1,
+      "title": "Control Points",
+      "type": "array"
+    },
+    "downstream_roles": {
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1,
+      "title": "Downstream Roles",
+      "type": "array"
+    },
+    "edges": {
+      "items": {
+        "$ref": "#/$defs/LaneEdge"
+      },
+      "minItems": 1,
+      "title": "Edges",
+      "type": "array"
+    },
+    "event_description": {
+      "minLength": 1,
+      "title": "Event Description",
+      "type": "string"
+    },
+    "event_role": {
+      "minLength": 1,
+      "title": "Event Role",
+      "type": "string"
+    },
+    "id": {
+      "minLength": 1,
+      "title": "Id",
+      "type": "string"
+    },
+    "name": {
+      "minLength": 1,
+      "title": "Name",
+      "type": "string"
+    },
+    "nodes": {
+      "items": {
+        "$ref": "#/$defs/LaneNode"
+      },
+      "minItems": 2,
+      "title": "Nodes",
+      "type": "array"
+    }
+  },
+  "required": [
+    "id",
+    "name",
+    "event_role",
+    "event_description",
+    "downstream_roles",
+    "nodes",
+    "edges",
+    "control_points"
+  ],
+  "title": "LaneTemplate",
+  "type": "object"
+}

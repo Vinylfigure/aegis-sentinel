@@ -1,0 +1,61 @@
+{
+  "id": "termination",
+  "name": "Termination lane",
+  "event_role": "source-of-truth",
+  "event_description": "employee terminations effective in the period",
+  "downstream_roles": ["identity-provider", "code-hosting", "cloud", "messaging"],
+  "nodes": [
+    { "role": "source-of-truth", "kind": "system", "description": "HR system of record emitting termination events" },
+    { "role": "identity-provider", "kind": "system", "description": "central IdP fanning deprovisioning out to downstream systems" },
+    { "role": "code-hosting", "kind": "system", "description": "source-code hosting org membership" },
+    { "role": "cloud", "kind": "system", "description": "cloud IAM principals, incl. break-glass accounts" },
+    { "role": "messaging", "kind": "system", "description": "workspace membership, incl. local accounts" },
+    { "role": "people-ops", "kind": "actor", "description": "initiates termination in the system of record" }
+  ],
+  "edges": [
+    { "source": "people-ops", "target": "source-of-truth", "trigger": "termination recorded" },
+    { "source": "source-of-truth", "target": "identity-provider", "trigger": "termination event propagates to IdP deactivation" },
+    { "source": "identity-provider", "target": "code-hosting", "trigger": "deprovision fan-out" },
+    { "source": "identity-provider", "target": "cloud", "trigger": "deprovision fan-out" },
+    { "source": "identity-provider", "target": "messaging", "trigger": "deprovision fan-out" }
+  ],
+  "control_points": [
+    {
+      "id": "cp-idp-deactivation",
+      "at_role": "source-of-truth",
+      "statement_template": "every terminated employee was deactivated in {system}'s downstream IdP",
+      "assertions": [
+        {
+          "attribute": "A",
+          "type": "EVENT",
+          "description_template": "a deactivation event exists in the IdP for each termination in {system}"
+        },
+        {
+          "attribute": "B",
+          "type": "TIMING",
+          "description_template": "IdP deactivation occurred within 5 business days of the {system} termination",
+          "timing_days": 5
+        }
+      ]
+    },
+    {
+      "id": "cp-no-residual-access",
+      "at_role": "identity-provider",
+      "per_downstream": true,
+      "statement_template": "no terminated employee retains access in {system}, including local and group-derived accounts",
+      "assertions": [
+        {
+          "attribute": "A",
+          "type": "NON-EXISTENCE",
+          "description_template": "no terminated identity appears among {system} access holders after the revocation window"
+        },
+        {
+          "attribute": "B",
+          "type": "TIMING",
+          "description_template": "{system} access was revoked within 5 business days of termination",
+          "timing_days": 5
+        }
+      ]
+    }
+  ]
+}

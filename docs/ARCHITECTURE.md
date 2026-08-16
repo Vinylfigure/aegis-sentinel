@@ -20,6 +20,7 @@ schemas/                      closed JSON Schemas — hand-authored verdict-reco
 tests/                        pytest suite + fixtures (incl. seeded-drift captures under fixtures/seeded/)
 knowledge/                    hash-manifested corpus + prior-scaffold knowledge (read-only inputs)
 registry/capabilities/        versioned capability entries (JSON; FROZEN = ratified, drafts unusable)
+templates/lanes/              process-lane templates as data (roles, edges, control points)
 docs/EVALUATION.md            adopt-vs-rebuild decisions and the first build milestone
 pyproject.toml                Python ≥3.12 packaging; dev extras: ruff, pytest, pyyaml
 .github/ISSUE_TEMPLATE/       work-order form (objective, done-means, allowed-paths, effort-budget)
