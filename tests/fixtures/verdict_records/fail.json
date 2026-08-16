@@ -1,0 +1,29 @@
+{
+  "schema_version": "0.1.0",
+  "record_id": "vr-2026-08-16-0002",
+  "control_id": "CM-03",
+  "status": "FAIL",
+  "message": "required status check 'verify' is not enforced",
+  "severity": "high",
+  "support": {
+    "field_values": {
+      "required_status_checks.contexts": []
+    },
+    "record_hashes": [
+      "384d558c68e21ba57b1c279a93134a2fd77b1288bd2ba8cba079823a7ff4f490"
+    ]
+  },
+  "source": "github-branch-protection-collector",
+  "source_version": "0.1.0",
+  "run_id": "run-2026-08-16-0001",
+  "collected_at": "2026-08-16T00:00:00Z",
+  "record_hash": "9204d2298aa78febd1c83e49fc2dd9eee405ecae9fff13fc8f7a4c8c6807f02b",
+  "chain_prev": "ed003a8f4ae177a3f31344e910a5320c2ece572f8b7860142d7b7c138a2fa850",
+  "population_id": "soc2-in-scope-repos-2026H2",
+  "population_count": 1,
+  "completeness_ref": "completeness/soc2-in-scope-repos-2026H2.json",
+  "spec_id": "spec-branch-protection-v1",
+  "spec_hash": "d4f02eaafd1a9e9de7d10972ca8e47fa7a985825c3c9c1e249c72683cb3e4f19",
+  "test_function_version": "0.1.0",
+  "evidence_refs": ["captures/branch_protection/Vinylfigure-aegis-sentinel-main.json"]
+}
