@@ -280,3 +280,17 @@ Rules for curators (`/evolve`):
 - Scope: portable
 - Evidence: 1
 - Status: inherited (was: candidate in janus)
+
+## L-039 · 2026-08-16 · A work order's done-means check must be executable inside the agent's allowlist
+- Trigger: the WO-C2 issue-template run (6d0d805) needed a YAML parse to verify its own output, no allowlisted command could do one, and the dispatched agent burned ~50 turns on 35 permission denials before dying on max-turns; the fix (64b13c5) put the YAML check inside scripts/verify.sh. The lesson was written as prose comments in verify.sh and tests/test_issue_templates.py but never entered this ledger — backfilled by the 2026-08-16 memory audit (origin: verify failure, own observation)
+- Rule: before dispatching a work order, confirm every done-means check is runnable via an allowlisted command — verification that needs an unlisted tool becomes a denial loop, not a closed loop
+- Scope: project
+- Evidence: 1
+- Status: candidate
+
+## L-040 · 2026-08-16 · A mechanical template copy leaves the memory loop wired but dead — run the provisioning ritual
+- Trigger: this repo was stamped from janus on 2026-07-27 by template copy, not /replicate; every heredity transform was skipped (parent statuses and retired entries crossed, sources-seen watermark intact, identity unrewritten), and in 3 weeks of real work no session ran /reflect, /evolve, or /recalibrate despite the Stop hook and session-start nudging every session — real lessons were routed into code comments instead of the ledger (origin: own observation, 2026-08-16 memory audit; retroactive fix in this branch)
+- Rule: when adopting a scaffold whose skills assume a provisioning ritual, run the ritual's transforms — or apply them retroactively before real work continues; nudges alone do not revive a loop that provisioning left dead
+- Scope: project
+- Evidence: 1
+- Status: candidate
