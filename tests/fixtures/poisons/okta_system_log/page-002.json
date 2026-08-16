@@ -1,0 +1,58 @@
+{
+  "tenant": "meridian-financial-poisons",
+  "extracted_at": "2026-12-31T12:00:00Z",
+  "cursor": "poison-cur-0002",
+  "after": null,
+  "events": [
+    {
+      "uuid": "pvt-0005",
+      "event_type": "user.lifecycle.deactivate",
+      "published": "2026-11-24T10:26:31Z",
+      "actor": { "id": "00u-scim-bot", "type": "User", "alternate_id": "iam.provisioner@meridian.example", "display_name": "SCIM Provisioner" },
+      "target": [
+        { "id": "00u9106", "type": "User", "alternate_id": "sam.cole@example.com", "display_name": "Sam Cole" }
+      ],
+      "outcome": { "result": "SUCCESS", "reason": null }
+    },
+    {
+      "uuid": "pvt-0006",
+      "event_type": "user.lifecycle.deactivate",
+      "published": "2026-12-01T09:37:12Z",
+      "actor": { "id": "00u-scim-bot", "type": "User", "alternate_id": "iam.provisioner@meridian.example", "display_name": "SCIM Provisioner" },
+      "target": [
+        { "id": "00u9108", "type": "User", "alternate_id": "uma.wynn@example.com", "display_name": "Uma Wynn" }
+      ],
+      "outcome": { "result": "SUCCESS", "reason": null }
+    },
+    {
+      "uuid": "pvt-0007",
+      "event_type": "user.lifecycle.deactivate",
+      "published": "2026-12-01T14:12:48Z",
+      "actor": { "id": "00u-admin-1", "type": "User", "alternate_id": "it.admin@meridian.example", "display_name": "IT Admin" },
+      "target": [
+        { "id": "00u9103", "type": "User", "alternate_id": "pia.voss@example.com", "display_name": "Pia Voss" }
+      ],
+      "outcome": { "result": "SUCCESS", "reason": "phased offboarding completed per approved exception" }
+    },
+    {
+      "uuid": "pvt-0008",
+      "event_type": "user.lifecycle.deactivate",
+      "published": "2026-12-08T09:05:55Z",
+      "actor": { "id": "00u-scim-bot", "type": "User", "alternate_id": "iam.provisioner@meridian.example", "display_name": "SCIM Provisioner" },
+      "target": [
+        { "id": "00u9107", "type": "User", "alternate_id": "tess.umber@example.com", "display_name": "Tess Umber" }
+      ],
+      "outcome": { "result": "SUCCESS", "reason": null }
+    },
+    {
+      "uuid": "pvt-0009",
+      "event_type": "user.lifecycle.deactivate",
+      "published": "2026-12-15T15:48:20Z",
+      "actor": { "id": "00u-admin-1", "type": "User", "alternate_id": "it.admin@meridian.example", "display_name": "IT Admin" },
+      "target": [
+        { "id": "00u9109", "type": "User", "alternate_id": "mira.chen@example.com", "display_name": "Mira Chen" }
+      ],
+      "outcome": { "result": "SUCCESS", "reason": "agency contractor offboarded by IT ticket, no HRIS record" }
+    }
+  ]
+}

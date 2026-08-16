@@ -1,0 +1,17 @@
+{
+  "report": "terminated_workers",
+  "report_version": "2026R2",
+  "tenant": "meridian-financial-poisons",
+  "generated_at": "2026-12-31T23:59:59Z",
+  "report_metadata": { "row_count": 8, "page": 1, "total_pages": 1 },
+  "rows": [
+    { "worker_id": "P-2001", "full_name": "Nia Park", "email": "nia.park@example.com", "worker_type": "employee", "termination_date": "2026-10-19" },
+    { "worker_id": "P-2002", "full_name": "Omar Diaz", "email": "omar.diaz@example.com", "worker_type": "employee", "termination_date": "2026-10-26" },
+    { "worker_id": "P-2003", "full_name": "Pia Voss", "email": "pia.voss@example.com", "worker_type": "employee", "termination_date": "2026-11-02" },
+    { "worker_id": "P-2004", "full_name": "Quinn Ash", "email": "quinn.ash@example.com", "worker_type": "employee", "termination_date": "2026-11-09" },
+    { "worker_id": "P-2005", "full_name": "Rhea Bell", "email": "rhea.bell@example.com", "worker_type": "employee", "termination_date": "2026-11-16" },
+    { "worker_id": "P-2006", "full_name": "Sam Cole", "email": "sam.cole@example.com", "worker_type": "employee", "termination_date": "2026-11-23" },
+    { "worker_id": "P-2008", "full_name": "Uma Wynn", "email": "uma.wynn@example.com", "worker_type": "employee", "termination_date": "2026-11-30" },
+    { "worker_id": "P-2007", "full_name": "Tess Umber", "email": "tess.umber@example.com", "worker_type": "employee", "termination_date": "2026-12-07" }
+  ]
+}

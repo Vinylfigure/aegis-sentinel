@@ -1,0 +1,7 @@
+{
+  "accounts": [
+    { "name": "projects/meridian-prod-poisons/serviceAccounts/breakglass-admin@meridian-prod-poisons.iam.gserviceaccount.com", "email": "breakglass-admin@meridian-prod-poisons.iam.gserviceaccount.com", "uniqueId": "104857600000000000101", "disabled": false },
+    { "name": "projects/meridian-prod-poisons/serviceAccounts/ci-deployer@meridian-prod-poisons.iam.gserviceaccount.com", "email": "ci-deployer@meridian-prod-poisons.iam.gserviceaccount.com", "uniqueId": "104857600000000000102", "disabled": false }
+  ],
+  "nextPageToken": "poison-sa-2"
+}

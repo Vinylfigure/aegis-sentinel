@@ -1,0 +1,322 @@
+{
+  "boundary_exclusions": [
+    {
+      "member": "vik.rao@example.com",
+      "ratified_by": "vinylfigure (Ratifier)",
+      "ref": "boundary/poisons-v1#advisors"
+    }
+  ],
+  "buckets": {
+    "conflict": [
+      {
+        "bucket": "conflict",
+        "disposition": null,
+        "member_ref": "email:uma.wynn@example.com",
+        "owner": null
+      }
+    ],
+    "excluded": [
+      {
+        "bucket": "excluded",
+        "disposition": {
+          "owner": "vinylfigure (Ratifier)",
+          "rationale": "ratified boundary exclusion boundary/poisons-v1#advisors (D-9)",
+          "value": "not_applicable"
+        },
+        "member_ref": "email:vik.rao@example.com",
+        "owner": "vinylfigure (Ratifier)"
+      }
+    ],
+    "intersection": [
+      {
+        "bucket": "intersection",
+        "disposition": null,
+        "member_ref": "email:nia.park@example.com",
+        "owner": null
+      },
+      {
+        "bucket": "intersection",
+        "disposition": null,
+        "member_ref": "email:omar.diaz@example.com",
+        "owner": null
+      },
+      {
+        "bucket": "intersection",
+        "disposition": null,
+        "member_ref": "email:pia.voss@example.com",
+        "owner": null
+      },
+      {
+        "bucket": "intersection",
+        "disposition": null,
+        "member_ref": "email:rhea.bell@example.com",
+        "owner": null
+      },
+      {
+        "bucket": "intersection",
+        "disposition": null,
+        "member_ref": "email:sam.cole@example.com",
+        "owner": null
+      },
+      {
+        "bucket": "intersection",
+        "disposition": null,
+        "member_ref": "email:tess.umber@example.com",
+        "owner": null
+      }
+    ],
+    "left_only": [
+      {
+        "bucket": "left_only",
+        "disposition": null,
+        "member_ref": "email:quinn.ash@example.com",
+        "owner": null
+      }
+    ],
+    "right_only": [
+      {
+        "bucket": "right_only",
+        "disposition": null,
+        "member_ref": "email:mira.chen@example.com",
+        "owner": null
+      }
+    ],
+    "unresolvable": [
+      {
+        "bucket": "unresolvable",
+        "disposition": null,
+        "member_ref": "okta:00u9104",
+        "owner": null
+      }
+    ]
+  },
+  "canonical_members": [
+    "nia.park@example.com",
+    "omar.diaz@example.com",
+    "pia.voss@example.com",
+    "rhea.bell@example.com",
+    "sam.cole@example.com",
+    "tess.umber@example.com"
+  ],
+  "counts": {
+    "conflict": 1,
+    "excluded": 1,
+    "intersection": 6,
+    "left_only": 1,
+    "right_only": 1,
+    "unresolvable": 1
+  },
+  "counts_note": "counts are diagnostics, never evidence (HANDOFF \u00a72)",
+  "dispositions": {
+    "email:mira.chen@example.com": {
+      "owner": "vinylfigure",
+      "rationale": "the contractor-absent-from-HRIS poison, dispositioned only AFTER the population defect was surfaced as UNKNOWN_POPULATION: agency contractor engaged outside the HRIS worker population; offboarded via IT ticket POF-3309 and okta deactivation pvt-0009; escalated to HR as finding, vendor-MSA boundary review scheduled. TODO(playbook)",
+      "value": "compensating"
+    },
+    "email:quinn.ash@example.com": {
+      "owner": "vinylfigure",
+      "rationale": "IdP deactivation event exists but its target login attribute is garbled, so the deterministic identity join cannot attribute it; workforce membership confirmed manually against the payroll extract \u2014 revocation evidence remains unattributable and the timing verdict stays UNKNOWN. TODO(playbook)",
+      "value": "compensating"
+    },
+    "email:uma.wynn@example.com": {
+      "owner": "vinylfigure",
+      "rationale": "worker_type conflicts across sources (HRIS says employee, offboarding tracker ticket POF-3308 says contractor); HRIS value ratified as authoritative and the tracker correction filed. TODO(playbook)",
+      "value": "compensating"
+    },
+    "okta:00u9104": {
+      "owner": "vinylfigure",
+      "rationale": "System Log target alternate_id 'quinn.ash%example.com' derives no canonical identity (the failed-identity-join poison); source record quarantined for IdP profile repair. TODO(playbook)",
+      "value": "compensating"
+    }
+  },
+  "ladder": {
+    "after_dispositions": "RECONCILED",
+    "at_first_verdict": "DISCOVERED",
+    "blocked_by_open_deltas": [
+      "email:mira.chen@example.com",
+      "email:quinn.ash@example.com",
+      "email:uma.wynn@example.com",
+      "okta:00u9104"
+    ]
+  },
+  "period": {
+    "end": "2026-12-31T00:00:00+00:00",
+    "start": "2026-10-15T00:00:00+00:00"
+  },
+  "population_id": "pop-termination-events",
+  "population_name": "Termination lane: employee terminations effective in the period",
+  "sources": [
+    {
+      "members": [
+        {
+          "attributes": {
+            "worker_type": "employee"
+          },
+          "email": "nia.park@example.com",
+          "ref": "worker:P-2001"
+        },
+        {
+          "attributes": {
+            "worker_type": "employee"
+          },
+          "email": "omar.diaz@example.com",
+          "ref": "worker:P-2002"
+        },
+        {
+          "attributes": {
+            "worker_type": "employee"
+          },
+          "email": "pia.voss@example.com",
+          "ref": "worker:P-2003"
+        },
+        {
+          "attributes": {
+            "worker_type": "employee"
+          },
+          "email": "quinn.ash@example.com",
+          "ref": "worker:P-2004"
+        },
+        {
+          "attributes": {
+            "worker_type": "employee"
+          },
+          "email": "rhea.bell@example.com",
+          "ref": "worker:P-2005"
+        },
+        {
+          "attributes": {
+            "worker_type": "employee"
+          },
+          "email": "sam.cole@example.com",
+          "ref": "worker:P-2006"
+        },
+        {
+          "attributes": {
+            "worker_type": "employee"
+          },
+          "email": "uma.wynn@example.com",
+          "ref": "worker:P-2008"
+        },
+        {
+          "attributes": {
+            "worker_type": "employee"
+          },
+          "email": "tess.umber@example.com",
+          "ref": "worker:P-2007"
+        }
+      ],
+      "name": "workday",
+      "role": "authoritative"
+    },
+    {
+      "members": [
+        {
+          "attributes": {},
+          "email": "nia.park@example.com",
+          "ref": "okta:00u9101"
+        },
+        {
+          "attributes": {},
+          "email": "omar.diaz@example.com",
+          "ref": "okta:00u9102"
+        },
+        {
+          "attributes": {},
+          "email": "quinn.ash%example.com",
+          "ref": "okta:00u9104"
+        },
+        {
+          "attributes": {},
+          "email": "rhea.bell@example.com",
+          "ref": "okta:00u9105"
+        },
+        {
+          "attributes": {},
+          "email": "sam.cole@example.com",
+          "ref": "okta:00u9106"
+        },
+        {
+          "attributes": {},
+          "email": "uma.wynn@example.com",
+          "ref": "okta:00u9108"
+        },
+        {
+          "attributes": {},
+          "email": "pia.voss@example.com",
+          "ref": "okta:00u9103"
+        },
+        {
+          "attributes": {},
+          "email": "tess.umber@example.com",
+          "ref": "okta:00u9107"
+        },
+        {
+          "attributes": {},
+          "email": "mira.chen@example.com",
+          "ref": "okta:00u9109"
+        }
+      ],
+      "name": "okta",
+      "role": "contributing"
+    },
+    {
+      "members": [
+        {
+          "attributes": {},
+          "email": "nia.park@example.com",
+          "ref": "ticket:POF-3301"
+        },
+        {
+          "attributes": {},
+          "email": "omar.diaz@example.com",
+          "ref": "ticket:POF-3302"
+        },
+        {
+          "attributes": {},
+          "email": "pia.voss@example.com",
+          "ref": "ticket:POF-3303"
+        },
+        {
+          "attributes": {},
+          "email": "quinn.ash@example.com",
+          "ref": "ticket:POF-3304"
+        },
+        {
+          "attributes": {},
+          "email": "rhea.bell@example.com",
+          "ref": "ticket:POF-3305"
+        },
+        {
+          "attributes": {},
+          "email": "sam.cole@example.com",
+          "ref": "ticket:POF-3306"
+        },
+        {
+          "attributes": {},
+          "email": "tess.umber@example.com",
+          "ref": "ticket:POF-3307"
+        },
+        {
+          "attributes": {
+            "worker_type": "contractor"
+          },
+          "email": "uma.wynn@example.com",
+          "ref": "ticket:POF-3308"
+        },
+        {
+          "attributes": {},
+          "email": "mira.chen@example.com",
+          "ref": "ticket:POF-3309"
+        },
+        {
+          "attributes": {},
+          "email": "vik.rao@example.com",
+          "ref": "ticket:POF-3310"
+        }
+      ],
+      "name": "offboarding-tracker",
+      "role": "contributing"
+    }
+  ],
+  "tenant": "meridian-financial-poisons"
+}

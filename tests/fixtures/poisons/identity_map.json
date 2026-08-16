@@ -1,0 +1,7 @@
+{
+  "note": "Engagement-ratified local-account ownership register: maps non-SSO logins in downstream systems to canonical identities. TODO(playbook): the mutation playbook document will supply the real register shape; this minimal map exists so the dormant-local-account poison can be named, never guessed.",
+  "ratified_by": "vinylfigure (Ratifier)",
+  "map": {
+    "rhea-bell-local": "rhea.bell@example.com"
+  }
+}
