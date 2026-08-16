@@ -635,7 +635,7 @@ Additionally we need to check: sampled release version should match with approve
 **Population Request (From Anec):**
 1. The population of new releases for Data Feeds during the period.
 
-**Sample Request (From Anec):** For selected sample, provide evidence of release notes published on Chainlink's website.
+**Sample Request (From Anec):** For selected sample, provide evidence of release notes published on the vendor's public website.
 
 **Testing Attributes (Draft):**
 - A. Release population complete

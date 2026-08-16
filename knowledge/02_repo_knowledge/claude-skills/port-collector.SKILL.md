@@ -15,7 +15,7 @@ Each port is the same shape. Follow it exactly; the repetition is the point — 
    - lane1_fail_loud (endpoint paths, params — wrong = throws; safe to iterate on)
    - lane2_runner_assert (pagination truncation, 404-for-403, count mismatches — wrong = plausible wrong answer; must be a deterministic runner assertion)
    - lane3_human_owned (tolerance semantics, approver definitions, authoritative source)
-   The spec takes effect only when Mike ratifies its hash (use the `ratify` skill). Never execute a draft spec against a real org.
+   The spec takes effect only when the Owner ratifies its hash (use the `ratify` skill). Never execute a draft spec against a real org.
 4. **Write the evaluation** in `src/controls/<name>.py`: pure function `evaluate(observed, baseline, evidence_hash) -> list[Verdict]`, with `TEST_FUNCTION_VERSION` bumped on every behaviour change. Rules that are not negotiable:
    - `observed is None` → UNKNOWN(basis_missing), never PASS, never guessed FAIL
    - partial population → the caller raises via `src/completeness.py`; never emit per-record verdicts over an unproven population
@@ -28,4 +28,4 @@ Each port is the same shape. Follow it exactly; the repetition is the point — 
 ## Hard fences
 
 - Janus/`.janus/` and this skill operate in the build plane only. Nothing here runs in the verdict path at runtime.
-- The agent (you) drafts specs and code; Mike ratifies specs and reviews verdict-path PRs. Do not merge your own verdict-path change, and do not mark a spec ratified yourself.
+- The agent (you) drafts specs and code; the Owner ratifies specs and reviews verdict-path PRs. Do not merge your own verdict-path change, and do not mark a spec ratified yourself.

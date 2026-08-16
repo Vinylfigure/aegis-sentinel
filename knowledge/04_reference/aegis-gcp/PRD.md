@@ -183,7 +183,7 @@ UI states to handle: empty/first-run, UNKNOWN-heavy run (render amber, surface a
 ## 12. Tradeoffs (the decisions worth defending)
 
 - **Deterministic runtime over agentic runtime** — gives a clean scale/cost story and nothing to attack on "did the model skip a project"; costs the flashy live-agent demo. Worth it.
-- **Two/three sources, not a quorum** — sources share a root (one provider), so >3 adds reconciliation noise without assurance; Chainlink-style consensus is the wrong tool here. Spend the trust-minimization on the integrity *root* (KMS/HSM signing) instead.
+- **Two/three sources, not a quorum** — sources share a root (one provider), so >3 adds reconciliation noise without assurance; DON-style consensus is the wrong tool here. Spend the trust-minimization on the integrity *root* (KMS/HSM signing) instead.
 - **Bucket Lock + per-record hash now, chain/KMS signing later** — locked WORM is the primary, caveat-free anti-tamper; per-record SHA-256 gives integrity + re-performance (AU-9(3)); the run-digest chain and KMS/HSM signing are named extensions, with the collector-trust residual stated, not hidden.
 - **Type-driven backup enrollment over labels** — a missing tag can't let a database escape scope; tiered-RPO-by-label is the extension.
 - **Config-evidence + sampled reconciliation for log export, not full entry counting** — full counting is infeasible at scale and isn't how the routing guarantee works.

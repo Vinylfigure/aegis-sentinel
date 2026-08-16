@@ -17,6 +17,7 @@ where = ["src"]
 
 [tool.ruff]
 line-length = 100
+extend-exclude = ["web"]
 src = ["src", "tests"]
 
 [tool.ruff.lint]
