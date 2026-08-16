@@ -294,3 +294,38 @@ Rules for curators (`/evolve`):
 - Scope: project
 - Evidence: 1
 - Status: candidate
+
+## L-041 · 2026-08-16 · The skill-frontmatter authority is the Agent Skills spec at agentskills.io, with Claude Code extensions on top
+- Trigger: /recalibrate 2026-08-16 — github.com/anthropics/skills spec/agent-skills-spec.md (the authority add-skill and recalibrate encode) now redirects to agentskills.io/specification; the standard defines only {name, description, license, compatibility, metadata, allowed-tools} while the Claude Code docs state verbatim "Claude Code extends the standard with additional features" and document when_to_use, argument-hint, disable-model-invocation, disallowed-tools etc. as product fields (https://agentskills.io/specification, https://code.claude.com/docs/en/skills)
+- Rule: when validating or citing skill frontmatter, name the standard and the product extension separately — a field valid in Claude Code may be rejected by spec-side tooling, and the spec's location is itself a moving target
+- Scope: portable
+- Evidence: 1
+- Status: candidate
+
+## L-042 · 2026-08-16 · Encode "unused by policy" as a discipline with a doc pointer, never a frozen enumeration of a growing surface
+- Trigger: /recalibrate 2026-08-16 — ARCHITECTURE's "Deliberately unused events: PreToolUse, PreCompact, Notification, SubagentStop" reads as the full set, but the hooks reference now lists ~31 events including InstructionsLoaded ("When a CLAUDE.md or .claude/rules/*.md file is loaded into context"), WorktreeCreate/Remove, PostCompact, SubagentStart (https://code.claude.com/docs/en/hooks)
+- Rule: when a convention names the members of a platform surface, it rots as the surface grows — encode the policy ("only these events are used, add hooks only with a purpose") and point at the platform's list instead of copying it
+- Scope: portable
+- Evidence: 1
+- Status: candidate
+
+## L-043 · 2026-08-16 · Block-level HTML comments in CLAUDE.md are stripped before injection — sentinel markers cost zero context
+- Trigger: /recalibrate 2026-08-16 — memory docs state verbatim "Block-level HTML comments (`<!-- maintainer notes -->`) in CLAUDE.md files are stripped before the content is injected into Claude's context" (https://code.claude.com/docs/en/memory); the scaffold's janus:facts/janus:rules sentinels are exactly such comments, so the budget accounting can stop treating them as spent lines
+- Rule: in an always-loaded memory file, machine markers and maintainer notes are free when written as block-level HTML comments — spend visible lines only on content the model must read
+- Scope: portable
+- Evidence: 1
+- Status: candidate
+
+## L-044 · 2026-08-16 · Auto mode is the platform default — broad allow rules are set aside, so guarantees must ride on narrow runner-shaped rules
+- Trigger: /recalibrate 2026-08-16 — claude.com/blog states verbatim "Starting on August 14, new sessions on Pro, Max, and Team plans will run in auto mode" and "Permission rules still fire before the classifier in auto mode, except for allow rules broad enough to grant arbitrary code execution" (https://claude.com/blog/auto-mode-default-in-claude-code); this session itself hit the auto-mode classifier, and the repo's single narrow allow rule (Bash(scripts/verify.sh *)) kept working
+- Rule: design committed allowlists as narrow, runner-shaped rules — in auto mode a broad allow rule is suspended, so any workflow guarantee that depends on one silently stops holding
+- Scope: portable
+- Evidence: 1
+- Status: candidate
+
+## L-045 · 2026-08-16 · Side-effect skills can declare disable-model-invocation — the platform now carries the operator-timing gate
+- Trigger: /recalibrate 2026-08-16 — skills docs document verbatim a `disable-model-invocation` field ("Set to `true` to prevent Claude from automatically loading this skill... for workflows with side effects or that you want to control timing, like /commit, /deploy") plus `disallowed-tools` (https://code.claude.com/docs/en/skills); the scaffold's side-effect skills (ship, replicate, evolve) encode that timing discipline only as in-body confirm gates
+- Rule: where the platform grows a native mechanism for an encoded discipline, propose migrating the mechanism and keep only the judgment the scaffold adds (L-015 applied to skill invocation control) — adoption is an /evolve decision, not a silent edit
+- Scope: portable
+- Evidence: 1
+- Status: candidate

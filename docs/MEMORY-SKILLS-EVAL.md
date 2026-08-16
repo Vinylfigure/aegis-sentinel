@@ -74,15 +74,19 @@ paths, and counts only, so CI stayed green while the prose rotted.
 4. **Ledger backfill** — L-039 (allowlist-executable done-means) and L-040
    (template copy leaves the loop dead) authored by this repo.
 
-## What is deliberately NOT done here
+## Follow-ups now closed (2026-08-16, second pass)
 
-- **`recalibrated-at` is not stamped.** A stamp certifies a completed
-  `/recalibrate` run (L-020: a stamp written by anything but a real run is a
-  false green). No full run has happened here, so the session-start staleness
-  nudge is legitimate and stays. First full `/recalibrate` is a named next
-  step — it starts from the now-truncated `sources-seen.md`.
-- **The five CLAUDE.md rules are not re-gated.** Flagged above; retire or
-  re-confirm them through `/evolve` with the operator, not unilaterally.
+- **`recalibrated-at` is stamped — by a real run.** The first full
+  `/recalibrate` completed 2026-08-16: 16 encoded claims enumerated and
+  checked against primary sources, 11 confirmed, 2 drifted (L-041 spec
+  authority moved, L-042 stale event enumeration), 3 new capabilities filed
+  (L-043 sentinel comments are free, L-044 auto-mode default, L-045
+  disable-model-invocation), 3 no-data items recorded as unverified rather
+  than confirmed. The watermark carries one row per source actually read.
+- **The five CLAUDE.md rules passed the late consent gate.** The operator
+  reviewed each rule (L-005, L-007, L-014, L-015, L-008) on 2026-08-16 and
+  confirmed all five — the L-035 generation gate is now satisfied,
+  retroactively.
 
 ## Next steps for the loop
 
