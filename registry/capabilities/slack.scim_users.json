@@ -1,0 +1,45 @@
+{
+  "rate_limits": null,
+  "history_caveats": [
+    "DRAFT: api.slack.com/admins/scim returned 403 through this session's proxy \u2014 parameters and plan gating are recall-sourced and MUST be doc-verified before ratification"
+  ],
+  "ratified_by": null,
+  "lifecycle": "draft",
+  "id": "slack.scim_users",
+  "system": "slack",
+  "surface": "SCIM v2 GET /scim/v2/Users",
+  "access_modes": [
+    "direct-api"
+  ],
+  "populations_yielded": [
+    {
+      "type": "entity",
+      "description": "workspace users incl. local (non-SSO) accounts",
+      "attributes": [
+        "id",
+        "userName",
+        "emails",
+        "active"
+      ]
+    }
+  ],
+  "temporal": {
+    "kind": "state-only"
+  },
+  "join_keys": [
+    "email"
+  ],
+  "auth_scope": "admin-scoped OAuth token (SCIM requires Business+/Enterprise Grid)",
+  "pagination": {
+    "method": "page",
+    "exhaustion_method": "count/startIndex until totalResults exhausted"
+  },
+  "provenance": {
+    "researched_by": "vinylfigure",
+    "researched_at": "2026-08-16T00:00:00Z",
+    "citations": [
+      "https://api.slack.com/admins/scim"
+    ],
+    "doc_version": null
+  }
+}

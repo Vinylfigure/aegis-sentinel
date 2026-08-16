@@ -1,0 +1,47 @@
+{
+  "rate_limits": null,
+  "history_caveats": [
+    "DRAFT: docs.github.com audit-log reference unreachable through this session's proxy (404) \u2014 endpoint, window (180d assumed from prior art), and scope are corpus/recall-sourced and MUST be Surveyor- or doc-verified before ratification",
+    "requires GitHub Enterprise Cloud; unavailable on Free/Team orgs"
+  ],
+  "ratified_by": null,
+  "lifecycle": "draft",
+  "id": "github.audit_log",
+  "system": "github",
+  "surface": "REST GET /orgs/{org}/audit-log (Enterprise Cloud)",
+  "access_modes": [
+    "direct-api"
+  ],
+  "populations_yielded": [
+    {
+      "type": "event",
+      "description": "org audit events incl. member removal (org.remove_member)",
+      "attributes": [
+        "action",
+        "actor",
+        "user",
+        "created_at"
+      ]
+    }
+  ],
+  "temporal": {
+    "kind": "event-history",
+    "window_days": 180
+  },
+  "join_keys": [
+    "login"
+  ],
+  "auth_scope": "read:audit_log (fine-grained: 'Administration' org permission, read)",
+  "pagination": {
+    "method": "cursor",
+    "exhaustion_method": "follow Link rel=next until absent"
+  },
+  "provenance": {
+    "researched_by": "vinylfigure",
+    "researched_at": "2026-08-16T00:00:00Z",
+    "citations": [
+      "https://docs.github.com/en/enterprise-cloud@latest/rest/orgs/audit-log"
+    ],
+    "doc_version": null
+  }
+}
