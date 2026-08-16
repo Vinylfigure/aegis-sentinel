@@ -22,7 +22,7 @@ what auditors buy.
 
 - `port-collector` — porting gh-ec-audit audits / authoring collectors
 - `verdict-path-review` — line-by-line checklist for CODEOWNERS paths
-- `ratify` — F-4 ratification workflow (agent drafts, Mike ratifies)
+- `ratify` — F-4 ratification workflow (agent drafts, the Owner ratifies)
 
 ## Invariants (never negotiate these in code you write or accept)
 
@@ -39,7 +39,7 @@ what auditors buy.
 - Partial collection is UNKNOWN(basis_missing) at population level,
   never a partial pass (src/completeness.py).
 - Baselines, specs, rosters, allowlists take effect only via human
-  ratification of a hash (F-4). Agent may draft; only Mike ratifies.
+  ratification of a hash (F-4). Agent may draft; only the Owner ratifies.
 - UNKNOWN always carries a D-7 cause family: basis_missing |
   identity_fuzzy | no_basis_anywhere. UNKNOWN never maps to satisfied.
 - schemas/ are closed (additionalProperties:false) and const-pinned;

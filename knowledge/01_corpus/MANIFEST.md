@@ -28,3 +28,10 @@ Source: claude.ai Project "Compliance agents" (exported verbatim via Projects pr
 | 04_build_prds/Sentinel_JIT_UI_DB_Janus.md | 11142 | f9aa0c0ad3e0bff351f6bf43174a8d49a2580415275bac4cd97188dec5c48413 |
 | 04_build_prds/Sentinel_v0.2_Event_Driven_Agentic_OSCAL.md | 11632 | b5edc63bfc1f7145bd3ec022ee548aaef222fe6a7c04a8afa854c1bf4ead3d3f |
 | 05_prior_art/Aegis_Prior_Art_GRCEngClub_Toolkit.md | 16120 | 0ab33f0b1ff0b4f94f6e0f9297503d14a5b3a8ff2974ee2c459272b38b5e19dc |
+
+## Redaction note (2026-08-12)
+
+Client and personal names were redacted from corpus files post-export by Owner
+directive (docs/DECISIONS.md D-R1); references to the identically-named public
+oracle protocol were rewritten generically. MANIFEST.sha256 was regenerated over
+the redacted files; corpus no-modify discipline holds from the new hashes.

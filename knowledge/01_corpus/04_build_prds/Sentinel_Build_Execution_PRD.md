@@ -1,6 +1,6 @@
 # Aegis Sentinel — Build Execution PRD (v2)
 
-**Author:** Mike (`vinylfigure`) · **Date:** 2026-07-24 · **Status:** Launch Readiness
+**Author:** `vinylfigure` · **Date:** 2026-07-24 · **Status:** Launch Readiness
 **Supersedes:** v1 of this document. v1 split authorship between Replit Agent and Claude Code along the fail-loud/fail-silent axis. That was a category error — see §1 — and the scheme is withdrawn.
 **Companions:** `PRD_Aegis_GitHub_Sentinel.md` (product), `Sentinel_Audit_And_Replit_Execution.md` (F-1…F-9), `Sentinel_JIT_UI_DB_Janus.md` (JIT/UI/DB/Janus)
 

@@ -1,13 +1,13 @@
 # Aegis Sentinel — Comprehensive Build Plan
 
-**Date:** 2026-07-25 · **Author:** scaffolded by Claude (Cowork session), decisions per Mike's ratified corpus
+**Date:** 2026-07-25 · **Author:** scaffolded by Claude (Cowork session), decisions per the Owner's ratified corpus
 **Companions:** the 23-doc authoring corpus (`~/PycharmProjects/aegis-corpus/`, SHA-256 manifest inside), `Sentinel_Build_Execution_PRD.md` (v2), `Sentinel_v0.2_Event_Driven_Agentic_OSCAL.md`, `Sentinel_JIT_UI_DB_Janus.md`, `Aegis_Prior_Art_GRCEngClub_Toolkit.md`
 
 ---
 
 ## 1. Decisions taken this session
 
-Three questions were put to Mike and answered:
+Three questions were put to the Owner and answered:
 
 1. **Repo:** new `vinylfigure/aegis-sentinel` (private), exactly per Build Execution PRD v2 §3. `vinylfigure/aegis` stays what it is — the GCP-scoped evidence platform (CAI discovery, GCS Bucket Lock WORM, BigQuery index) — and serves as architectural prior art, not as host. Its verdict/evidence/collector shape was consulted; its GCP specifics were not imported.
 2. **Documentation corpus:** lives in a local folder on the Mac (`~/PycharmProjects/aegis-corpus/`), organized by function, with a SHA-256 `MANIFEST` computed at export — intake discipline applied to our own authoring documents. The repo carries a pointer, not the corpus. (If the corpus should later become CODEOWNERS-protected and hashable in CI, move it to `docs/corpus/` in-repo; the manifest makes that move verifiable.)
