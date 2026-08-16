@@ -100,8 +100,12 @@ ratification is the freeze — draft → frozen(=ratified) → superseded).
 - [x] LANE02 (AP lane from template) — fit verdict in docs/lane-fit-notes.md:
   4 control families fit; 5 misfits recorded as evidence (FIT-001..005), extensions
   deferred per L-014.
-- [ ] MCP01 (Aegis MCP server, read-only) ·
-  CAP10 (Cartographer, needs D7 allowlist ruling) · REC10 (Surveyor probes).
+- [x] MCP01 — read-only Aegis MCP server (`src/aegis_sentinel/mcp_server/`): the
+  four demo-engagement artifacts as resources + a `query_verdicts` tool; official
+  `mcp` SDK as an optional extra (core package imports without it); mutation
+  structurally impossible (exact tool-set assertion + AST scan banning write- and
+  deletion-shaped calls; stdio e2e subprocess test).
+- [ ] CAP10 (Cartographer, needs D7 allowlist ruling) · REC10 (Surveyor probes).
 
 ## Owner's open items
 

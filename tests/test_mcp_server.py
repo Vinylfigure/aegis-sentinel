@@ -117,6 +117,23 @@ def test_unknown_artifact_name_rejected():
 # (e) -- read-only by construction: AST scan for write calls
 
 WRITE_ATTRS = {"write", "writelines", "write_text", "write_bytes"}
+# Deletion/creation are mutations too (verifier probe: unlink/rmtree evaded
+# the write-only scan). Conservative by attribute name — collisions like
+# list.remove() are acceptable false positives in a read-only package.
+MUTATE_ATTRS = {
+    "unlink",
+    "rmdir",
+    "mkdir",
+    "makedirs",
+    "touch",
+    "rename",
+    "renames",
+    "rmtree",
+    "remove",
+    "removedirs",
+    "symlink_to",
+    "hardlink_to",
+}
 
 
 def _open_mode_is_write(call: ast.Call) -> bool:
@@ -145,13 +162,13 @@ def _write_violations(path: Path) -> list[str]:
         )
         if is_open and _open_mode_is_write(node):
             problems.append(f"{path.name}:{node.lineno}: write-mode open()")
-        if isinstance(func, ast.Attribute) and func.attr in WRITE_ATTRS:
+        if isinstance(func, ast.Attribute) and func.attr in WRITE_ATTRS | MUTATE_ATTRS:
             problems.append(f"{path.name}:{node.lineno}: .{func.attr}() call")
     return problems
 
 
 def test_mcp_server_package_has_no_write_calls():
-    files = sorted(PACKAGE_DIR.glob("*.py"))
+    files = sorted(PACKAGE_DIR.rglob("*.py"))
     assert files, f"no python files under {PACKAGE_DIR}"
     violations = [v for f in files for v in _write_violations(f)]
     assert violations == []
@@ -168,6 +185,12 @@ def test_write_scan_detects_writes():
         "path.write_bytes(b)\n"
         "fh.write(s)\n"
         "fh.writelines(xs)\n"
+        "p.unlink()\n"
+        "os.remove(p)\n"
+        "shutil.rmtree(d)\n"
+        "p.mkdir()\n"
+        "os.rename(a, b)\n"
+        "p.touch()\n"
     )
     tmp = ast.parse(bad)
     hits = []
@@ -179,9 +202,9 @@ def test_write_scan_detects_writes():
             )
             if is_open and _open_mode_is_write(node):
                 hits.append(node.lineno)
-            if isinstance(func, ast.Attribute) and func.attr in WRITE_ATTRS:
+            if isinstance(func, ast.Attribute) and func.attr in WRITE_ATTRS | MUTATE_ATTRS:
                 hits.append(node.lineno)
-    assert hits == [1, 2, 3, 4, 5, 6, 7, 8]
+    assert hits == list(range(1, 15))
 
 
 # -- optionality: the package imports and fails cleanly without mcp
