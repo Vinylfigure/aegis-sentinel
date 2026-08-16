@@ -1,0 +1,72 @@
+.rail {
+  border-left: 1px solid var(--line);
+  background: var(--panel);
+  padding: 22px 20px;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+}
+
+.title {
+  font-family: var(--font-display);
+  font-size: var(--fs-label);
+  font-weight: 700;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin: 18px 0 9px;
+}
+
+.rail section:first-child .title {
+  margin-top: 0;
+}
+
+.gauge {
+  background: var(--panel2);
+  border-radius: 9px;
+  padding: 11px 13px;
+  margin-bottom: 8px;
+}
+
+.value {
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.label {
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  color: var(--faint);
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
+.ok .value {
+  color: var(--ok);
+}
+.warn .value {
+  color: var(--warn);
+}
+.fail .value {
+  color: var(--fail);
+}
+.accent .value {
+  color: var(--accent);
+}
+.info .value {
+  color: var(--info);
+}
+.neutral .value {
+  color: var(--ink);
+}
+
+@media (max-width: 1020px) {
+  .rail {
+    position: static;
+    height: auto;
+    border-left: 0;
+    border-top: 1px solid var(--line);
+  }
+}
