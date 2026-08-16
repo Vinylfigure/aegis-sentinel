@@ -97,7 +97,10 @@ ratification is the freeze — draft → frozen(=ratified) → superseded).
 
 ## Phase 1.5 / 2 — blocked until VAL02 passes
 
-- [ ] LANE02 (AP lane from template) · MCP01 (Aegis MCP server, read-only) ·
+- [x] LANE02 (AP lane from template) — fit verdict in docs/lane-fit-notes.md:
+  4 control families fit; 5 misfits recorded as evidence (FIT-001..005), extensions
+  deferred per L-014.
+- [ ] MCP01 (Aegis MCP server, read-only) ·
   CAP10 (Cartographer, needs D7 allowlist ruling) · REC10 (Surveyor probes).
 
 ## Owner's open items
