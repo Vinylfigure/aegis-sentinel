@@ -1,0 +1,103 @@
+{
+  "$defs": {
+    "DeltaBucket": {
+      "description": "Set-based reconciliation buckets \u2014 counts are diagnostics, never\nevidence.",
+      "enum": [
+        "intersection",
+        "left_only",
+        "right_only",
+        "conflict",
+        "unresolvable",
+        "excluded"
+      ],
+      "title": "DeltaBucket",
+      "type": "string"
+    },
+    "DispositionRecord": {
+      "additionalProperties": false,
+      "description": "Nothing exits silently: NOT_APPLICABLE demands a rationale.",
+      "properties": {
+        "owner": {
+          "minLength": 1,
+          "title": "Owner",
+          "type": "string"
+        },
+        "rationale": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Rationale"
+        },
+        "value": {
+          "$ref": "#/$defs/DispositionValue"
+        }
+      },
+      "required": [
+        "value",
+        "owner"
+      ],
+      "title": "DispositionRecord",
+      "type": "object"
+    },
+    "DispositionValue": {
+      "description": "Every substrate answer resolves to one of these; nothing exits\nsilently \u2014 N/A demands a rationale (enforced on DispositionRecord).",
+      "enum": [
+        "implemented",
+        "inherited",
+        "shared",
+        "vendor_managed",
+        "compensating",
+        "not_applicable"
+      ],
+      "title": "DispositionValue",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "description": "A reconciliation difference as a first-class object with an owner\nand a disposition \u2014 never just a count.",
+  "properties": {
+    "bucket": {
+      "$ref": "#/$defs/DeltaBucket"
+    },
+    "disposition": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/DispositionRecord"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "member_ref": {
+      "minLength": 1,
+      "title": "Member Ref",
+      "type": "string"
+    },
+    "owner": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Owner"
+    }
+  },
+  "required": [
+    "bucket",
+    "member_ref"
+  ],
+  "title": "Delta",
+  "type": "object"
+}

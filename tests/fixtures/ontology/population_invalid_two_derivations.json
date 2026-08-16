@@ -1,0 +1,12 @@
+{
+  "id": "pop-terminations-2026H2",
+  "name": "Terminated employees, 2026 H2",
+  "type": "event",
+  "definition": "Deliberately invalid: carries BOTH a derivation rule and an authoritative source — the model requires exactly one.",
+  "derivation_rule": {
+    "description": "HRIS terminations joined against IdP",
+    "sources": [{ "system": "hris", "role": "authoritative", "ref": "hris://terminations" }]
+  },
+  "authoritative_source": { "system": "hris", "role": "authoritative", "ref": "hris://terminations" },
+  "period": { "start": "2026-07-01T00:00:00Z", "end": "2026-12-31T23:59:59Z" }
+}

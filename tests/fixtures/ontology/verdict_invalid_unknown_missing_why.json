@@ -1,0 +1,4 @@
+{
+  "state": "UNKNOWN",
+  "message": "Deliberately invalid: UNKNOWN without a why-code — D-U1 makes the why-code the required companion of UNKNOWN."
+}

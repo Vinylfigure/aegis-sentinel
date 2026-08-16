@@ -21,7 +21,7 @@ ratification is the freeze — draft → frozen(=ratified) → superseded).
   (`knowledge/01_corpus/04_build_prds/Sentinel_Build_Execution_PRD.md`). Presented D-L1
   for ruling (ruled: collapse — see DECISIONS.md). **Hard gate: no P1 task starts
   before this merges.**
-- [ ] **SCH01** — core ontology as pydantic v2 models in `src/aegis_sentinel/schema/`
+- [x] **SCH01** — core ontology as pydantic v2 models in `src/aegis_sentinel/schema/`
   (Population ×3 + assurance ladder + derivation rules + source roles; Claim; Assertion
   ×7; Evidence Quality Contract identity + 5 properties; Verdict ×5 + why-codes;
   Disposition ×6). Generated JSON schemas committed under `schemas/`; `docs/invariants.md`

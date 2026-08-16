@@ -1,0 +1,10 @@
+{
+  "_comment": "Deliberately invalid: 'coverage_percent' is not a field, and coverage is never computed against an unratified denominator anyway. extra='forbid' must reject this.",
+  "id": "pop-terminations-2026H2",
+  "name": "Terminated employees, 2026 H2",
+  "type": "event",
+  "definition": "x",
+  "authoritative_source": { "system": "hris", "role": "authoritative", "ref": "hris://terminations" },
+  "period": { "start": "2026-07-01T00:00:00Z", "end": "2026-12-31T23:59:59Z" },
+  "coverage_percent": 94.2
+}

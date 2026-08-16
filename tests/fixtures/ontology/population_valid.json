@@ -1,0 +1,19 @@
+{
+  "id": "pop-terminations-2026H2",
+  "name": "Terminated employees, 2026 H2",
+  "type": "event",
+  "definition": "Every employee whose termination was effective inside the period, per the HRIS termination feed.",
+  "derivation_rule": {
+    "description": "HRIS termination events joined against the IdP user set; contractors enter via the exclusion-role source.",
+    "sources": [
+      { "system": "hris", "role": "authoritative", "ref": "hris://terminations?period=2026H2" },
+      { "system": "okta", "role": "contributing", "ref": "okta://system-log?event=user.lifecycle.deactivate" },
+      { "system": "github", "role": "discovery", "ref": "github://org-members" }
+    ]
+  },
+  "period": { "start": "2026-07-01T00:00:00Z", "end": "2026-12-31T23:59:59Z" },
+  "size": 15,
+  "exclusions": ["service-accounts per ratified boundary v3"],
+  "deltas": [],
+  "state": "UNDEFINED"
+}

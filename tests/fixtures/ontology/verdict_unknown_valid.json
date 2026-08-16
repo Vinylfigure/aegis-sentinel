@@ -1,0 +1,5 @@
+{
+  "state": "UNKNOWN",
+  "unknown_why": "UNKNOWN_EVIDENCE",
+  "message": "partial collection: pagination not exhausted — the population quality property failed; basis_missing family maps to UNKNOWN_EVIDENCE per D-U1"
+}
