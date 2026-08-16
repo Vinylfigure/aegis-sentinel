@@ -38,7 +38,7 @@ ratification is the freeze — draft → frozen(=ratified) → superseded).
   file roster), per-file purity check script wired into `verify.sh quick`,
   `.github/CODEOWNERS`. Owner: enable branch protection (required checks
   `verify` + `web-verify`, CODEOWNERS, 1 review).
-- [ ] **LANE01** — termination-lane template as data (`templates/lanes/termination.json`)
+- [x] **LANE01** — termination-lane template as data (`templates/lanes/termination.json`)
   + instantiation into populations/claims.
 
 ## Phase 1 — the termination lane, made nasty

@@ -10,10 +10,11 @@ import sys
 from pathlib import Path
 
 from aegis_sentinel.capability import REGISTRY_MODELS
+from aegis_sentinel.lanes import LANE_MODELS
 from aegis_sentinel.manifest import MANIFEST_MODELS
 from aegis_sentinel.schema import ONTOLOGY_MODELS
 
-ALL_MODELS = ONTOLOGY_MODELS + REGISTRY_MODELS + MANIFEST_MODELS
+ALL_MODELS = ONTOLOGY_MODELS + REGISTRY_MODELS + MANIFEST_MODELS + LANE_MODELS
 OUT = Path(__file__).resolve().parent.parent / "schemas" / "ontology"
 
 
