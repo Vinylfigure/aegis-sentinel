@@ -1,0 +1,25 @@
+[
+  {
+    "chain_prev": null,
+    "collected_at": "2026-12-31T23:59:59Z",
+    "completeness_ref": "reconciliations/pop-termination-events.json",
+    "control_id": "AM-06",
+    "evidence_refs": [
+      "tests/fixtures/collectors/hris_terminations.json#sha256=d5eeaf9ace0f0a9d2ea2ba00ae8889e73f10929c07d1f72cf60ef6d85b075ff6"
+    ],
+    "message": "assertion am06-hris-existence-A: all 12 canonical members have a termination record in the workday feed",
+    "population_count": 12,
+    "population_id": "pop-termination-events",
+    "record_hash": "6c58536603dabe5ce306f5e612851f075ccfcd07db6142baf4b564791d192329",
+    "record_id": "vr-demo-engagement-0001",
+    "run_id": "run-demo-engagement-0001",
+    "schema_version": "0.1.0",
+    "severity": "high",
+    "source": "hris-termination-collector",
+    "source_version": "0.1.0",
+    "spec_hash": "6a1aad39a9f8bc4675d5177a030e33589356a60147f02997083e11e28dd47b09",
+    "spec_id": "spec-hris-terminations-v1",
+    "status": "PASS",
+    "test_function_version": "0.1.0"
+  }
+]

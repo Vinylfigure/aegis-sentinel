@@ -1,0 +1,20 @@
+{
+  "source": "offboarding-tracker",
+  "tenant": "meridian-financial-fixtures",
+  "extracted_at": "2026-12-31T23:59:59Z",
+  "tickets": [
+    { "ticket": "OFF-2201", "email": "ada.grant@example.com" },
+    { "ticket": "OFF-2202", "email": "ben.osei@example.com" },
+    { "ticket": "OFF-2203", "email": "cleo.marsh@example.com" },
+    { "ticket": "OFF-2204", "email": "dev.rao@example.com" },
+    { "ticket": "OFF-2205", "email": "elif.kaya@example.com" },
+    { "ticket": "OFF-2206", "email": "finn.doyle@example.com" },
+    { "ticket": "OFF-2207", "email": "gus.ito@example.com" },
+    { "ticket": "OFF-2208", "email": "hana.kim@example.com" },
+    { "ticket": "OFF-2209", "email": "iris.nunn@example.com" },
+    { "ticket": "OFF-2210", "email": "jo.vance@example.com" },
+    { "ticket": "OFF-2211", "email": "blair.quinn@example.com" },
+    { "ticket": "OFF-2212", "email": "livia.sorn@example.com" },
+    { "ticket": "OFF-2213", "email": "mira.chen@example.com" }
+  ]
+}

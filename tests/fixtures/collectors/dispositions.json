@@ -1,0 +1,17 @@
+{
+  "email:rowan.ellis@example.com": {
+    "value": "compensating",
+    "owner": "vinylfigure",
+    "rationale": "offboarding executed directly in the HRIS with no tracker ticket; the quarterly access review compensates for the missing workflow record"
+  },
+  "email:mira.chen@example.com": {
+    "value": "not_applicable",
+    "owner": "vinylfigure",
+    "rationale": "agency contractor offboarded under the vendor MSA and absent from the HRIS worker population per the ratified boundary — TODO(playbook): the contractor-absent poison case lands with VAL02"
+  },
+  "worker:W-1012": {
+    "value": "compensating",
+    "owner": "vinylfigure",
+    "rationale": "row carries no email so the canonical identity join cannot resolve it; identity resolved manually via worker_id against the payroll extract"
+  }
+}
