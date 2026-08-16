@@ -1,0 +1,38 @@
+{
+  "tenant": "meridian-financial-fixtures",
+  "extracted_at": "2026-12-31T12:00:00Z",
+  "cursor": "cur-0003",
+  "after": null,
+  "events": [
+    {
+      "uuid": "evt-0006",
+      "event_type": "user.lifecycle.deactivate",
+      "published": "2026-11-19T16:48:05Z",
+      "actor": { "id": "00u-scim-bot", "type": "User", "alternate_id": "iam.provisioner@meridian.example", "display_name": "SCIM Provisioner" },
+      "target": [
+        { "id": "00u0006", "type": "User", "alternate_id": "finn.doyle@example.com", "display_name": "Finn Doyle" }
+      ],
+      "outcome": { "result": "SUCCESS", "reason": null }
+    },
+    {
+      "uuid": "evt-0010",
+      "event_type": "user.lifecycle.deactivate",
+      "published": "2026-12-12T15:09:26Z",
+      "actor": { "id": "00u-scim-bot", "type": "User", "alternate_id": "iam.provisioner@meridian.example", "display_name": "SCIM Provisioner" },
+      "target": [
+        { "id": "00u0009", "type": "User", "alternate_id": "iris.nunn@example.com", "display_name": "Iris Nunn" }
+      ],
+      "outcome": { "result": "SUCCESS", "reason": null }
+    },
+    {
+      "uuid": "evt-0011",
+      "event_type": "user.lifecycle.deactivate",
+      "published": "2026-12-19T12:44:31Z",
+      "actor": { "id": "00u-admin-1", "type": "User", "alternate_id": "it.admin@meridian.example", "display_name": "IT Admin" },
+      "target": [
+        { "id": "00u0011", "type": "User", "alternate_id": "jo.vance@example.com", "display_name": "Jo Vance" }
+      ],
+      "outcome": { "result": "SUCCESS", "reason": null }
+    }
+  ]
+}

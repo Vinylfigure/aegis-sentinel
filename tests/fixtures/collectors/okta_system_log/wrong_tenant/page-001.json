@@ -1,0 +1,18 @@
+{
+  "tenant": "rival-corp-fixtures",
+  "extracted_at": "2026-12-31T12:00:00Z",
+  "cursor": null,
+  "after": null,
+  "events": [
+    {
+      "uuid": "evt-8001",
+      "event_type": "user.lifecycle.deactivate",
+      "published": "2026-11-05T10:00:00Z",
+      "actor": { "id": "00u-scim-bot", "type": "User", "alternate_id": "iam.provisioner@rival.example", "display_name": "SCIM Provisioner" },
+      "target": [
+        { "id": "00u7001", "type": "User", "alternate_id": "someone.else@rival.example", "display_name": "Someone Else" }
+      ],
+      "outcome": { "result": "SUCCESS", "reason": null }
+    }
+  ]
+}

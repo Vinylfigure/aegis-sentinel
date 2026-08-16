@@ -1,0 +1,58 @@
+{
+  "tenant": "meridian-financial-fixtures",
+  "extracted_at": "2026-12-31T12:00:00Z",
+  "cursor": null,
+  "after": "cur-0002",
+  "events": [
+    {
+      "uuid": "evt-0001",
+      "event_type": "user.lifecycle.deactivate",
+      "published": "2026-10-20T14:02:11Z",
+      "actor": { "id": "00u-scim-bot", "type": "User", "alternate_id": "iam.provisioner@meridian.example", "display_name": "SCIM Provisioner" },
+      "target": [
+        { "id": "00u0001", "type": "User", "alternate_id": "ada.grant@example.com", "display_name": "Ada Grant" }
+      ],
+      "outcome": { "result": "SUCCESS", "reason": null }
+    },
+    {
+      "uuid": "evt-0002",
+      "event_type": "user.lifecycle.deactivate",
+      "published": "2026-10-28T09:41:53Z",
+      "actor": { "id": "00u-scim-bot", "type": "User", "alternate_id": "iam.provisioner@meridian.example", "display_name": "SCIM Provisioner" },
+      "target": [
+        { "id": "00u0002", "type": "User", "alternate_id": "ben.osei@example.com", "display_name": "Ben Osei" }
+      ],
+      "outcome": { "result": "SUCCESS", "reason": null }
+    },
+    {
+      "uuid": "evt-0003",
+      "event_type": "user.lifecycle.deactivate",
+      "published": "2026-11-02T17:15:00Z",
+      "actor": { "id": "00u-admin-1", "type": "User", "alternate_id": "it.admin@meridian.example", "display_name": "IT Admin" },
+      "target": [
+        { "id": "00u0003", "type": "User", "alternate_id": "cleo.marsh@example.com", "display_name": "Cleo Marsh" }
+      ],
+      "outcome": { "result": "SUCCESS", "reason": null }
+    },
+    {
+      "uuid": "evt-0004",
+      "event_type": "user.lifecycle.deactivate",
+      "published": "2026-11-08T08:03:29Z",
+      "actor": { "id": "00u-scim-bot", "type": "User", "alternate_id": "iam.provisioner@meridian.example", "display_name": "SCIM Provisioner" },
+      "target": [
+        { "id": "00u0004", "type": "User", "alternate_id": "dev.rao@example.com", "display_name": "Dev Rao" }
+      ],
+      "outcome": { "result": "SUCCESS", "reason": null }
+    },
+    {
+      "uuid": "evt-0005",
+      "event_type": "user.lifecycle.deactivate",
+      "published": "2026-11-15T11:27:44Z",
+      "actor": { "id": "00u-scim-bot", "type": "User", "alternate_id": "iam.provisioner@meridian.example", "display_name": "SCIM Provisioner" },
+      "target": [
+        { "id": "00u0005", "type": "User", "alternate_id": "elif.kaya@example.com", "display_name": "Elif Kaya" }
+      ],
+      "outcome": { "result": "SUCCESS", "reason": null }
+    }
+  ]
+}

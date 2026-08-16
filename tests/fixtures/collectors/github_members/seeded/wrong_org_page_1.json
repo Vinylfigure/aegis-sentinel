@@ -1,0 +1,13 @@
+{
+  "org": "acme-widgets-fixtures",
+  "endpoint": "REST v3 GET /orgs/acme-widgets-fixtures/members",
+  "api_version": "2022-11-28",
+  "captured_at": "2026-12-31T23:59:59Z",
+  "page": 1,
+  "per_page": 3,
+  "link_next": null,
+  "rows": [
+    { "login": "ada-grant", "id": 5001, "type": "User", "site_admin": false, "sso_identity": "ada.grant@example.com" },
+    { "login": "ben-osei", "id": 5002, "type": "User", "site_admin": false, "sso_identity": "ben.osei@example.com" }
+  ]
+}

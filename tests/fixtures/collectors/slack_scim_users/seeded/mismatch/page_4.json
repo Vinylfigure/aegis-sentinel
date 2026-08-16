@@ -1,0 +1,29 @@
+{
+  "schemas": ["urn:ietf:params:scim:api:messages:2.0:ListResponse"],
+  "workspace": "T-MERIDIAN-FIX",
+  "totalResults": 8,
+  "startIndex": 4,
+  "itemsPerPage": 3,
+  "Resources": [
+    {
+      "id": "U-2004",
+      "userName": "devon.reyes",
+      "emails": [{"value": "devon.reyes@example.com", "primary": true}],
+      "active": true,
+      "samlIdentity": "devon.reyes@idp.example.com"
+    },
+    {
+      "id": "U-2005",
+      "userName": "emory.blake",
+      "emails": [{"value": "emory.blake@example.com", "primary": true}],
+      "active": true
+    },
+    {
+      "id": "U-2006",
+      "userName": "finley.wu",
+      "emails": [{"value": "finley.wu@example.com", "primary": true}],
+      "active": true,
+      "samlIdentity": "finley.wu@idp.example.com"
+    }
+  ]
+}

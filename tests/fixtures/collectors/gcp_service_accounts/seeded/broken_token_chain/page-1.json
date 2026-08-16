@@ -1,0 +1,7 @@
+{
+  "accounts": [
+    { "name": "projects/meridian-prod-fixtures/serviceAccounts/ci-deployer@meridian-prod-fixtures.iam.gserviceaccount.com", "email": "ci-deployer@meridian-prod-fixtures.iam.gserviceaccount.com", "uniqueId": "104857600000000000001", "disabled": false },
+    { "name": "projects/meridian-prod-fixtures/serviceAccounts/breakglass-admin@meridian-prod-fixtures.iam.gserviceaccount.com", "email": "breakglass-admin@meridian-prod-fixtures.iam.gserviceaccount.com", "uniqueId": "104857600000000000003", "disabled": false }
+  ],
+  "nextPageToken": "sa-page-2"
+}

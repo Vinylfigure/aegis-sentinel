@@ -1,0 +1,8 @@
+{
+  "accounts": [
+    { "name": "projects/meridian-prod-fixtures/serviceAccounts/legacy-etl@meridian-prod-fixtures.iam.gserviceaccount.com", "email": "legacy-etl@meridian-prod-fixtures.iam.gserviceaccount.com", "uniqueId": "104857600000000000004", "disabled": true },
+    { "name": "projects/meridian-prod-fixtures/serviceAccounts/billing-export@meridian-prod-fixtures.iam.gserviceaccount.com", "email": "billing-export@meridian-prod-fixtures.iam.gserviceaccount.com", "uniqueId": "104857600000000000005" },
+    { "name": "projects/meridian-prod-fixtures/serviceAccounts/vuln-scanner@meridian-prod-fixtures.iam.gserviceaccount.com", "email": "vuln-scanner@meridian-prod-fixtures.iam.gserviceaccount.com", "uniqueId": "104857600000000000006" }
+  ],
+  "nextPageToken": "sa-page-3"
+}

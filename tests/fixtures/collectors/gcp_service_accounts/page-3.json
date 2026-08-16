@@ -1,0 +1,6 @@
+{
+  "accounts": [
+    { "name": "projects/meridian-prod-fixtures/serviceAccounts/workload-runner@meridian-prod-fixtures.iam.gserviceaccount.com", "email": "workload-runner@meridian-prod-fixtures.iam.gserviceaccount.com", "uniqueId": "104857600000000000007" },
+    { "name": "projects/meridian-prod-fixtures/serviceAccounts/audit-reader@meridian-prod-fixtures.iam.gserviceaccount.com", "email": "audit-reader@meridian-prod-fixtures.iam.gserviceaccount.com", "uniqueId": "104857600000000000008" }
+  ]
+}

@@ -1,0 +1,28 @@
+{
+  "tenant": "meridian-financial-fixtures",
+  "extracted_at": "2026-12-31T12:00:00Z",
+  "cursor": null,
+  "after": "cur-0002",
+  "events": [
+    {
+      "uuid": "evt-9001",
+      "event_type": "user.lifecycle.deactivate",
+      "published": "2026-11-03T10:00:00Z",
+      "actor": { "id": "00u-scim-bot", "type": "User", "alternate_id": "iam.provisioner@meridian.example", "display_name": "SCIM Provisioner" },
+      "target": [
+        { "id": "00u0001", "type": "User", "alternate_id": "ada.grant@example.com", "display_name": "Ada Grant" }
+      ],
+      "outcome": { "result": "SUCCESS", "reason": null }
+    },
+    {
+      "uuid": "evt-9002",
+      "event_type": "user.lifecycle.deactivate",
+      "published": "2026-11-10T10:00:00Z",
+      "actor": { "id": "00u-scim-bot", "type": "User", "alternate_id": "iam.provisioner@meridian.example", "display_name": "SCIM Provisioner" },
+      "target": [
+        { "id": "00u0002", "type": "User", "alternate_id": "ben.osei@example.com", "display_name": "Ben Osei" }
+      ],
+      "outcome": { "result": "SUCCESS", "reason": null }
+    }
+  ]
+}

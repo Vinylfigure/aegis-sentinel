@@ -1,0 +1,22 @@
+{
+  "schemas": ["urn:ietf:params:scim:api:messages:2.0:ListResponse"],
+  "workspace": "T-OTHER-WS",
+  "totalResults": 2,
+  "startIndex": 1,
+  "itemsPerPage": 2,
+  "Resources": [
+    {
+      "id": "U-9001",
+      "userName": "harlow.kane",
+      "emails": [{"value": "harlow.kane@other.example.org", "primary": true}],
+      "active": true,
+      "samlIdentity": "harlow.kane@idp.other.example.org"
+    },
+    {
+      "id": "U-9002",
+      "userName": "indira.voss",
+      "emails": [{"value": "indira.voss@other.example.org", "primary": true}],
+      "active": true
+    }
+  ]
+}

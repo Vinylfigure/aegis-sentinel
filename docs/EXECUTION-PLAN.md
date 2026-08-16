@@ -55,7 +55,7 @@ ratification is the freeze — draft → frozen(=ratified) → superseded).
   (`scripts/build_demo_engagement.py`; drift-tested byte-for-byte). The `web`
   `/verdicts` rendering half rides the frontend track (B3/C2). First end-to-end
   milestone; ontology proof-of-fit.
-- [ ] **COL02–05** — Okta / GitHub / GCP / Slack collectors (worktrees): injected
+- [x] **COL02–05** — Okta / GitHub / GCP / Slack collectors (worktrees): injected
   transport, fixture tenants only, pagination exhaustion, hashed raw responses, EQC with
   all five property methods named; each ships a seeded failing fixture it must detect.
 - [ ] **REC01** — canonical identity join + set reconciler; six delta buckets as

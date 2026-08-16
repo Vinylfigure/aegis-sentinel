@@ -15,3 +15,6 @@ __pycache__/
 web/node_modules/
 web/.next/
 web/.vercel/
+
+# Claude worktrees (parallel session/subagent checkouts, never committed)
+.claude/worktrees/
