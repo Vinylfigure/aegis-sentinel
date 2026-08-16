@@ -1,0 +1,7 @@
+# Verdict-path discipline (docs/EVALUATION.md §3, item 5): the schema, the
+# control modules, and the seeded fixtures take review by the owner — these
+# are exactly the files where a quiet edit breaks an audit guarantee.
+# Applied to the files this milestone creates, not pre-emptively.
+/schemas/ @Vinylfigure
+/src/aegis_sentinel/controls/ @Vinylfigure
+/tests/fixtures/seeded/ @Vinylfigure

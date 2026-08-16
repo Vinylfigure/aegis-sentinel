@@ -6,7 +6,7 @@ requires-python = ">=3.12"
 dependencies = []
 
 [project.optional-dependencies]
-dev = ["ruff", "pytest", "pyyaml"]
+dev = ["ruff", "pytest", "pyyaml", "jsonschema"]
 
 [build-system]
 requires = ["setuptools>=68"]

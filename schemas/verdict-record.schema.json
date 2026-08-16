@@ -1,0 +1,141 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Vinylfigure/aegis-sentinel/schemas/verdict-record.schema.json",
+  "title": "Aegis Sentinel verdict record",
+  "description": "One population-scoped control verdict with its full audit trail. Conventions forked from GRCEngClub finding.schema.json v1.0.0 (knowledge/01_corpus/05_prior_art/Aegis_Prior_Art_GRCEngClub_Toolkit.md §3.1): const-pinned schema_version, closed objects, conditional requirements, the source/source_version/run_id/collected_at reproducibility tuple, severity independent of status. Deltas per docs/EVALUATION.md §2: record_hash + chain_prev, population_id/population_count/completeness_ref, spec_id + spec_hash, test_function_version, ratification_ref, and unknown_cause as the required companion of UNKNOWN. Verdict vocabulary and UNKNOWN why-codes follow the ratified rulings docs/DECISIONS.md D-V1 and D-U1 (PRD-v3 §2). skipped is deliberately absent: a population-testing system has no skip state that is not either EXCLUDED or a completeness failure. Hand-authored for the first milestone; superseded by the pydantic-generated schemas when SCH01 lands (D-P1).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "record_id",
+    "control_id",
+    "status",
+    "source",
+    "source_version",
+    "run_id",
+    "collected_at",
+    "record_hash",
+    "chain_prev",
+    "population_id",
+    "population_count",
+    "completeness_ref",
+    "spec_id",
+    "spec_hash",
+    "test_function_version",
+    "evidence_refs"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "0.1.0",
+      "description": "const-pinned semver; consumers pin a major version"
+    },
+    "record_id": { "type": "string", "minLength": 1 },
+    "control_id": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Control identifier from the testing library, e.g. CM-03"
+    },
+    "status": {
+      "enum": ["PASS", "FAIL", "UNKNOWN", "EXCLUDED", "EXCEPTION"],
+      "description": "The five ratified verdict states (docs/DECISIONS.md D-V1, PRD-v3 §2): EXCLUDED is the former NOT_APPLICABLE and keeps its ratification_ref requirement; EXCEPTION is a dispositioned legitimate exception and requires disposition_ref"
+    },
+    "unknown_cause": {
+      "enum": [
+        "UNKNOWN_DISCOVERY",
+        "UNKNOWN_OWNER",
+        "UNKNOWN_POPULATION",
+        "UNKNOWN_EVIDENCE",
+        "UNKNOWN_TESTABILITY"
+      ],
+      "description": "Required companion of status=UNKNOWN. PRD-v3 why-codes per docs/DECISIONS.md D-U1; D-7 cause families map in as basis_missing→UNKNOWN_EVIDENCE, identity_fuzzy→UNKNOWN_POPULATION, no_basis_anywhere→UNKNOWN_TESTABILITY"
+    },
+    "message": { "type": "string", "minLength": 1 },
+    "severity": {
+      "enum": ["critical", "high", "medium", "low", "informational"],
+      "description": "Independent of status: a passing critical control still tells the consumer the stakes"
+    },
+    "support": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["field_values", "record_hashes"],
+      "description": "FAIL and UNKNOWN verdicts must carry support; PASS may be terse",
+      "properties": {
+        "field_values": { "type": "object" },
+        "record_hashes": {
+          "type": "array",
+          "items": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
+        }
+      }
+    },
+    "source": { "type": "string", "minLength": 1 },
+    "source_version": { "type": "string", "minLength": 1 },
+    "run_id": { "type": "string", "minLength": 1 },
+    "collected_at": {
+      "type": "string",
+      "format": "date-time",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?(Z|[+-]\\d{2}:\\d{2})$",
+      "description": "RFC 3339; the pattern enforces the shape because format alone is annotation-only in most validators"
+    },
+    "record_hash": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$",
+      "description": "SHA-256 of the evidence record at intake (D-1)"
+    },
+    "chain_prev": {
+      "type": ["string", "null"],
+      "pattern": "^[0-9a-f]{64}$",
+      "description": "Hash-chain link to the previous record; null only for the first record in a chain"
+    },
+    "population_id": { "type": "string", "minLength": 1 },
+    "population_count": { "type": "integer", "minimum": 0 },
+    "completeness_ref": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Pointer to the completeness assertion for the population this verdict is scoped to"
+    },
+    "spec_id": { "type": "string", "minLength": 1 },
+    "spec_hash": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$",
+      "description": "Hash of the frozen collection spec that produced the record: run_id says when, spec_hash says under what ratified plan"
+    },
+    "test_function_version": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Version of the pure function that emitted the verdict, with its seeded-fixture reference"
+    },
+    "ratification_ref": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Pointer to the hashed human sign-off; required when status=EXCLUDED (D-V1)"
+    },
+    "disposition_ref": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Pointer to the dispositioned-exception record (REI: justification + owner + review date); required when status=EXCEPTION"
+    },
+    "evidence_refs": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 },
+      "description": "Typed pointers to backing artifacts — pointers, never payloads"
+    }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "status": { "const": "FAIL" } }, "required": ["status"] },
+      "then": { "required": ["message", "severity", "support"] }
+    },
+    {
+      "if": { "properties": { "status": { "const": "UNKNOWN" } }, "required": ["status"] },
+      "then": { "required": ["message", "unknown_cause", "support"] }
+    },
+    {
+      "if": { "properties": { "status": { "const": "EXCLUDED" } }, "required": ["status"] },
+      "then": { "required": ["ratification_ref"] }
+    },
+    {
+      "if": { "properties": { "status": { "const": "EXCEPTION" } }, "required": ["status"] },
+      "then": { "required": ["message", "disposition_ref"] }
+    }
+  ]
+}

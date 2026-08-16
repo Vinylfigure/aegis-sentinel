@@ -1,4 +1,4 @@
-# Janus (template)
+# Aegis Sentinel
 
 Concept budget: 1 bullet = 1 concept, ≤20 concepts in this file — a workspace
 heuristic well inside the platform's own <200-line target, not a substitute for
@@ -21,7 +21,7 @@ already shows earns nothing.
 
 <!-- janus:facts:start -->
 - App stack: Python 3.12, pip, ruff (lint+format), pytest; src-layout package `aegis_sentinel` under `src/`.
-- Verify: `scripts/verify.sh quick <file>` (ruff check+format on the file) or `full` (fixture suite + ruff + pytest project-wide); CI runs `scripts/test-hooks.sh` on every PR.
+- Verify: `scripts/verify.sh quick <file>` (ruff check+format on the file) or `full` (fixture suite + ruff + pytest project-wide); CI runs `scripts/verify.sh full` on every push/PR.
 - Setup: `pip install -e '.[dev]'` (editable install, pulls in ruff + pytest for dev).
 <!-- janus:facts:end -->
 

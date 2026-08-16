@@ -41,263 +41,256 @@ Rules for curators (`/evolve`):
 - Rule: before committing a hook script, pipe fixture JSON through it and assert exit code and output for the pass, fail, and repeat cases
 - Scope: portable
 - Evidence: 2
-- Status: promoted:rules/hooks
+- Status: inherited (was: promoted:rules/hooks in janus)
 
 ## L-002 · 2026-07-07 · Scope pattern-counts below the content marker in self-documenting files
 - Trigger: grep counted the format-spec example at the top of LEARNINGS.md as a real entry, inflating the session-start summary (janus build session)
 - Rule: when a file embeds its own format spec, count or match entries only below its entries-start marker
 - Scope: portable
 - Evidence: 1
-- Status: candidate
+- Status: inherited (was: candidate in janus)
 
 ## L-003 · 2026-07-07 · Inject post-compaction context via SessionStart source=compact, not PreCompact
 - Trigger: compaction workspace-rescue was first designed as a PreCompact hook; PreCompact output cannot reliably reach the post-compaction context window (janus hardening session)
 - Rule: to restore context after compaction, hook SessionStart and branch on source == "compact"
 - Scope: portable
 - Evidence: 1
-- Status: candidate
+- Status: inherited (was: candidate in janus)
 
 ## L-004 · 2026-07-07 · Re-verify encoded practices against primary sources before trusting them
 - Trigger: the worktree-parallel skill shipped using a manual script while `claude --worktree` already existed natively; found by re-checking Cherny's own posts (https://x.com/bcherny/status/2017742743125299476) when the user asked if terminal-tab advice was stale (janus refinement session); merged with L-013: a maintenance audit flagged /goal references as drift because the command was absent from the auditing surface, while primary docs confirmed the feature real — the same claim-about-a-moving-target rule, failing in the opposite direction
 - Rule: an encoded reference is a claim about a moving target — confirm both staleness and validity against the primary source before relying on it or "fixing" drift
 - Scope: portable
 - Evidence: 2
-- Status: promoted:skill/recalibrate
+- Status: inherited (was: promoted:skill/recalibrate in janus)
 
 ## L-005 · 2026-07-06 · Treat aggregator claims and fetch summaries as leads, never evidence
 - Trigger: an aggregator site mixed verified practices with unverifiable feature claims — only primary-source-corroborated claims were encoded (janus refinement session); the withheld /goal claim was later confirmed by the official loops post (round-3 research); merged with L-011: a fetch-summary of the workspace paper attributed claims the paper never makes, caught by demanding verbatim quotes; recurred in round 3.5: a subagent report claimed a branch was "up to date with its origin" — the remote had no such branch, and a PR create failed until `git ls-remote` settled it; recurred 2026-07-24 (methodology review): a delegated verifier reported two Anthropic quotes as FABRICATIONS — main-thread raw-HTML fetch showed both sentences real, the refutation itself being the false summary-layer claim (origin: subagent report, falsified by own observation)
 - Rule: treat aggregator claims and fetch summaries as leads, never evidence — confirm any specific claim verbatim against a primary source before adopting or citing it
 - Scope: portable
 - Evidence: 5
-- Status: promoted:CLAUDE.md
-
-## L-006 · 2026-07-07 · Distinguish context bloat from dependency bloat when judging a tool
-- Trigger: user corrected the "keep Graphify optional" recommendation — offloading structure to an external queryable store REDUCES the bloat the workspace budget guards; only the install dependency is a cost (janus refinement session)
-- Rule: a tool that moves knowledge out of always-loaded context into on-demand external memory should default ON with graceful degradation; weigh its dependency cost separately from its context benefit
-- Scope: portable
-- Evidence: 1
-- Status: retired (2026-07-06: owner reversed the default-on decision — the template ships tool-agnostic, with no third-party mechanism in the genome before dogfooding proves need; external memory returns as a per-project choice)
+- Status: inherited (was: promoted:CLAUDE.md in janus)
 
 ## L-007 · 2026-07-06 · When changing a convention, sweep every mention of it, not just planned edit sites
 - Trigger: the adversarial verifier failed the refinement diff because docs/USAGE.md's day-1 section still said "optional Graphify" after the convention changed to default-on; the planned edit list had missed that mention (janus refinement session); recurred in round 3.5 — removing new-worktree.sh missed ARCHITECTURE's component-map row, caught by the docs-consistency fixture rather than a manual sweep
 - Rule: after changing a convention, grep the whole repo for the old wording and reconcile every hit before claiming consistency
 - Scope: portable
 - Evidence: 2
-- Status: promoted:CLAUDE.md
+- Status: inherited (was: promoted:CLAUDE.md in janus)
 
 ## L-008 · 2026-07-06 · Stress-test a plan against scale, concurrency, and headless modes before presenting it
 - Trigger: user rejected the round-3 plan approval asking "will this perform under stress and scaling?"; the resulting review found 4 real design bugs the plan had missed — ledger cap deadlock, worktree ID collisions, headless gates with no user, mtime loss across clones (janus round-3 session)
 - Rule: before presenting a plan, run an adversarial pass over its behavior at scale, under concurrent use, and with no user present — and pair every failure found with a fix, not just a risk note
 - Scope: portable
 - Evidence: 1
-- Status: promoted:CLAUDE.md (Evidence 1 — promoted on explicit user confirmation)
+- Status: inherited (was: promoted:CLAUDE.md (Evidence 1 — promoted on explicit user confirmation) in janus)
 
 ## L-009 · 2026-07-06 · Seed behavioral fixtures with controlled data, never the repo's live content
 - Trigger: bumping L-005 to Evidence 2 broke two session-start fixtures that asserted against the shipped ledger's real entry counts (janus round-3 session)
 - Rule: a behavioral fixture must create the data it asserts against (truncate and seed in the sandbox); asserting against live repo content couples tests to unrelated edits
 - Scope: portable
 - Evidence: 1
-- Status: candidate
+- Status: inherited (was: candidate in janus)
 
 ## L-010 · 2026-07-06 · Store cross-clone state in file content, never in file mtimes
 - Trigger: the recalibration staleness design first used a gitignored marker checked via find -mtime; gitignored files never sync between clones, and git does not preserve mtimes on committed files either — both halves were broken (janus round-3 session)
 - Rule: any timestamp or state that must survive a git clone boundary goes in the file's content (e.g. epoch seconds) and is committed; mtimes are per-checkout artifacts
 - Scope: portable
 - Evidence: 1
-- Status: candidate
-
-## L-011 · 2026-07-06 · Verify a source's specific claims as verbatim quotes before citing them
-- Trigger: a first fetch-summary of the transformer-circuits workspace paper attributed capacity limits and RAG recommendations to it that the paper never makes; a re-fetch demanding verbatim quotes caught the embellishment (janus round-3 session)
-- Rule: before citing a source for a specific claim, re-verify the claim as a verbatim quote from the source itself — summarization layers embellish; kin to L-005, a summary is a lead, not evidence
-- Scope: portable
-- Evidence: 1
-- Status: retired (merged into L-005)
+- Status: inherited (was: candidate in janus)
 
 ## L-012 · 2026-07-06 · Propose the maintenance heartbeat at the end of /bootstrap
 - Trigger: user asked why the weekly heartbeat isn't on by default for every project; auto-creating a billed cloud routine silently would violate the escalation-is-proposed rule, but the end of session zero is the natural moment to offer it (janus round-3 evolve session)
 - Rule: when a project finishes bootstrapping, propose creating the maintenance heartbeat (one yes, PR-delivery only) instead of waiting for the user to discover it
 - Scope: portable
 - Evidence: 1
-- Status: candidate
-
-## L-013 · 2026-07-06 · Absence from one environment is not deprecation — confirm drift against the primary source
-- Trigger: a maintenance audit flagged the scaffold's /goal references as drift because the command was absent from the auditing session's surface; the official best-practices page documents /goal as a real feature, and the planned "fix" was withdrawn before landing (janus round-3.5 session)
-- Rule: before declaring an encoded reference drifted, confirm the claim against the product's primary documentation — a feature missing from the current environment's surface may still exist in the product
-- Scope: portable
-- Evidence: 1
-- Status: retired (merged into L-004)
+- Status: inherited (was: candidate in janus)
 
 ## L-014 · 2026-07-06 · Mechanisms enter the template only after dogfooding evidence demonstrates the need
 - Trigger: round-3.5 subtraction removed Graphify (never built here), the ARCHIVE.md + ≤25 cap (ledger held 12 entries), and staged expiry policies — all machinery added for problems no session had hit, against the repo's own Evidence >= 2 discipline (janus round-3.5 session)
 - Rule: disciplines can be designed up front, but a mechanism (tool, file, cap, fallback) enters the scaffold only after real use demonstrates the need it serves
 - Scope: portable
 - Evidence: 3
-- Status: promoted:CLAUDE.md
+- Status: inherited (was: promoted:CLAUDE.md in janus)
 
 ## L-015 · 2026-07-06 · Platform owns mechanisms; the template keeps only the disciplines it adds
 - Trigger: the explorer/planner agents duplicated native exploration/planning subagents, and scripts/new-worktree.sh duplicated native claude --worktree; both were removed with their embedded disciplines consolidated into plan-feature and worktree-parallel (janus round-3.5 session)
 - Rule: before encoding a mechanism, check whether the platform provides it natively; encode only the discipline the scaffold adds on top, and let the platform's mechanism carry it
 - Scope: portable
 - Evidence: 2
-- Status: promoted:CLAUDE.md
+- Status: inherited (was: promoted:CLAUDE.md in janus)
 
 ## L-016 · 2026-07-06 · Weigh subtraction as seriously as addition when reviewing for improvement
 - Trigger: asked "any enhancements?", the audit proposed only fixes and additions; the owner's redirect ("consider features we should remove") produced the round's highest-value changes — four feature removals (janus round-3.5 session)
 - Rule: when reviewing a system for improvement, audit what fails to earn its place with the same rigor as what is broken or missing, and propose removals alongside fixes
 - Scope: portable
 - Evidence: 1
-- Status: candidate
+- Status: inherited (was: candidate in janus)
 
 ## L-017 · 2026-07-06 · Design from first principles; cite existing implementations as evidence, not as the template
 - Trigger: the J-brain memory design was framed "from how contextual memory actually works in current harnesses"; the owner rejected it — "I want to build a harness... what should be designed" — and the first-principles redesign (prediction machine + memory pipeline) superseded it (janus round-3.5 session)
 - Rule: when asked to design a system, derive the design from the problem's own invariants; use existing implementations as evidence for or against choices, never as the starting shape
 - Scope: portable
 - Evidence: 1
-- Status: candidate
+- Status: inherited (was: candidate in janus)
 
 ## L-018 · 2026-07-06 · Preserve foreign uncommitted changes in their own labeled commit before starting your own
 - Trigger: the working tree carried uncommitted docs-consistency fixtures written outside the session (the start-of-session snapshot said clean); committing them unmodified, clearly labeled, before any session work kept authorship legible and the changes safe — they caught a real bug two commits later (janus round-3.5 session)
 - Rule: treat uncommitted working-tree changes you did not make as someone else's work — verify what they are, then commit or stash them separately with a label stating their origin, before your own commits touch the tree
 - Scope: portable
 - Evidence: 1
-- Status: candidate
+- Status: inherited (was: candidate in janus)
 
 ## L-019 · 2026-07-24 · Name concrete source URLs in an encoded source list, never a category
 - Trigger: five new Anthropic posts (claude.com/blog, 2026-07-16..24) had to be hand-delivered by the user because /recalibrate never reached them; the skill names "Anthropic's engineering blog" at SKILL.md:22 but its Hold-in-mind #1 at :14 says "Aggregator and blog claims are leads to verify, never evidence" — the skill contradicts itself, and line 14 silently downgraded L-005's *method* rule (confirm verbatim against a primary source) into a *source-class* rule (blogs are second-class)
 - Rule: a source list is executable only if it names concrete URLs; gate credibility on method (verbatim confirmation) rather than on the publisher's format, or whole publications go unread
 - Scope: portable
 - Evidence: 1
-- Status: candidate
+- Status: inherited (was: candidate in janus)
 
 ## L-020 · 2026-07-24 · A provenance stamp written by anything but a real run is a false green
 - Trigger: .claude/memory/recalibrated-at holds 1783394187 (2026-07-07) written by design commit 539a12e, not by a run — `git log` on the file shows exactly one commit, so /recalibrate has never actually completed in this repo, yet the 30-day staleness nudge reads as satisfied (janus claude-5 realignment session)
 - Rule: write a run stamp only from the run it certifies; a stamp set by the commit that designed the mechanism records provenance that never happened and suppresses the very nudge meant to catch it
 - Scope: portable
 - Evidence: 1
-- Status: candidate
+- Status: inherited (was: candidate in janus)
 
 ## L-021 · 2026-07-24 · Verify which memory tiers survive the environments you actually run in
 - Trigger: code.claude.com/docs/en/memory states verbatim "Auto memory is machine-local. All worktrees and subdirectories within the same git repository share one auto memory directory. Files are not shared across machines or cloud environments" — so this scaffold's headless heartbeat routine and every cloud session start with an empty ambient tier, a consequence the memory-pipeline design never accounted for (janus claude-5 realignment session)
 - Rule: for each memory tier a design depends on, confirm which execution environments it actually reaches; a tier that is absent headless or in the cloud cannot carry anything the automation relies on
 - Scope: portable
 - Evidence: 1
-- Status: candidate
+- Status: inherited (was: candidate in janus)
 
 ## L-022 · 2026-07-24 · Keep volatile platform facts out of inherited memory, or state their expiry
 - Trigger: the claude-5 findings include vendor state that will rot (auto-memory locality, a 1,536-char listing truncation, the current frontmatter field set); /replicate copies every `Scope: portable` entry into every child forever and entries are never deleted, so filing them portable would breed claims with no expiry and no deletion path (janus claude-5 realignment session)
 - Rule: file the durable discipline as the portable rule and keep the vendor fact in the Trigger line as dated evidence — an inherited entry must stay true when the platform changes under it
 - Scope: portable
 - Evidence: 1
-- Status: candidate
+- Status: inherited (was: candidate in janus)
 
 ## L-023 · 2026-07-24 · A platform's truncation ceiling is not a budget — don't swap a binding discipline for it
 - Trigger: this session's own plan proposed replacing the repo's ≤50-word skill-description cap with the docs' "truncated at 1,536 characters in the skill listing"; an adversarial pass caught that the ceiling is where rendering stops, not a target — adopting it would license ~15,360 chars of always-loaded description against ~2,816 today, a 5.5x increase, while quoting "every token added depletes Claude's attention budget" as the warrant (janus claude-5 realignment session)
 - Rule: when replacing a scaffold cap with a native limit, check whether the native number is a target or a failure threshold; substituting a ceiling for a binding discipline loosens the constraint while appearing to modernize it
 - Scope: portable
 - Evidence: 1
-- Status: candidate
+- Status: inherited (was: candidate in janus)
 
 ## L-024 · 2026-07-24 · Aim a recalibration at the conventions it would be most costly to lose
 - Trigger: the claude-5 context-engineering post ("Give Claude rules" -> "Let Claude use judgement", "Repeat yourself" -> "Simple tool descriptions", "Memory in CLAUDE.md files" -> "Auto-memory") challenges this scaffold's own signature mechanisms — the Hold-in-mind ritual, the prime directives, and the manual reflect/evolve pipeline — and the first draft of the realignment plan proposed changes everywhere except there (janus claude-5 realignment session)
 - Rule: a recalibration that returns only comfortable findings has not recalibrated — enumerate the conventions the scaffold is proudest of and file the evidence against them by name
 - Scope: portable
 - Evidence: 1
-- Status: candidate
+- Status: inherited (was: candidate in janus)
 
 ## L-025 · 2026-07-24 · Spend always-loaded memory on gotchas, not on what the codebase already shows
 - Trigger: claude.com/blog's claude-5 context-engineering post says verbatim "Keep your CLAUDE.md lightweight and briefly describe what your repo is for, but spend most of the tokens on gotchas inside of the codebase", and the /doctor trim check "cuts content Claude can derive from the codebase, such as directory layouts, dependency lists, and architecture overviews"; this repo's CLAUDE.md carried a ## Map section of exactly that derivable content and no gotchas at all (janus claude-5 realignment session)
 - Rule: in an always-loaded memory file, a line that restates the directory tree is paying permanent rent for something a single `ls` recovers — spend the budget on traps that bite and are invisible from the code
 - Scope: portable
 - Evidence: 1
-- Status: candidate
+- Status: inherited (was: candidate in janus)
 
 ## L-026 · 2026-07-24 · Derive a validator's allowlist from the primary source, not from what you just read
 - Trigger: the new frontmatter fixture's field sets were written from the fields this session happened to have quoted — it then rejected documented-valid input (`shell:` on a skill; `color:`/`skills:`/`isolation:` on an agent, where 5 of 16 documented fields were known) and its lowercase-only regex made every camelCase field invisible to validation, including misspellings; the adversarial verifier caught all of it against the docs (janus claude-5 realignment session)
 - Rule: when a check encodes a set of valid values, build the set by enumerating the primary source in that moment — a validator written from recall is a claim about a moving target that fails in both directions, rejecting what is valid and silently passing what is not
 - Scope: portable
 - Evidence: 1
-- Status: candidate
+- Status: inherited (was: candidate in janus)
 
 ## L-027 · 2026-07-24 · Refresh remote-tracking refs before reasoning about what has already landed
 - Trigger: `git log --oneline origin/main..HEAD` ran without a prior fetch and reported 12 unmerged commits; all 12 were already on main via PRs #4-#6. A scope decision was put to the user on that count, and the resulting PR opened CONFLICTING against a main that had since landed its own /evolve round, forcing the PR to be closed and rebuilt (janus doctor+evolve session). Distinct from L-005's round-3.5 branch incident: there the remote branch never existed and a report asserted it unverified (a trust-the-summary failure); here the ref existed but the local cache was stale — the primary-source command itself lied
 - Rule: run `git fetch` before any command that reads a remote-tracking ref — `origin/*` is a local cache, and a comparison against an unfetched one returns a confidently stale answer, not a visibly wrong one
 - Scope: portable
 - Evidence: 1
-- Status: candidate
+- Status: inherited (was: candidate in janus)
 
 ## L-028 · 2026-07-24 · Audit a delegated report's premises, not only its citations
 - Trigger: the memory-curator agent's promotion proposal was checked line by line against LEARNINGS.md and every Evidence count held — yet four of its five proposed promotions were already merged on main, because its unstated premise (that the working tree reflected the shared branch) was never tested; the agent was scoped to the local tree and could not have known (janus doctor+evolve session)
 - Rule: when auditing a subagent's report, name and test its unstated premises and the scope it could actually observe — correctly verified citations under a false premise still yield a wrong conclusion
 - Scope: portable
 - Evidence: 1
-- Status: candidate
+- Status: inherited (was: candidate in janus)
 
 ## L-029 · 2026-07-24 · Pass multi-line command bodies through a file, never inline command substitution
 - Trigger: `gh pr create --body "$(cat <<'BODY' ...)"` failed with `unexpected EOF while looking for matching quote`; writing the identical body to a file and passing `--body-file` succeeded unchanged. A heredoc piped directly to stdin (`git commit -F -`) was unaffected — only the nesting inside command substitution broke (janus doctor+evolve session)
 - Rule: write multi-line text — PR and issue bodies, JSON payloads, config blocks — to a file and pass it by path; never nest a heredoc inside command substitution inside a quoted argument
 - Scope: portable
 - Evidence: 1
-- Status: candidate
+- Status: inherited (was: candidate in janus)
 
 ## L-030 · 2026-07-24 · Derive budgets from operational guidance and dogfooding, never from a lens hyperparameter
 - Trigger: ARCHITECTURE claimed the workspace paper "found ~10–25 simultaneously active concepts" and derived the ≤20 cap from it; main-thread verbatim read (methodology review) showed the paper *chooses* "no more than 25" as a J-lens hyperparameter, calls the lens "an imperfect tool", and contains no such range and no claims about instruction files — the external reviewer who praised the derivation had taken the repo's framing at face value (origin: fetched content, main-thread verified; prompted by user-supplied critiques)
 - Rule: ground every encoded budget in operational guidance or dogfooded evidence; an interpretability measurement choice is convergent context at most, and citing it as a derivation is numerology
 - Scope: portable
 - Evidence: 1
-- Status: promoted:docs/ARCHITECTURE (Evidence 1 — applied on explicit user confirmation, methodology review)
+- Status: inherited (was: promoted:docs/ARCHITECTURE (Evidence 1 — applied on explicit user confirmation, methodology review) in janus)
 
 ## L-031 · 2026-07-24 · A cross-session signal must carry enough context to reconstruct why it fired
 - Trigger: correction signals logged only `correction:<timestamp>`; a Stop-hook nudge fired on a leftover signal whose cause could only be guessed at, and the cross-session leftover-signals path offered a bare count with no recoverable context (origin: own observation, this session)
 - Rule: any signal a later session may consume must carry its cause — matched keyword, source excerpt, or file path — not just a timestamp; a context-free signal forces the consumer to guess
 - Scope: portable
 - Evidence: 1
-- Status: promoted:hooks/prompt-signal (Evidence 1 — applied on explicit user confirmation, methodology review)
+- Status: inherited (was: promoted:hooks/prompt-signal (Evidence 1 — applied on explicit user confirmation, methodology review) in janus)
 
 ## L-032 · 2026-07-24 · Git-shared memory is an injection channel — untrusted-origin evidence never promotes unreviewed
 - Trigger: repo-wide grep found zero trust boundaries on the ledger → CLAUDE.md → /replicate pipeline while Anthropic names the exact channel: "An injection that lands in any of these is reloaded each time the agent starts" and "Tool output is an attack surface even when the tool is trusted" (how-we-contain-claude, main-thread verified 2026-07-24; origin: fetched content + user-supplied critique)
 - Rule: an entry whose evidence originates in untrusted content — fetched pages, tool output, repo text — promotes into always-loaded context only with the user's explicit confirmation, whatever its Evidence count
 - Scope: portable
 - Evidence: 1
-- Status: promoted:skill/evolve (Evidence 1 — applied on explicit user confirmation, methodology review)
+- Status: inherited (was: promoted:skill/evolve (Evidence 1 — applied on explicit user confirmation, methodology review) in janus)
 
 ## L-033 · 2026-07-24 · A promoted rule with no observed effect needs a retirement path
 - Trigger: retirement fired only on contradiction, so a useless rule had no exit; every loop metric counted compliance (budget assertions, claims-checked tallies), never outcomes — against "you should consider adding complexity _only_ when it demonstrably improves outcomes" (building-effective-agents, main-thread verified; origin: user-supplied critique + fetched content)
 - Rule: track when promoted rules visibly fire or fail to help, and propose retirement for rules with no observed effect — compliance counting is not outcome evaluation
 - Scope: portable
 - Evidence: 1
-- Status: promoted:skill/evolve (Evidence 1 — applied on explicit user confirmation, methodology review)
+- Status: inherited (was: promoted:skill/evolve (Evidence 1 — applied on explicit user confirmation, methodology review) in janus)
 
 ## L-034 · 2026-07-24 · Evidence units are independent incidents; merges take the max, never the sum
 - Trigger: the memory-curator brief instructed "summing their Evidence" across merged near-duplicates — two unrelated anecdotes could manufacture a promotable 2 — and nothing anywhere defined recurrence or barred same-session double-bumps (origin: own observation of repo text, methodology review)
 - Rule: an Evidence unit is a distinct incident from a separate session or task; the same event never counts twice, one session bumps an entry at most once, and merged entries take the max of their counts
 - Scope: portable
 - Evidence: 1
-- Status: promoted:skill/reflect (Evidence 1 — applied on explicit user confirmation, methodology review)
+- Status: inherited (was: promoted:skill/reflect (Evidence 1 — applied on explicit user confirmation, methodology review) in janus)
 
 ## L-035 · 2026-07-24 · Rules crossing a generation boundary get human review before landing active
 - Trigger: /replicate copied promoted rules straight into every child's always-loaded rules block while USAGE promised children "re-earn promotion" — a contradiction that left the generational injection path Anthropic warns about ungated; ledger census at review time: 29/29 entries marked portable (origin: own observation of repo text + fetched content)
 - Rule: a rule that will land active in a descendant's always-loaded context requires the user's explicit yes at the generation boundary; inherited ledger entries stay inactive until re-earned
 - Scope: portable
 - Evidence: 1
-- Status: promoted:skill/replicate (Evidence 1 — applied on explicit user confirmation, methodology review)
+- Status: inherited (was: promoted:skill/replicate (Evidence 1 — applied on explicit user confirmation, methodology review) in janus)
 
 ## L-036 · 2026-07-24 · A refutation is a claim — verify absence with substring rigor, not sentence matching
 - Trigger: a delegated verifier reported "Once an agent discovers a bug class, the relevant file is updated to prevent it recurring" as a fabricated quote because its exact-string check matched a punctuation-terminated sentence against text that continues "…in future code."; a raw-HTML substring fetch proved the sentence real (origin: subagent report, falsified by own observation, methodology review)
 - Rule: verify a claimed absence with the same rigor as a claimed presence — match substrings against raw source, never full sentences with terminal punctuation, and treat a delegate's refutation as unverified until reproduced
 - Scope: portable
 - Evidence: 1
-- Status: candidate
+- Status: inherited (was: candidate in janus)
 
 ## L-037 · 2026-07-24 · The self-learning claim is unproven until a bootstrapped child measures outcomes
 - Trigger: methodology review adopted the critique that nothing measures whether promoted rules reduce failures; the full baseline-vs-scaffold evaluation was deliberately deferred — the template has no real coding tasks to measure (origin: user-supplied critique, user decision 2026-07-24). Re-open trigger: the first bootstrapped child with real task history. Protocol sketch preserved: fixed task set; arms = plain Claude Code / verify-only / memory-only / full scaffold; measure task success, repeated-error rate, interventions, tokens; test longitudinally (task N benefits from lessons of tasks 1..N-1)
 - Rule: before claiming a learning loop improves outcomes, run the deferred baseline comparison in a bootstrapped child — efficacy notes on promoted rules are the interim signal, not the proof
 - Scope: portable
 - Evidence: 1
-- Status: candidate
+- Status: inherited (was: candidate in janus)
 
 ## L-038 · 2026-07-24 · Gate the commit on the verifier's exit in the same command chain
 - Trigger: a commit ran as an unconditional statement after the verify invocation in one compound command; the suite was red (a component-map fixture) and the red commit landed, needing an amend after the fix (origin: verify failure, own observation, this session)
 - Rule: when a commit depends on verification passing, chain it with && on the verify exit status — sequential statements commit red results
 - Scope: portable
+- Evidence: 1
+- Status: inherited (was: candidate in janus)
+
+## L-039 · 2026-08-16 · A work order's done-means check must be executable inside the agent's allowlist
+- Trigger: the WO-C2 issue-template run (6d0d805) needed a YAML parse to verify its own output, no allowlisted command could do one, and the dispatched agent burned ~50 turns on 35 permission denials before dying on max-turns; the fix (64b13c5) put the YAML check inside scripts/verify.sh. The lesson was written as prose comments in verify.sh and tests/test_issue_templates.py but never entered this ledger — backfilled by the 2026-08-16 memory audit (origin: verify failure, own observation)
+- Rule: before dispatching a work order, confirm every done-means check is runnable via an allowlisted command — verification that needs an unlisted tool becomes a denial loop, not a closed loop
+- Scope: project
+- Evidence: 1
+- Status: candidate
+
+## L-040 · 2026-08-16 · A mechanical template copy leaves the memory loop wired but dead — run the provisioning ritual
+- Trigger: this repo was stamped from janus on 2026-07-27 by template copy, not /replicate; every heredity transform was skipped (parent statuses and retired entries crossed, sources-seen watermark intact, identity unrewritten), and in 3 weeks of real work no session ran /reflect, /evolve, or /recalibrate despite the Stop hook and session-start nudging every session — real lessons were routed into code comments instead of the ledger (origin: own observation, 2026-08-16 memory audit; retroactive fix in this branch)
+- Rule: when adopting a scaffold whose skills assume a provisioning ritual, run the ritual's transforms — or apply them retroactively before real work continues; nudges alone do not revive a loop that provisioning left dead
+- Scope: project
 - Evidence: 1
 - Status: candidate
