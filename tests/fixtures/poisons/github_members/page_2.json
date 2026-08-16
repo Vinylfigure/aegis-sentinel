@@ -1,0 +1,13 @@
+{
+  "org": "meridian-financial-poisons",
+  "endpoint": "REST v3 GET /orgs/meridian-financial-poisons/members",
+  "api_version": "2022-11-28",
+  "captured_at": "2026-12-31T23:59:59Z",
+  "page": 2,
+  "per_page": 3,
+  "link_next": null,
+  "rows": [
+    { "login": "rhea-bell-local", "id": 7004, "type": "User", "site_admin": false, "sso_identity": null },
+    { "login": "meridian-deploy[bot]", "id": 7005, "type": "Bot", "site_admin": false, "sso_identity": null }
+  ]
+}

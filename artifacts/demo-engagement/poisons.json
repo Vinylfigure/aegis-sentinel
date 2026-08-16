@@ -1,0 +1,553 @@
+{
+  "cases": [
+    {
+      "actual": {
+        "kind": "verdict",
+        "record": {
+          "chain_prev": null,
+          "collected_at": "2026-12-31T23:59:59Z",
+          "completeness_ref": "artifacts/demo-engagement/reconciliation.json",
+          "control_id": "AM-06",
+          "evidence_refs": [
+            "tests/fixtures/poisons/hris_terminations.json#sha256=a963b000381065686bd1b29a6b22d40873d0d1deec2aaf2683a523596a9c9718"
+          ],
+          "message": "population pop-termination-events is DISCOVERED; no verdict against a denominator left of RECONCILED (assurance-state ladder)",
+          "population_count": 6,
+          "population_id": "pop-termination-events",
+          "record_hash": "a46a8ac0c01de23861e34bc735885a45c81c6aaff76df13a8d99a4c2f07d3137",
+          "record_id": "vr-poison-existence-0001",
+          "run_id": "run-poison-engagement-0001",
+          "schema_version": "0.1.0",
+          "severity": "high",
+          "source": "hris-termination-collector",
+          "source_version": "0.1.0",
+          "spec_hash": "a826e0d585e4d6998b2dab4f0300606220481fdd7a179dbda2c4141765980a7b",
+          "spec_id": "spec-poison-hris-existence-v1",
+          "status": "UNKNOWN",
+          "support": {
+            "field_values": {
+              "population_state": "DISCOVERED"
+            },
+            "record_hashes": [
+              "a963b000381065686bd1b29a6b22d40873d0d1deec2aaf2683a523596a9c9718"
+            ]
+          },
+          "test_function_version": "0.1.0",
+          "unknown_cause": "UNKNOWN_POPULATION"
+        }
+      },
+      "actual_class": "UNKNOWN:UNKNOWN_POPULATION",
+      "detected": true,
+      "evidence": {
+        "bucket": "right_only",
+        "member_ref": "email:mira.chen@example.com"
+      },
+      "expected": "UNKNOWN:UNKNOWN_POPULATION",
+      "id": "contractor-absent-from-hris",
+      "poison": "contractor offboarded downstream (okta pvt-0009, tracker POF-3309) but absent from the authoritative HRIS feed",
+      "stage": "evaluate"
+    },
+    {
+      "actual": {
+        "kind": "verdict",
+        "record": {
+          "chain_prev": null,
+          "collected_at": "2026-12-31T23:59:59Z",
+          "completeness_ref": "artifacts/demo-engagement/reconciliation.json",
+          "control_id": "AM-06",
+          "evidence_refs": [
+            "tests/fixtures/poisons/github_members#sha256=900b5e314ff948a31b7769749e10211ec149f64e0bf8fc19bfa4a121a5afd443"
+          ],
+          "message": "1 terminated member(s) still hold access in github \u2014 residual access is a NON-EXISTENCE failure",
+          "population_count": 6,
+          "population_id": "pop-termination-events",
+          "record_hash": "4dbc0008f3414c845a16f5f75ef7b2ad1213885ebfe79e55daceff6a8efb2bad",
+          "record_id": "vr-poison-nonexistence-0001",
+          "run_id": "run-poison-engagement-0001",
+          "schema_version": "0.1.0",
+          "severity": "high",
+          "source": "github-members-collector",
+          "source_version": "0.1.0",
+          "spec_hash": "57a8be5a525eebb2f9905668fee93b9347b6cecca925539bee7aa440ff37793d",
+          "spec_id": "spec-poison-github-nonexistence-v1",
+          "status": "FAIL",
+          "support": {
+            "field_values": {
+              "residual_access_members": [
+                "rhea.bell@example.com"
+              ]
+            },
+            "record_hashes": [
+              "900b5e314ff948a31b7769749e10211ec149f64e0bf8fc19bfa4a121a5afd443"
+            ]
+          },
+          "test_function_version": "0.1.0"
+        }
+      },
+      "actual_class": "FAIL",
+      "detected": true,
+      "evidence": {
+        "login": "rhea-bell-local",
+        "member": "rhea.bell@example.com"
+      },
+      "expected": "FAIL",
+      "id": "dormant-github-local-account",
+      "poison": "terminated employee still an org member via a dormant local (non-SSO) account, rhea-bell-local",
+      "stage": "evaluate"
+    },
+    {
+      "actual": {
+        "errors": [
+          {
+            "claim_id": "claim-poison-breakglass-coverage",
+            "code": "E117",
+            "message": "population pop-breakglass-capable derivation references breakglass.config; no usable capability entry for breakglass.config.",
+            "suggestion": null
+          }
+        ],
+        "kind": "compile_error"
+      },
+      "actual_class": "E117",
+      "detected": true,
+      "evidence": {
+        "population": "pop-breakglass-capable",
+        "system": "breakglass.config"
+      },
+      "expected": "E117",
+      "id": "breakglass-capability-missing",
+      "poison": "break-glass cloud account claim derives from breakglass.config, a system with no capability entry",
+      "stage": "compile"
+    },
+    {
+      "actual": {
+        "kind": "verdict",
+        "record": {
+          "chain_prev": "32973d6df43d9c50e68f03761178a4c9854f7e84c80160936a77a941f4409f01",
+          "collected_at": "2026-12-31T23:59:59Z",
+          "completeness_ref": "artifacts/demo-engagement/reconciliation.json",
+          "control_id": "AM-06",
+          "evidence_refs": [
+            "tests/fixtures/poisons/okta_system_log#sha256=0b14301efcb756c9d51c15dd4a6342edc17bb1f2edd37ac336216869fbfc7e6c"
+          ],
+          "message": "no revocation event for quinn.ash@example.com inside the covered window 2026-10-15T00:00:00+00:00..2026-12-31T00:00:00+00:00 \u2014 D-7 basis_missing \u2192 UNKNOWN_EVIDENCE (D-U1)",
+          "population_count": 8,
+          "population_id": "pop-termination-events",
+          "record_hash": "065824ed05151efc156d2086435c5b4610ac3f070c97f45e7f338da12ce715bf",
+          "record_id": "vr-poison-timing-0001-quinn.ash@example.com",
+          "run_id": "run-poison-engagement-0001",
+          "schema_version": "0.1.0",
+          "severity": "high",
+          "source": "okta-system-log-collector",
+          "source_version": "0.1.0",
+          "spec_hash": "5412c8131859f166ca0c16abf8a5f9d4d9a0a69aada7294a63d6e660df9727c1",
+          "spec_id": "spec-poison-idp-timing-v1",
+          "status": "UNKNOWN",
+          "support": {
+            "field_values": {
+              "member": "quinn.ash@example.com",
+              "termination_date": "2026-11-09"
+            },
+            "record_hashes": [
+              "0b14301efcb756c9d51c15dd4a6342edc17bb1f2edd37ac336216869fbfc7e6c"
+            ]
+          },
+          "test_function_version": "0.1.0",
+          "unknown_cause": "UNKNOWN_EVIDENCE"
+        }
+      },
+      "actual_class": "UNKNOWN:UNKNOWN_EVIDENCE",
+      "detected": true,
+      "evidence": {
+        "bucket": "unresolvable",
+        "member_ref": "okta:00u9104"
+      },
+      "expected": "UNKNOWN:UNKNOWN_EVIDENCE",
+      "id": "garbled-identity-join",
+      "poison": "deactivation event target alternate_id garbled (quinn.ash%example.com) \u2014 the identity join cannot resolve it",
+      "stage": "evaluate"
+    },
+    {
+      "actual": {
+        "kind": "verdict",
+        "record": {
+          "chain_prev": "c9b7e7a0fc8ff3b65337321349fa3562cab5614c98ee556ed2d6e094277a06ef",
+          "collected_at": "2026-12-31T23:59:59Z",
+          "completeness_ref": "artifacts/demo-engagement/reconciliation.json",
+          "control_id": "AM-06",
+          "evidence_refs": [
+            "tests/fixtures/poisons/okta_system_log#sha256=0b14301efcb756c9d51c15dd4a6342edc17bb1f2edd37ac336216869fbfc7e6c"
+          ],
+          "message": "revocation for omar.diaz@example.com took 9 business days, exceeding the 5-business-day constraint (D-P4)",
+          "population_count": 8,
+          "population_id": "pop-termination-events",
+          "record_hash": "04722ad79918007b5c65dc6afd9fd391398aa8afad89d95fcfab58a1a4c97e2e",
+          "record_id": "vr-poison-timing-0001-omar.diaz@example.com",
+          "run_id": "run-poison-engagement-0001",
+          "schema_version": "0.1.0",
+          "severity": "high",
+          "source": "okta-system-log-collector",
+          "source_version": "0.1.0",
+          "spec_hash": "5412c8131859f166ca0c16abf8a5f9d4d9a0a69aada7294a63d6e660df9727c1",
+          "spec_id": "spec-poison-idp-timing-v1",
+          "status": "FAIL",
+          "support": {
+            "field_values": {
+              "constraint_business_days": 5,
+              "elapsed_business_days": 9,
+              "member": "omar.diaz@example.com",
+              "revocation_date": "2026-11-06",
+              "termination_date": "2026-10-26"
+            },
+            "record_hashes": [
+              "0b14301efcb756c9d51c15dd4a6342edc17bb1f2edd37ac336216869fbfc7e6c"
+            ]
+          },
+          "test_function_version": "0.1.0"
+        }
+      },
+      "actual_class": "FAIL",
+      "detected": true,
+      "evidence": {
+        "member": "omar.diaz@example.com"
+      },
+      "expected": "FAIL",
+      "id": "delayed-revocation",
+      "poison": "omar.diaz revoked 9 business days after termination against the 5-business-day constraint",
+      "stage": "evaluate"
+    },
+    {
+      "actual": {
+        "kind": "verdict",
+        "record": {
+          "chain_prev": "04722ad79918007b5c65dc6afd9fd391398aa8afad89d95fcfab58a1a4c97e2e",
+          "collected_at": "2026-12-31T23:59:59Z",
+          "completeness_ref": "artifacts/demo-engagement/reconciliation.json",
+          "control_id": "AM-06",
+          "disposition_ref": "dispositions/poisons/pia-voss-phased-offboarding.json",
+          "evidence_refs": [
+            "tests/fixtures/poisons/okta_system_log#sha256=0b14301efcb756c9d51c15dd4a6342edc17bb1f2edd37ac336216869fbfc7e6c"
+          ],
+          "message": "pia.voss@example.com carries dispositioned exception dispositions/poisons/pia-voss-phased-offboarding.json (D-V1: EXCEPTION, never a silent PASS)",
+          "population_count": 8,
+          "population_id": "pop-termination-events",
+          "record_hash": "32973d6df43d9c50e68f03761178a4c9854f7e84c80160936a77a941f4409f01",
+          "record_id": "vr-poison-timing-0001-pia.voss@example.com",
+          "run_id": "run-poison-engagement-0001",
+          "schema_version": "0.1.0",
+          "severity": "high",
+          "source": "okta-system-log-collector",
+          "source_version": "0.1.0",
+          "spec_hash": "5412c8131859f166ca0c16abf8a5f9d4d9a0a69aada7294a63d6e660df9727c1",
+          "spec_id": "spec-poison-idp-timing-v1",
+          "status": "EXCEPTION",
+          "test_function_version": "0.1.0"
+        }
+      },
+      "actual_class": "EXCEPTION",
+      "detected": true,
+      "evidence": {
+        "member": "pia.voss@example.com"
+      },
+      "expected": "EXCEPTION",
+      "id": "legitimate-exception",
+      "poison": "pia.voss's phased offboarding ran long under a dispositioned exception \u2014 EXCEPTION, never a silent PASS",
+      "stage": "evaluate"
+    }
+  ],
+  "collected_at": "2026-12-31T23:59:59Z",
+  "control_id": "AM-06",
+  "detection": {
+    "detected": 6,
+    "detection_rate": 1.0,
+    "misses": [],
+    "total": 6
+  },
+  "period": {
+    "end": "2026-12-31T00:00:00+00:00",
+    "start": "2026-10-15T00:00:00+00:00"
+  },
+  "project": "meridian-prod-poisons",
+  "run_id": "run-poison-engagement-0001",
+  "tenant": "meridian-financial-poisons",
+  "verdict_records": {
+    "existence": [
+      {
+        "chain_prev": null,
+        "collected_at": "2026-12-31T23:59:59Z",
+        "completeness_ref": "artifacts/demo-engagement/reconciliation.json",
+        "control_id": "AM-06",
+        "evidence_refs": [
+          "tests/fixtures/poisons/hris_terminations.json#sha256=a963b000381065686bd1b29a6b22d40873d0d1deec2aaf2683a523596a9c9718"
+        ],
+        "message": "population pop-termination-events is DISCOVERED; no verdict against a denominator left of RECONCILED (assurance-state ladder)",
+        "population_count": 6,
+        "population_id": "pop-termination-events",
+        "record_hash": "a46a8ac0c01de23861e34bc735885a45c81c6aaff76df13a8d99a4c2f07d3137",
+        "record_id": "vr-poison-existence-0001",
+        "run_id": "run-poison-engagement-0001",
+        "schema_version": "0.1.0",
+        "severity": "high",
+        "source": "hris-termination-collector",
+        "source_version": "0.1.0",
+        "spec_hash": "a826e0d585e4d6998b2dab4f0300606220481fdd7a179dbda2c4141765980a7b",
+        "spec_id": "spec-poison-hris-existence-v1",
+        "status": "UNKNOWN",
+        "support": {
+          "field_values": {
+            "population_state": "DISCOVERED"
+          },
+          "record_hashes": [
+            "a963b000381065686bd1b29a6b22d40873d0d1deec2aaf2683a523596a9c9718"
+          ]
+        },
+        "test_function_version": "0.1.0",
+        "unknown_cause": "UNKNOWN_POPULATION"
+      }
+    ],
+    "non_existence": [
+      {
+        "chain_prev": null,
+        "collected_at": "2026-12-31T23:59:59Z",
+        "completeness_ref": "artifacts/demo-engagement/reconciliation.json",
+        "control_id": "AM-06",
+        "evidence_refs": [
+          "tests/fixtures/poisons/github_members#sha256=900b5e314ff948a31b7769749e10211ec149f64e0bf8fc19bfa4a121a5afd443"
+        ],
+        "message": "1 terminated member(s) still hold access in github \u2014 residual access is a NON-EXISTENCE failure",
+        "population_count": 6,
+        "population_id": "pop-termination-events",
+        "record_hash": "4dbc0008f3414c845a16f5f75ef7b2ad1213885ebfe79e55daceff6a8efb2bad",
+        "record_id": "vr-poison-nonexistence-0001",
+        "run_id": "run-poison-engagement-0001",
+        "schema_version": "0.1.0",
+        "severity": "high",
+        "source": "github-members-collector",
+        "source_version": "0.1.0",
+        "spec_hash": "57a8be5a525eebb2f9905668fee93b9347b6cecca925539bee7aa440ff37793d",
+        "spec_id": "spec-poison-github-nonexistence-v1",
+        "status": "FAIL",
+        "support": {
+          "field_values": {
+            "residual_access_members": [
+              "rhea.bell@example.com"
+            ]
+          },
+          "record_hashes": [
+            "900b5e314ff948a31b7769749e10211ec149f64e0bf8fc19bfa4a121a5afd443"
+          ]
+        },
+        "test_function_version": "0.1.0"
+      }
+    ],
+    "timing": [
+      {
+        "chain_prev": null,
+        "collected_at": "2026-12-31T23:59:59Z",
+        "completeness_ref": "artifacts/demo-engagement/reconciliation.json",
+        "control_id": "AM-06",
+        "evidence_refs": [
+          "tests/fixtures/poisons/okta_system_log#sha256=0b14301efcb756c9d51c15dd4a6342edc17bb1f2edd37ac336216869fbfc7e6c"
+        ],
+        "message": "breakglass-admin@meridian-prod-poisons.iam.gserviceaccount.com is outside the ratified boundary (boundary/poisons-v1#break-glass); no timing verdict owed (D-V1)",
+        "population_count": 8,
+        "population_id": "pop-termination-events",
+        "ratification_ref": "boundary/poisons-v1#break-glass",
+        "record_hash": "802ca8006da8d981c0867af95af499344b7f8e29b598b6a11d5d5c2f99f4c79b",
+        "record_id": "vr-poison-timing-0001-breakglass-admin@meridian-prod-poisons.iam.gserviceaccount.com",
+        "run_id": "run-poison-engagement-0001",
+        "schema_version": "0.1.0",
+        "severity": "high",
+        "source": "okta-system-log-collector",
+        "source_version": "0.1.0",
+        "spec_hash": "5412c8131859f166ca0c16abf8a5f9d4d9a0a69aada7294a63d6e660df9727c1",
+        "spec_id": "spec-poison-idp-timing-v1",
+        "status": "EXCLUDED",
+        "test_function_version": "0.1.0"
+      },
+      {
+        "chain_prev": "802ca8006da8d981c0867af95af499344b7f8e29b598b6a11d5d5c2f99f4c79b",
+        "collected_at": "2026-12-31T23:59:59Z",
+        "completeness_ref": "artifacts/demo-engagement/reconciliation.json",
+        "control_id": "AM-06",
+        "evidence_refs": [
+          "tests/fixtures/poisons/okta_system_log#sha256=0b14301efcb756c9d51c15dd4a6342edc17bb1f2edd37ac336216869fbfc7e6c"
+        ],
+        "message": "revocation for nia.park@example.com within 2 business days (constraint: 5, D-P4)",
+        "population_count": 8,
+        "population_id": "pop-termination-events",
+        "record_hash": "c9b7e7a0fc8ff3b65337321349fa3562cab5614c98ee556ed2d6e094277a06ef",
+        "record_id": "vr-poison-timing-0001-nia.park@example.com",
+        "run_id": "run-poison-engagement-0001",
+        "schema_version": "0.1.0",
+        "severity": "high",
+        "source": "okta-system-log-collector",
+        "source_version": "0.1.0",
+        "spec_hash": "5412c8131859f166ca0c16abf8a5f9d4d9a0a69aada7294a63d6e660df9727c1",
+        "spec_id": "spec-poison-idp-timing-v1",
+        "status": "PASS",
+        "test_function_version": "0.1.0"
+      },
+      {
+        "chain_prev": "c9b7e7a0fc8ff3b65337321349fa3562cab5614c98ee556ed2d6e094277a06ef",
+        "collected_at": "2026-12-31T23:59:59Z",
+        "completeness_ref": "artifacts/demo-engagement/reconciliation.json",
+        "control_id": "AM-06",
+        "evidence_refs": [
+          "tests/fixtures/poisons/okta_system_log#sha256=0b14301efcb756c9d51c15dd4a6342edc17bb1f2edd37ac336216869fbfc7e6c"
+        ],
+        "message": "revocation for omar.diaz@example.com took 9 business days, exceeding the 5-business-day constraint (D-P4)",
+        "population_count": 8,
+        "population_id": "pop-termination-events",
+        "record_hash": "04722ad79918007b5c65dc6afd9fd391398aa8afad89d95fcfab58a1a4c97e2e",
+        "record_id": "vr-poison-timing-0001-omar.diaz@example.com",
+        "run_id": "run-poison-engagement-0001",
+        "schema_version": "0.1.0",
+        "severity": "high",
+        "source": "okta-system-log-collector",
+        "source_version": "0.1.0",
+        "spec_hash": "5412c8131859f166ca0c16abf8a5f9d4d9a0a69aada7294a63d6e660df9727c1",
+        "spec_id": "spec-poison-idp-timing-v1",
+        "status": "FAIL",
+        "support": {
+          "field_values": {
+            "constraint_business_days": 5,
+            "elapsed_business_days": 9,
+            "member": "omar.diaz@example.com",
+            "revocation_date": "2026-11-06",
+            "termination_date": "2026-10-26"
+          },
+          "record_hashes": [
+            "0b14301efcb756c9d51c15dd4a6342edc17bb1f2edd37ac336216869fbfc7e6c"
+          ]
+        },
+        "test_function_version": "0.1.0"
+      },
+      {
+        "chain_prev": "04722ad79918007b5c65dc6afd9fd391398aa8afad89d95fcfab58a1a4c97e2e",
+        "collected_at": "2026-12-31T23:59:59Z",
+        "completeness_ref": "artifacts/demo-engagement/reconciliation.json",
+        "control_id": "AM-06",
+        "disposition_ref": "dispositions/poisons/pia-voss-phased-offboarding.json",
+        "evidence_refs": [
+          "tests/fixtures/poisons/okta_system_log#sha256=0b14301efcb756c9d51c15dd4a6342edc17bb1f2edd37ac336216869fbfc7e6c"
+        ],
+        "message": "pia.voss@example.com carries dispositioned exception dispositions/poisons/pia-voss-phased-offboarding.json (D-V1: EXCEPTION, never a silent PASS)",
+        "population_count": 8,
+        "population_id": "pop-termination-events",
+        "record_hash": "32973d6df43d9c50e68f03761178a4c9854f7e84c80160936a77a941f4409f01",
+        "record_id": "vr-poison-timing-0001-pia.voss@example.com",
+        "run_id": "run-poison-engagement-0001",
+        "schema_version": "0.1.0",
+        "severity": "high",
+        "source": "okta-system-log-collector",
+        "source_version": "0.1.0",
+        "spec_hash": "5412c8131859f166ca0c16abf8a5f9d4d9a0a69aada7294a63d6e660df9727c1",
+        "spec_id": "spec-poison-idp-timing-v1",
+        "status": "EXCEPTION",
+        "test_function_version": "0.1.0"
+      },
+      {
+        "chain_prev": "32973d6df43d9c50e68f03761178a4c9854f7e84c80160936a77a941f4409f01",
+        "collected_at": "2026-12-31T23:59:59Z",
+        "completeness_ref": "artifacts/demo-engagement/reconciliation.json",
+        "control_id": "AM-06",
+        "evidence_refs": [
+          "tests/fixtures/poisons/okta_system_log#sha256=0b14301efcb756c9d51c15dd4a6342edc17bb1f2edd37ac336216869fbfc7e6c"
+        ],
+        "message": "no revocation event for quinn.ash@example.com inside the covered window 2026-10-15T00:00:00+00:00..2026-12-31T00:00:00+00:00 \u2014 D-7 basis_missing \u2192 UNKNOWN_EVIDENCE (D-U1)",
+        "population_count": 8,
+        "population_id": "pop-termination-events",
+        "record_hash": "065824ed05151efc156d2086435c5b4610ac3f070c97f45e7f338da12ce715bf",
+        "record_id": "vr-poison-timing-0001-quinn.ash@example.com",
+        "run_id": "run-poison-engagement-0001",
+        "schema_version": "0.1.0",
+        "severity": "high",
+        "source": "okta-system-log-collector",
+        "source_version": "0.1.0",
+        "spec_hash": "5412c8131859f166ca0c16abf8a5f9d4d9a0a69aada7294a63d6e660df9727c1",
+        "spec_id": "spec-poison-idp-timing-v1",
+        "status": "UNKNOWN",
+        "support": {
+          "field_values": {
+            "member": "quinn.ash@example.com",
+            "termination_date": "2026-11-09"
+          },
+          "record_hashes": [
+            "0b14301efcb756c9d51c15dd4a6342edc17bb1f2edd37ac336216869fbfc7e6c"
+          ]
+        },
+        "test_function_version": "0.1.0",
+        "unknown_cause": "UNKNOWN_EVIDENCE"
+      },
+      {
+        "chain_prev": "065824ed05151efc156d2086435c5b4610ac3f070c97f45e7f338da12ce715bf",
+        "collected_at": "2026-12-31T23:59:59Z",
+        "completeness_ref": "artifacts/demo-engagement/reconciliation.json",
+        "control_id": "AM-06",
+        "evidence_refs": [
+          "tests/fixtures/poisons/okta_system_log#sha256=0b14301efcb756c9d51c15dd4a6342edc17bb1f2edd37ac336216869fbfc7e6c"
+        ],
+        "message": "revocation for rhea.bell@example.com within 1 business days (constraint: 5, D-P4)",
+        "population_count": 8,
+        "population_id": "pop-termination-events",
+        "record_hash": "303c466feea2a146be25e460bf9fd004f776da8ebee2e79c46c628bdc7a82ef5",
+        "record_id": "vr-poison-timing-0001-rhea.bell@example.com",
+        "run_id": "run-poison-engagement-0001",
+        "schema_version": "0.1.0",
+        "severity": "high",
+        "source": "okta-system-log-collector",
+        "source_version": "0.1.0",
+        "spec_hash": "5412c8131859f166ca0c16abf8a5f9d4d9a0a69aada7294a63d6e660df9727c1",
+        "spec_id": "spec-poison-idp-timing-v1",
+        "status": "PASS",
+        "test_function_version": "0.1.0"
+      },
+      {
+        "chain_prev": "303c466feea2a146be25e460bf9fd004f776da8ebee2e79c46c628bdc7a82ef5",
+        "collected_at": "2026-12-31T23:59:59Z",
+        "completeness_ref": "artifacts/demo-engagement/reconciliation.json",
+        "control_id": "AM-06",
+        "evidence_refs": [
+          "tests/fixtures/poisons/okta_system_log#sha256=0b14301efcb756c9d51c15dd4a6342edc17bb1f2edd37ac336216869fbfc7e6c"
+        ],
+        "message": "revocation for sam.cole@example.com within 1 business days (constraint: 5, D-P4)",
+        "population_count": 8,
+        "population_id": "pop-termination-events",
+        "record_hash": "1b048f9c3d14925531ea19d399b036c60440b59ecf22308a7ab8f9889c6dc81b",
+        "record_id": "vr-poison-timing-0001-sam.cole@example.com",
+        "run_id": "run-poison-engagement-0001",
+        "schema_version": "0.1.0",
+        "severity": "high",
+        "source": "okta-system-log-collector",
+        "source_version": "0.1.0",
+        "spec_hash": "5412c8131859f166ca0c16abf8a5f9d4d9a0a69aada7294a63d6e660df9727c1",
+        "spec_id": "spec-poison-idp-timing-v1",
+        "status": "PASS",
+        "test_function_version": "0.1.0"
+      },
+      {
+        "chain_prev": "1b048f9c3d14925531ea19d399b036c60440b59ecf22308a7ab8f9889c6dc81b",
+        "collected_at": "2026-12-31T23:59:59Z",
+        "completeness_ref": "artifacts/demo-engagement/reconciliation.json",
+        "control_id": "AM-06",
+        "evidence_refs": [
+          "tests/fixtures/poisons/okta_system_log#sha256=0b14301efcb756c9d51c15dd4a6342edc17bb1f2edd37ac336216869fbfc7e6c"
+        ],
+        "message": "revocation for tess.umber@example.com within 1 business days (constraint: 5, D-P4)",
+        "population_count": 8,
+        "population_id": "pop-termination-events",
+        "record_hash": "6fc248b47991df1c94706c388b7b4724ee0dbe41ca1706e0b467e1cbbc331f8e",
+        "record_id": "vr-poison-timing-0001-tess.umber@example.com",
+        "run_id": "run-poison-engagement-0001",
+        "schema_version": "0.1.0",
+        "severity": "high",
+        "source": "okta-system-log-collector",
+        "source_version": "0.1.0",
+        "spec_hash": "5412c8131859f166ca0c16abf8a5f9d4d9a0a69aada7294a63d6e660df9727c1",
+        "spec_id": "spec-poison-idp-timing-v1",
+        "status": "PASS",
+        "test_function_version": "0.1.0"
+      }
+    ]
+  }
+}

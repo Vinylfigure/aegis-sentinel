@@ -1,0 +1,17 @@
+{
+  "source": "offboarding-tracker",
+  "tenant": "meridian-financial-poisons",
+  "extracted_at": "2026-12-31T23:59:59Z",
+  "tickets": [
+    { "ticket": "POF-3301", "email": "nia.park@example.com" },
+    { "ticket": "POF-3302", "email": "omar.diaz@example.com" },
+    { "ticket": "POF-3303", "email": "pia.voss@example.com" },
+    { "ticket": "POF-3304", "email": "quinn.ash@example.com" },
+    { "ticket": "POF-3305", "email": "rhea.bell@example.com" },
+    { "ticket": "POF-3306", "email": "sam.cole@example.com" },
+    { "ticket": "POF-3307", "email": "tess.umber@example.com" },
+    { "ticket": "POF-3308", "email": "uma.wynn@example.com", "worker_type": "contractor" },
+    { "ticket": "POF-3309", "email": "mira.chen@example.com" },
+    { "ticket": "POF-3310", "email": "vik.rao@example.com" }
+  ]
+}

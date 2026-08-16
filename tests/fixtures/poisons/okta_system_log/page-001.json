@@ -1,0 +1,48 @@
+{
+  "tenant": "meridian-financial-poisons",
+  "extracted_at": "2026-12-31T12:00:00Z",
+  "cursor": null,
+  "after": "poison-cur-0002",
+  "events": [
+    {
+      "uuid": "pvt-0001",
+      "event_type": "user.lifecycle.deactivate",
+      "published": "2026-10-21T09:14:02Z",
+      "actor": { "id": "00u-scim-bot", "type": "User", "alternate_id": "iam.provisioner@meridian.example", "display_name": "SCIM Provisioner" },
+      "target": [
+        { "id": "00u9101", "type": "User", "alternate_id": "nia.park@example.com", "display_name": "Nia Park" }
+      ],
+      "outcome": { "result": "SUCCESS", "reason": null }
+    },
+    {
+      "uuid": "pvt-0002",
+      "event_type": "user.lifecycle.deactivate",
+      "published": "2026-11-06T16:41:57Z",
+      "actor": { "id": "00u-admin-1", "type": "User", "alternate_id": "it.admin@meridian.example", "display_name": "IT Admin" },
+      "target": [
+        { "id": "00u9102", "type": "User", "alternate_id": "omar.diaz@example.com", "display_name": "Omar Diaz" }
+      ],
+      "outcome": { "result": "SUCCESS", "reason": "manual deprovisioning after missed SCIM run" }
+    },
+    {
+      "uuid": "pvt-0003",
+      "event_type": "user.lifecycle.deactivate",
+      "published": "2026-11-10T11:03:44Z",
+      "actor": { "id": "00u-scim-bot", "type": "User", "alternate_id": "iam.provisioner@meridian.example", "display_name": "SCIM Provisioner" },
+      "target": [
+        { "id": "00u9104", "type": "User", "alternate_id": "quinn.ash%example.com", "display_name": "Quinn Ash" }
+      ],
+      "outcome": { "result": "SUCCESS", "reason": "target profile carries a malformed login attribute" }
+    },
+    {
+      "uuid": "pvt-0004",
+      "event_type": "user.lifecycle.deactivate",
+      "published": "2026-11-17T08:52:19Z",
+      "actor": { "id": "00u-scim-bot", "type": "User", "alternate_id": "iam.provisioner@meridian.example", "display_name": "SCIM Provisioner" },
+      "target": [
+        { "id": "00u9105", "type": "User", "alternate_id": "rhea.bell@example.com", "display_name": "Rhea Bell" }
+      ],
+      "outcome": { "result": "SUCCESS", "reason": null }
+    }
+  ]
+}

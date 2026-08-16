@@ -63,7 +63,7 @@ ratification is the freeze — draft → frozen(=ratified) → superseded).
   delta is undispositioned.
 - [x] **EVAL01** — typed assertion evaluator (pure; business-day math tested;
   re-performance byte-identical; five verdict states distinct; D-7/D-8/D-9 citations).
-- [ ] **VAL02** — six poison fixtures per PRD §6 (expected: UNKNOWN_POPULATION-or-FAIL ·
+- [x] **VAL02** — six poison fixtures per PRD §6 (expected: UNKNOWN_POPULATION-or-FAIL ·
   NON-EXISTENCE FAIL · E117 compile error · unresolvable→UNKNOWN · TIMING FAIL ·
   EXCEPTION). Assurance defect detection rate = 100%; emits the full
   `artifacts/demo-engagement/*.json` set for the frontend.

@@ -1,0 +1,9 @@
+{
+  "note": "Ratified boundary exclusions (D-9: the human act happened upstream; the engine only matches the ref). TODO(playbook): exclusion refs will be re-pointed at the playbook's boundary snapshot when it lands.",
+  "reconciliation": [
+    { "member": "vik.rao@example.com", "ref": "boundary/poisons-v1#advisors", "ratified_by": "vinylfigure (Ratifier)" }
+  ],
+  "verdicts": {
+    "breakglass-admin@meridian-prod-poisons.iam.gserviceaccount.com": "boundary/poisons-v1#break-glass"
+  }
+}

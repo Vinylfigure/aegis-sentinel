@@ -1,0 +1,6 @@
+{
+  "note": "Dispositioned exceptions for the timing evaluation (D-V1: EXCEPTION carries its disposition ref, never a silent PASS). TODO(playbook): the referenced disposition documents ship with the mutation playbook.",
+  "exceptions": {
+    "pia.voss@example.com": "dispositions/poisons/pia-voss-phased-offboarding.json"
+  }
+}
