@@ -338,7 +338,7 @@ Rules for curators (`/evolve`):
 - Status: promoted:skill/evolve (Evidence 1 — applied on explicit user confirmation, 2026-08-16)
 
 ## L-047 · 2026-08-16 · Make judgment disciplines auditable: document the ritual, presence-check mechanically, judge substance independently
-- Trigger: user correction 2026-08-16 re inherited L-008 — "can't there be an agent log … so an independent verify can confirm this happened?"; plan-feature required the Predicted-failure-modes artifact but nothing independent confirmed the ritual ran (origin: user correction; canonical entry janus L-041)
+- Trigger: user correction 2026-08-16 re inherited L-008 — "can't there be an agent log … so an independent verify can confirm this happened?"; plan-feature required the Predicted-failure-modes artifact but nothing independent confirmed the ritual ran (origin: user correction; canonical entry janus L-041). observed: 2026-08-16 — the verifier's WALKING SKELETON audit flagged the absent failure-modes trail unprompted (roadmap-driven change, no /plan-feature run), correctly stopping short of a process FAIL while naming the gap — the rule fires as designed
 - Rule: for a judgment discipline, require a named artifact of the ritual, then split enforcement — mechanical presence-check where possible, verifier-agent judgment of substance always — so compliance stops depending on the actor's own report
 - Scope: portable
 - Evidence: 1
