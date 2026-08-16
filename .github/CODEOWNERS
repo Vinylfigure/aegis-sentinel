@@ -4,4 +4,9 @@
 # Applied to the files this milestone creates, not pre-emptively.
 /schemas/ @Vinylfigure
 /src/aegis_sentinel/controls/ @Vinylfigure
+/src/aegis_sentinel/schema/ @Vinylfigure
+/src/aegis_sentinel/capability/ @Vinylfigure
+/src/aegis_sentinel/manifest/ @Vinylfigure
+/registry/ @Vinylfigure
 /tests/fixtures/seeded/ @Vinylfigure
+/tests/mutation/ @Vinylfigure

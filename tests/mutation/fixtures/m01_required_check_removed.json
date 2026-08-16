@@ -1,0 +1,32 @@
+{
+  "name": "m01_required_check_removed",
+  "capture": {
+    "repository": "Vinylfigure/aegis-sentinel",
+    "branch": "main",
+    "collected_at": "2026-08-16T00:00:00Z",
+    "status_code": 200,
+    "protection": {
+      "required_status_checks": {
+        "strict": true,
+        "contexts": []
+      },
+      "required_pull_request_reviews": {
+        "required_approving_review_count": 1,
+        "dismiss_stale_reviews": true
+      },
+      "enforce_admins": {
+        "enabled": true
+      },
+      "allow_force_pushes": {
+        "enabled": false
+      },
+      "allow_deletions": {
+        "enabled": false
+      }
+    }
+  },
+  "required_checks": [
+    "verify"
+  ],
+  "expected_status": "FAIL"
+}

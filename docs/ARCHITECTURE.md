@@ -19,6 +19,7 @@ src/aegis_sentinel/           the product package (src layout; controls land her
 schemas/                      closed JSON Schemas — hand-authored verdict-record v0.1.0 + ontology/ generated from the pydantic models (drift-tested)
 tests/                        pytest suite + fixtures (incl. seeded-drift captures under fixtures/seeded/)
 knowledge/                    hash-manifested corpus + prior-scaffold knowledge (read-only inputs)
+registry/capabilities/        versioned capability entries (JSON; FROZEN = ratified, drafts unusable)
 docs/EVALUATION.md            adopt-vs-rebuild decisions and the first build milestone
 pyproject.toml                Python ≥3.12 packaging; dev extras: ruff, pytest, pyyaml
 .github/ISSUE_TEMPLATE/       work-order form (objective, done-means, allowed-paths, effort-budget)
@@ -43,7 +44,9 @@ little as possible — hook output lands in always-on context, which is a
 budgeted resource (see rationale below).
 
 ```
-SessionStart      session-start.sh      → ≤3 short lines: bootstrap status, leftover
+SessionStart      session-start.sh      → ≤4 short lines: bootstrap status, build-plan next task
+                                          (first unticked box in docs/EXECUTION-PLAN.md,
+                                          when that file exists), leftover
                                           unprocessed signals (→ consider /reflect), ripe-learnings
                                           count, recalibration staleness (only once
                                           bootstrapped; stale = recalibrated-at missing or
@@ -82,7 +85,7 @@ a purpose, and keep their output inside the budget.
 ## The capacity-budget rationale
 
 The caps — ≤20 concepts in CLAUDE.md, ≤12 learned rules, ≤50-word skill
-descriptions, ≤3 hook lines — are operational discipline, grounded in
+descriptions, ≤4 hook lines — are operational discipline, grounded in
 Anthropic's product guidance and this repo's own dogfooding, not derived
 from interpretability research:
 
@@ -160,7 +163,7 @@ option for the verifier — observe the need first, encode later.
 ## Context-budget accounting
 
 Always-loaded context = CLAUDE.md (≤20 concepts) + every skill's
-`description` + ≤3 hook status lines. Everything else is on-demand: skill
+`description` + ≤4 hook status lines. Everything else is on-demand: skill
 bodies load on invocation, the ledger is opened by exactly three skills,
 exploration and verification run in subagents that return conclusions. This
 is why skill descriptions are capped at ≤50 words (with `when_to_use`

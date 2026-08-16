@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# SessionStart hook: inject at most 3 short lines of status into the new session.
+# SessionStart hook: inject at most 4 short lines of status into the new session.
 # Workspace rule: hooks add concepts to always-on context, so keep it minimal.
 set -euo pipefail
 
@@ -50,6 +50,16 @@ if [ -f "$CLAUDE_MD" ] && ! grep -q "NOT BOOTSTRAPPED" "$CLAUDE_MD"; then
   now=$(date +%s)
   if [ -z "$stamp" ] || [ "$((now - stamp))" -gt 2592000 ]; then
     lines+=("Recalibration is stale (never recorded or >30 days) — consider /recalibrate to re-verify encoded practices.")
+  fi
+fi
+
+# Build-plan continuation: a merged milestone is a trigger, not a stop —
+# surface the next unticked task so sessions conduct instead of waiting (L-042).
+PLAN="$DIR/docs/EXECUTION-PLAN.md"
+if [ -f "$PLAN" ]; then
+  next=$(grep -m1 -oE '^- \[ \] \*\*[A-Za-z0-9._-]+\*\*' "$PLAN" | sed -E 's/.*\*\*([A-Za-z0-9._-]+)\*\*.*/\1/')
+  if [ -n "$next" ]; then
+    lines+=("Build plan: next unblocked task is $next (docs/EXECUTION-PLAN.md) — continue it.")
   fi
 fi
 

@@ -343,3 +343,10 @@ Rules for curators (`/evolve`):
 - Scope: portable
 - Evidence: 1
 - Status: promoted:skill/plan-feature+agent/verifier (Evidence 1 — applied on explicit user confirmation, 2026-08-16)
+
+## L-048 · 2026-08-16 · A merged milestone is a trigger, not a stopping point — surface the next task mechanically
+- Trigger: user correction 2026-08-16 — after SCH01 merged the session reported "say the word" while docs/EXECUTION-PLAN.md named SCH02 as next; the Conduct-don't-wait directive was prose with no mechanism (origin: user correction; canonical entry janus L-042, hook mirrored here the same day)
+- Rule: when a repo carries an execution plan, the harness surfaces the first unticked task at session start and the session continues it — continuation is the harness's job, not the user's prompt
+- Scope: portable
+- Evidence: 1
+- Status: promoted:hooks/session-start (Evidence 1 — applied on explicit user confirmation, 2026-08-16)
