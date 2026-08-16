@@ -62,3 +62,9 @@ def test_skipped_is_not_a_status():
     record = load("pass.json")
     record["status"] = "skipped"
     assert not VALIDATOR.is_valid(record)
+
+
+def test_garbage_collected_at_is_rejected():
+    record = load("pass.json")
+    record["collected_at"] = "not-a-date"
+    assert not VALIDATOR.is_valid(record)

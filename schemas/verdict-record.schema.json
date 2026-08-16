@@ -61,7 +61,12 @@
     "source": { "type": "string", "minLength": 1 },
     "source_version": { "type": "string", "minLength": 1 },
     "run_id": { "type": "string", "minLength": 1 },
-    "collected_at": { "type": "string", "format": "date-time" },
+    "collected_at": {
+      "type": "string",
+      "format": "date-time",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?(Z|[+-]\\d{2}:\\d{2})$",
+      "description": "RFC 3339; the pattern enforces the shape because format alone is annotation-only in most validators"
+    },
     "record_hash": {
       "type": "string",
       "pattern": "^[0-9a-f]{64}$",

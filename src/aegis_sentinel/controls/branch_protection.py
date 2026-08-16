@@ -59,7 +59,9 @@ def evaluate(
         reasons.append("required_pull_request_reviews is not configured")
     else:
         count = reviews.get("required_approving_review_count", 0)
-        if not isinstance(count, int) or count < min_approving_reviews:
+        # bool is an int subclass: `true` from a malformed capture must not
+        # satisfy a numeric threshold.
+        if not isinstance(count, int) or isinstance(count, bool) or count < min_approving_reviews:
             reasons.append(
                 f"required_approving_review_count is {count!r}, "
                 f"spec requires >= {min_approving_reviews}"

@@ -50,6 +50,15 @@ def test_missing_reviews_fails_on_a_successful_capture():
     assert any("required_pull_request_reviews" in reason for reason in verdict.reasons)
 
 
+def test_boolean_review_count_fails_not_passes():
+    """JSON `true` is a Python bool, and bool is an int subclass — it must
+    not satisfy the numeric threshold."""
+    capture = load("branch_protection/capture_pass.json")
+    capture["protection"]["required_pull_request_reviews"]["required_approving_review_count"] = True
+    verdict = evaluate(capture, required_checks=SPEC_REQUIRED_CHECKS)
+    assert verdict.status == FAIL
+
+
 def test_admin_bypass_fails():
     capture = load("branch_protection/capture_pass.json")
     capture["protection"]["enforce_admins"] = {"enabled": False}
