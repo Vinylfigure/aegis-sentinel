@@ -70,7 +70,7 @@ ratification is the freeze — draft → frozen(=ratified) → superseded).
 
 ## Frontend track (worktree; independent until Phase C)
 
-- [ ] **A1** — Next.js 15 scaffold in `web/` (CSS Modules + token sheet from the
+- [x] **A1** — Next.js 15 scaffold in `web/` (CSS Modules + token sheet from the
   prototypes; fonts via next/font; AppShell + NavTabs + GaugesRail), Aegis branding,
   `.github/workflows/web-verify.yml` (npm ci, tsc, build, artifact-sync drift check),
   Vercel project (root `web/`, ignored-build-step diffing `web/ artifacts/`).

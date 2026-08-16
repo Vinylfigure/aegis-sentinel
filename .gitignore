@@ -18,3 +18,4 @@ web/.vercel/
 
 # Claude worktrees (parallel session/subagent checkouts, never committed)
 .claude/worktrees/
+web/*.tsbuildinfo
