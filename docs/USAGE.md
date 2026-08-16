@@ -1,8 +1,11 @@
-# Using Janus
+# Using the scaffold (Aegis Sentinel's Janus operations guide)
 
-The operator's guide. [ARCHITECTURE.md](ARCHITECTURE.md) explains *why* the
-pieces exist; [SELF-IMPROVEMENT.md](SELF-IMPROVEMENT.md) specs the memory
-system; this document is *how you drive it* — though mostly, it drives.
+The operator's guide to the Janus scaffold this repo runs on.
+[ARCHITECTURE.md](ARCHITECTURE.md) explains *why* the pieces exist;
+[SELF-IMPROVEMENT.md](SELF-IMPROVEMENT.md) specs the memory system;
+[MEMORY-SKILLS-EVAL.md](MEMORY-SKILLS-EVAL.md) records how this repo's loop
+went dead and was revived; this document is *how you drive it* — though
+mostly, it drives.
 
 **You never need to memorize the command vocabulary.** Every skill carries a
 trigger description, so Claude proposes the right one when the situation
