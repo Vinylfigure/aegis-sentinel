@@ -1,0 +1,10 @@
+{
+  "_comment": "Ratified boundary exclusions (D-9: ratification happened upstream and is human; the engine only matches and records the ref). Mirrors population_valid.json's exclusions entry 'service-accounts per ratified boundary v3'.",
+  "exclusions": [
+    {
+      "member": "svc-deploy@example.com",
+      "ref": "boundary/v3#service-accounts",
+      "ratified_by": "vinylfigure (Ratifier)"
+    }
+  ]
+}
