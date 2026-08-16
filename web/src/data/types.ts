@@ -111,7 +111,10 @@ export type SupportFieldValue =
   | ReadonlyArray<string>;
 
 export interface VerdictSupport {
-  field_values: Record<string, SupportFieldValue>;
+  /** `| undefined` because tsc infers phantom `key?: undefined` props for
+   * keys present in some JSON records but not others; consumers must
+   * narrow on lookup anyway. */
+  field_values: Record<string, SupportFieldValue | undefined>;
   record_hashes: Sha256[];
 }
 
@@ -181,7 +184,8 @@ export interface BoundaryExclusion {
 }
 
 export interface SourceMember {
-  attributes: Record<string, string>;
+  /** See VerdictSupport.field_values on `| undefined`. */
+  attributes: Record<string, string | undefined>;
   email: string;
   ref: string;
 }

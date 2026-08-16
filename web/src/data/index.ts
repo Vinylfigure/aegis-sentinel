@@ -1,12 +1,15 @@
 /**
  * Typed export barrel for the data layer (A2 seed + B1 mock engagement).
  *
- * Importing the JSON through the hand-authored types here is what makes
- * `tsc --noEmit` structurally check every data file against
- * `web/src/data/types.ts` — a missing or renamed field in any JSON file
- * fails the build. (JSON module inference widens string literals to
- * `string`, so enum VALUES are not literal-checked until C1's codegen
- * lands assignability checks; structure and field presence are.)
+ * Each JSON file is first ASSIGNED (not `as`-cast) to a `Widen<T>` of its
+ * hand-authored type: assignment checks assignability recursively, so a
+ * missing or renamed field in any record of any array fails `tsc --noEmit`.
+ * (`as T` only checks top-level comparability and swallows per-record
+ * errors — proven by the adversarial verifier.) `Widen` relaxes literal
+ * unions to their primitives because JSON module inference widens string
+ * literals to `string`; enum VALUES therefore remain unchecked until C1's
+ * codegen lands assignability checks. The single `as T` after the checked
+ * assignment only re-narrows those enum strings.
  */
 
 import type {
@@ -32,16 +35,35 @@ import verdictsJson from "@/data/engagement/verdicts.json";
 
 export type * from "@/data/types";
 
+/** Literal unions -> primitives, recursively; structure and key presence
+ * are preserved so assignment still checks them. */
+type Widen<T> = T extends string
+  ? string
+  : T extends number
+    ? number
+    : T extends boolean
+      ? boolean
+      : T extends readonly (infer E)[]
+        ? readonly Widen<E>[]
+        : T extends object
+          ? { [K in keyof T]: Widen<T[K]> }
+          : T;
+
+/** The checked assignment: fails to compile unless `json` matches the
+ * widened shape of T field-for-field, at every depth. */
+function checked<T>(json: Widen<T>): T {
+  return json as T;
+}
+
 /* Seed data (A2) — prototype-ported, Meridian Financial demo company. */
-export const scopeSeed: ScopeSeed = scopeJson as ScopeSeed;
-export const controlsSeed: ControlsSeed = controlsJson as ControlsSeed;
-export const processSeed: ProcessSeed = processJson as ProcessSeed;
-export const gaugesSeed: GaugesSeed = gaugesJson as GaugesSeed;
+export const scopeSeed = checked<ScopeSeed>(scopeJson);
+export const controlsSeed = checked<ControlsSeed>(controlsJson);
+export const processSeed = checked<ProcessSeed>(processJson);
+export const gaugesSeed = checked<GaugesSeed>(gaugesJson);
 
 /* Mock engagement (B1) — the six poison cases, shaped to the
  * artifacts/demo-engagement contracts; C2 swaps these for the real files. */
-export const engagementVerdicts: VerdictsArtifact = verdictsJson as VerdictsArtifact;
-export const engagementReconciliation: ReconciliationReport =
-  reconciliationJson as ReconciliationReport;
-export const engagementRegistry: RegistryArtifact = registryJson as RegistryArtifact;
-export const engagementPoisons: PoisonsArtifact = poisonsJson as PoisonsArtifact;
+export const engagementVerdicts = checked<VerdictsArtifact>(verdictsJson);
+export const engagementReconciliation = checked<ReconciliationReport>(reconciliationJson);
+export const engagementRegistry = checked<RegistryArtifact>(registryJson);
+export const engagementPoisons = checked<PoisonsArtifact>(poisonsJson);
