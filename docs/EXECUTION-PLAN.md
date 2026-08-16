@@ -7,7 +7,8 @@ Parallel streams run as git worktrees off the base checkout (file-disjoint track
 see `.claude/skills/worktree-parallel/`). The frontend is a permanently disjoint track.
 
 Rulings already ratified by the Owner: verdict enum (D-V1), UNKNOWN taxonomy (D-U1),
-redaction (D-R1), naming (D-N1). Open: lifecycle collapse (D-L1, due at SCH00 PR).
+redaction (D-R1), naming (D-N1), lifecycle collapse (D-L1, ruled at the SCH00 PR:
+ratification is the freeze — draft → frozen(=ratified) → superseded).
 
 ## Phase 0 — gate & ontology
 
@@ -15,10 +16,11 @@ redaction (D-R1), naming (D-N1). Open: lifecycle collapse (D-L1, due at SCH00 PR
   regenerated), redacted+retitled `docs/PRD-v3.md` + `docs/HANDOFF.md`, prototypes at
   `docs/prototypes/`, `docs/DECISIONS.md`, this plan, `scripts/check-redaction.sh`
   wired into `verify.sh full`, LICENSE holder → `vinylfigure`, ruff excludes `web/`.
-- [ ] **SCH00** — `docs/manifest-reconciliation.md`: PRD-v3 manifest blocks mapped onto
+- [x] **SCH00** — `docs/manifest-reconciliation.md`: PRD-v3 manifest blocks mapped onto
   the Build Execution PRD v2 plan→freeze→execute contract
-  (`knowledge/01_corpus/04_build_prds/Sentinel_Build_Execution_PRD.md`). Presents D-L1
-  for ruling. **Hard gate: no P1 task starts before this merges.**
+  (`knowledge/01_corpus/04_build_prds/Sentinel_Build_Execution_PRD.md`). Presented D-L1
+  for ruling (ruled: collapse — see DECISIONS.md). **Hard gate: no P1 task starts
+  before this merges.**
 - [ ] **SCH01** — core ontology as pydantic v2 models in `src/aegis_sentinel/schema/`
   (Population ×3 + assurance ladder + derivation rules + source roles; Claim; Assertion
   ×7; Evidence Quality Contract identity + 5 properties; Verdict ×5 + why-codes;
