@@ -1,4 +1,4 @@
-# Janus architecture
+# Aegis Sentinel architecture (Janus scaffold)
 
 How the pieces connect, the exact hook protocol, and the research the design
 choices come from. Read this before changing hooks, caps, or skill shapes —
@@ -15,10 +15,16 @@ CLAUDE.md                     always-on memory (≤20 concepts; sentinel-marked 
   agents/                     2 subagents — run in their own context windows
   memory/LEARNINGS.md         append-only learnings ledger (git-tracked)
   memory/sources-seen.md      committed watermark of what /recalibrate has read
+src/aegis_sentinel/           the product package (src layout; controls land here)
+tests/                        pytest suite + fixtures
+knowledge/                    hash-manifested corpus + prior-scaffold knowledge (read-only inputs)
+docs/EVALUATION.md            adopt-vs-rebuild decisions and the first build milestone
+pyproject.toml                Python ≥3.12 packaging; dev extras: ruff, pytest, pyyaml
+.github/ISSUE_TEMPLATE/       work-order form (objective, done-means, allowed-paths, effort-budget)
 scripts/
   verify.sh                   quick|full dispatcher; /bootstrap fills the case arms
-  test-hooks.sh               fixture suite for the scaffold plumbing — hooks + docs cross-refs (verify.sh full + CI)
-.github/workflows/verify.yml  CI: runs test-hooks.sh on every push/PR
+  test-hooks.sh               fixture suite for the scaffold plumbing — hooks + docs cross-refs (first step of verify.sh full)
+.github/workflows/verify.yml  CI: runs verify.sh full on every push/PR
 ```
 
 Sentinel markers give skills deterministic edit targets:
@@ -173,7 +179,7 @@ retired in favour of "retire before adding", because it never once bound.
 | Practice | Where it lives in Janus |
 |---|---|
 | Plan mode before code | `/plan-feature` (and prime directive #1) |
-| Ship as a loop — babysit CI and reviews to merged | `/ship`, plus `.github/workflows/verify.yml` running `scripts/test-hooks.sh` as the remote closed loop |
+| Ship as a loop — babysit CI and reviews to merged | `/ship`, plus `.github/workflows/verify.yml` running `scripts/verify.sh full` as the remote closed loop |
 | CLAUDE.md as compounding memory — "any time Claude does something wrong, add a note" | The session loop: signals → `/reflect` → ledger → `/evolve` → CLAUDE.md, with evidence thresholds so notes compound instead of accumulating |
 | Closed feedback loops — "if Claude can close the loop on its own, it will iterate until the output is right" | PostToolUse hook (inner loop) + `/verify-loop` + the verifier agent |
 | Subagents for focused work | Custom: verifier (evidence-bound judge) and memory-curator (proposal-only librarian). Scouting and independent design use Claude Code's native exploration/planning subagents — the platform owns the mechanism; the template keeps only the disciplines it adds |

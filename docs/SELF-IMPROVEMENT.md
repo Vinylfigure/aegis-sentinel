@@ -85,7 +85,8 @@ here flow to every future child. Two rules keep that safe:
    [ARCHITECTURE.md](ARCHITECTURE.md) in the same commit — the rationale doc
    is what stops future sessions from "simplifying" load-bearing constraints.
 2. Prove loop changes with the fixture tests before committing: run
-   `scripts/test-hooks.sh` — the same suite CI runs on every push — and give
+   `scripts/test-hooks.sh` — the first step of the `verify.sh full` CI runs
+   on every push — and give
    new behavior a new fixture in the same commit. Each hook's header comment
    documents its stdin/exit-code contract; the fixtures are the executable
    form of those contracts.

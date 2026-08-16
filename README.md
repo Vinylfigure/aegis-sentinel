@@ -1,26 +1,24 @@
-# Janus
+# Aegis Sentinel
 
-*The god of starting anything.*
+*Compliance you can prove.*
 
-A self-learning, self-replicating starter template for [Claude Code](https://code.claude.com)
-projects. Stack-agnostic: the scaffold *is* the product — hooks, skills,
-subagents, and a memory system that make every project it spawns learn from
-its own sessions and inherit what its ancestors learned.
+An agentic GRC-engineering platform in the making: deterministic control
+checks that emit auditable verdict records, with test agents that exercise
+and validate the compliance agents. Decision history and the first build
+milestone live in [docs/EVALUATION.md](docs/EVALUATION.md); the source
+corpus lives in `knowledge/`.
 
-Janus has two faces: one looks back (distilling lessons from what happened),
-one looks forward (stamping those lessons into the next project).
+The repo runs on the [Janus](https://github.com/Vinylfigure/janus) scaffold
+— hooks, skills, subagents, and a git-tracked memory system that make the
+project learn from its own sessions.
 
 ## Quickstart
 
-1. On GitHub, click **Use this template** (or run `/replicate` from an existing Janus repo).
-2. `cd` into the clone and start `claude`.
-3. Run `/bootstrap` — it detects (or asks for) your stack, wires
-   `scripts/verify.sh` to your real lint/test commands, and proves the
-   verification loop closes.
-4. Build things. The loops below do the rest.
-
-To make this repo itself a template: `gh repo edit <owner>/janus --template`
-(or Settings → check *Template repository*).
+1. `pip install -e '.[dev]'` (Python ≥ 3.12; pulls in ruff, pytest, pyyaml).
+2. `scripts/verify.sh full` — the whole truth: scaffold fixture suite, ruff
+   lint + format check, pytest. CI runs the same entry point on every
+   push/PR.
+3. Start `claude` and build. The loops below do the rest.
 
 ## The three loops
 
