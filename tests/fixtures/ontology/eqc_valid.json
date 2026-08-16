@@ -1,0 +1,21 @@
+{
+  "id": "eqc-github-members-v1",
+  "source": "github",
+  "tenant": "vinylfigure-fixtures",
+  "population_ref": "pop-terminations-2026H2",
+  "endpoint": "GET /orgs/{org}/members",
+  "parameters": { "per_page": "100", "role": "all" },
+  "time_window": { "start": "2026-07-01T00:00:00Z", "end": "2026-12-31T23:59:59Z" },
+  "schema_version": "2022-11-28",
+  "collector_version": "0.1.0",
+  "auth_context": "github-app installation, read-only members scope",
+  "contract_hash": "d4f02eaafd1a9e9de7d10972ca8e47fa7a985825c3c9c1e249c72683cb3e4f19",
+  "quality": {
+    "provenance": { "method": "authenticated API origin recorded per request", "failure_mode": "response from unauthenticated or wrong-tenant origin" },
+    "integrity": { "method": "SHA-256 of raw response, WORM-stored", "failure_mode": "hash mismatch against stored record" },
+    "population": { "method": "pagination exhausted, page count and Link headers recorded", "failure_mode": "truncated enumeration — partial collection" },
+    "semantics": { "method": "response schema contract + one sampled record traced to UI", "failure_mode": "schema drift or field meaning change" },
+    "temporal_validity": { "method": "snapshot time compared against asserted period", "failure_mode": "snapshot outside the asserted window" }
+  },
+  "supported_assertion_types": ["STATE", "EXISTENCE", "NON-EXISTENCE"]
+}

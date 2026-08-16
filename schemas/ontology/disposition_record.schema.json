@@ -1,0 +1,47 @@
+{
+  "$defs": {
+    "DispositionValue": {
+      "description": "Every substrate answer resolves to one of these; nothing exits\nsilently \u2014 N/A demands a rationale (enforced on DispositionRecord).",
+      "enum": [
+        "implemented",
+        "inherited",
+        "shared",
+        "vendor_managed",
+        "compensating",
+        "not_applicable"
+      ],
+      "title": "DispositionValue",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Nothing exits silently: NOT_APPLICABLE demands a rationale.",
+  "properties": {
+    "owner": {
+      "minLength": 1,
+      "title": "Owner",
+      "type": "string"
+    },
+    "rationale": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Rationale"
+    },
+    "value": {
+      "$ref": "#/$defs/DispositionValue"
+    }
+  },
+  "required": [
+    "value",
+    "owner"
+  ],
+  "title": "DispositionRecord",
+  "type": "object"
+}

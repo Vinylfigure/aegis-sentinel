@@ -1,0 +1,20 @@
+{
+  "id": "eqc-github-members-v1",
+  "source": "github",
+  "tenant": "vinylfigure-fixtures",
+  "population_ref": "pop-terminations-2026H2",
+  "endpoint": "GET /orgs/{org}/members",
+  "parameters": {},
+  "time_window": { "start": "2026-07-01T00:00:00Z", "end": "2026-12-31T23:59:59Z" },
+  "schema_version": "2022-11-28",
+  "collector_version": "0.1.0",
+  "auth_context": "github-app installation, read-only members scope. Deliberately invalid: temporal_validity is missing — all five quality properties are required, each with its own method and failure mode.",
+  "contract_hash": "d4f02eaafd1a9e9de7d10972ca8e47fa7a985825c3c9c1e249c72683cb3e4f19",
+  "quality": {
+    "provenance": { "method": "authenticated API origin", "failure_mode": "wrong origin" },
+    "integrity": { "method": "SHA-256 + WORM", "failure_mode": "hash mismatch" },
+    "population": { "method": "pagination exhausted", "failure_mode": "truncated enumeration" },
+    "semantics": { "method": "schema contract", "failure_mode": "schema drift" }
+  },
+  "supported_assertion_types": ["STATE"]
+}

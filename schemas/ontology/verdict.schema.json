@@ -1,0 +1,85 @@
+{
+  "$defs": {
+    "UnknownWhy": {
+      "enum": [
+        "UNKNOWN_DISCOVERY",
+        "UNKNOWN_OWNER",
+        "UNKNOWN_POPULATION",
+        "UNKNOWN_EVIDENCE",
+        "UNKNOWN_TESTABILITY"
+      ],
+      "title": "UnknownWhy",
+      "type": "string"
+    },
+    "VerdictState": {
+      "enum": [
+        "PASS",
+        "FAIL",
+        "UNKNOWN",
+        "EXCLUDED",
+        "EXCEPTION"
+      ],
+      "title": "VerdictState",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "description": "The five ratified states (D-V1), never interchangeable. UNKNOWN\ncarries a why-code (D-U1); EXCLUDED carries its ratification;\nEXCEPTION carries its disposition.",
+  "properties": {
+    "exception_disposition_ref": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Exception Disposition Ref"
+    },
+    "message": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Message"
+    },
+    "ratification_ref": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Ratification Ref"
+    },
+    "state": {
+      "$ref": "#/$defs/VerdictState"
+    },
+    "unknown_why": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/UnknownWhy"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    }
+  },
+  "required": [
+    "state"
+  ],
+  "title": "Verdict",
+  "type": "object"
+}

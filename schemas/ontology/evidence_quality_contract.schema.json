@@ -1,0 +1,177 @@
+{
+  "$defs": {
+    "AssertionType": {
+      "description": "The assertion type determines what evidence *can* prove it.",
+      "enum": [
+        "STATE",
+        "EVENT",
+        "SEQUENCE",
+        "AGGREGATE",
+        "EXISTENCE",
+        "NON-EXISTENCE",
+        "TIMING"
+      ],
+      "title": "AssertionType",
+      "type": "string"
+    },
+    "EvidenceQuality": {
+      "additionalProperties": false,
+      "properties": {
+        "integrity": {
+          "$ref": "#/$defs/QualityProperty"
+        },
+        "population": {
+          "$ref": "#/$defs/QualityProperty"
+        },
+        "provenance": {
+          "$ref": "#/$defs/QualityProperty"
+        },
+        "semantics": {
+          "$ref": "#/$defs/QualityProperty"
+        },
+        "temporal_validity": {
+          "$ref": "#/$defs/QualityProperty"
+        }
+      },
+      "required": [
+        "provenance",
+        "integrity",
+        "population",
+        "semantics",
+        "temporal_validity"
+      ],
+      "title": "EvidenceQuality",
+      "type": "object"
+    },
+    "QualityProperty": {
+      "additionalProperties": false,
+      "description": "One of the five EQC properties: an independent named method with an\nindependent failure mode.",
+      "properties": {
+        "failure_mode": {
+          "minLength": 1,
+          "title": "Failure Mode",
+          "type": "string"
+        },
+        "method": {
+          "minLength": 1,
+          "title": "Method",
+          "type": "string"
+        }
+      },
+      "required": [
+        "method",
+        "failure_mode"
+      ],
+      "title": "QualityProperty",
+      "type": "object"
+    },
+    "TimeWindow": {
+      "additionalProperties": false,
+      "description": "Temporal semantics are part of evidence identity (invariant: no\nevidence without provenance and temporal semantics).",
+      "properties": {
+        "end": {
+          "format": "date-time",
+          "title": "End",
+          "type": "string"
+        },
+        "start": {
+          "format": "date-time",
+          "title": "Start",
+          "type": "string"
+        }
+      },
+      "required": [
+        "start",
+        "end"
+      ],
+      "title": "TimeWindow",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Full identity plus the five properties; a contract declares which\nassertion types it is entitled to support (invariant: no PASS unless\nthe evidence is fit to prove the claim).",
+  "properties": {
+    "auth_context": {
+      "minLength": 1,
+      "title": "Auth Context",
+      "type": "string"
+    },
+    "collector_version": {
+      "minLength": 1,
+      "title": "Collector Version",
+      "type": "string"
+    },
+    "contract_hash": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Contract Hash",
+      "type": "string"
+    },
+    "endpoint": {
+      "minLength": 1,
+      "title": "Endpoint",
+      "type": "string"
+    },
+    "id": {
+      "minLength": 1,
+      "title": "Id",
+      "type": "string"
+    },
+    "parameters": {
+      "additionalProperties": {
+        "type": "string"
+      },
+      "title": "Parameters",
+      "type": "object"
+    },
+    "population_ref": {
+      "minLength": 1,
+      "title": "Population Ref",
+      "type": "string"
+    },
+    "quality": {
+      "$ref": "#/$defs/EvidenceQuality"
+    },
+    "schema_version": {
+      "minLength": 1,
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "source": {
+      "minLength": 1,
+      "title": "Source",
+      "type": "string"
+    },
+    "supported_assertion_types": {
+      "items": {
+        "$ref": "#/$defs/AssertionType"
+      },
+      "minItems": 1,
+      "title": "Supported Assertion Types",
+      "type": "array"
+    },
+    "tenant": {
+      "minLength": 1,
+      "title": "Tenant",
+      "type": "string"
+    },
+    "time_window": {
+      "$ref": "#/$defs/TimeWindow"
+    }
+  },
+  "required": [
+    "id",
+    "source",
+    "tenant",
+    "population_ref",
+    "endpoint",
+    "time_window",
+    "schema_version",
+    "collector_version",
+    "auth_context",
+    "contract_hash",
+    "quality",
+    "supported_assertion_types"
+  ],
+  "title": "EvidenceQualityContract",
+  "type": "object"
+}

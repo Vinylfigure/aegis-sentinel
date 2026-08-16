@@ -1,0 +1,85 @@
+{
+  "$defs": {
+    "AssertionType": {
+      "description": "The assertion type determines what evidence *can* prove it.",
+      "enum": [
+        "STATE",
+        "EVENT",
+        "SEQUENCE",
+        "AGGREGATE",
+        "EXISTENCE",
+        "NON-EXISTENCE",
+        "TIMING"
+      ],
+      "title": "AssertionType",
+      "type": "string"
+    },
+    "TimingConstraint": {
+      "additionalProperties": false,
+      "properties": {
+        "business_days": {
+          "default": true,
+          "title": "Business Days",
+          "type": "boolean"
+        },
+        "days": {
+          "minimum": 1,
+          "title": "Days",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "days"
+      ],
+      "title": "TimingConstraint",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "A lettered, typed, testable attribute of a claim. The type\nconstrains admissible evidence; TIMING must say its window.",
+  "properties": {
+    "attribute": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Attribute"
+    },
+    "description": {
+      "minLength": 1,
+      "title": "Description",
+      "type": "string"
+    },
+    "id": {
+      "minLength": 1,
+      "title": "Id",
+      "type": "string"
+    },
+    "timing": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/TimingConstraint"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "type": {
+      "$ref": "#/$defs/AssertionType"
+    }
+  },
+  "required": [
+    "id",
+    "type",
+    "description"
+  ],
+  "title": "Assertion",
+  "type": "object"
+}

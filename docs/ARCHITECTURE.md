@@ -16,7 +16,7 @@ CLAUDE.md                     always-on memory (≤20 concepts; sentinel-marked 
   memory/LEARNINGS.md         append-only learnings ledger (git-tracked)
   memory/sources-seen.md      committed watermark of what /recalibrate has read
 src/aegis_sentinel/           the product package (src layout; controls land here)
-schemas/                      closed JSON Schemas — the audit-record contracts (verdict-record v0.1.0)
+schemas/                      closed JSON Schemas — hand-authored verdict-record v0.1.0 + ontology/ generated from the pydantic models (drift-tested)
 tests/                        pytest suite + fixtures (incl. seeded-drift captures under fixtures/seeded/)
 knowledge/                    hash-manifested corpus + prior-scaffold knowledge (read-only inputs)
 docs/EVALUATION.md            adopt-vs-rebuild decisions and the first build milestone
