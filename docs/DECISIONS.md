@@ -46,13 +46,21 @@ D-7 cause family from the prior scaffold
 `knowledge/01_corpus/02_design_decisions/Aegis_Design_Fix_D7_UNKNOWN_Decomposition.md`
 in code where implemented.
 
-## D-L1 · 2026-08-12 · OPEN · Owner (decide at SCH00 PR)
+## D-L1 · 2026-08-16 · RATIFIED · Owner (ruling delegated to research at the SCH00 PR)
 
-**Lifecycle collapse.** Proposal: merge the Build Execution PRD v2 spec lifecycle
-`draft → ratified → frozen` so ratification *is* the freeze (a `PROPOSED_SCOPE_CHANGE`
-is a draft delta against the current frozen manifest snapshot; ratifying it produces
-v(N+1) frozen; v(N) becomes superseded). Changes the v2 contract's four-state enum —
-held for explicit Owner ruling at the SCH00 PR, never resolved silently.
+**Lifecycle collapse: ratification IS the freeze.** The enum is
+`draft → frozen(=ratified) → superseded`, applied uniformly to collection
+specs, capability entries, and manifest snapshots. Grounds
+(`docs/manifest-reconciliation.md` §D-L1): the v2 contract ratifies and
+freezes in one breath ("human-ratified at the trust boundary, then frozen and
+versioned") and gives no semantics to a ratified-but-unfrozen artifact —
+"frozen requires ratified hash" makes freeze derivable from ratification;
+effectivity ("in force for this run") is already evidenced by each verdict
+record's `spec_id`/`spec_hash`, so a separate frozen state would duplicate in
+a flag what execution records prove; approval batching is served upstream by
+bundling `PROPOSED_SCOPE_CHANGE` deltas into one proposal before ratifying.
+A `PROPOSED_SCOPE_CHANGE` is a draft delta against the current frozen
+snapshot; ratifying it produces v(N+1) frozen and marks v(N) superseded.
 
 ## D-P1 · 2026-08-12 · ADOPTED
 
