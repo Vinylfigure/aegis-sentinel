@@ -1,0 +1,24 @@
+{
+  "report": "terminated_workers",
+  "report_version": "2026R2",
+  "tenant": "meridian-financial-fixtures",
+  "generated_at": "2026-12-31T23:59:59Z",
+  "report_metadata": { "row_count": 15, "page": 1, "total_pages": 1 },
+  "rows": [
+    { "worker_id": "W-1001", "full_name": "Ada Grant", "email": "ada.grant@example.com", "worker_type": "employee", "termination_date": "2026-07-10" },
+    { "worker_id": "W-1002", "full_name": "Ben Osei", "email": "ben.osei@example.com", "worker_type": "employee", "termination_date": "2026-07-24" },
+    { "worker_id": "W-1003", "full_name": "Cleo Marsh", "email": "cleo.marsh@example.com", "worker_type": "employee", "termination_date": "2026-08-03" },
+    { "worker_id": "W-1004", "full_name": "Dev Rao", "email": "dev.rao@example.com", "worker_type": "employee", "termination_date": "2026-08-14" },
+    { "worker_id": "W-1005", "full_name": "Elif Kaya", "email": "elif.kaya@example.com", "worker_type": "employee", "termination_date": "2026-09-01" },
+    { "worker_id": "W-1006", "full_name": "Finn Doyle", "email": "finn.doyle@example.com", "worker_type": "employee", "termination_date": "2026-09-18" },
+    { "worker_id": "W-1007", "full_name": "Gus Ito", "email": "gus.ito@example.com", "worker_type": "employee", "termination_date": "2026-10-02" },
+    { "worker_id": "W-1008", "full_name": "Hana Kim", "email": "hana.kim@example.com", "worker_type": "employee", "termination_date": "2026-10-16" },
+    { "worker_id": "W-1009", "full_name": "Iris Nunn", "email": "iris.nunn@example.com", "worker_type": "employee", "termination_date": "2026-11-06" },
+    { "worker_id": "W-1010", "full_name": "Rowan Ellis", "email": "rowan.ellis@example.com", "worker_type": "employee", "termination_date": "2026-11-20" },
+    { "worker_id": "W-1011", "full_name": "Jo Vance", "email": "jo.vance@example.com", "worker_type": "contractor", "termination_date": "2026-12-04" },
+    { "worker_id": "W-1012", "full_name": "Kai Moss", "email": null, "worker_type": "employee", "termination_date": "2026-12-11" },
+    { "worker_id": "W-1013", "full_name": "Blair Quinn", "email": "  Blair.QUINN@Example.COM ", "worker_type": "employee", "termination_date": "2026-12-15" },
+    { "worker_id": "W-1003", "full_name": "Cleo Marsh", "email": "cleo.marsh@example.com", "worker_type": "employee", "termination_date": "2026-12-18" },
+    { "worker_id": "W-1014", "full_name": "Livia Sorn", "email": "livia.sorn@example.com", "worker_type": "employee", "termination_date": "2026-12-22" }
+  ]
+}

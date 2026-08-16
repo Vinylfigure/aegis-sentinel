@@ -50,9 +50,11 @@ ratification is the freeze — draft → frozen(=ratified) → superseded).
   suggestion, E117 missing capability, E302 schema drift); zero collectors executable
   with unresolved E-codes. Acceptance: 6-month TIMING assertion vs Okta 90d fails with
   E204 and the correct suggestion.
-- [ ] **WALKING SKELETON** — COL01 (HRIS) → one claim → minimal reconcile/evaluate →
-  one real verdict record → `artifacts/demo-engagement/verdicts.json` → rendered by
-  `web` `/verdicts`. First end-to-end milestone; ontology proof-of-fit.
+- [x] **WALKING SKELETON** — COL01 (HRIS) → one claim → minimal reconcile/evaluate →
+  one real verdict record → `artifacts/demo-engagement/verdicts.json`
+  (`scripts/build_demo_engagement.py`; drift-tested byte-for-byte). The `web`
+  `/verdicts` rendering half rides the frontend track (B3/C2). First end-to-end
+  milestone; ontology proof-of-fit.
 - [ ] **COL02–05** — Okta / GitHub / GCP / Slack collectors (worktrees): injected
   transport, fixture tenants only, pagination exhaustion, hashed raw responses, EQC with
   all five property methods named; each ships a seeded failing fixture it must detect.
