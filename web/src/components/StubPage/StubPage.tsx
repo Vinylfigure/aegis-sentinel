@@ -10,7 +10,7 @@ export interface StubPageProps {
 /** Placeholder body for a planned route. Replaced as its track lands. */
 export function StubPage({ title, plannedIn, description }: StubPageProps) {
   return (
-    <article>
+    <article className={styles.stub}>
       <h1 className={styles.title}>{title}</h1>
       <p className={styles.badge}>
         <span className={styles.code}>{plannedIn}</span> planned — stub page

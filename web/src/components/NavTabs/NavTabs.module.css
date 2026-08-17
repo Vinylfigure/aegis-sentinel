@@ -1,6 +1,7 @@
 .tabs {
   display: flex;
   gap: 0;
+  padding: 0 28px;
   border-bottom: 1px solid var(--line);
   overflow-x: auto;
 }

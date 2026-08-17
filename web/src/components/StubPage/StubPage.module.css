@@ -1,3 +1,7 @@
+.stub {
+  padding: 20px 28px 60px;
+}
+
 .title {
   font-family: var(--font-display);
   font-size: 19px;
