@@ -1,0 +1,278 @@
+{
+  "controls": [
+    {
+      "id": "AM-01",
+      "name": "Source code access approval",
+      "domain": "Access Management",
+      "description": "Repo access granted on approval, provisioner ≠ approver.",
+      "nature": "auto",
+      "function": "det",
+      "compensating": false,
+      "systems": ["gh", "jira", "okta"],
+      "datasets": [
+        { "system": "gh", "artifact": "Repo access grants (population)", "retrieval": "api", "caMethod": "recon" },
+        { "system": "jira", "artifact": "Access request tickets", "retrieval": "api", "caMethod": "trace" }
+      ]
+    },
+    {
+      "id": "AM-05",
+      "name": "Access approval — in-scope systems",
+      "domain": "Access Management",
+      "description": "New/modified access approved before grant.",
+      "nature": "auto",
+      "function": "det",
+      "compensating": false,
+      "systems": ["okta", "jira"],
+      "datasets": [
+        { "system": "okta", "artifact": "Access grant events (population)", "retrieval": "api", "caMethod": "recon" },
+        { "system": "jira", "artifact": "Access request tickets", "retrieval": "api", "caMethod": "trace" }
+      ]
+    },
+    {
+      "id": "AM-06",
+      "name": "Terminations — access revocation",
+      "domain": "Access Management",
+      "description": "Access revoked ≤5 business days from termination.",
+      "nature": "auto",
+      "function": "det",
+      "compensating": false,
+      "systems": ["hris", "okta", "siem"],
+      "datasets": [
+        { "system": "hris", "artifact": "Termination feed", "retrieval": "api", "caMethod": "recon" },
+        { "system": "okta", "artifact": "Deprovisioning events", "retrieval": "api", "caMethod": "hash" },
+        { "system": "siem", "artifact": "Deprovisioning log query", "retrieval": "api", "caMethod": "hash" }
+      ]
+    },
+    {
+      "id": "AM-JIT",
+      "name": "JIT elevation — time-bound access",
+      "domain": "Access Management",
+      "description": "Elevation auto-granted on approval, auto-revoked at expiry.",
+      "nature": "cfg",
+      "function": "prev",
+      "compensating": false,
+      "systems": ["okta", "gh"],
+      "datasets": [
+        { "system": "okta", "artifact": "JIT grant/revoke config + events", "retrieval": "api", "caMethod": "hash" }
+      ]
+    },
+    {
+      "id": "CM-03",
+      "name": "Change approval SoD",
+      "domain": "Change Management",
+      "description": "Branch protection: approver ≠ author before production merge.",
+      "nature": "cfg",
+      "function": "prev",
+      "compensating": false,
+      "systems": ["gh"],
+      "datasets": [
+        { "system": "gh", "artifact": "Branch protection config (per repo)", "retrieval": "api", "caMethod": "hash" },
+        { "system": "gh", "artifact": "Merged PR population", "retrieval": "api", "caMethod": "recon" }
+      ]
+    },
+    {
+      "id": "CM-05",
+      "name": "Required checks before merge",
+      "domain": "Change Management",
+      "description": "Security + functional CI checks required to pass pre-merge.",
+      "nature": "cfg",
+      "function": "prev",
+      "compensating": false,
+      "systems": ["gh", "ci"],
+      "datasets": [
+        { "system": "gh", "artifact": "Branch protection config (per repo)", "retrieval": "api", "caMethod": "hash" },
+        { "system": "ci", "artifact": "Required check run results", "retrieval": "api", "caMethod": "hash" }
+      ]
+    },
+    {
+      "id": "CM-04",
+      "name": "Emergency changes",
+      "domain": "Change Management",
+      "description": "Tested + approved by Eng Mgmt within 24h of implementation.",
+      "nature": "manual",
+      "function": "det",
+      "compensating": true,
+      "systems": ["gh", "jira"],
+      "datasets": [
+        { "system": "jira", "artifact": "Emergency change tickets", "retrieval": "api", "caMethod": "trace" }
+      ]
+    },
+    {
+      "id": "CFG-03",
+      "name": "Config drift monitoring",
+      "domain": "Configuration Management",
+      "description": "Hardening drift detected, alerted, re-enforced.",
+      "nature": "auto",
+      "function": "det",
+      "compensating": false,
+      "systems": ["gh", "mon"],
+      "datasets": [
+        { "system": "gh", "artifact": "Repo security config snapshots", "retrieval": "api", "caMethod": "hash" },
+        { "system": "mon", "artifact": "Drift alert population", "retrieval": "api", "caMethod": "recon" }
+      ]
+    },
+    {
+      "id": "DP-04",
+      "name": "Key storage encryption",
+      "domain": "Key Management",
+      "description": "Signing/private keys stored encrypted in vault/KMS.",
+      "nature": "cfg",
+      "function": "prev",
+      "compensating": false,
+      "systems": ["kms"],
+      "datasets": [
+        { "system": "kms", "artifact": "Key inventory + protection level", "retrieval": "api", "caMethod": "hash" }
+      ]
+    },
+    {
+      "id": "KM-ROT",
+      "name": "Key rotation",
+      "domain": "Key Management",
+      "description": "Keys rotated per lifecycle policy (generate→destroy).",
+      "nature": "cfg",
+      "function": "prev",
+      "compensating": false,
+      "systems": ["kms"],
+      "datasets": [
+        { "system": "kms", "artifact": "Rotation schedule config", "retrieval": "api", "caMethod": "hash" }
+      ]
+    },
+    {
+      "id": "BR-01",
+      "name": "Backup coverage & RPO",
+      "domain": "Data & Resilience",
+      "description": "Eligible stores backed up; freshness within RPO.",
+      "nature": "cfg",
+      "function": "prev",
+      "compensating": false,
+      "systems": ["gcp"],
+      "datasets": [
+        { "system": "gcp", "artifact": "Backup config per eligible store", "retrieval": "api", "caMethod": "recon" },
+        { "system": "gcp", "artifact": "Last-successful-backup timestamps", "retrieval": "api", "caMethod": "hash" }
+      ]
+    },
+    {
+      "id": "BR-04",
+      "name": "Restore validation",
+      "domain": "Data & Resilience",
+      "description": "Periodic restore tests prove integrity + availability.",
+      "nature": "manual",
+      "function": "det",
+      "compensating": false,
+      "systems": ["gcp", "jira"],
+      "datasets": [
+        { "system": "jira", "artifact": "Restore test records", "retrieval": "api", "caMethod": "trace" }
+      ]
+    },
+    {
+      "id": "IM-07",
+      "name": "Incident triage & severity",
+      "domain": "Incident Management",
+      "description": "Severity assigned at triage; tracked to closure per SLA.",
+      "nature": "auto",
+      "function": "det",
+      "compensating": false,
+      "systems": ["jira", "siem"],
+      "datasets": [
+        { "system": "jira", "artifact": "Incident ticket population", "retrieval": "api", "caMethod": "recon" }
+      ]
+    },
+    {
+      "id": "IM-106",
+      "name": "Materiality determination (Item 106)",
+      "domain": "Incident Management",
+      "description": "Documented materiality step with legal; 4 business days to 8-K.",
+      "nature": "manual",
+      "function": "det",
+      "compensating": false,
+      "systems": ["jira"],
+      "datasets": [
+        { "system": "jira", "artifact": "Incident ticket population", "retrieval": "api", "caMethod": "recon" }
+      ]
+    },
+    {
+      "id": "TVM-01",
+      "name": "Vulnerability scanning coverage",
+      "domain": "Vulnerability Management",
+      "description": "Weekly scans; denominator = asset inventory.",
+      "nature": "auto",
+      "function": "det",
+      "compensating": false,
+      "systems": ["gcp", "gh"],
+      "datasets": [
+        { "system": "gcp", "artifact": "Asset inventory (CAI)", "retrieval": "api", "caMethod": "recon" },
+        { "system": "gh", "artifact": "Dependabot/CodeQL findings", "retrieval": "api", "caMethod": "hash" }
+      ]
+    },
+    {
+      "id": "ASM-03",
+      "name": "Endpoint protection (EDR)",
+      "domain": "People & Endpoints",
+      "description": "EDR installed + reporting on all managed workstations.",
+      "nature": "cfg",
+      "function": "prev",
+      "compensating": false,
+      "systems": ["mdm", "edr"],
+      "datasets": [
+        { "system": "mdm", "artifact": "Managed device population", "retrieval": "api", "caMethod": "recon" },
+        { "system": "edr", "artifact": "Agent health status", "retrieval": "api", "caMethod": "hash" }
+      ]
+    },
+    {
+      "id": "TPRM-01",
+      "name": "Vendor risk tiering & review",
+      "domain": "Third-Party Risk",
+      "description": "Vendors tiered by data access; review depth per tier.",
+      "nature": "manual",
+      "function": "det",
+      "compensating": false,
+      "systems": ["vend"],
+      "datasets": [
+        { "system": "vend", "artifact": "Vendor inventory + tiers", "retrieval": "api", "caMethod": "recon" }
+      ]
+    },
+    {
+      "id": "DLP-02",
+      "name": "Data loss prevention",
+      "domain": "Data Protection",
+      "description": "DLP rules per classification; alerts investigated.",
+      "nature": "auto",
+      "function": "det",
+      "compensating": false,
+      "systems": ["siem", "mon"],
+      "datasets": [
+        { "system": "mon", "artifact": "DLP rule config", "retrieval": "shot", "caMethod": "hash" },
+        { "system": "siem", "artifact": "DLP alert population", "retrieval": "api", "caMethod": "recon" }
+      ]
+    }
+  ],
+  "retrievalChannels": {
+    "api": "API / MCP",
+    "shot": "Playwright snapshot",
+    "log": "Log query",
+    "man": "Manual attestation"
+  },
+  "caMethods": {
+    "recon": "Two-source reconciliation",
+    "hash": "Hash raw response",
+    "trace": "Bidirectional 1-sample trace",
+    "agent": "Independent verifier agent"
+  },
+  "llmLane": [
+    {
+      "id": "A-01",
+      "name": "Triage unresolved / UNKNOWN results",
+      "boundary": "reads collector output, drafts investigation plan, routes to owner — never records a verdict"
+    },
+    {
+      "id": "A-02",
+      "name": "Draft exception narratives",
+      "boundary": "grounds every claim in a named evidence record; human sign-off required"
+    },
+    {
+      "id": "A-03",
+      "name": "Map new risks to existing datasets",
+      "boundary": "buckets incoming risks into domains; flags where an existing tested dataset already covers them"
+    }
+  ]
+}

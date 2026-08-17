@@ -29,6 +29,14 @@ npm run build
   page states the execution-plan task (A3–B4) that fills it in.
 - `src/components/` — `AppShell` (two-column shell), `NavTabs` (route tabs),
   `GaugesRail` (sticky right rail), `StubPage`.
+- `src/data/` — the data layer (A2 + B1). `types.ts` holds hand-authored
+  ontology/artifact types (C1 codegen replaces them); `seed/*.json` is the
+  prototype-ported demo data, genericized to the invented demo company
+  "Meridian Financial" (scope, controls, process lanes, gauges); `engagement/`
+  is the hand-authored mock engagement encoding the six poison cases, shaped
+  to the `artifacts/demo-engagement/` contracts; `index.ts` typed-exports all
+  of it so `tsc --noEmit` structurally checks every JSON file against the
+  types. Pages import from `@/data`, never from the JSON directly.
 - `src/styles/tokens.css` — the single source of color/type/scale tokens.
   Extend it only from a prototype or ratified design, never ad hoc.
 
@@ -45,8 +53,61 @@ edit those files, and do not vendor copies into `web/`):
 | `registry.json` | `entries` (capability entries with `lifecycle` + `history_caveats`), `compile_errors` (E-codes), top-level `note` | `/registry` (B3) |
 | `poisons.json` | `cases` + `detection` + embedded `verdict_records` | `/verdicts` mutation scorecard (B3) |
 
-B1 lands hand-authored mocks in `web/src/data/engagement/` matching these
-shapes; C2 swaps them for the real artifacts above.
+B1 landed hand-authored mocks in `web/src/data/engagement/` matching these
+shapes (Meridian Financial cast, synthetic hashes); C2 swaps them for the real
+artifacts above.
+
+## SCH01/REC01 shape review questions
+
+Review artifact for the backend output shapes, recorded while hand-authoring
+the B1 types and mock engagement. Rule followed: the mock keeps the artifact
+shape verbatim; every place the shape diverges from the ontology models or is
+awkward for rendering is a question here, not a silent frontend workaround.
+Numbers are referenced from comments in `src/data/types.ts`.
+
+- **Q1 — `unknown_cause` vs `unknown_why`.** Verdict records on the wire
+  carry the UNKNOWN why-code as `unknown_cause`; `schema/models.py` `Verdict`
+  calls the field `unknown_why`. Same D-U1 concept, two names — which one is
+  canonical for SCH01's exported schema?
+- **Q2 — EXCEPTION ref naming.** Artifact records carry `disposition_ref`;
+  the `Verdict` model calls it `exception_disposition_ref` (EXCLUDED's
+  `ratification_ref` matches in both). Also: the conditional fields are
+  *absent keys* on the wire but nullable-always-present on the model — codegen
+  (C1) needs one convention.
+- **Q3 — `verdicts.json` has no run envelope.** It is a bare array;
+  `run_id`, `period`, `tenant`, `collected_at` exist only per-record (period
+  not at all). `/verdicts` must derive run metadata by folding over records —
+  a `{run, records}` wrapper (like poisons.json's envelope) would render
+  directly. Intentional?
+- **Q4 — poison classification is stringly typed.** `expected` /
+  `actual_class` encode "UNKNOWN:UNKNOWN_POPULATION" and E-codes as strings
+  the client must parse; a structured `{kind, status, unknown_cause?, code?}`
+  would avoid string-splitting in the scorecard. Related: `evidence` is an
+  open keyset that varies per case (typed as `PoisonEvidence` with all-optional
+  known keys — fragile by construction).
+- **Q4b — `verdict_records` grouping keys.** poisons.json groups embedded
+  records under `existence` / `non_existence` / `timing` — lower-snake family
+  names that do not match the ratified `AssertionType` values (`EXISTENCE`,
+  `NON-EXISTENCE`, `TIMING`; note the hyphen). Is the key set closed at these
+  three, and should it reuse the enum spelling?
+- **Q5 — dispositions live in two places in reconciliation.json.** The
+  top-level `dispositions` map (keyed by member_ref) and the per-delta inline
+  `disposition` field overlap but disagree: the excluded bucket entry carries
+  its disposition inline, while right_only/left_only/conflict/unresolvable
+  entries show `disposition: null` even when the top-level map holds one for
+  the same member_ref. Which is authoritative for the "why complete" rail?
+- **Q6 — member identifier scheme is inconsistent.** `boundary_exclusions[].member`
+  is a bare email; every bucket entry uses a prefixed `member_ref`
+  (`email:...`, `okta:...`). One scheme, please — joins in the UI otherwise
+  need prefix-stripping heuristics.
+- **Q7 — `severity` vocabulary is not in the ontology.** Only `"high"` is
+  observed; `schema/enums.py` has no Severity enum. Typed as
+  `"low" | "medium" | "high"` by guess — needs ratification.
+- **Q8 — registry vocabularies not in the ontology.** `temporal.kind`
+  (`state-only` / `event-history` / `full-history`) and `pagination.method`
+  (`page` / `cursor` / `none`) are closed-looking sets that exist nowhere in
+  `schema/enums.py`. If they are ontology, they belong in SCH01; if they are
+  free text, the types should say `string`.
 
 ## REQUIRED for B3: render ratification caveats on `/registry`
 

@@ -367,14 +367,21 @@ Rules for curators (`/evolve`):
 
 ## L-051 · 2026-08-16 · Worktree subagents deliver untracked files — integrate by clobber-checked copy, never by branch merge
 - Trigger: the first collector-wave integration ran `git merge worktree-agent-...` and got a silently empty merge — worktree subagents are told not to commit, so their branches carry no commits and the deliverables sit untracked in the worktree directory; the working pattern (repeated 6x this session) is: list the worktree's `git status --porcelain` untracked paths, refuse any path that already exists in the destination (L-049's clobber guard), copy the rest, re-verify in the main checkout (origin: own observation, verify failure)
-- Rule: to integrate a no-commit worktree subagent's work, copy its untracked new files with a per-path exists-check and re-run the full suite in the destination — merging its branch integrates nothing
+- Rule: instruct worktree subagents to commit in their worktree and integrate by merging their branch (gitignore then filters node_modules-style noise); for a subagent that did not commit, fall back to copying its untracked files with a per-path exists-check — merging an uncommitted worktree's branch integrates nothing. Either way, re-run the full suite in the destination
 - Scope: portable
-- Evidence: 1
+- Evidence: 2 (empty-merge failure at the collector wave; instruct-commit-then-merge worked cleanly for A1, MCP01, and A2+B1)
 - Status: candidate
 
 ## L-052 · 2026-08-16 · The shell's working directory resets between tool calls — anchor every compound command
 - Trigger: four separate commands this session failed with "not a git repository" / "No such file or directory" because the session cwd had silently reverted to the home directory between calls (worker restarts and environment reconnects reset it); each failure cost a retry with an explicit cd (origin: own observation, repeated)
 - Rule: start every compound shell command with an absolute-path cd (or use absolute paths throughout) — never assume the previous call's working directory survived
+- Scope: portable
+- Evidence: 1
+- Status: candidate
+
+## L-053 · 2026-08-16 · `as T` on JSON imports is a vacuous per-record check — wire JSON through an assignability position and prove it with a falsifier
+- Trigger: the A2+B1 adversarial verifier renamed a required key inside a verdict record of an imported JSON array and `tsc --noEmit` stayed green — `index.ts` wired every JSON file through `as T` casts, and TypeScript `as` checks only top-level bidirectional comparability, so a broken record inside any array is swallowed; the doc comment and commit message both claimed "tsc checks every JSON file" (origin: verifier FAIL, prescribed falsifier)
+- Rule: never claim the compiler checks imported JSON unless the JSON flows through an assignability position — a plain annotation or a generic parameter (`checked<T>(json: Widen<T>)`, literal unions widened to primitives since JSON inference widens strings) — and prove the wiring by making a representative deep mutation fail the build before shipping the claim
 - Scope: portable
 - Evidence: 1
 - Status: candidate
