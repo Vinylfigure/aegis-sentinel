@@ -1,4 +1,5 @@
 import styles from "./GaugesRail.module.css";
+import type { GaugeTone as SeedGaugeTone } from "@/data";
 
 export type GaugeTone = "ok" | "warn" | "fail" | "accent" | "info" | "neutral";
 
@@ -15,42 +16,26 @@ export interface GaugeSection {
   gauges: Gauge[];
 }
 
-/**
- * Placeholder gauges mirroring the workbench prototype's rail
- * (scope / posture / datasets / agents). A4 replaces these with
- * values derived from seed data; C2 with the real artifacts.
- */
-const PLACEHOLDER_SECTIONS: GaugeSection[] = [
-  {
-    title: "Scope",
-    gauges: [
-      { label: "systems in scope", value: "—", tone: "ok" },
-      { label: "unresolved — taints mappings", value: "—", tone: "warn" },
-    ],
-  },
-  {
-    title: "Control posture",
-    gauges: [
-      { label: "configurable · preventative", value: "—", tone: "ok" },
-      { label: "manual controls — automation backlog", value: "—", tone: "fail" },
-    ],
-  },
-  {
-    title: "Datasets",
-    gauges: [
-      { label: "unique datasets", value: "—", tone: "info" },
-      { label: "avg controls per dataset", value: "—", tone: "accent" },
-    ],
-  },
-];
+/** Seed gauge tones (prototype color names) → semantic rail tones. */
+const SEED_TONES: Record<SeedGaugeTone, GaugeTone> = {
+  green: "ok",
+  amber: "warn",
+  red: "fail",
+  purple: "accent",
+  cyan: "info",
+};
 
-export function GaugesRail({
-  sections = PLACEHOLDER_SECTIONS,
-}: {
-  sections?: GaugeSection[];
-}) {
+export function toneFromSeed(tone: SeedGaugeTone): GaugeTone {
+  return SEED_TONES[tone];
+}
+
+/**
+ * Gauge sections without an aside wrapper — for embedding inside a
+ * page's RailLayout rail alongside page-specific panels.
+ */
+export function GaugeList({ sections }: { sections: GaugeSection[] }) {
   return (
-    <aside className={styles.rail} aria-label="Gauges">
+    <>
       {sections.map((section) => (
         <section key={section.title}>
           <h2 className={styles.title}>{section.title}</h2>
@@ -65,6 +50,15 @@ export function GaugesRail({
           ))}
         </section>
       ))}
+    </>
+  );
+}
+
+/** Standalone gauges rail (workbench prototype) as its own aside. */
+export function GaugesRail({ sections }: { sections: GaugeSection[] }) {
+  return (
+    <aside className={styles.rail} aria-label="Gauges">
+      <GaugeList sections={sections} />
     </aside>
   );
 }

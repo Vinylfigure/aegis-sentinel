@@ -1,0 +1,559 @@
+/* /scope — merged scope-tool + workbench stage 1, styled from the
+ * prototypes against tokens.css. */
+
+.main {
+  max-width: 1000px;
+}
+
+.h1 {
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.h1Dot {
+  color: var(--accent);
+}
+
+.sub {
+  color: var(--dim);
+  font-size: 13px;
+  margin: 5px 0 22px;
+  max-width: 70ch;
+}
+
+.subTight {
+  color: var(--dim);
+  font-size: 13px;
+  max-width: 70ch;
+}
+
+.hint {
+  font-size: 11.5px;
+  color: var(--faint);
+  font-style: italic;
+  margin-bottom: 14px;
+}
+
+/* ---------- step headers ---------- */
+
+.step {
+  font-family: var(--font-mono);
+  font-weight: 500;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin: 26px 0 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.step::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--line);
+}
+
+.substep {
+  margin: 14px 0 8px;
+  font-size: 10px;
+}
+
+/* ---------- products ---------- */
+
+.prod {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 11px;
+  margin-bottom: 10px;
+  overflow: hidden;
+}
+
+.prodOn {
+  border-color: var(--accent);
+}
+
+.phead {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  padding-left: 16px;
+}
+
+.phead:hover {
+  background: var(--panel2);
+}
+
+.box {
+  width: 19px;
+  height: 19px;
+  padding: 0;
+  border-radius: 5px;
+  border: 1.5px solid var(--faint);
+  background: transparent;
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--bg);
+  cursor: pointer;
+  transition: 0.12s;
+}
+
+.boxOn {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+.pheadBtn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  background: none;
+  border: 0;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  padding: 14px 16px 14px 0;
+  cursor: pointer;
+  min-width: 0;
+}
+
+.ptext {
+  min-width: 0;
+}
+
+.pname {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 15px;
+  display: block;
+}
+
+.pdesc {
+  font-size: 12px;
+  color: var(--dim);
+  display: block;
+}
+
+.chev {
+  margin-left: auto;
+  color: var(--faint);
+  font-size: 11px;
+  transition: transform 0.15s;
+}
+
+.chevOpen {
+  transform: rotate(90deg);
+}
+
+.pbody {
+  border-top: 1px solid var(--line);
+  padding: 4px 16px 16px;
+}
+
+/* ---------- data classes ---------- */
+
+.dcGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(215px, 1fr));
+  gap: 8px;
+  margin: 12px 0 4px;
+}
+
+.dc {
+  background: var(--panel2);
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--faint);
+  border-radius: 7px;
+  padding: 9px 11px;
+  cursor: pointer;
+  text-align: left;
+  color: inherit;
+  font: inherit;
+  display: block;
+}
+
+.dc:hover {
+  background: var(--panel3);
+}
+
+.dcOn {
+  border-left-color: var(--warn);
+  background: var(--panel3);
+}
+
+.dcName {
+  font-size: 12.5px;
+  font-weight: 700;
+  display: block;
+}
+
+.dcNote {
+  font-size: 11px;
+  color: var(--dim);
+  display: block;
+}
+
+.dcTier {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--warn);
+  margin-top: 4px;
+  display: none;
+}
+
+.dcOn .dcTier {
+  display: block;
+}
+
+/* ---------- asset layers ---------- */
+
+.layer {
+  border-top: 1px solid var(--line);
+}
+
+.lhead {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 11px 2px;
+  width: 100%;
+  background: none;
+  border: 0;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.lhead:hover .lname {
+  color: var(--accent);
+}
+
+.lnum {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  color: var(--faint);
+  width: 20px;
+  flex-shrink: 0;
+}
+
+.lname {
+  font-weight: 600;
+  font-size: 13px;
+  transition: 0.12s;
+}
+
+.lcount {
+  margin-left: auto;
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  color: var(--faint);
+  white-space: nowrap;
+}
+
+.lcount b {
+  color: var(--warn);
+  font-weight: 500;
+}
+
+.lbody {
+  padding: 2px 0 12px 30px;
+}
+
+.item {
+  display: flex;
+  align-items: flex-start;
+  gap: 11px;
+  padding: 7px 0;
+}
+
+.itemName {
+  font-size: 12.5px;
+  font-weight: 500;
+  display: block;
+}
+
+.itemPrompt {
+  font-size: 11.5px;
+  color: var(--faint);
+  font-style: italic;
+}
+
+/* ---------- tri-state ---------- */
+
+.tri {
+  display: flex;
+  flex-shrink: 0;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  overflow: hidden;
+  margin-top: 1px;
+}
+
+.triBtn {
+  background: var(--panel2);
+  border: 0;
+  color: var(--faint);
+  font-family: var(--font-mono);
+  font-weight: 500;
+  font-size: 10px;
+  padding: 4px 7px;
+  cursor: pointer;
+  letter-spacing: 0.04em;
+}
+
+.triBtn:hover {
+  color: var(--ink);
+}
+
+.triSm {
+  margin-top: 0;
+  border-radius: 5px;
+}
+
+.triSm .triBtn {
+  padding: 3px 6px;
+  font-size: 9.5px;
+}
+
+.selIn {
+  background: var(--ok);
+  color: var(--bg);
+}
+
+.selIn:hover {
+  color: var(--bg);
+}
+
+.selUnknown {
+  background: var(--warn);
+  color: var(--bg);
+}
+
+.selUnknown:hover {
+  color: var(--bg);
+}
+
+.selOut {
+  background: var(--panel3);
+  color: var(--dim);
+}
+
+/* ---------- system registry ---------- */
+
+.syscat {
+  margin-bottom: 4px;
+}
+
+.syscatName {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--dim);
+  margin: 12px 0 6px;
+}
+
+.sysgrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+.sys {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 6px 8px 6px 11px;
+}
+
+.sysName {
+  font-size: 12px;
+  font-weight: 500;
+}
+
+/* ---------- rail: scope ledger ---------- */
+
+.railTitle {
+  font-family: var(--font-display);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin: 18px 0 9px;
+}
+
+.railTitle:first-child {
+  margin-top: 0;
+}
+
+.assert {
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 14px;
+  margin-bottom: 20px;
+  background: var(--panel2);
+}
+
+.verdict {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 15px;
+  margin-bottom: 4px;
+}
+
+.verdictBlocked {
+  color: var(--warn);
+}
+
+.verdictClear {
+  color: var(--ok);
+}
+
+.assertNote {
+  font-size: 11.5px;
+  color: var(--dim);
+}
+
+.tallies {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 7px;
+  margin-bottom: 22px;
+}
+
+.tally {
+  background: var(--panel2);
+  border-radius: 8px;
+  padding: 9px;
+  text-align: center;
+}
+
+.tallyValue {
+  display: block;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 19px;
+}
+
+.tallyLabel {
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--faint);
+}
+
+.tallyIn .tallyValue {
+  color: var(--ok);
+}
+
+.tallyUnknown .tallyValue {
+  color: var(--warn);
+}
+
+.tallyOut .tallyValue {
+  color: var(--faint);
+}
+
+/* ---------- rail: regimes ---------- */
+
+.regimes {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.reg {
+  display: flex;
+  align-items: baseline;
+  gap: 9px;
+  padding: 8px 0;
+  border-bottom: 1px dashed var(--line);
+  opacity: 0.28;
+}
+
+.regLit {
+  opacity: 1;
+}
+
+.dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--faint);
+  flex-shrink: 0;
+}
+
+.regLit .dot {
+  background: var(--warn);
+}
+
+.regName {
+  font-size: 12.5px;
+  font-weight: 600;
+  display: block;
+}
+
+.regWhy {
+  font-size: 11px;
+  color: var(--dim);
+  display: block;
+}
+
+/* ---------- rail: actions + summary ---------- */
+
+.btn {
+  width: 100%;
+  margin-top: 18px;
+  background: var(--accent);
+  color: var(--bg);
+  border: 0;
+  border-radius: 8px;
+  padding: 10px;
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 12.5px;
+  cursor: pointer;
+}
+
+.btn:hover {
+  background: var(--accent-hover);
+}
+
+.btnGhost {
+  background: transparent;
+  border: 1px solid var(--line);
+  color: var(--dim);
+  margin-top: 8px;
+}
+
+.btnGhost:hover {
+  background: transparent;
+  color: var(--ink);
+  border-color: var(--faint);
+}
+
+.out {
+  margin-top: 14px;
+  width: 100%;
+  height: 150px;
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  color: var(--dim);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  line-height: 1.5;
+  padding: 10px;
+  resize: vertical;
+}

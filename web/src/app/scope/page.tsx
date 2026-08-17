@@ -1,14 +1,15 @@
 import type { Metadata } from "next";
-import { StubPage } from "@/components/StubPage/StubPage";
+import { gaugesSeed, scopeSeed } from "@/data";
+import { ScopeWorkbench } from "./ScopeWorkbench";
 
 export const metadata: Metadata = { title: "Scope" };
 
+/**
+ * A3 — /scope: the scope-tool prototype's product-first scoping surface
+ * merged with workbench stage 1's system registry, plus the scope
+ * ledger / regime rail. All data flows from the typed seed layer; the
+ * server page hands it to one client component for the interaction.
+ */
 export default function ScopePage() {
-  return (
-    <StubPage
-      title="Scope determination"
-      plannedIn="A3"
-      description="Product-first scope: products carrying a commitment, the data classes they hold, and the asset stack resolved in / unknown / out — with the ledger and regime rail. Merges the scope-tool prototype with workbench stage 1."
-    />
-  );
+  return <ScopeWorkbench seed={scopeSeed} gauges={gaugesSeed} />;
 }
