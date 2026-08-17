@@ -374,9 +374,9 @@ Rules for curators (`/evolve`):
 
 ## L-052 · 2026-08-16 · The shell's working directory resets between tool calls — anchor every compound command
 - Trigger: four separate commands this session failed with "not a git repository" / "No such file or directory" because the session cwd had silently reverted to the home directory between calls (worker restarts and environment reconnects reset it); each failure cost a retry with an explicit cd (origin: own observation, repeated)
-- Rule: start every compound shell command with an absolute-path cd (or use absolute paths throughout) — never assume the previous call's working directory survived
+- Rule: start every compound shell command with an absolute-path cd (or use absolute paths throughout) — never assume the previous call's working directory survived; and within one compound command, every segment after a `cd` inherits it, so re-anchor before each phase that needs a different directory (web gates in `web/`, repo scripts at the root)
 - Scope: portable
-- Evidence: 1
+- Evidence: 3 (four cwd-reset failures early in the session; two conductor passes then ran `scripts/verify.sh` from `web/` inside a compound command — exit 127 both times)
 - Status: candidate
 
 ## L-053 · 2026-08-16 · `as T` on JSON imports is a vacuous per-record check — wire JSON through an assignability position and prove it with a falsifier
