@@ -77,7 +77,10 @@ ratification is the freeze — draft → frozen(=ratified) → superseded).
 - [x] **A2** — seed data ported from prototypes into `web/src/data/seed/*.json`
   (scope/controls/process/gauges), genericized to Meridian Financial (redaction
   gate green; fictional `@meridian.example` people).
-- [ ] **A3** — `/scope` (merged scope-tool + workbench stage 1) + ledger/regime rail.
+- [x] **A3** — `/scope` (merged scope-tool + workbench stage 1) + ledger/regime rail:
+  products/data-classes/asset-layers/system-registry all rendered from `@/data`
+  seed exports (deletion-falsifier proven — no literals, counts computed); shared
+  `RailLayout`; a11y-upgraded controls (buttons + aria states).
 - [ ] **A4** — `/controls`, `/datasets` (derived registry), `/overlord` (generated
   missions + manifest export) + posture/dataset/agent gauges.
 - [ ] **A5** — `/process` lanes + control-point detail rail.
