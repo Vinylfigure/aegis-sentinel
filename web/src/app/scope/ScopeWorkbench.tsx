@@ -7,6 +7,7 @@ import {
   type GaugeSection,
 } from "@/components/GaugesRail/GaugesRail";
 import { RailLayout } from "@/components/RailLayout/RailLayout";
+import { StageTabs } from "@/components/StageTabs/StageTabs";
 import type {
   GaugesSeed,
   ScopeResolution,
@@ -510,6 +511,7 @@ export function ScopeWorkbench({
   return (
     <RailLayout rail={rail} railLabel="Scope ledger">
       <div className={styles.main}>
+        <StageTabs current={1} />
         <h1 className={styles.h1}>
           Scope determination <span className={styles.h1Dot}>·</span> product-first
         </h1>
