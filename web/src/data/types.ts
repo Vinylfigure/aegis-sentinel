@@ -196,6 +196,20 @@ export interface ReconciliationSource {
   role: SourceRole;
 }
 
+/** Mirrors `SourceRef` in schema/models.py. */
+export interface SourceRef {
+  ref: string;
+  role: SourceRole;
+  system: string;
+}
+
+/** Mirrors `DerivationRule` in schema/models.py — the general case; an
+ * authoritative source is the degenerate case (HANDOFF §2, D-5). */
+export interface DerivationRule {
+  description: string;
+  sources: SourceRef[];
+}
+
 export interface ReconciliationLadder {
   after_dispositions: AssuranceState;
   at_first_verdict: AssuranceState;
@@ -203,18 +217,25 @@ export interface ReconciliationLadder {
 }
 
 export interface ReconciliationReport {
+  /** Invariant №3: exactly one of `derivation_rule` / `authoritative_source`
+   * is non-null (validated backend-side in schema/models.py). */
+  authoritative_source: SourceRef | null;
   boundary_exclusions: BoundaryExclusion[];
   /** All six DeltaBucket keys are present, each possibly empty. */
   buckets: Record<DeltaBucket, Delta[]>;
   canonical_members: string[];
   counts: Record<DeltaBucket, number>;
   counts_note: string;
-  /** Keyed by member_ref; duplicates bucket-inline dispositions (README Q5). */
+  definition: string;
+  derivation_rule: DerivationRule | null;
+  /** Keyed by member_ref. Records the human disposition act; the bucket-inline
+   * field is the pre-disposition snapshot of the same delta (README Q5). */
   dispositions: Record<string, DispositionRecord>;
   ladder: ReconciliationLadder;
   period: TimeWindow;
   population_id: string;
   population_name: string;
+  population_type: PopulationType;
   sources: ReconciliationSource[];
   tenant: string;
 }

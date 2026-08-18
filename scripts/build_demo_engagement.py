@@ -701,6 +701,22 @@ def build_poison_artifacts() -> dict[str, str]:
     reconciliation_artifact = {
         "population_id": event_pop.id,
         "population_name": event_pop.name,
+        # Invariant №3 travels with the reconciliation: a population has a
+        # derivation rule OR an authoritative source (never both, never
+        # neither). Without it the "why complete" surface can name what
+        # differed but not what the population was derived FROM.
+        "population_type": event_pop.type.value,
+        "definition": event_pop.definition,
+        "derivation_rule": (
+            event_pop.derivation_rule.model_dump(mode="json")
+            if event_pop.derivation_rule is not None
+            else None
+        ),
+        "authoritative_source": (
+            event_pop.authoritative_source.model_dump(mode="json")
+            if event_pop.authoritative_source is not None
+            else None
+        ),
         "tenant": POISON_TENANT,
         "period": period,
         "sources": [

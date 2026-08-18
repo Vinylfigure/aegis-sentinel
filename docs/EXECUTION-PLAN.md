@@ -97,8 +97,20 @@ ratification is the freeze — draft → frozen(=ratified) → superseded).
   (enum VALUES stay unchecked until C1 codegen — JSON inference widens strings);
   shape divergences recorded in `web/README.md` "SCH01/REC01 shape review
   questions" — the review artifact for the backend output shapes.
-- [ ] **B2** — `/reconciliation` + `/reconciliation/[populationId]` (ladder stepper,
-  identity join panel, six-bucket board, why-complete rail).
+- [x] **B2** — `/reconciliation` (population index) + `/reconciliation/[populationId]`:
+  ladder stepper (the DISCOVERED→RECONCILED gate rendered with the engine's own
+  blocking sentence; RECONCILED marked *claimed but contradicted* when a blocker
+  is unanswered), canonical identity join matrix (every source member keys or
+  appears as a named join failure; D-7 cause families inferred and labelled as
+  inferred), six-bucket board split open-vs-resolved per `OPEN_BUCKETS`, and the
+  why-complete rail that assembles derivation → join → reconciliation →
+  dispositions into a conclusion computed from whether every blocker was
+  answered, never echoed from `after_dispositions`. Emitter extended so the
+  derivation basis travels (`population_type`/`definition`/`derivation_rule`/
+  `authoritative_source` — answers README Q12); Q5 answered as two moments, not
+  two truths; deletion-falsifier proven across counts, dispositions, sources,
+  exclusions and the D-7 classification. No control on the page sets a
+  disposition (invariant №11).
 - [ ] **B3** — `/verdicts` (five distinct states, why-code chips, mutation scorecard)
   + `/registry` (capability entries, E-codes as compiler errors).
 - [ ] **B4** — `/proof/[verdictId]` ten-stage SVG lineage + node inspector.

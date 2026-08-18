@@ -1,4 +1,9 @@
 {
+  "authoritative_source": {
+    "ref": "workday://termination-events",
+    "role": "authoritative",
+    "system": "workday"
+  },
   "boundary_exclusions": [
     {
       "member": "june.abara@meridian.example",
@@ -106,11 +111,13 @@
     "right_only": 1,
     "unresolvable": 1
   },
-  "counts_note": "counts are diagnostics, never evidence (HANDOFF §2)",
+  "counts_note": "counts are diagnostics, never evidence (HANDOFF \u00a72)",
+  "definition": "employee terminations effective in the period, per the workday feed",
+  "derivation_rule": null,
   "dispositions": {
     "email:gwen.pryce@meridian.example": {
       "owner": "dana.reyes",
-      "rationale": "IdP deactivation event exists but its target login attribute is garbled, so the deterministic identity join cannot attribute it; workforce membership confirmed manually against the payroll extract — revocation evidence remains unattributable and the timing verdict stays UNKNOWN.",
+      "rationale": "IdP deactivation event exists but its target login attribute is garbled, so the deterministic identity join cannot attribute it; workforce membership confirmed manually against the payroll extract \u2014 revocation evidence remains unattributable and the timing verdict stays UNKNOWN.",
       "value": "compensating"
     },
     "email:hana.kato@meridian.example": {
@@ -145,46 +152,63 @@
   },
   "population_id": "pop-termination-events",
   "population_name": "Termination lane: employee terminations effective in the period",
+  "population_type": "event",
   "sources": [
     {
       "members": [
         {
-          "attributes": { "worker_type": "employee" },
+          "attributes": {
+            "worker_type": "employee"
+          },
           "email": "avery.stone@meridian.example",
           "ref": "worker:M-1001"
         },
         {
-          "attributes": { "worker_type": "employee" },
+          "attributes": {
+            "worker_type": "employee"
+          },
           "email": "brooke.lin@meridian.example",
           "ref": "worker:M-1002"
         },
         {
-          "attributes": { "worker_type": "employee" },
+          "attributes": {
+            "worker_type": "employee"
+          },
           "email": "carmen.ortiz@meridian.example",
           "ref": "worker:M-1003"
         },
         {
-          "attributes": { "worker_type": "employee" },
+          "attributes": {
+            "worker_type": "employee"
+          },
           "email": "devin.hale@meridian.example",
           "ref": "worker:M-1004"
         },
         {
-          "attributes": { "worker_type": "employee" },
+          "attributes": {
+            "worker_type": "employee"
+          },
           "email": "elena.marsh@meridian.example",
           "ref": "worker:M-1005"
         },
         {
-          "attributes": { "worker_type": "employee" },
+          "attributes": {
+            "worker_type": "employee"
+          },
           "email": "farid.nazari@meridian.example",
           "ref": "worker:M-1006"
         },
         {
-          "attributes": { "worker_type": "employee" },
+          "attributes": {
+            "worker_type": "employee"
+          },
           "email": "gwen.pryce@meridian.example",
           "ref": "worker:M-1007"
         },
         {
-          "attributes": { "worker_type": "employee" },
+          "attributes": {
+            "worker_type": "employee"
+          },
           "email": "ivan.petrov@meridian.example",
           "ref": "worker:M-1008"
         }
@@ -281,7 +305,9 @@
           "ref": "ticket:OFF-4107"
         },
         {
-          "attributes": { "worker_type": "contractor" },
+          "attributes": {
+            "worker_type": "contractor"
+          },
           "email": "ivan.petrov@meridian.example",
           "ref": "ticket:OFF-4108"
         },

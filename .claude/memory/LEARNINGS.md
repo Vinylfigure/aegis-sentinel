@@ -65,14 +65,14 @@ Rules for curators (`/evolve`):
 - Status: inherited (was: promoted:skill/recalibrate in janus)
 
 ## L-005 · 2026-07-06 · Treat aggregator claims and fetch summaries as leads, never evidence
-- Trigger: an aggregator site mixed verified practices with unverifiable feature claims — only primary-source-corroborated claims were encoded (janus refinement session); the withheld /goal claim was later confirmed by the official loops post (round-3 research); merged with L-011: a fetch-summary of the workspace paper attributed claims the paper never makes, caught by demanding verbatim quotes; recurred in round 3.5: a subagent report claimed a branch was "up to date with its origin" — the remote had no such branch, and a PR create failed until `git ls-remote` settled it; recurred 2026-07-24 (methodology review): a delegated verifier reported two Anthropic quotes as FABRICATIONS — main-thread raw-HTML fetch showed both sentences real, the refutation itself being the false summary-layer claim (origin: subagent report, falsified by own observation)
+- Trigger: an aggregator site mixed verified practices with unverifiable feature claims — only primary-source-corroborated claims were encoded (janus refinement session); the withheld /goal claim was later confirmed by the official loops post (round-3 research); merged with L-011: a fetch-summary of the workspace paper attributed claims the paper never makes, caught by demanding verbatim quotes; recurred in round 3.5: a subagent report claimed a branch was "up to date with its origin" — the remote had no such branch, and a PR create failed until `git ls-remote` settled it; recurred 2026-07-24 (methodology review): a delegated verifier reported two Anthropic quotes as FABRICATIONS — main-thread raw-HTML fetch showed both sentences real, the refutation itself being the false summary-layer claim (origin: subagent report, falsified by own observation). observed: 2026-08-18 — fired twice in the B2 session: the adversarial verifier's two reported defects were re-run in the main thread before AND after fixing rather than accepted on report, and a probe harness's own numbers were re-measured when they looked wrong (the harness, not the code, was lying)
 - Rule: treat aggregator claims and fetch summaries as leads, never evidence — confirm any specific claim verbatim against a primary source before adopting or citing it
 - Scope: portable
 - Evidence: 5
 - Status: inherited (was: promoted:CLAUDE.md in janus)
 
 ## L-007 · 2026-07-06 · When changing a convention, sweep every mention of it, not just planned edit sites
-- Trigger: the adversarial verifier failed the refinement diff because docs/USAGE.md's day-1 section still said "optional Graphify" after the convention changed to default-on; the planned edit list had missed that mention (janus refinement session); recurred in round 3.5 — removing new-worktree.sh missed ARCHITECTURE's component-map row, caught by the docs-consistency fixture rather than a manual sweep
+- Trigger: the adversarial verifier failed the refinement diff because docs/USAGE.md's day-1 section still said "optional Graphify" after the convention changed to default-on; the planned edit list had missed that mention (janus refinement session); recurred in round 3.5 — removing new-worktree.sh missed ARCHITECTURE's component-map row, caught by the docs-consistency fixture rather than a manual sweep. observed: 2026-08-18 — credited by name in L-049's own Trigger ("caught by own L-007 sweep"); fired again at B2 sweeping README question numbers and the EXECUTION-PLAN tick
 - Rule: after changing a convention, grep the whole repo for the old wording and reconcile every hit before claiming consistency
 - Scope: portable
 - Evidence: 2
@@ -81,6 +81,7 @@ Rules for curators (`/evolve`):
 ## L-008 · 2026-07-06 · Stress-test a plan against scale, concurrency, and headless modes before presenting it
 - Trigger: user rejected the round-3 plan approval asking "will this perform under stress and scaling?"; the resulting review found 4 real design bugs the plan had missed — ledger cap deadlock, worktree ID collisions, headless gates with no user, mtime loss across clones (janus round-3 session)
 - Rule: before presenting a plan, run an adversarial pass over its behavior at scale, under concurrent use, and with no user present — and pair every failure found with a fix, not just a risk note
+- observed: 2026-08-18 — FAILED TO HELP on B2: the plan carried a seven-probe verification section and still shipped two defects, because the rule's adversarial axes (scale / concurrency / headless) do not include "what would survive every check I planned and still be false". The verification plan itself needs an adversarial pass, not just the design — see L-056
 - Scope: portable
 - Evidence: 1
 - Status: inherited (was: promoted:CLAUDE.md (Evidence 1 — promoted on explicit user confirmation) in janus)
@@ -109,6 +110,7 @@ Rules for curators (`/evolve`):
 ## L-014 · 2026-07-06 · Mechanisms enter the template only after dogfooding evidence demonstrates the need
 - Trigger: round-3.5 subtraction removed Graphify (never built here), the ARCHIVE.md + ≤25 cap (ledger held 12 entries), and staged expiry policies — all machinery added for problems no session had hit, against the repo's own Evidence >= 2 discipline (janus round-3.5 session)
 - Rule: disciplines can be designed up front, but a mechanism (tool, file, cap, fallback) enters the scaffold only after real use demonstrates the need it serves
+- observed: 2026-08-18 — fired twice in one /evolve: it cleared L-052's write-side hook (Evidence 5, need demonstrated) and refused an L-049 `integrate-worktree.sh` helper (Evidence 1, premature)
 - Scope: portable
 - Evidence: 3
 - Status: inherited (was: promoted:CLAUDE.md in janus)
@@ -116,6 +118,7 @@ Rules for curators (`/evolve`):
 ## L-015 · 2026-07-06 · Platform owns mechanisms; the template keeps only the disciplines it adds
 - Trigger: the explorer/planner agents duplicated native exploration/planning subagents, and scripts/new-worktree.sh duplicated native claude --worktree; both were removed with their embedded disciplines consolidated into plan-feature and worktree-parallel (janus round-3.5 session)
 - Rule: before encoding a mechanism, check whether the platform provides it natively; encode only the discipline the scaffold adds on top, and let the platform's mechanism carry it
+- observed: 2026-08-18 — L-045's Rule is literally this rule applied to skill invocation control; at B2 it kept the cwd-drift check inside the existing hook rather than minting a new one
 - Scope: portable
 - Evidence: 2
 - Status: inherited (was: promoted:CLAUDE.md in janus)
@@ -276,17 +279,18 @@ Rules for curators (`/evolve`):
 
 ## L-038 · 2026-07-24 · Gate the commit on the verifier's exit in the same command chain
 - Trigger: a commit ran as an unconditional statement after the verify invocation in one compound command; the suite was red (a component-map fixture) and the red commit landed, needing an amend after the fix (origin: verify failure, own observation, this session)
-- Rule: when a commit depends on verification passing, chain it with && on the verify exit status — sequential statements commit red results
+- Rule: never pipe a gating command's output before using its exit status — run the gate bare (redirect to a file if output is needed) or set pipefail in the same shell — then chain the commit with && on that status; sequential statements commit red results, and a pipe makes the status the last stage's, not the gate's
 - Scope: portable
-- Evidence: 1
-- Status: inherited (was: candidate in janus)
+- Evidence: 2 (the red commit that landed as a sequential statement, janus 2026-07-24; `verify.sh full 2>&1 | tail -4 && git commit` laundering the exit code through tail, aegis 2026-08-16 — two independent incidents in separate sessions, merged from L-050 whose own title recorded it as "evidence of L-038 recurring")
+- observed: 2026-08-18 — fired throughout the B2 session: every gate ran bare into a log file with `echo EXIT=$?`, and no exit code was laundered
+- Status: candidate — RIPE, absorbed L-050's wording 2026-08-18 on user confirmation
 
 ## L-039 · 2026-08-16 · A work order's done-means check must be executable inside the agent's allowlist
 - Trigger: the WO-C2 issue-template run (6d0d805) needed a YAML parse to verify its own output, no allowlisted command could do one, and the dispatched agent burned ~50 turns on 35 permission denials before dying on max-turns; the fix (64b13c5) put the YAML check inside scripts/verify.sh. The lesson was written as prose comments in verify.sh and tests/test_issue_templates.py but never entered this ledger — backfilled by the 2026-08-16 memory audit (origin: verify failure, own observation)
 - Rule: before dispatching a work order, confirm every done-means check is runnable via an allowlisted command — verification that needs an unlisted tool becomes a denial loop, not a closed loop
 - Scope: project
 - Evidence: 1
-- Status: candidate
+- Status: promoted:skill/recalibrate — resolved; SKILL.md now reads \"The gate is method, not publisher: any source can be primary\" (ledger status was stale)
 
 ## L-040 · 2026-08-16 · A mechanical template copy leaves the memory loop wired but dead — run the provisioning ritual
 - Trigger: this repo was stamped from janus on 2026-07-27 by template copy, not /replicate; every heredity transform was skipped (parent statuses and retired entries crossed, sources-seen watermark intact, identity unrewritten), and in 3 weeks of real work no session ran /reflect, /evolve, or /recalibrate despite the Stop hook and session-start nudging every session — real lessons were routed into code comments instead of the ledger (origin: own observation, 2026-08-16 memory audit; retroactive fix in this branch)
@@ -358,30 +362,51 @@ Rules for curators (`/evolve`):
 - Evidence: 1
 - Status: candidate
 
-## L-050 · 2026-08-16 · Piping verify output through tail launders the exit code — evidence of L-038 recurring
+## L-050 · 2026-08-16 · Piping verify output through tail launders the exit code — evidence of L-038 recurring [RETIRED — merged into L-038]
 - Trigger: `verify.sh full 2>&1 | tail -4 && git commit` committed and pushed a red suite this session — the pipeline's exit status is tail's, not verify's, so the && gate held a door that was already open; caught one command later and amended (origin: verify failure, own observation). observed: 2026-08-16 — L-038 ("gate the commit on the verifier's exit in the same command chain") fired in spirit but its rule assumed the exit code reaches the chain; a pipe breaks that assumption
-- Rule: never pipe a gating command's output before using its exit status — run the gate bare (redirect to a file if output is needed) or set pipefail in the same shell, then chain the commit
+- Rule: (superseded — this wording now lives in L-038, which this entry's evidence bumped to 2)
 - Scope: portable
 - Evidence: 1
-- Status: candidate
+- Status: retired — merged into L-038 (same rule, refined wording); /reflect should have bumped L-038 rather than appending a twin
 
 ## L-051 · 2026-08-16 · Worktree subagents deliver untracked files — integrate by clobber-checked copy, never by branch merge
 - Trigger: the first collector-wave integration ran `git merge worktree-agent-...` and got a silently empty merge — worktree subagents are told not to commit, so their branches carry no commits and the deliverables sit untracked in the worktree directory; the working pattern (repeated 6x this session) is: list the worktree's `git status --porcelain` untracked paths, refuse any path that already exists in the destination (L-049's clobber guard), copy the rest, re-verify in the main checkout (origin: own observation, verify failure)
 - Rule: instruct worktree subagents to commit in their worktree and integrate by merging their branch (gitignore then filters node_modules-style noise); for a subagent that did not commit, fall back to copying its untracked files with a per-path exists-check — merging an uncommitted worktree's branch integrates nothing. Either way, re-run the full suite in the destination
 - Scope: portable
 - Evidence: 2 (empty-merge failure at the collector wave; instruct-commit-then-merge worked cleanly for A1, MCP01, and A2+B1)
-- Status: candidate
+- Status: promoted:skill/worktree-parallel — step 3 now instructs each track to commit in its worktree, step 5 carries the empty-merge check and the clobber-checked-copy fallback
 
-## L-052 · 2026-08-16 · The shell's working directory resets between tool calls — anchor every compound command
+## L-052 · 2026-08-16 · The shell's working directory between tool calls is undefined — anchor every path
 - Trigger: four separate commands this session failed with "not a git repository" / "No such file or directory" because the session cwd had silently reverted to the home directory between calls (worker restarts and environment reconnects reset it); each failure cost a retry with an explicit cd (origin: own observation, repeated)
-- Rule: start every compound shell command with an absolute-path cd (or use absolute paths throughout) — never assume the previous call's working directory survived; and within one compound command, every segment after a `cd` inherits it, so re-anchor before each phase that needs a different directory (web gates in `web/`, repo scripts at the root)
+- Rule: treat the working directory between tool calls as undefined — it may reset OR persist, and believing it always resets is itself how `web/web/src/...` gets written. Start every compound shell command with an absolute-path cd (or use absolute paths throughout), and never assume the previous call's working directory either survived or did not; and within one compound command, every segment after a `cd` inherits it, so re-anchor before each phase that needs a different directory (web gates in `web/`, repo scripts at the root)
 - Scope: portable
-- Evidence: 4 (four cwd-reset failures early in the session; three conductor passes then ran `scripts/verify.sh` from `web/` inside a compound command — exit 127 each time, twice AFTER this rule was written)
-- Status: promoted — prose demonstrably did not prevent recurrence, so the mixed-directory case is now mechanical: `scripts/verify-web.sh` self-anchors and runs all frontend gates + redaction from any cwd (proven green from a wrong cwd); conductor loops call it instead of composing per-directory compounds. The general re-anchor rule stays for everything else.
+- Evidence: 5 (four cwd-reset failures early in that session; three conductor passes then ran `scripts/verify.sh` from `web/` inside a compound command — exit 127 each time, twice AFTER this rule was written; recurred 2026-08-18 in the B2 session in the OTHER direction — cwd PERSISTED from a prior `cd web`, so two heredoc writes landed at `web/web/src/...` and one `cat > web/src/app/...` failed outright. The promoted mechanism covers gate RUNS, not file WRITES: `verify-web.sh` self-anchors, but a heredoc path does not)
+- Status: promoted:hooks/post-edit-verify + scripts/verify-web.sh — two halves, because one mechanism cannot see both. RUN side: `verify-web.sh` self-anchors and runs all frontend gates + redaction from any cwd. WRITE side (added 2026-08-18 after the B2 recurrence): `post-edit-verify.sh` rejects a written path that repeats an adjacent directory segment — the fingerprint of a relative path resolved from a drifted cwd — with six fixtures in `scripts/test-hooks.sh` including a `Dir/Dir.ext` false-positive guard. A self-anchoring script cannot anchor a heredoc path, which is why prose alone kept failing. The re-anchor rule stays as the judgment neither mechanism carries: the hook never sees a `cd` inside a Bash command.
 
 ## L-053 · 2026-08-16 · `as T` on JSON imports is a vacuous per-record check — wire JSON through an assignability position and prove it with a falsifier
-- Trigger: the A2+B1 adversarial verifier renamed a required key inside a verdict record of an imported JSON array and `tsc --noEmit` stayed green — `index.ts` wired every JSON file through `as T` casts, and TypeScript `as` checks only top-level bidirectional comparability, so a broken record inside any array is swallowed; the doc comment and commit message both claimed "tsc checks every JSON file" (origin: verifier FAIL, prescribed falsifier)
+- Trigger: the A2+B1 adversarial verifier renamed a required key inside a verdict record of an imported JSON array and `tsc --noEmit` stayed green — `index.ts` wired every JSON file through `as T` casts, and TypeScript `as` checks only top-level bidirectional comparability, so a broken record inside any array is swallowed; the doc comment and commit message both claimed "tsc checks every JSON file" (origin: verifier FAIL, prescribed falsifier). observed: 2026-08-18 — fired as designed at B2: after `ReconciliationReport` gained four fields and a sibling array export was added, the prescribed falsifier (rename `member_ref` in one delta) still failed tsc with TS2345, confirming the assignability position survived the edit
 - Rule: never claim the compiler checks imported JSON unless the JSON flows through an assignability position — a plain annotation or a generic parameter (`checked<T>(json: Widen<T>)`, literal unions widened to primitives since JSON inference widens strings) — and prove the wiring by making a representative deep mutation fail the build before shipping the claim
 - Scope: portable
 - Evidence: 1
 - Status: candidate
+
+## L-054 · 2026-08-18 · Commit the baseline before running revert-based falsifier probes
+- Trigger: the B2 deletion-falsifier run reverted each probe with `git checkout -- <mock>.json`, which discarded the SAME task's uncommitted edits to that file (four keys the emitter change had just added); probes 2–5 then ran against a half-reverted mock and all failed the build with a type error that read like a real defect, costing a full diagnostic detour before the cause — my own revert — was spotted. Committing the verified baseline first made all seven probes pass unchanged (origin: own observation, verify failure)
+- Rule: a falsifier probe whose undo is `git checkout --` can only restore committed state, so commit (or stash) the work under test before the first probe — and when a probe fails in a way the mutation cannot explain, suspect the harness before the code
+- Scope: portable
+- Evidence: 1
+- Status: candidate
+
+## L-055 · 2026-08-18 · Prerendered HTML is one line — `grep -c` cannot count occurrences in it
+- Trigger: the B2 probe harness measured rendered signals with `grep -c`, which counts matching LINES; Next.js prerenders each route as a single-line HTML file, so every signal reported 0 or 1 regardless of how many times it appeared — two probes (source deletion, exclusion deletion) looked like no-ops until re-measured with `grep -o … | wc -l`, which showed the real 5→0 and 1→0 transitions (origin: own observation during falsifier verification)
+- Rule: when asserting against minified or prerendered single-line output, count occurrences with `grep -o <pattern> | wc -l`, never `grep -c`; and rebuild before measuring, since a stale artifact from the previous probe reads as the current baseline
+- Scope: portable
+- Evidence: 1
+- Status: candidate
+
+## L-056 · 2026-08-18 · Deletion falsifiers cannot catch authored prose about state — mutate the enum too
+- Trigger: B2 shipped seven passing deletion probes, and the adversarial verifier still found two real defects by mutating a state VALUE instead of removing data: `after_dispositions: "RATIFIED"` made the page render "RATIFIED holds" and "RATIFIED not reached" simultaneously (the second hardcoded inside the sentence advertised as computed), and the legal state `STALE` made every rung read "not reached" and silently dropped the `aria-current` landmark, with tsc and the build green. Deleting data can never flip a hardcoded claim about a state the data never takes (origin: verifier report, confirmed by own re-run)
+- Rule: pair every deletion falsifier with a value falsifier — set each enum-valued field to every other member its schema permits, not just the one the fixture emits — and where a rendered sentence asserts a state, derive it from that field or make the unhandled case a compile error (an exhaustive `switch` with a `never` arm), never a literal
+- Scope: portable
+- Evidence: 1
+- Status: promoted:agent/verifier + CLAUDE.md (Evidence 1 — applied on explicit user confirmation, 2026-08-18); the probe procedure lives in the verifier's step 2, its plan-time half is the fourth adversarial axis on the L-008 bullet

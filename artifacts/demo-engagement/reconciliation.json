@@ -1,4 +1,9 @@
 {
+  "authoritative_source": {
+    "ref": "workday://termination-events",
+    "role": "authoritative",
+    "system": "workday"
+  },
   "boundary_exclusions": [
     {
       "member": "vik.rao@example.com",
@@ -107,6 +112,8 @@
     "unresolvable": 1
   },
   "counts_note": "counts are diagnostics, never evidence (HANDOFF \u00a72)",
+  "definition": "employee terminations effective in the period, per the workday feed",
+  "derivation_rule": null,
   "dispositions": {
     "email:mira.chen@example.com": {
       "owner": "vinylfigure",
@@ -145,6 +152,7 @@
   },
   "population_id": "pop-termination-events",
   "population_name": "Termination lane: employee terminations effective in the period",
+  "population_type": "event",
   "sources": [
     {
       "members": [

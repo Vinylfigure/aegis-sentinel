@@ -1,0 +1,181 @@
+/* LadderStepper — the assurance ladder as a stepper, styled against
+   tokens.css. Status is carried in text as well as color (the rung status
+   word), so the strip reads without color perception. */
+
+.full,
+.condensed {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.rungs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.rung {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1 1 auto;
+  min-width: 92px;
+  padding: 7px 10px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--panel2);
+}
+
+.rungName {
+  font-family: var(--font-mono);
+  font-size: var(--fs-label);
+  letter-spacing: 0.04em;
+  color: var(--dim);
+}
+
+.rungStatus {
+  font-size: var(--fs-label);
+  color: var(--faint);
+}
+
+.reached {
+  border-color: var(--green);
+  background: var(--green-tint);
+}
+.reached .rungName {
+  color: var(--ink);
+}
+
+.first {
+  border-color: var(--cyan);
+  background: var(--cyan-tint);
+}
+.first .rungName {
+  color: var(--ink);
+}
+
+.now {
+  border-color: var(--accent);
+  background: var(--purple-tint);
+}
+.now .rungName {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.future {
+  border-style: dashed;
+  background: transparent;
+}
+
+.gate {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--amber);
+  border-radius: var(--radius-sm);
+  background: var(--panel);
+}
+
+.gateRule {
+  margin: 0;
+  font-size: var(--fs-sub);
+  color: var(--dim);
+}
+
+.gateEdge {
+  font-family: var(--font-mono);
+  font-size: var(--fs-label);
+  color: var(--amber);
+  letter-spacing: 0.04em;
+}
+
+.gateEmpty {
+  margin: 0;
+  font-size: var(--fs-sub);
+  color: var(--faint);
+}
+
+.blockers {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.blocker {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 8px;
+  font-size: var(--fs-sub);
+}
+
+.ref {
+  font-family: var(--font-mono);
+  font-size: var(--fs-label);
+  color: var(--ink);
+  background: var(--panel3);
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.blockerBucket {
+  font-size: var(--fs-label);
+  color: var(--dim);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.answered {
+  color: var(--ok);
+}
+
+.unanswered {
+  color: var(--fail);
+  font-weight: 600;
+}
+
+.verdictOk,
+.verdictBad {
+  margin: 0;
+  font-size: var(--fs-sub);
+}
+
+.verdictOk {
+  color: var(--ok);
+}
+
+.verdictBad {
+  color: var(--fail);
+  font-weight: 600;
+}
+
+.ratified {
+  margin: 0;
+  font-size: var(--fs-label);
+  color: var(--faint);
+  line-height: 1.5;
+}
+
+/* An AssuranceState that is legal but off the linear strip (STALE). It gets
+   its own marker rather than an index, so the current-position landmark
+   never disappears — see ladderPosition() in data/reconciliation.ts. */
+.offStrip {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin: 0;
+  padding: 7px 10px;
+  border: 1px dashed var(--amber);
+  border-radius: var(--radius-sm);
+  background: var(--amber-tint);
+}
