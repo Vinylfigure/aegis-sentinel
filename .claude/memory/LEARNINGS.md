@@ -385,3 +385,17 @@ Rules for curators (`/evolve`):
 - Scope: portable
 - Evidence: 1
 - Status: candidate
+
+## L-054 · 2026-08-18 · Commit the baseline before running revert-based falsifier probes
+- Trigger: the B2 deletion-falsifier run reverted each probe with `git checkout -- <mock>.json`, which discarded the SAME task's uncommitted edits to that file (four keys the emitter change had just added); probes 2–5 then ran against a half-reverted mock and all failed the build with a type error that read like a real defect, costing a full diagnostic detour before the cause — my own revert — was spotted. Committing the verified baseline first made all seven probes pass unchanged (origin: own observation, verify failure)
+- Rule: a falsifier probe whose undo is `git checkout --` can only restore committed state, so commit (or stash) the work under test before the first probe — and when a probe fails in a way the mutation cannot explain, suspect the harness before the code
+- Scope: portable
+- Evidence: 1
+- Status: candidate
+
+## L-055 · 2026-08-18 · Prerendered HTML is one line — `grep -c` cannot count occurrences in it
+- Trigger: the B2 probe harness measured rendered signals with `grep -c`, which counts matching LINES; Next.js prerenders each route as a single-line HTML file, so every signal reported 0 or 1 regardless of how many times it appeared — two probes (source deletion, exclusion deletion) looked like no-ops until re-measured with `grep -o … | wc -l`, which showed the real 5→0 and 1→0 transitions (origin: own observation during falsifier verification)
+- Rule: when asserting against minified or prerendered single-line output, count occurrences with `grep -o <pattern> | wc -l`, never `grep -c`; and rebuild before measuring, since a stale artifact from the previous probe reads as the current baseline
+- Scope: portable
+- Evidence: 1
+- Status: candidate
