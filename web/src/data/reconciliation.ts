@@ -12,6 +12,7 @@
  */
 
 import type {
+  AssuranceState,
   Delta,
   DeltaBucket,
   DispositionRecord,
@@ -42,6 +43,48 @@ export type LadderRung = (typeof LADDER_RUNGS)[number];
 /** The gate sentence the engine itself enforces (schema.models.advance). */
 export const LADDER_GATE_RULE =
   "blocked while any delta is undispositioned (schema.models.advance)";
+
+export type LadderPosition =
+  | { kind: "rung"; index: number }
+  /** Reached RATIFIED and left the strip — STALE is re-entry, not a rung. */
+  | { kind: "off-strip"; label: AssuranceState };
+
+/**
+ * Where an AssuranceState sits relative to the linear strip.
+ *
+ * The `never` arm is the point: an AssuranceState the stepper does not
+ * handle fails the build here rather than rendering a strip with no current
+ * rung and no `aria-current` landmark. Found by the B2 adversarial verifier,
+ * which set `after_dispositions` to STALE — a legal state reachable from
+ * RATIFIED (schema/models.py LADDER_TRANSITIONS) — and watched every rung
+ * report "not reached" while tsc and the build stayed green.
+ */
+export function ladderPosition(state: AssuranceState): LadderPosition {
+  switch (state) {
+    case "UNDEFINED":
+    case "DEFINED":
+    case "DISCOVERED":
+    case "RECONCILED":
+    case "RATIFIED":
+      return { kind: "rung", index: LADDER_RUNGS.indexOf(state) };
+    case "STALE":
+      return { kind: "off-strip", label: state };
+    default: {
+      const exhaustive: never = state;
+      return exhaustive;
+    }
+  }
+}
+
+/** True once the human freeze (D-L1) has happened — including STALE, which
+ * is only reachable from RATIFIED. Anything asserting "RATIFIED not reached"
+ * must derive it from this, never state it unconditionally. */
+export function ratifiedReached(state: AssuranceState): boolean {
+  const position = ladderPosition(state);
+  return (
+    position.kind === "off-strip" || position.index >= LADDER_RUNGS.indexOf("RATIFIED")
+  );
+}
 
 /* ------------------------------------------------------------------ */
 /* Buckets                                                             */

@@ -399,3 +399,10 @@ Rules for curators (`/evolve`):
 - Scope: portable
 - Evidence: 1
 - Status: candidate
+
+## L-056 · 2026-08-18 · Deletion falsifiers cannot catch authored prose about state — mutate the enum too
+- Trigger: B2 shipped seven passing deletion probes, and the adversarial verifier still found two real defects by mutating a state VALUE instead of removing data: `after_dispositions: "RATIFIED"` made the page render "RATIFIED holds" and "RATIFIED not reached" simultaneously (the second hardcoded inside the sentence advertised as computed), and the legal state `STALE` made every rung read "not reached" and silently dropped the `aria-current` landmark, with tsc and the build green. Deleting data can never flip a hardcoded claim about a state the data never takes (origin: verifier report, confirmed by own re-run)
+- Rule: pair every deletion falsifier with a value falsifier — set each enum-valued field to every other member its schema permits, not just the one the fixture emits — and where a rendered sentence asserts a state, derive it from that field or make the unhandled case a compile error (an exhaustive `switch` with a `never` arm), never a literal
+- Scope: portable
+- Evidence: 1
+- Status: candidate

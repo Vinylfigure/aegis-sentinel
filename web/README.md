@@ -143,6 +143,13 @@ Numbers are referenced from comments in `src/data/types.ts`.
   own `state` was deliberately *not* added — `ladder.after_dispositions`
   already carries it, and duplicating it would manufacture another Q10-shaped
   disagreement.
+- **Q11b — a legal AssuranceState can leave the strip.** `STALE` is reachable
+  from RATIFIED (`schema/models.py` LADDER_TRANSITIONS) but is not a rung. The
+  stepper now handles it as an explicit off-strip marker via `ladderPosition`,
+  whose `never` arm makes any unhandled state a compile error. Should the
+  ladder block on the wire say *why* it went stale (period rolled, source
+  drift, re-collection due), the way `blocked_by_open_deltas` says why
+  RECONCILED was blocked?
 - **Q13 — no per-source temporal window.** `period` is on the report, but each
   source's own collection window (and CAP01's Okta 90-day history caveat, which
   lives in `registry.json`) does not travel with the reconciliation — so the

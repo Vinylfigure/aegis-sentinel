@@ -9,6 +9,7 @@ import {
   findDelta,
   formatPeriod,
   joinMatrix,
+  ratifiedReached,
   resolveDisposition,
   type Blocker,
   type ReconciliationReport,
@@ -207,7 +208,11 @@ function Argument({
           {claimHolds
             ? `${report.ladder.at_first_verdict} at first verdict → ${report.ladder.after_dispositions} after ${answered.length} ${
                 answered.length === 1 ? "disposition" : "dispositions"
-              }, each owned by a named human. RATIFIED not reached — no coverage percentage.`
+              }, each owned by a named human. ${
+                ratifiedReached(report.ladder.after_dispositions)
+                  ? "RATIFIED reached — the human freeze (D-L1)."
+                  : "RATIFIED not reached."
+              } No coverage percentage — V1 reports ladder states only.`
             : `Not reconciled: ${unanswered.length} of ${blockers.length} blocking ${
                 blockers.length === 1 ? "delta is" : "deltas are"
               } unanswered (${unanswered.map((b) => b.ref).join(", ")}). The artifact claims ${report.ladder.after_dispositions}; the deltas do not support it.`}

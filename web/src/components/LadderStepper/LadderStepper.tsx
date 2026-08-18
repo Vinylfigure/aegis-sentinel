@@ -1,10 +1,12 @@
 import {
   LADDER_GATE_RULE,
   LADDER_RUNGS,
+  ladderPosition,
+  ratifiedReached,
   type Blocker,
   type LadderRung,
 } from "@/data";
-import type { ReconciliationLadder } from "@/data";
+import type { AssuranceState, ReconciliationLadder } from "@/data";
 import styles from "./LadderStepper.module.css";
 
 /**
@@ -21,14 +23,17 @@ export type RungStatus = "reached" | "at first verdict" | "now" | "not reached";
 
 function rungStatus(
   rung: LadderRung,
-  current: string,
-  atFirstVerdict: string,
+  current: AssuranceState,
+  atFirstVerdict: AssuranceState,
 ): RungStatus {
-  const order = LADDER_RUNGS.indexOf(rung);
-  const currentIndex = LADDER_RUNGS.indexOf(current as LadderRung);
+  const position = ladderPosition(current);
+  // Off-strip (STALE) means RATIFIED was reached and left behind, so every
+  // rung is behind the current state — never "not reached".
+  const currentIndex =
+    position.kind === "rung" ? position.index : LADDER_RUNGS.length;
   if (rung === atFirstVerdict && rung !== current) return "at first verdict";
   if (rung === current) return "now";
-  return order < currentIndex ? "reached" : "not reached";
+  return LADDER_RUNGS.indexOf(rung) < currentIndex ? "reached" : "not reached";
 }
 
 const STATUS_CLASS: Record<RungStatus, string> = {
@@ -53,6 +58,9 @@ export function LadderStepper({
   const current = ladder.after_dispositions;
   const answered = blockers.filter((b) => b.answer !== null);
   const unanswered = blockers.filter((b) => b.answer === null);
+  const position = ladderPosition(current);
+  const offStrip = position.kind === "off-strip" ? position : null;
+  const ratified = ratifiedReached(current);
 
   return (
     <div className={variant === "condensed" ? styles.condensed : styles.full}>
@@ -74,6 +82,16 @@ export function LadderStepper({
           );
         })}
       </ol>
+
+      {offStrip && (
+        <p className={styles.offStrip} aria-current="step">
+          <span className={styles.rungName}>{offStrip.label}</span>
+          <span className={styles.rungStatus}>
+            now — off the linear strip; re-entry to DISCOVERED
+            (schema/models.py LADDER_TRANSITIONS)
+          </span>
+        </p>
+      )}
 
       {variant === "full" && (
         <div className={styles.gate}>
@@ -114,9 +132,9 @@ export function LadderStepper({
           </p>
 
           <p className={styles.ratified}>
-            RATIFIED not reached — it is the human freeze (D-L1). No coverage
-            percentage is computed: a denominator left of RATIFIED cannot carry
-            one (PRD §2).
+            {ratified
+              ? "RATIFIED reached — the human freeze (D-L1). No coverage percentage is computed: V1 reports ladder states only (PRD §2)."
+              : "RATIFIED not reached — it is the human freeze (D-L1). No coverage percentage is computed: a denominator left of RATIFIED cannot carry one (PRD §2)."}
           </p>
         </div>
       )}

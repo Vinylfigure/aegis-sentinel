@@ -165,3 +165,17 @@
   color: var(--faint);
   line-height: 1.5;
 }
+
+/* An AssuranceState that is legal but off the linear strip (STALE). It gets
+   its own marker rather than an index, so the current-position landmark
+   never disappears — see ladderPosition() in data/reconciliation.ts. */
+.offStrip {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin: 0;
+  padding: 7px 10px;
+  border: 1px dashed var(--amber);
+  border-radius: var(--radius-sm);
+  background: var(--amber-tint);
+}
