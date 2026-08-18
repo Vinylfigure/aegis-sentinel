@@ -38,6 +38,9 @@ export type * from "@/data/types";
 /* Derived collections (A4) — computed from the seeds, never authored. */
 export * from "@/data/derived";
 
+/* Reconciliation derivations (B2) — computed from the engagement artifact. */
+export * from "@/data/reconciliation";
+
 /** Literal unions -> primitives, recursively; structure and key presence
  * are preserved so assignment still checks them. */
 type Widen<T> = T extends string
@@ -70,3 +73,11 @@ export const engagementVerdicts = checked<VerdictsArtifact>(verdictsJson);
 export const engagementReconciliation = checked<ReconciliationReport>(reconciliationJson);
 export const engagementRegistry = checked<RegistryArtifact>(registryJson);
 export const engagementPoisons = checked<PoisonsArtifact>(poisonsJson);
+
+/**
+ * The population list the /reconciliation routes iterate. One report today;
+ * C2 maps over the real artifacts/demo-engagement output, so a second
+ * population is a data-only change. Built FROM the checked export above, so
+ * the `checked<T>` assignability position (L-053) is untouched.
+ */
+export const engagementReconciliations: ReconciliationReport[] = [engagementReconciliation];

@@ -90,16 +90,25 @@ Numbers are referenced from comments in `src/data/types.ts`.
   names that do not match the ratified `AssertionType` values (`EXISTENCE`,
   `NON-EXISTENCE`, `TIMING`; note the hyphen). Is the key set closed at these
   three, and should it reuse the enum spelling?
-- **Q5 — dispositions live in two places in reconciliation.json.** The
-  top-level `dispositions` map (keyed by member_ref) and the per-delta inline
-  `disposition` field overlap but disagree: the excluded bucket entry carries
-  its disposition inline, while right_only/left_only/conflict/unresolvable
-  entries show `disposition: null` even when the top-level map holds one for
-  the same member_ref. Which is authoritative for the "why complete" rail?
+- **Q5 — dispositions live in two places in reconciliation.json.**
+  *(ANSWERED at B2 — they are two moments, not two truths.)* The buckets are
+  the pre-disposition snapshot (taken before `apply_dispositions`); the
+  top-level map records the human acts applied after the first verdict. The
+  EXCLUDED delta carries its disposition inline because it is born
+  dispositioned (D-9). `/reconciliation/[populationId]` therefore renders both
+  moments — `at_first_verdict` → `blocked_by_open_deltas` → `after_dispositions`
+  — and tags every disposition with which record it came from
+  (`resolveDisposition` returns `source: "inline" | "map"`), so the choice is
+  visible rather than merged away. Still worth the Owner's confirmation that
+  the pre-disposition snapshot is deliberate and should stay on the wire.
 - **Q6 — member identifier scheme is inconsistent.** `boundary_exclusions[].member`
   is a bare email; every bucket entry uses a prefixed `member_ref`
   (`email:...`, `okta:...`). One scheme, please — joins in the UI otherwise
-  need prefix-stripping heuristics.
+  need prefix-stripping heuristics. **B2 consequence:** the excluded delta ↔
+  `boundary_exclusions` join is performed by `strippedMemberRef`, and the
+  excluded card labels that on screen (`PREFIX_JOIN_NOTE`) rather than
+  stripping silently. Deleting the exclusion makes the card say so — it is a
+  real join, not decoration.
 - **Q7 — `severity` vocabulary is not in the ontology.** Only `"high"` is
   observed; `schema/enums.py` has no Severity enum. Typed as
   `"low" | "medium" | "high"` by guess — needs ratification.
@@ -108,6 +117,37 @@ Numbers are referenced from comments in `src/data/types.ts`.
   (`page` / `cursor` / `none`) are closed-looking sets that exist nowhere in
   `schema/enums.py`. If they are ontology, they belong in SCH01; if they are
   free text, the types should say `string`.
+- **Q9 — no D-7 join-failure cause on the wire.** `Delta` carries `bucket` but
+  not the D-7 cause family. B2 infers it (`unresolvable` → identity-fuzzy /
+  `UNKNOWN_POPULATION`; `left_only` → basis-missing / `UNKNOWN_EVIDENCE`;
+  `right_only` → no-basis-anywhere / `UNKNOWN_POPULATION`; `conflict` is a D-8
+  attribute disagreement, *not* a join failure) and marks every rendering as
+  inferred. Given D-7 §5 makes the per-cause UNKNOWN rate itself a verdict
+  input, should `Delta` carry `cause` plus its D-U1 why-code so the UI stops
+  guessing?
+- **Q10 — `counts` can disagree with `buckets`.** Two representations of one
+  fact. B2 renders `buckets[b].length` as truth and shows `counts[b]` beside it
+  as the artifact's own diagnostic, flagging any divergence on screen. Is
+  `counts` a deliberate checksum, or should it drop off the wire as computable?
+- **Q11 — `blocked_by_open_deltas` is a flat ref list.** No bucket, no
+  resolution state; the page re-derives both by cross-referencing `buckets` and
+  `dispositions`, and cannot distinguish "was blocking, now answered" from
+  "still blocking" except by that join. Should the ladder carry
+  `{ref, bucket, dispositioned}`? Related: nothing on the wire says *why*
+  RATIFIED was not reached.
+- **Q12 — derivation basis on the wire.** *(ANSWERED at B2 — it now travels.)*
+  `reconciliation.json` gained `population_type`, `definition`,
+  `derivation_rule` and `authoritative_source`, emitted from the `Population`
+  the reconciler already holds, so the why-complete rail can state invariant
+  №3's basis instead of inferring it from `sources[].role`. The population's
+  own `state` was deliberately *not* added — `ladder.after_dispositions`
+  already carries it, and duplicating it would manufacture another Q10-shaped
+  disagreement.
+- **Q13 — no per-source temporal window.** `period` is on the report, but each
+  source's own collection window (and CAP01's Okta 90-day history caveat, which
+  lives in `registry.json`) does not travel with the reconciliation — so the
+  join panel cannot show whether a source could even observe the whole period.
+  Should `ReconciliationSource` carry its own `time_window` + capability ref?
 
 ## REQUIRED for B3: render ratification caveats on `/registry`
 
