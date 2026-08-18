@@ -279,10 +279,11 @@ Rules for curators (`/evolve`):
 
 ## L-038 · 2026-07-24 · Gate the commit on the verifier's exit in the same command chain
 - Trigger: a commit ran as an unconditional statement after the verify invocation in one compound command; the suite was red (a component-map fixture) and the red commit landed, needing an amend after the fix (origin: verify failure, own observation, this session)
-- Rule: when a commit depends on verification passing, chain it with && on the verify exit status — sequential statements commit red results
+- Rule: never pipe a gating command's output before using its exit status — run the gate bare (redirect to a file if output is needed) or set pipefail in the same shell — then chain the commit with && on that status; sequential statements commit red results, and a pipe makes the status the last stage's, not the gate's
 - Scope: portable
-- Evidence: 1
-- Status: inherited (was: candidate in janus)
+- Evidence: 2 (the red commit that landed as a sequential statement, janus 2026-07-24; `verify.sh full 2>&1 | tail -4 && git commit` laundering the exit code through tail, aegis 2026-08-16 — two independent incidents in separate sessions, merged from L-050 whose own title recorded it as "evidence of L-038 recurring")
+- observed: 2026-08-18 — fired throughout the B2 session: every gate ran bare into a log file with `echo EXIT=$?`, and no exit code was laundered
+- Status: candidate — RIPE, absorbed L-050's wording 2026-08-18 on user confirmation
 
 ## L-039 · 2026-08-16 · A work order's done-means check must be executable inside the agent's allowlist
 - Trigger: the WO-C2 issue-template run (6d0d805) needed a YAML parse to verify its own output, no allowlisted command could do one, and the dispatched agent burned ~50 turns on 35 permission denials before dying on max-turns; the fix (64b13c5) put the YAML check inside scripts/verify.sh. The lesson was written as prose comments in verify.sh and tests/test_issue_templates.py but never entered this ledger — backfilled by the 2026-08-16 memory audit (origin: verify failure, own observation)
@@ -361,12 +362,12 @@ Rules for curators (`/evolve`):
 - Evidence: 1
 - Status: candidate
 
-## L-050 · 2026-08-16 · Piping verify output through tail launders the exit code — evidence of L-038 recurring
-- Trigger: `verify.sh full 2>&1 | tail -4 && git commit` committed and pushed a red suite this session — the pipeline's exit status is tail's, not verify's, so the && gate held a door that was already open; caught one command later and amended (origin: verify failure, own observation). observed: 2026-08-16 — L-038 ("gate the commit on the verifier's exit in the same command chain") fired in spirit but its rule assumed the exit code reaches the chain; a pipe breaks that assumption. observed: 2026-08-18 — fired throughout the B2 session: every gate run used `bash scripts/verify.sh full > /tmp/log 2>&1; echo EXIT=$?` and no exit code was laundered
-- Rule: never pipe a gating command's output before using its exit status — run the gate bare (redirect to a file if output is needed) or set pipefail in the same shell, then chain the commit
+## L-050 · 2026-08-16 · Piping verify output through tail launders the exit code — evidence of L-038 recurring [RETIRED — merged into L-038]
+- Trigger: `verify.sh full 2>&1 | tail -4 && git commit` committed and pushed a red suite this session — the pipeline's exit status is tail's, not verify's, so the && gate held a door that was already open; caught one command later and amended (origin: verify failure, own observation). observed: 2026-08-16 — L-038 ("gate the commit on the verifier's exit in the same command chain") fired in spirit but its rule assumed the exit code reaches the chain; a pipe breaks that assumption
+- Rule: (superseded — this wording now lives in L-038, which this entry's evidence bumped to 2)
 - Scope: portable
 - Evidence: 1
-- Status: candidate
+- Status: retired — merged into L-038 (same rule, refined wording); /reflect should have bumped L-038 rather than appending a twin
 
 ## L-051 · 2026-08-16 · Worktree subagents deliver untracked files — integrate by clobber-checked copy, never by branch merge
 - Trigger: the first collector-wave integration ran `git merge worktree-agent-...` and got a silently empty merge — worktree subagents are told not to commit, so their branches carry no commits and the deliverables sit untracked in the worktree directory; the working pattern (repeated 6x this session) is: list the worktree's `git status --porcelain` untracked paths, refuse any path that already exists in the destination (L-049's clobber guard), copy the rest, re-verify in the main checkout (origin: own observation, verify failure)
@@ -408,4 +409,4 @@ Rules for curators (`/evolve`):
 - Rule: pair every deletion falsifier with a value falsifier — set each enum-valued field to every other member its schema permits, not just the one the fixture emits — and where a rendered sentence asserts a state, derive it from that field or make the unhandled case a compile error (an exhaustive `switch` with a `never` arm), never a literal
 - Scope: portable
 - Evidence: 1
-- Status: candidate
+- Status: promoted:agent/verifier + CLAUDE.md (Evidence 1 — applied on explicit user confirmation, 2026-08-18); the probe procedure lives in the verifier's step 2, its plan-time half is the fourth adversarial axis on the L-008 bullet

@@ -26,6 +26,12 @@ Procedure:
    wrong), then pick 2-3 targeted probes: edge inputs, the fresh-state path
    (clean build, empty DB, first run), the error path, or direct exercise of
    the changed behavior (run the actual command/endpoint).
+   Deletion probes are never sufficient on their own: removing data cannot
+   flip a hardcoded claim about a state the fixture never takes. For every
+   enum-valued field the change reads, set it to each other member its schema
+   permits and re-render — a rendered sentence asserting a state must be
+   derived from that field, or the unhandled case must be a compile error.
+   (L-056)
 3. Check the diff for claims the tests don't cover (`git diff` / `git log
    -1 -p`): docs promising behavior nobody tests, dead config, TODOs.
 4. When the change was driven by a plan (plan-feature or plan mode), audit

@@ -33,7 +33,7 @@ already shows earns nothing.
 - After changing a convention, grep the whole repo for the old wording and reconcile every hit before claiming consistency. (L-007)
 - Disciplines may be designed up front, but a mechanism — tool, file, cap, fallback — enters the scaffold only after dogfooded use demonstrates the need. (L-014)
 - Before encoding a mechanism, check whether the platform provides it natively; encode only the discipline the scaffold adds on top. (L-015)
-- Before presenting a plan, run an adversarial pass over scale, concurrency, and headless/no-user behavior, and pair every failure found with a fix, not a risk note. (L-008)
+- Before presenting a plan, run an adversarial pass over the design AND over the verification plan itself — scale, concurrency, headless, and "what would survive every check I planned and still be false"; pair every failure with a fix, not a risk note. (L-008, L-056)
 <!-- janus:rules:end -->
 
 ## Gotchas
