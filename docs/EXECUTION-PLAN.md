@@ -111,8 +111,20 @@ ratification is the freeze — draft → frozen(=ratified) → superseded).
   two truths; deletion-falsifier proven across counts, dispositions, sources,
   exclusions and the D-7 classification. No control on the page sets a
   disposition (invariant №11).
-- [ ] **B3** — `/verdicts` (five distinct states, why-code chips, mutation scorecard)
-  + `/registry` (capability entries, E-codes as compiler errors).
+- [x] **B3** — `/verdicts`: the five states each render their own section with
+  their own on-screen definition (`Record<VerdictState, …>` is exhaustive, so a
+  sixth state fails `tsc` rather than vanishing), UNKNOWN why-code chips + a
+  per-cause roll-up (D-U1/D-7 §5), and the mutation scorecard recomputed from the
+  cases on screen rather than read from `detection` — divergence, misses and
+  conditional-field breaches (EXCLUDED without a ratification_ref, etc.) all
+  surface as visible defects. `/registry`: usability DERIVED per SCH02 (a DRAFT
+  entry can never read as available), the DEMO-ONLY note and every DRAFT caveat
+  rendered verbatim per the README's hard requirement, and E-codes rendered as
+  refusals with their consequence ("zero collectors execute", TYP01) rather than
+  warnings; server-only, no client state. Nine falsifiers: six VALUE probes
+  (detection divergence, undetected case, non-empty misses, frozen→draft,
+  missing ratifier, missing why-code), two deletion probes, and an exhaustiveness
+  probe proving a new `VerdictState` fails the build.
 - [ ] **B4** — `/proof/[verdictId]` ten-stage SVG lineage + node inspector.
 - [ ] **C1** — pydantic JSON-Schema export + codegen (`json-schema-to-typescript`) +
   assignability checks (needs SCH01).

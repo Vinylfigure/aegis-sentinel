@@ -156,7 +156,7 @@ Numbers are referenced from comments in `src/data/types.ts`.
   join panel cannot show whether a source could even observe the whole period.
   Should `ReconciliationSource` carry its own `time_window` + capability ref?
 
-## REQUIRED for B3: render ratification caveats on `/registry`
+## SATISFIED at B3: ratification caveats on `/registry`
 
 `registry.json` carries a top-level DEMO-ONLY `note` ("workday.terminated_workers
 appears frozen because the demo registry ratifies a COPY in memory; the on-disk
@@ -167,6 +167,15 @@ the `/registry` page MUST render the top-level `note` and every entry's DRAFT
 caveats verbatim alongside the lifecycle badge. A registry page that shows these
 entries as usable/frozen without the caveats misrepresents ratification state —
 that is a demo-correctness bug, not a styling choice.
+
+**Done at B3.** `/registry` renders `note` verbatim at the top of the page and
+every `DRAFT:` caveat verbatim inside the entry card, and usability is *derived*
+(`usability()` in `src/data/registry.ts`) from lifecycle + ratifier rather than
+asserted, so a DRAFT entry renders "NOT usable" with the SCH02 reason attached.
+A frozen entry missing its ratifier is surfaced as a self-contradiction rather
+than rounded off (D-L1 makes ratification the freeze). Proven by value
+falsifiers: flipping an entry to `draft` moves it to NOT-usable, and nulling
+`ratified_by` on a frozen entry produces the contradiction notice.
 
 ## Deployment (Owner console action — not automated)
 
