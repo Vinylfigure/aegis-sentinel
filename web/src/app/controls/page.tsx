@@ -1,14 +1,17 @@
 import type { Metadata } from "next";
-import { StubPage } from "@/components/StubPage/StubPage";
+import { controlsSeed, gaugesSeed, scopeSeed } from "@/data";
+import { ControlsWorkbench } from "./ControlsWorkbench";
 
 export const metadata: Metadata = { title: "Controls" };
 
+/**
+ * A4 — /controls: workbench stage 2. The control library by domain,
+ * classification segments, system mapping against the scope registry,
+ * and the live posture gauges in the rail. All data flows from the
+ * typed seed layer; the server page hands it to one client component.
+ */
 export default function ControlsPage() {
   return (
-    <StubPage
-      title="Control library"
-      plannedIn="A4"
-      description="The control library by domain: nature (configurable · automated · manual), function (preventative · detective), compensating flags, and system mappings — feeding the derived dataset registry and posture gauges."
-    />
+    <ControlsWorkbench seed={controlsSeed} scope={scopeSeed} gauges={gaugesSeed} />
   );
 }

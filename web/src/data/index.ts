@@ -35,6 +35,9 @@ import verdictsJson from "@/data/engagement/verdicts.json";
 
 export type * from "@/data/types";
 
+/* Derived collections (A4) — computed from the seeds, never authored. */
+export * from "@/data/derived";
+
 /** Literal unions -> primitives, recursively; structure and key presence
  * are preserved so assignment still checks them. */
 type Widen<T> = T extends string

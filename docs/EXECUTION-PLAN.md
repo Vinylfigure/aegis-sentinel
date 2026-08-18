@@ -81,8 +81,11 @@ ratification is the freeze — draft → frozen(=ratified) → superseded).
   products/data-classes/asset-layers/system-registry all rendered from `@/data`
   seed exports (deletion-falsifier proven — no literals, counts computed); shared
   `RailLayout`; a11y-upgraded controls (buttons + aria states).
-- [ ] **A4** — `/controls`, `/datasets` (derived registry), `/overlord` (generated
-  missions + manifest export) + posture/dataset/agent gauges.
+- [x] **A4** — `/controls`, `/datasets` (derived registry), `/overlord` (generated
+  missions + manifest export) + posture/dataset/agent gauges: registry derived in
+  code (`web/src/data/derived.ts`, 29 refs → 26 datasets), one mission per entry;
+  deletion-falsifier proven across the whole chain; shared `StageTabs` strip on
+  stages 1–4.
 - [ ] **A5** — `/process` lanes + control-point detail rail.
 - [x] **B1** — TS ontology/artifact types (`web/src/data/types.ts`) + hand-authored
   mock `web/src/data/engagement/*.json` encoding the six poisons; JSON wired

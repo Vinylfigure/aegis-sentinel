@@ -1,0 +1,48 @@
+/* Workbench prototype .stages / .stage-tab, as navigation links. */
+
+.stages {
+  display: flex;
+  gap: 0;
+  margin-bottom: 20px;
+  border-bottom: 1px solid var(--line);
+  overflow-x: auto;
+}
+
+.tab {
+  color: var(--faint);
+  font-weight: 600;
+  font-size: 12.5px;
+  padding: 10px 16px 12px;
+  border-bottom: 2px solid transparent;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  white-space: nowrap;
+}
+
+.tab:hover {
+  color: var(--dim);
+  text-decoration: none;
+}
+
+.on {
+  color: var(--ink);
+  border-bottom-color: var(--accent);
+}
+
+.on:hover {
+  color: var(--ink);
+}
+
+.num {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  padding: 1px 5px;
+}
+
+.on .num {
+  border-color: var(--accent);
+  color: var(--accent);
+}

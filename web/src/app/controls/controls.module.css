@@ -1,0 +1,269 @@
+/* /controls — workbench stage 2, styled from the prototype against
+ * tokens.css. */
+
+.main {
+  max-width: 1000px;
+}
+
+.h1 {
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.h1Dot {
+  color: var(--accent);
+}
+
+.sub {
+  color: var(--dim);
+  font-size: 13px;
+  margin: 5px 0 14px;
+  max-width: 70ch;
+}
+
+.hint {
+  font-size: 11.5px;
+  color: var(--faint);
+  font-style: italic;
+  margin-bottom: 14px;
+}
+
+/* ---------- domain accordion ---------- */
+
+.dom {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  margin-bottom: 8px;
+  overflow: hidden;
+}
+
+.domHead {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 11px 15px;
+  background: none;
+  border: 0;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.domHead:hover {
+  background: var(--panel2);
+}
+
+.domName {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 13.5px;
+}
+
+.domStats {
+  margin-left: auto;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--faint);
+  white-space: nowrap;
+}
+
+.statCfg {
+  font-style: normal;
+  color: var(--ok);
+}
+
+.statMan {
+  font-style: normal;
+  color: var(--fail);
+}
+
+.domBody {
+  border-top: 1px solid var(--line);
+  padding: 10px 15px 14px;
+}
+
+/* ---------- control cards ---------- */
+
+.ctl {
+  background: var(--panel2);
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  padding: 11px 13px;
+  margin-bottom: 8px;
+}
+
+.ctlHead {
+  display: flex;
+  align-items: baseline;
+  gap: 9px;
+  flex-wrap: wrap;
+}
+
+.code {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  color: var(--accent);
+}
+
+.ctlName {
+  font-size: 12.5px;
+  font-weight: 700;
+}
+
+.compBadge {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  border: 1px solid var(--warn);
+  border-radius: 6px;
+  padding: 2px 8px;
+  color: var(--warn);
+}
+
+.ctlDesc {
+  font-size: 11.5px;
+  color: var(--dim);
+  margin: 3px 0 8px;
+}
+
+.ctlRow {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+/* ---------- segmented classification ---------- */
+
+.seg {
+  display: flex;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.segBtn {
+  background: var(--panel);
+  border: 0;
+  color: var(--faint);
+  font-family: var(--font-mono);
+  font-weight: 500;
+  font-size: 10px;
+  padding: 4px 9px;
+  cursor: pointer;
+  letter-spacing: 0.03em;
+}
+
+.segBtn:hover {
+  color: var(--ink);
+}
+
+.selCfg {
+  background: var(--ok);
+  color: var(--bg);
+}
+
+.selCfg:hover {
+  color: var(--bg);
+}
+
+.selAuto {
+  background: var(--info);
+  color: var(--bg);
+}
+
+.selAuto:hover {
+  color: var(--bg);
+}
+
+.selManual {
+  background: var(--fail);
+  color: var(--bg);
+}
+
+.selManual:hover {
+  color: var(--bg);
+}
+
+.selPrev {
+  background: var(--accent);
+  color: var(--bg);
+}
+
+.selPrev:hover {
+  color: var(--bg);
+}
+
+.selDet {
+  background: var(--panel3);
+  color: var(--ink);
+}
+
+.comp {
+  font-family: var(--font-mono);
+  font-weight: 500;
+  font-size: 10px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 4px 9px;
+  background: var(--panel);
+  color: var(--faint);
+  cursor: pointer;
+}
+
+.compOn {
+  border-color: var(--warn);
+  color: var(--warn);
+}
+
+/* ---------- system chips ---------- */
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-top: 8px;
+}
+
+.chip {
+  font-family: var(--font-body);
+  font-size: 10.5px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 2px 9px;
+  color: var(--faint);
+  cursor: pointer;
+  background: var(--panel);
+}
+
+.chipOn {
+  border-color: var(--info);
+  color: var(--info);
+}
+
+.chipDis {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+/* ---------- dataset link ---------- */
+
+.dsLink {
+  margin-top: 8px;
+  font-size: 11px;
+}
+
+.noDs {
+  color: var(--fail);
+}
+
+/* ---------- rail ---------- */
+
+.railNote {
+  margin-top: 14px;
+  font-size: 11px;
+  color: var(--faint);
+}

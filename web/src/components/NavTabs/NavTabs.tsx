@@ -9,10 +9,12 @@ export interface NavEntry {
   label: string;
 }
 
-/** The planned route arc (A3–B4). Stub pages exist for each today. */
+/** The planned route arc (A3–B4); remaining stubs fill in as tracks land. */
 export const NAV_ENTRIES: NavEntry[] = [
   { href: "/scope", label: "Scope" },
   { href: "/controls", label: "Controls" },
+  { href: "/datasets", label: "Datasets" },
+  { href: "/overlord", label: "Overlord" },
   { href: "/process", label: "Process" },
   { href: "/reconciliation", label: "Reconciliation" },
   { href: "/verdicts", label: "Verdicts" },
