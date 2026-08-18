@@ -142,6 +142,21 @@ echo '{"tool_input":{"file_path":"'"$SANDBOX"'/.claude/memory/LEARNINGS.md"}}' |
 [ $? -eq 0 ] && pass "memory files exempt from the loop" || fail "memory files exempt from the loop"
 rm -f "$SIGNALS"
 
+# L-052 escalation: doubled adjacent path segment = cwd drift (web/web/src/...).
+printf '#!/usr/bin/env bash\nexit 0\n' > "$SANDBOX/scripts/verify.sh"
+echo '{"tool_input":{"file_path":"'"$SANDBOX"'/web/src/app/page.tsx"}}' | "$SANDBOX/.claude/hooks/post-edit-verify.sh"
+[ $? -eq 0 ] && pass "cwd-drift: normal path -> exit 0" || fail "cwd-drift: normal path -> exit 0"
+echo '{"tool_input":{"file_path":"'"$SANDBOX"'/web/src/components/Ladder/Ladder.tsx"}}' | "$SANDBOX/.claude/hooks/post-edit-verify.sh"
+[ $? -eq 0 ] && pass "cwd-drift: Dir/Dir.ext is not a doubled segment" || fail "cwd-drift: Dir/Dir.ext is not a doubled segment"
+err=$(echo '{"tool_input":{"file_path":"'"$SANDBOX"'/web/web/src/app/page.tsx"}}' | "$SANDBOX/.claude/hooks/post-edit-verify.sh" 2>&1 >/dev/null)
+rc=$?
+[ $rc -eq 2 ] && pass "cwd-drift: doubled segment -> exit 2" || fail "cwd-drift: doubled segment -> exit 2 (got $rc)"
+echo "$err" | grep -q "repeats a path segment" && pass "cwd-drift: message names the cause" || fail "cwd-drift: message names the cause"
+echo '{"tool_input":{"file_path":"'"$SANDBOX"'/web/web/src/app/page.tsx"}}' | "$SANDBOX/.claude/hooks/post-edit-verify.sh" >/dev/null 2>&1
+[ $? -eq 2 ] && pass "cwd-drift: repeat case still exit 2 (no latch)" || fail "cwd-drift: repeat case still exit 2 (no latch)"
+grep -q '^verify-fail:' "$SIGNALS" 2>/dev/null && fail "cwd-drift must not log a verify-fail signal" || pass "cwd-drift must not log a verify-fail signal"
+rm -f "$SIGNALS"
+
 echo "== verify.sh dispatcher (template contract) =="
 # Runs the REAL repo dispatcher (the sandbox copy is a stub). Asserts only
 # what survives /bootstrap: the *.sh/*.json arms, the usage exit, and the

@@ -72,7 +72,7 @@ Rules for curators (`/evolve`):
 - Status: inherited (was: promoted:CLAUDE.md in janus)
 
 ## L-007 · 2026-07-06 · When changing a convention, sweep every mention of it, not just planned edit sites
-- Trigger: the adversarial verifier failed the refinement diff because docs/USAGE.md's day-1 section still said "optional Graphify" after the convention changed to default-on; the planned edit list had missed that mention (janus refinement session); recurred in round 3.5 — removing new-worktree.sh missed ARCHITECTURE's component-map row, caught by the docs-consistency fixture rather than a manual sweep
+- Trigger: the adversarial verifier failed the refinement diff because docs/USAGE.md's day-1 section still said "optional Graphify" after the convention changed to default-on; the planned edit list had missed that mention (janus refinement session); recurred in round 3.5 — removing new-worktree.sh missed ARCHITECTURE's component-map row, caught by the docs-consistency fixture rather than a manual sweep. observed: 2026-08-18 — credited by name in L-049's own Trigger ("caught by own L-007 sweep"); fired again at B2 sweeping README question numbers and the EXECUTION-PLAN tick
 - Rule: after changing a convention, grep the whole repo for the old wording and reconcile every hit before claiming consistency
 - Scope: portable
 - Evidence: 2
@@ -110,6 +110,7 @@ Rules for curators (`/evolve`):
 ## L-014 · 2026-07-06 · Mechanisms enter the template only after dogfooding evidence demonstrates the need
 - Trigger: round-3.5 subtraction removed Graphify (never built here), the ARCHIVE.md + ≤25 cap (ledger held 12 entries), and staged expiry policies — all machinery added for problems no session had hit, against the repo's own Evidence >= 2 discipline (janus round-3.5 session)
 - Rule: disciplines can be designed up front, but a mechanism (tool, file, cap, fallback) enters the scaffold only after real use demonstrates the need it serves
+- observed: 2026-08-18 — fired twice in one /evolve: it cleared L-052's write-side hook (Evidence 5, need demonstrated) and refused an L-049 `integrate-worktree.sh` helper (Evidence 1, premature)
 - Scope: portable
 - Evidence: 3
 - Status: inherited (was: promoted:CLAUDE.md in janus)
@@ -117,6 +118,7 @@ Rules for curators (`/evolve`):
 ## L-015 · 2026-07-06 · Platform owns mechanisms; the template keeps only the disciplines it adds
 - Trigger: the explorer/planner agents duplicated native exploration/planning subagents, and scripts/new-worktree.sh duplicated native claude --worktree; both were removed with their embedded disciplines consolidated into plan-feature and worktree-parallel (janus round-3.5 session)
 - Rule: before encoding a mechanism, check whether the platform provides it natively; encode only the discipline the scaffold adds on top, and let the platform's mechanism carry it
+- observed: 2026-08-18 — L-045's Rule is literally this rule applied to skill invocation control; at B2 it kept the cwd-drift check inside the existing hook rather than minting a new one
 - Scope: portable
 - Evidence: 2
 - Status: inherited (was: promoted:CLAUDE.md in janus)
@@ -287,7 +289,7 @@ Rules for curators (`/evolve`):
 - Rule: before dispatching a work order, confirm every done-means check is runnable via an allowlisted command — verification that needs an unlisted tool becomes a denial loop, not a closed loop
 - Scope: project
 - Evidence: 1
-- Status: candidate
+- Status: promoted:skill/recalibrate — resolved; SKILL.md now reads \"The gate is method, not publisher: any source can be primary\" (ledger status was stale)
 
 ## L-040 · 2026-08-16 · A mechanical template copy leaves the memory loop wired but dead — run the provisioning ritual
 - Trigger: this repo was stamped from janus on 2026-07-27 by template copy, not /replicate; every heredity transform was skipped (parent statuses and retired entries crossed, sources-seen watermark intact, identity unrewritten), and in 3 weeks of real work no session ran /reflect, /evolve, or /recalibrate despite the Stop hook and session-start nudging every session — real lessons were routed into code comments instead of the ledger (origin: own observation, 2026-08-16 memory audit; retroactive fix in this branch)
@@ -371,14 +373,14 @@ Rules for curators (`/evolve`):
 - Rule: instruct worktree subagents to commit in their worktree and integrate by merging their branch (gitignore then filters node_modules-style noise); for a subagent that did not commit, fall back to copying its untracked files with a per-path exists-check — merging an uncommitted worktree's branch integrates nothing. Either way, re-run the full suite in the destination
 - Scope: portable
 - Evidence: 2 (empty-merge failure at the collector wave; instruct-commit-then-merge worked cleanly for A1, MCP01, and A2+B1)
-- Status: candidate
+- Status: promoted:skill/worktree-parallel — step 3 now instructs each track to commit in its worktree, step 5 carries the empty-merge check and the clobber-checked-copy fallback
 
-## L-052 · 2026-08-16 · The shell's working directory resets between tool calls — anchor every compound command
+## L-052 · 2026-08-16 · The shell's working directory between tool calls is undefined — anchor every path
 - Trigger: four separate commands this session failed with "not a git repository" / "No such file or directory" because the session cwd had silently reverted to the home directory between calls (worker restarts and environment reconnects reset it); each failure cost a retry with an explicit cd (origin: own observation, repeated)
-- Rule: start every compound shell command with an absolute-path cd (or use absolute paths throughout) — never assume the previous call's working directory survived; and within one compound command, every segment after a `cd` inherits it, so re-anchor before each phase that needs a different directory (web gates in `web/`, repo scripts at the root)
+- Rule: treat the working directory between tool calls as undefined — it may reset OR persist, and believing it always resets is itself how `web/web/src/...` gets written. Start every compound shell command with an absolute-path cd (or use absolute paths throughout), and never assume the previous call's working directory either survived or did not; and within one compound command, every segment after a `cd` inherits it, so re-anchor before each phase that needs a different directory (web gates in `web/`, repo scripts at the root)
 - Scope: portable
 - Evidence: 5 (four cwd-reset failures early in that session; three conductor passes then ran `scripts/verify.sh` from `web/` inside a compound command — exit 127 each time, twice AFTER this rule was written; recurred 2026-08-18 in the B2 session in the OTHER direction — cwd PERSISTED from a prior `cd web`, so two heredoc writes landed at `web/web/src/...` and one `cat > web/src/app/...` failed outright. The promoted mechanism covers gate RUNS, not file WRITES: `verify-web.sh` self-anchors, but a heredoc path does not)
-- Status: promoted — prose demonstrably did not prevent recurrence, so the mixed-directory case is now mechanical: `scripts/verify-web.sh` self-anchors and runs all frontend gates + redaction from any cwd (proven green from a wrong cwd); conductor loops call it instead of composing per-directory compounds. The general re-anchor rule stays for everything else.
+- Status: promoted:hooks/post-edit-verify + scripts/verify-web.sh — two halves, because one mechanism cannot see both. RUN side: `verify-web.sh` self-anchors and runs all frontend gates + redaction from any cwd. WRITE side (added 2026-08-18 after the B2 recurrence): `post-edit-verify.sh` rejects a written path that repeats an adjacent directory segment — the fingerprint of a relative path resolved from a drifted cwd — with six fixtures in `scripts/test-hooks.sh` including a `Dir/Dir.ext` false-positive guard. A self-anchoring script cannot anchor a heredoc path, which is why prose alone kept failing. The re-anchor rule stays as the judgment neither mechanism carries: the hook never sees a `cd` inside a Bash command.
 
 ## L-053 · 2026-08-16 · `as T` on JSON imports is a vacuous per-record check — wire JSON through an assignability position and prove it with a falsifier
 - Trigger: the A2+B1 adversarial verifier renamed a required key inside a verdict record of an imported JSON array and `tsc --noEmit` stayed green — `index.ts` wired every JSON file through `as T` casts, and TypeScript `as` checks only top-level bidirectional comparability, so a broken record inside any array is swallowed; the doc comment and commit message both claimed "tsc checks every JSON file" (origin: verifier FAIL, prescribed falsifier). observed: 2026-08-18 — fired as designed at B2: after `ReconciliationReport` gained four fields and a sibling array export was added, the prescribed falsifier (rename `member_ref` in one delta) still failed tsc with TS2345, confirming the assignability position survived the edit
