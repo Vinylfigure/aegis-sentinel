@@ -60,6 +60,25 @@ if [ -f "$PLAN" ]; then
   next=$(grep -m1 -oE '^- \[ \] \*\*[A-Za-z0-9._-]+\*\*' "$PLAN" | sed -E 's/.*\*\*([A-Za-z0-9._-]+)\*\*.*/\1/')
   if [ -n "$next" ]; then
     lines+=("Build plan: next unblocked task is $next (docs/EXECUTION-PLAN.md) — continue it.")
+    # Concurrency guard (L-058): the daily heartbeat fires into fresh sessions
+    # that pick the next unticked box the same way this one does, so two
+    # sessions can build the same box and collide at merge. Unmerged remote
+    # branches are the only claim signal that crosses machines — local memory
+    # does not travel. Bounded + offline-safe: a slow or absent remote is
+    # silently skipped rather than blocking session start.
+    if command -v git >/dev/null 2>&1 && command -v timeout >/dev/null 2>&1; then
+      # Every substitution below needs `|| true`: under `set -euo pipefail` a
+      # failing command substitution aborts the hook, and the healthy cases
+      # (no other branches -> grep -v exits 1; no remote/no commits -> git
+      # exits 128) would take session start down with them.
+      here=$(git -C "$DIR" rev-parse --abbrev-ref HEAD 2>/dev/null || true)
+      others=$(timeout 5 git -C "$DIR" ls-remote --heads origin 2>/dev/null |
+        sed -E 's#.*refs/heads/##' |
+        grep -vE "^(main|master|${here:-__none__})$" | head -3 | tr '\n' ' ' || true)
+      if [ -n "$others" ]; then
+        lines+=("Concurrency: unmerged remote branches exist (${others%% }) — another session may already be building $next. Check open PRs before starting it.")
+      fi
+    fi
   fi
 fi
 
