@@ -1,14 +1,14 @@
 import type { Metadata } from "next";
-import { StubPage } from "@/components/StubPage/StubPage";
+import { engagementPoisons, engagementVerdicts } from "@/data";
+import { VerdictsBoard } from "./VerdictsBoard";
 
 export const metadata: Metadata = { title: "Verdicts" };
 
+/**
+ * B3 — /verdicts: the five verdict states rendered distinctly, UNKNOWN
+ * why-code chips, and the mutation scorecard. PRD §6 acceptance: the five
+ * states must be visibly distinct and every seeded defect visibly caught.
+ */
 export default function VerdictsPage() {
-  return (
-    <StubPage
-      title="Verdicts"
-      plannedIn="B3"
-      description="Verdict records with the five states visibly distinct, why-code chips, and the mutation scorecard. Consumes artifacts/demo-engagement/verdicts.json and poisons.json."
-    />
-  );
+  return <VerdictsBoard records={engagementVerdicts} poisons={engagementPoisons} />;
 }

@@ -41,6 +41,10 @@ export * from "@/data/derived";
 /* Reconciliation derivations (B2) — computed from the engagement artifact. */
 export * from "@/data/reconciliation";
 
+/* Verdict + registry derivations (B3) — computed from the engagement artifacts. */
+export * from "@/data/verdicts";
+export * from "@/data/registry";
+
 /** Literal unions -> primitives, recursively; structure and key presence
  * are preserved so assignment still checks them. */
 type Widen<T> = T extends string
