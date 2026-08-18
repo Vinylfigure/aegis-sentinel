@@ -86,7 +86,11 @@ ratification is the freeze — draft → frozen(=ratified) → superseded).
   code (`web/src/data/derived.ts`, 29 refs → 26 datasets), one mission per entry;
   deletion-falsifier proven across the whole chain; shared `StageTabs` strip on
   stages 1–4.
-- [ ] **A5** — `/process` lanes + control-point detail rail.
+- [x] **A5** — `/process` lanes + control-point detail rail: 3 lanes / 13 steps /
+  10 TA markers all iterated from `processSeed` (deletion- and reorder-falsifier
+  proven); rail controls derived by flanking-system adjacency (real
+  controlPoint→control mapping is a recorded seed-shape question); onward links
+  are bare hrefs (C2 wires them).
 - [x] **B1** — TS ontology/artifact types (`web/src/data/types.ts`) + hand-authored
   mock `web/src/data/engagement/*.json` encoding the six poisons; JSON wired
   through `checked<T>(json: Widen<T>)` assignability so tsc checks every record

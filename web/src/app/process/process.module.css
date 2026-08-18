@@ -1,0 +1,489 @@
+/* /process — process-graph prototype, styled from
+ * docs/prototypes/process-graph.html against tokens.css. */
+
+.main {
+  max-width: 1000px;
+}
+
+.h1 {
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.h1Dot {
+  color: var(--accent);
+}
+
+.sub {
+  color: var(--dim);
+  font-size: 13px;
+  margin: 5px 0 18px;
+  max-width: 80ch;
+}
+
+/* ---------- product / data context chips ---------- */
+
+.ctx {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+}
+
+.chip {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  padding: 5px 13px;
+  font-size: 11.5px;
+  color: var(--dim);
+}
+
+.chipStrong {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.chipT1 {
+  border-color: var(--fail);
+  color: var(--fail);
+}
+
+.chipT2 {
+  border-color: var(--warn);
+  color: var(--warn);
+}
+
+/* ---------- legend ---------- */
+
+.legend {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin: 4px 0 18px;
+  font-size: 11px;
+  color: var(--faint);
+}
+
+.legendItem {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.legendSq {
+  width: 11px;
+  height: 11px;
+  transform: rotate(45deg);
+  border-radius: 3px;
+  border: 1.5px solid;
+}
+
+.legendSqP {
+  border-color: var(--accent);
+  background: var(--purple-tint);
+}
+
+.legendSqD {
+  border-color: var(--info);
+  background: var(--cyan-tint);
+}
+
+.legendSqM {
+  border-color: var(--fail);
+  background: var(--red-tint);
+}
+
+.legendCi {
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  border: 1.5px solid;
+}
+
+.legendCiR {
+  border-color: var(--fail);
+}
+
+.legendCiA {
+  border-color: var(--warn);
+}
+
+/* ---------- process lanes ---------- */
+
+.lane {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  margin-bottom: 16px;
+  overflow: hidden;
+}
+
+.laneHead {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  padding: 13px 18px;
+  border-bottom: 1px solid var(--line);
+  flex-wrap: wrap;
+}
+
+.laneId {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  color: var(--accent);
+}
+
+.laneName {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 14.5px;
+}
+
+.laneSub {
+  font-size: 11.5px;
+  color: var(--faint);
+}
+
+/* Wide chains scroll inside the lane, never the page body. */
+.flow {
+  position: relative;
+  padding: 34px 18px 30px;
+  overflow-x: auto;
+}
+
+.chain {
+  display: flex;
+  align-items: center;
+  min-width: max-content;
+}
+
+/* ---------- nodes ---------- */
+
+.node {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 7px;
+  width: 108px;
+  flex-shrink: 0;
+}
+
+.bubble {
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  background: var(--panel2);
+  border: 2px solid var(--line);
+  display: grid;
+  place-items: center;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 11px;
+  text-align: center;
+  line-height: 1.15;
+  padding: 4px;
+  position: relative;
+}
+
+.nodeT1 .bubble {
+  border-color: var(--fail);
+}
+
+.nodeT2 .bubble {
+  border-color: var(--warn);
+}
+
+.tierBadge {
+  position: absolute;
+  top: -7px;
+  right: -4px;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 8px;
+  background: var(--bg);
+  border-radius: 8px;
+  padding: 1px 5px;
+}
+
+.nodeT1 .tierBadge {
+  color: var(--fail);
+  border: 1px solid var(--fail);
+}
+
+.nodeT2 .tierBadge {
+  color: var(--warn);
+  border: 1px solid var(--warn);
+}
+
+.nodeLabel {
+  font-size: 10.5px;
+  color: var(--dim);
+  text-align: center;
+  line-height: 1.25;
+}
+
+/* ---------- edges + control-point markers ---------- */
+
+.edge {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  position: relative;
+  height: 58px;
+}
+
+.wire {
+  height: 2px;
+  background: var(--line);
+  width: 26px;
+}
+
+.cp {
+  width: 30px;
+  height: 30px;
+  transform: rotate(45deg);
+  border-radius: 6px;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  margin: 0 3px;
+  border: 2px solid;
+  padding: 0;
+  transition: 0.12s;
+}
+
+.cpId {
+  transform: rotate(-45deg);
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 8.5px;
+  font-style: normal;
+}
+
+.cpPrev {
+  background: var(--purple-tint);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.cpDet {
+  background: var(--cyan-tint);
+  border-color: var(--info);
+  color: var(--info);
+}
+
+.cpMan {
+  background: var(--red-tint);
+  border-color: var(--fail);
+  color: var(--fail);
+}
+
+.cp:hover,
+.cpSel {
+  transform: rotate(45deg) scale(1.18);
+}
+
+.cpSel {
+  box-shadow: 0 0 0 3px var(--purple-tint);
+}
+
+.cp:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+}
+
+/* ---------- detail rail ---------- */
+
+.railTitle {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 10.5px;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 12px;
+}
+
+.empty {
+  color: var(--faint);
+  font-size: 12px;
+  font-style: italic;
+}
+
+.code {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--accent);
+}
+
+.dtName {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 15px;
+  margin: 2px 0 4px;
+}
+
+.dtLane {
+  font-size: 11px;
+  color: var(--faint);
+  margin-bottom: 10px;
+}
+
+.dtLane b {
+  color: var(--dim);
+  font-weight: 500;
+}
+
+.badges {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+}
+
+.bd {
+  font-family: var(--font-mono);
+  font-weight: 600;
+  font-size: 9.5px;
+  letter-spacing: 0.06em;
+  border-radius: 12px;
+  padding: 3px 9px;
+}
+
+.bdCfg {
+  background: var(--green-tint);
+  color: var(--ok);
+}
+
+.bdAuto {
+  background: var(--cyan-tint);
+  color: var(--info);
+}
+
+.bdMan {
+  background: var(--red-tint);
+  color: var(--fail);
+}
+
+.bdPrev {
+  background: var(--purple-tint);
+  color: var(--accent);
+}
+
+.bdDet {
+  background: var(--dim-tint);
+  color: var(--dim);
+}
+
+.frow {
+  margin-bottom: 12px;
+}
+
+.frowLabel {
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--faint);
+  display: block;
+  margin-bottom: 3px;
+}
+
+.frowBody {
+  font-size: 12px;
+  color: var(--dim);
+}
+
+.frowStrong {
+  color: var(--ink);
+  font-weight: 500;
+}
+
+.api {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  color: var(--ok);
+  background: var(--bg);
+  border-radius: 5px;
+  padding: 2px 6px;
+  display: inline-block;
+  margin-top: 2px;
+  word-break: break-all;
+}
+
+.gap {
+  border-top: 1px dashed var(--line);
+  margin: 16px 0;
+  padding-top: 14px;
+}
+
+.gapTitle {
+  color: var(--warn);
+  font-size: 11.5px;
+}
+
+.gapBody {
+  font-size: 11.5px;
+  color: var(--dim);
+  margin-top: 3px;
+}
+
+/* ---------- related library controls ---------- */
+
+.rel {
+  border-top: 1px dashed var(--line);
+  margin-top: 16px;
+  padding-top: 14px;
+}
+
+.relCtl {
+  font-size: 11.5px;
+  margin-bottom: 8px;
+}
+
+.relName {
+  font-weight: 600;
+  font-size: 11.5px;
+}
+
+.relDs {
+  font-size: 10.5px;
+  color: var(--faint);
+  margin: 2px 0 0 2px;
+}
+
+.relEmpty {
+  font-size: 11px;
+  color: var(--faint);
+  font-style: italic;
+}
+
+.relNote {
+  font-size: 10px;
+  color: var(--faint);
+  font-style: italic;
+  margin-top: 8px;
+}
+
+/* ---------- onward links ---------- */
+
+.onward {
+  border-top: 1px dashed var(--line);
+  margin-top: 16px;
+  padding-top: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.onwardLink {
+  font-size: 11.5px;
+  color: var(--info);
+  text-decoration: none;
+}
+
+.onwardLink:hover {
+  text-decoration: underline;
+}

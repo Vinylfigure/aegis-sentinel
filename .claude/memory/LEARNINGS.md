@@ -376,8 +376,8 @@ Rules for curators (`/evolve`):
 - Trigger: four separate commands this session failed with "not a git repository" / "No such file or directory" because the session cwd had silently reverted to the home directory between calls (worker restarts and environment reconnects reset it); each failure cost a retry with an explicit cd (origin: own observation, repeated)
 - Rule: start every compound shell command with an absolute-path cd (or use absolute paths throughout) — never assume the previous call's working directory survived; and within one compound command, every segment after a `cd` inherits it, so re-anchor before each phase that needs a different directory (web gates in `web/`, repo scripts at the root)
 - Scope: portable
-- Evidence: 3 (four cwd-reset failures early in the session; two conductor passes then ran `scripts/verify.sh` from `web/` inside a compound command — exit 127 both times)
-- Status: candidate
+- Evidence: 4 (four cwd-reset failures early in the session; three conductor passes then ran `scripts/verify.sh` from `web/` inside a compound command — exit 127 each time, twice AFTER this rule was written)
+- Status: promoted — prose demonstrably did not prevent recurrence, so the mixed-directory case is now mechanical: `scripts/verify-web.sh` self-anchors and runs all frontend gates + redaction from any cwd (proven green from a wrong cwd); conductor loops call it instead of composing per-directory compounds. The general re-anchor rule stays for everything else.
 
 ## L-053 · 2026-08-16 · `as T` on JSON imports is a vacuous per-record check — wire JSON through an assignability position and prove it with a falsifier
 - Trigger: the A2+B1 adversarial verifier renamed a required key inside a verdict record of an imported JSON array and `tsc --noEmit` stayed green — `index.ts` wired every JSON file through `as T` casts, and TypeScript `as` checks only top-level bidirectional comparability, so a broken record inside any array is swallowed; the doc comment and commit message both claimed "tsc checks every JSON file" (origin: verifier FAIL, prescribed falsifier)

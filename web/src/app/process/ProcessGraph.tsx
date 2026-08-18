@@ -1,0 +1,391 @@
+"use client";
+
+import { useState } from "react";
+import Link from "next/link";
+import { RailLayout } from "@/components/RailLayout/RailLayout";
+import type {
+  ControlsSeed,
+  ProcessControlPoint,
+  ProcessLane,
+  ProcessSeed,
+  ProcessStep,
+  ProcessTier,
+  ScopeSeed,
+  SeedControl,
+} from "@/data";
+import styles from "./process.module.css";
+
+/* ------------------------------------------------------------------ */
+/* Derivations                                                         */
+/* ------------------------------------------------------------------ */
+
+interface PointOnFlow {
+  lane: ProcessLane;
+  point: ProcessControlPoint;
+  /** Registry system ids flanking this point on the flow (either side
+   * of the diamond), where the neighboring node resolves to one. */
+  flankSystems: string[];
+}
+
+/** A process node key resolves to a scope-registry system when its base
+ * (trailing disambiguation digits stripped — the seed reuses systems
+ * across lanes as `okta`/`okta2`) is a registered system id. Actor
+ * nodes (requester, developer, bot) resolve to nothing. */
+function resolveSystem(
+  nodeKey: string,
+  systemIds: ReadonlySet<string>,
+): string | null {
+  const base = nodeKey.replace(/\d+$/, "");
+  return systemIds.has(base) ? base : null;
+}
+
+function nearestFlank(
+  sequence: ProcessStep[],
+  from: number,
+  dir: -1 | 1,
+  systemIds: ReadonlySet<string>,
+): string | null {
+  for (let i = from + dir; i >= 0 && i < sequence.length; i += dir) {
+    const step = sequence[i];
+    if (step && step.kind === "node")
+      return resolveSystem(step.node.key, systemIds);
+  }
+  return null;
+}
+
+/** Every control point in seed order, with its lane and flanking systems. */
+function pointsOnFlow(
+  seed: ProcessSeed,
+  systemIds: ReadonlySet<string>,
+): PointOnFlow[] {
+  const points: PointOnFlow[] = [];
+  for (const lane of seed.lanes) {
+    lane.sequence.forEach((step, index) => {
+      if (step.kind !== "controlPoint") return;
+      const flanks = [
+        nearestFlank(lane.sequence, index, -1, systemIds),
+        nearestFlank(lane.sequence, index, 1, systemIds),
+      ].filter((s): s is string => s !== null);
+      points.push({
+        lane,
+        point: step.controlPoint,
+        flankSystems: [...new Set(flanks)],
+      });
+    });
+  }
+  return points;
+}
+
+/** Library controls operating over every system flanking the point —
+ * derived by system adjacency; the seed carries no explicit
+ * point→control mapping (see the rail's derivation note). */
+function relatedControls(
+  flankSystems: string[],
+  controls: SeedControl[],
+): SeedControl[] {
+  if (flankSystems.length === 0) return [];
+  return controls.filter((control) =>
+    flankSystems.every((system) => control.systems.includes(system)),
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/* Class + badge maps                                                  */
+/* ------------------------------------------------------------------ */
+
+const TIER_CHIP: Record<ProcessTier, string> = {
+  1: styles.chipT1 ?? "",
+  2: styles.chipT2 ?? "",
+  3: "",
+};
+
+const TIER_NODE: Record<ProcessTier, string> = {
+  1: styles.nodeT1 ?? "",
+  2: styles.nodeT2 ?? "",
+  3: "",
+};
+
+/** Prototype rule: manual wins the marker color; otherwise function. */
+function markerClass(point: ProcessControlPoint): string {
+  if (point.nature === "manual") return styles.cpMan ?? "";
+  return point.function === "prev" ? (styles.cpPrev ?? "") : (styles.cpDet ?? "");
+}
+
+const NATURE_BADGE: Record<
+  ProcessControlPoint["nature"],
+  { text: string; className: string }
+> = {
+  cfg: { text: "CONFIGURABLE", className: styles.bdCfg ?? "" },
+  auto: { text: "AUTOMATED", className: styles.bdAuto ?? "" },
+  manual: { text: "MANUAL", className: styles.bdMan ?? "" },
+};
+
+const FUNCTION_BADGE: Record<
+  ProcessControlPoint["function"],
+  { text: string; className: string }
+> = {
+  prev: { text: "PREVENTATIVE", className: styles.bdPrev ?? "" },
+  det: { text: "DETECTIVE", className: styles.bdDet ?? "" },
+};
+
+/* ------------------------------------------------------------------ */
+/* Detail rail                                                         */
+/* ------------------------------------------------------------------ */
+
+function PointDetail({
+  entry,
+  controls,
+}: {
+  entry: PointOnFlow;
+  controls: ControlsSeed;
+}) {
+  const { lane, point, flankSystems } = entry;
+  const nature = NATURE_BADGE[point.nature];
+  const fn = FUNCTION_BADGE[point.function];
+  const related = relatedControls(flankSystems, controls.controls);
+  return (
+    <div>
+      <span className={styles.code}>{point.id}</span>
+      <h3 className={styles.dtName}>{point.name}</h3>
+      <p className={styles.dtLane}>
+        on <b>{lane.name}</b>
+      </p>
+      <div className={styles.badges}>
+        <span className={`${styles.bd} ${nature.className}`}>{nature.text}</span>
+        <span className={`${styles.bd} ${fn.className}`}>{fn.text}</span>
+      </div>
+      <div className={styles.frow}>
+        <span className={styles.frowLabel}>What it enforces</span>
+        <div className={styles.frowBody}>{point.enforces}</div>
+      </div>
+      <div className={styles.frow}>
+        <span className={styles.frowLabel}>Data element</span>
+        <div className={styles.frowBody}>
+          <b className={styles.frowStrong}>{point.dataElement}</b>
+          <br />
+          <code className={styles.api}>{point.api}</code>
+        </div>
+      </div>
+      <div className={styles.frow}>
+        <span className={styles.frowLabel}>Type of evidence</span>
+        <div className={styles.frowBody}>{point.evidence}</div>
+      </div>
+      <div className={styles.frow}>
+        <span className={styles.frowLabel}>Completeness &amp; accuracy</span>
+        <div className={styles.frowBody}>{point.completenessAccuracy}</div>
+      </div>
+      {point.gap ? (
+        <div className={styles.gap}>
+          <b className={styles.gapTitle}>Watch</b>
+          <p className={styles.gapBody}>{point.gap}</p>
+        </div>
+      ) : null}
+
+      <div className={styles.rel}>
+        <span className={styles.frowLabel}>
+          Library controls on the flanked systems
+        </span>
+        {related.length > 0 ? (
+          related.map((control) => {
+            const datasets = control.datasets.filter((dataset) =>
+              flankSystems.includes(dataset.system),
+            );
+            return (
+              <div key={control.id} className={styles.relCtl}>
+                <span className={styles.code}>{control.id}</span>{" "}
+                <b className={styles.relName}>{control.name}</b>
+                {datasets.map((dataset) => (
+                  <div
+                    key={`${dataset.system}:${dataset.artifact}`}
+                    className={styles.relDs}
+                  >
+                    {dataset.artifact} · {controls.retrievalChannels[dataset.retrieval]}{" "}
+                    · {controls.caMethods[dataset.caMethod]}
+                  </div>
+                ))}
+              </div>
+            );
+          })
+        ) : (
+          <p className={styles.relEmpty}>
+            No library control operates over the systems flanking this point.
+          </p>
+        )}
+        <p className={styles.relNote}>
+          Derived by system adjacency — the seed carries no explicit
+          point→control mapping.
+        </p>
+      </div>
+
+      <div className={styles.onward}>
+        <span className={styles.frowLabel}>Explore</span>
+        <Link className={styles.onwardLink} href="/controls">
+          Control library →
+        </Link>
+        <Link className={styles.onwardLink} href="/reconciliation">
+          Reconciliation →
+        </Link>
+        <Link className={styles.onwardLink} href="/verdicts">
+          Verdicts →
+        </Link>
+      </div>
+    </div>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/* The graph                                                           */
+/* ------------------------------------------------------------------ */
+
+export function ProcessGraph({
+  seed,
+  controls,
+  scope,
+}: {
+  seed: ProcessSeed;
+  controls: ControlsSeed;
+  scope: ScopeSeed;
+}) {
+  const systemIds: ReadonlySet<string> = new Set(
+    scope.systems.map((system) => system.id),
+  );
+  const points = pointsOnFlow(seed, systemIds);
+
+  /* Default selection = first control point on the flow (seed order);
+   * pages built from a seed without points render the empty rail. */
+  const [selectedId, setSelectedId] = useState<string | null>(
+    () => points[0]?.point.id ?? null,
+  );
+  const selected = points.find((entry) => entry.point.id === selectedId) ?? null;
+
+  const laneCount = seed.lanes.length;
+  const stepCount = seed.lanes.reduce(
+    (sum, lane) =>
+      sum + lane.sequence.filter((step) => step.kind === "node").length,
+    0,
+  );
+
+  const rail = (
+    <>
+      <h2 className={styles.railTitle}>Control point</h2>
+      <div aria-live="polite">
+        {selected ? (
+          <PointDetail entry={selected} controls={controls} />
+        ) : (
+          <p className={styles.empty}>Select a diamond on any flow.</p>
+        )}
+      </div>
+    </>
+  );
+
+  return (
+    <RailLayout rail={rail} railLabel="Control point detail">
+      <div className={styles.main}>
+        <h1 className={styles.h1}>
+          Process graph <span className={styles.h1Dot}>·</span> controls on the
+          flow
+        </h1>
+        <p className={styles.sub}>
+          Assets as nodes tinted by the data classification they carry, ITGC
+          processes as left-to-right chains, and control points sitting on the
+          flow between systems. Select any diamond — the rail expands it into
+          nature, function, the exact data element collected, and the evidence
+          type. The graph is the scope; the diamonds are the program.
+        </p>
+
+        <div className={styles.ctx}>
+          <span className={styles.chip}>
+            <b className={styles.chipStrong}>Product:</b> {seed.context.product}
+          </span>
+          {seed.context.tiers.map((tier) => (
+            <span
+              key={tier.id}
+              className={`${styles.chip} ${TIER_CHIP[tier.id]}`}
+            >
+              {tier.label}
+            </span>
+          ))}
+          <span className={styles.chip}>
+            {laneCount} lanes · {stepCount} steps · {points.length} control
+            points
+          </span>
+        </div>
+
+        <div className={styles.legend}>
+          <span className={styles.legendItem}>
+            <span className={`${styles.legendSq} ${styles.legendSqP}`} />{" "}
+            preventative control point
+          </span>
+          <span className={styles.legendItem}>
+            <span className={`${styles.legendSq} ${styles.legendSqD}`} />{" "}
+            detective control point
+          </span>
+          <span className={styles.legendItem}>
+            <span className={`${styles.legendSq} ${styles.legendSqM}`} /> manual
+            control point
+          </span>
+          <span className={styles.legendItem}>
+            <span className={`${styles.legendCi} ${styles.legendCiR}`} /> node
+            carries T1 data
+          </span>
+          <span className={styles.legendItem}>
+            <span className={`${styles.legendCi} ${styles.legendCiA}`} /> T2
+          </span>
+        </div>
+
+        {seed.lanes.map((lane) => (
+          <section key={lane.id} className={styles.lane}>
+            <div className={styles.laneHead}>
+              <span className={styles.laneId}>{lane.id}</span>
+              <b className={styles.laneName}>{lane.name}</b>
+              <span className={styles.laneSub}>{lane.subtitle}</span>
+            </div>
+            <div className={styles.flow}>
+              <div className={styles.chain}>
+                {lane.sequence.map((step) =>
+                  step.kind === "node" ? (
+                    <div
+                      key={`n-${step.node.key}`}
+                      className={`${styles.node} ${TIER_NODE[step.node.tier]}`}
+                    >
+                      <div className={styles.bubble}>
+                        {step.node.label}
+                        {step.node.tier < 3 ? (
+                          <span className={styles.tierBadge}>
+                            T{step.node.tier}
+                          </span>
+                        ) : null}
+                      </div>
+                      <div className={styles.nodeLabel}>{step.node.sublabel}</div>
+                    </div>
+                  ) : (
+                    <div
+                      key={`cp-${step.controlPoint.id}`}
+                      className={styles.edge}
+                    >
+                      <span className={styles.wire} />
+                      <button
+                        type="button"
+                        className={`${styles.cp} ${markerClass(step.controlPoint)} ${
+                          selectedId === step.controlPoint.id
+                            ? (styles.cpSel ?? "")
+                            : ""
+                        }`}
+                        aria-pressed={selectedId === step.controlPoint.id}
+                        aria-label={`${step.controlPoint.id} — ${step.controlPoint.name}`}
+                        onClick={() => setSelectedId(step.controlPoint.id)}
+                      >
+                        <i className={styles.cpId}>{step.controlPoint.id}</i>
+                      </button>
+                      <span className={styles.wire} />
+                    </div>
+                  ),
+                )}
+              </div>
+            </div>
+          </section>
+        ))}
+      </div>
+    </RailLayout>
+  );
+}
