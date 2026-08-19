@@ -30,24 +30,35 @@ export interface Usability {
  * contradiction worth surfacing rather than rounding off.
  */
 export function usability(entry: RegistryEntry): Usability {
-  if (entry.lifecycle === "superseded") {
-    return { usable: false, reason: "superseded — a later version replaced it." };
+  // Exhaustive switch (B3 verifier finding): an if-chain would let a new
+  // LifecycleState member fall through to "usable" — the one direction this
+  // page must never default to. The `never` arm makes it a compile error.
+  switch (entry.lifecycle) {
+    case "superseded":
+      return { usable: false, reason: "superseded — a later version replaced it." };
+    case "draft":
+      return {
+        usable: false,
+        reason:
+          "DRAFT — not ratified, so the compiler cannot use it (SCH02: unratified entries are mechanically excluded).",
+      };
+    case "frozen":
+      if (!entry.ratified_by) {
+        return {
+          usable: false,
+          reason:
+            "frozen but no ratifier recorded — D-L1 makes ratification the freeze, so this entry contradicts itself.",
+        };
+      }
+      return {
+        usable: true,
+        reason: `ratified by ${entry.ratified_by} (D-L1: ratification is the freeze).`,
+      };
+    default: {
+      const exhaustive: never = entry.lifecycle;
+      return exhaustive;
+    }
   }
-  if (entry.lifecycle === "draft") {
-    return {
-      usable: false,
-      reason:
-        "DRAFT — not ratified, so the compiler cannot use it (SCH02: unratified entries are mechanically excluded).",
-    };
-  }
-  if (!entry.ratified_by) {
-    return {
-      usable: false,
-      reason:
-        "frozen but no ratifier recorded — D-L1 makes ratification the freeze, so this entry contradicts itself.",
-    };
-  }
-  return { usable: true, reason: `ratified by ${entry.ratified_by} (D-L1: ratification is the freeze).` };
 }
 
 export function usableEntries(artifact: RegistryArtifact): RegistryEntry[] {
