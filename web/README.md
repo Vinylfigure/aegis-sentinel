@@ -24,11 +24,14 @@ npm run build
 
 ## Layout
 
-- `src/app/` — App Router pages. `/scope`, `/controls`, `/process`,
-  `/reconciliation`, `/verdicts`, `/registry`, `/proof` are stubs today; each
-  page states the execution-plan task (A3–B4) that fills it in.
-- `src/components/` — `AppShell` (two-column shell), `NavTabs` (route tabs),
-  `GaugesRail` (sticky right rail), `StubPage`.
+- `src/app/` — App Router pages. Built: `/scope` (A3), `/controls`,
+  `/datasets`, `/overlord` (A4), `/process` (A5), `/reconciliation` +
+  `/reconciliation/[populationId]` (B2). Still stubs: `/verdicts`,
+  `/registry` (B3), `/proof` (B4); each stub states the execution-plan task
+  that fills it in.
+- `src/components/` — `AppShell` (header chrome), `NavTabs` (route tabs),
+  `RailLayout` (page-composed right rail), `GaugesRail` (gauge sections),
+  `StageTabs` (workbench stages 1–4), `StubPage`.
 - `src/data/` — the data layer (A2 + B1). `types.ts` holds hand-authored
   ontology/artifact types (C1 codegen replaces them); `seed/*.json` is the
   prototype-ported demo data, genericized to the invented demo company
