@@ -139,6 +139,24 @@ export function combinedRecords(
 }
 
 /* ------------------------------------------------------------------ */
+/* Record deep links (C3)                                              */
+/* ------------------------------------------------------------------ */
+
+/** DOM id for a record's card on /verdicts. Raw — getElementById handles
+ * `@` and `.`; the `record=` prefix avoids the `state-*` section ids. One
+ * shared helper pair so every producer and the consumer agree by
+ * construction. */
+export function verdictRecordAnchor(recordId: string): string {
+  return `record=${recordId}`;
+}
+
+/** Href that opens /verdicts with the record selected and scrolled into
+ * view (hash parsed client-side; static-export-safe). */
+export function verdictRecordHref(recordId: string): string {
+  return `/verdicts#record=${encodeURIComponent(recordId)}`;
+}
+
+/* ------------------------------------------------------------------ */
 /* Runs (C2)                                                           */
 /* ------------------------------------------------------------------ */
 

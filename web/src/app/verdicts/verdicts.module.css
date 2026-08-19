@@ -449,3 +449,27 @@
   color: var(--cyan);
   letter-spacing: 0.03em;
 }
+
+/* ---- C3 link mesh ---- */
+
+.popLink {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.popLink:hover {
+  color: var(--accent-hover);
+  text-decoration: underline;
+}
+
+.jump {
+  margin: 0;
+}
+
+.caseLinks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 2px 0 0;
+  font-size: var(--fs-label);
+}

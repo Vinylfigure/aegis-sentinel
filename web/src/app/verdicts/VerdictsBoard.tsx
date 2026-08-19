@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import Link from "next/link";
 import { RailLayout } from "@/components/RailLayout/RailLayout";
 import {
   VERDICT_STATES,
@@ -13,7 +14,10 @@ import {
   unknownCauses,
   verdictRuns,
   crossRunControl,
+  verdictRecordAnchor,
+  verdictRecordHref,
   verdictStateMeta,
+  type PoisonCase,
   type PoisonsArtifact,
   type VerdictRecord,
   type VerdictsArtifact,
@@ -30,13 +34,47 @@ export function VerdictsBoard({
   records,
   verdicts,
   poisons,
+  knownPopulationIds,
 }: {
   /** The combined roster (all runs). */
   records: VerdictRecord[];
   verdicts: VerdictsArtifact;
   poisons: PoisonsArtifact;
+  /** Population ids with a reconciliation report on the wire — the only ids
+   * a why-complete link may target (dynamicParams=false 404s the rest). */
+  knownPopulationIds: string[];
 }) {
   const [selectedId, setSelectedId] = useState<string | null>(null);
+
+  // C3 deep links: /verdicts#record=<encoded id> opens with that record
+  // selected and scrolled into view; selecting writes the hash back.
+  useEffect(() => {
+    const raw = window.location.hash;
+    if (!raw.startsWith("#record=")) return;
+    const id = (() => {
+      try {
+        return decodeURIComponent(raw.slice("#record=".length));
+      } catch {
+        return raw.slice("#record=".length);
+      }
+    })();
+    if (!records.some((r) => r.record_id === id)) return;
+    setSelectedId(id);
+    document.getElementById(verdictRecordAnchor(id))?.scrollIntoView({ block: "center" });
+    // records is stable per render of a static page; run once on mount.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const select = (id: string | null) => {
+    setSelectedId(id);
+    if (typeof window !== "undefined") {
+      window.history.replaceState(
+        null,
+        "",
+        id === null ? window.location.pathname : `#record=${encodeURIComponent(id)}`,
+      );
+    }
+  };
 
   const card = scorecard(poisons);
   const breaches = conditionalBreaches(records);
@@ -45,8 +83,7 @@ export function VerdictsBoard({
   const runs = verdictRuns(verdicts, poisons);
   const control = crossRunControl(runs);
 
-  const toggle = (id: string) =>
-    setSelectedId((current) => (current === id ? null : id));
+  const toggle = (id: string) => select(selectedId === id ? null : id);
 
   const rail = (
     <div aria-live="polite">
@@ -54,7 +91,11 @@ export function VerdictsBoard({
         {selected ? "Verdict record" : "Mutation scorecard"}
       </h2>
       {selected ? (
-        <RecordDetail record={selected} onClear={() => setSelectedId(null)} />
+        <RecordDetail
+          record={selected}
+          knownPopulationIds={knownPopulationIds}
+          onClear={() => select(null)}
+        />
       ) : (
         <Scorecard poisons={poisons} />
       )}
@@ -149,7 +190,7 @@ export function VerdictsBoard({
               ) : (
                 <ul className={styles.recordList}>
                   {inState.map((record) => (
-                    <li key={record.record_id}>
+                    <li key={record.record_id} id={verdictRecordAnchor(record.record_id)}>
                       <RecordCard
                         record={record}
                         selected={selectedId === record.record_id}
@@ -241,9 +282,11 @@ function RecordCard({
 
 function RecordDetail({
   record,
+  knownPopulationIds,
   onClear,
 }: {
   record: VerdictRecord;
+  knownPopulationIds: string[];
   onClear: () => void;
 }) {
   const meta = verdictStateMeta(record.status);
@@ -264,10 +307,31 @@ function RecordDetail({
       </RailRow>
       <RailRow label="Population">
         <p className={styles.railMeta}>
-          {record.population_id} · {record.population_count} members
+          {knownPopulationIds.includes(record.population_id) ? (
+            <Link
+              className={styles.popLink}
+              href={`/reconciliation/${record.population_id}`}
+            >
+              {record.population_id}
+            </Link>
+          ) : (
+            <>
+              {record.population_id}{" "}
+              <span className={styles.diagnostic}>
+                (no reconciliation report on the wire for this population)
+              </span>
+            </>
+          )}{" "}
+          · {record.population_count} members
           <span className={styles.diagnostic}> diagnostic</span>
         </p>
-        <p className={styles.railMeta}>completeness: {record.completeness_ref}</p>
+        <p className={styles.railMeta}>
+          completeness: {record.completeness_ref}
+          <span className={styles.diagnostic}>
+            {" "}
+            (ref string, not a URL — resolved via population_id)
+          </span>
+        </p>
       </RailRow>
       <RailRow label="Spec">
         <p className={styles.railMeta}>{record.spec_id}</p>
@@ -303,6 +367,14 @@ function RecordDetail({
           ))}
         </ul>
       </RailRow>
+      <p className={styles.jump}>
+        <Link
+          className={styles.popLink}
+          href={`/proof/${encodeURIComponent(record.record_id)}`}
+        >
+          Full lineage →
+        </Link>
+      </p>
       <button type="button" className={styles.clearButton} onClick={onClear}>
         Clear selection
       </button>
@@ -354,12 +426,51 @@ function Scorecard({ poisons }: { poisons: PoisonsArtifact }) {
                 <span className={styles.stateChip}>{cls.head}</span>
                 {cls.cause && <span className={styles.whyCode}> {cls.cause}</span>}
               </p>
+              <CaseLinks poisonCase={poisonCase} />
             </li>
           );
         })}
       </ul>
     </>
   );
+}
+
+/** Where a poison case's proof lives. Switches on the discriminated
+ * PoisonActual kind with a never arm — a third kind fails tsc rather than
+ * silently rendering no link. */
+function CaseLinks({ poisonCase }: { poisonCase: PoisonCase }) {
+  const actual = poisonCase.actual;
+  switch (actual.kind) {
+    case "verdict":
+      return (
+        <p className={styles.caseLinks}>
+          <Link
+            className={styles.popLink}
+            href={verdictRecordHref(actual.record.record_id)}
+          >
+            verdict record →
+          </Link>{" "}
+          <Link
+            className={styles.popLink}
+            href={`/proof/${encodeURIComponent(actual.record.record_id)}`}
+          >
+            lineage →
+          </Link>
+        </p>
+      );
+    case "compile_error":
+      return (
+        <p className={styles.caseLinks}>
+          <Link className={styles.popLink} href="/registry">
+            E-code on /registry →
+          </Link>
+        </p>
+      );
+    default: {
+      const exhaustive: never = actual;
+      return exhaustive;
+    }
+  }
 }
 
 function RailRow({ label, children }: { label: string; children: React.ReactNode }) {

@@ -1,5 +1,10 @@
 import type { Metadata } from "next";
-import { engagementPoisons, engagementVerdictRecords, engagementVerdicts } from "@/data";
+import {
+  engagementPoisons,
+  engagementReconciliations,
+  engagementVerdictRecords,
+  engagementVerdicts,
+} from "@/data";
 import { VerdictsBoard } from "./VerdictsBoard";
 
 export const metadata: Metadata = { title: "Verdicts" };
@@ -18,6 +23,7 @@ export default function VerdictsPage() {
       records={engagementVerdictRecords}
       verdicts={engagementVerdicts}
       poisons={engagementPoisons}
+      knownPopulationIds={engagementReconciliations.map((r) => r.population_id)}
     />
   );
 }

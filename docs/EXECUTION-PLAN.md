@@ -168,8 +168,19 @@ ratification is the freeze — draft → frozen(=ratified) → superseded).
   Proof routes lift 9 → 11 pages with zero route changes. Process TA control
   points gain data-driven `links` in the seed (TA-1 → the why-complete rail,
   TA-2/TA-3 → /verdicts); LA/CM points honestly carry none and say so.
-- [ ] **C3** — demo polish against PRD §6 acceptance: five verdict states visibly
-  distinct, every seeded defect visibly caught, population click answers "why complete".
+- [x] **C3** — the why-complete click and the link mesh: the `/verdicts`
+  inspector's population id links into the why-complete rail (only when a
+  reconciliation report exists for that id — otherwise honest no-report text;
+  `completeness_ref` stays labelled "ref string, not a URL"); every scorecard
+  case links to its verdict record and lineage (`verdict` kind) or to
+  `/registry` (`compile_error` kind) via a never-armed switch; the record
+  inspector gains "Full lineage →" and the proof verdict node links back —
+  all through one shared `verdictRecordAnchor`/`verdictRecordHref` helper pair
+  (`/verdicts#record=…` selects + scrolls, hash written back on select). Seed
+  TA-2/TA-3 stay at plain `/verdicts` by design (a seed-hardcoded record_id
+  would fail silently; TA-1's population href fails visibly). PRD §6
+  acceptance walkthrough (criterion → screen → falsifier) appended to
+  web/README.md.
 
 ## Phase 1.5 / 2 — blocked until VAL02 passes
 

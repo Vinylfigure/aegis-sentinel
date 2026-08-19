@@ -224,6 +224,30 @@ than rounded off (D-L1 makes ratification the freeze). Proven by value
 falsifiers: flipping an entry to `draft` moves it to NOT-usable, and nulling
 `ratified_by` on a frozen entry produces the contradiction notice.
 
+## PRD §6 acceptance walkthrough (C3)
+
+PRD §6's acceptance, mapped to the screen that carries it and the falsifier
+that proves the screen is data, not prose:
+
+| Criterion | Screen | Falsifier that proves it |
+| --- | --- | --- |
+| Five verdict states render distinctly | `/verdicts` — five sections, each with its own on-screen definition; state is always text, colour only reinforces | `Record<VerdictState, …>` is exhaustive (a sixth state fails `tsc`); flipping a record's `status` moves it between sections and its `/proof` page follows |
+| Every seeded defect visibly caught | `/verdicts` mutation scorecard, recomputed from the cases on screen — never read from `detection` | setting a case `detected:false` renders MISSED and drops the rate; a stated/computed divergence renders the "cases are the truth" banner; non-empty `misses` cites PRD §7 |
+| A practitioner says "now I know why the population is complete" | `/verdicts` record inspector → population link → `/reconciliation/pop-termination-events` why-complete rail; same from the `/proof` population node (UI01) and the TA-1 process control point | the population link renders only when a reconciliation report exists for that id (else honest no-report text); deleting a blocker's disposition flips the rail's conclusion to "not reconciled" |
+
+Standing note: the detection-rate percentage on `/verdicts` is PRD §7's
+required headline metric (`detected / introduced`, denominator = the seeded
+defects), not the PRD §2-forbidden coverage percentage against an unratified
+population denominator — documented in `src/data/verdicts.ts`.
+
+Deep-link scheme: `/verdicts#record=<encodeURIComponent(record_id)>` selects
+and scrolls to a record (`verdictRecordAnchor`/`verdictRecordHref` in
+`src/data/verdicts.ts` — one helper pair, so producers and the consumer agree
+by construction). Seed TA-2/TA-3 deliberately link to plain `/verdicts`, not a
+record anchor: a seed hardcoding an engagement `record_id` would fail silently
+(dead fragment, no 404) if VAL02 ever renamed a record, while TA-1's
+population href fails visibly (404) under `dynamicParams=false`.
+
 ## Deployment (Owner console action — not automated)
 
 Vercel project creation is an Owner action in the Vercel console; nothing in

@@ -7,6 +7,7 @@ import {
   EVIDENCE_KIND_LABEL,
   STAGE_ORDER,
   lineage,
+  verdictRecordHref,
   verdictStateMeta,
   type LineageNode,
   type LineageStageId,
@@ -222,6 +223,11 @@ function StageInspector({
 
       {node.meta.id === "verdict" && (
         <>
+          <p className={styles.jump}>
+            <Link className={styles.jumpLink} href={verdictRecordHref(record.record_id)}>
+              This record on /verdicts →
+            </Link>
+          </p>
           <dl className={styles.fields}>
             <div className={styles.field}>
               <dt>re-performance</dt>
