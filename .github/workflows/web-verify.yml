@@ -8,10 +8,12 @@ on:
     paths:
       - "web/**"
       - "artifacts/**"
+      - "schemas/**"
   pull_request:
     paths:
       - "web/**"
       - "artifacts/**"
+      - "schemas/**"
 
 jobs:
   web-verify:
@@ -29,6 +31,8 @@ jobs:
           cache-dependency-path: web/package-lock.json
       - name: Install
         run: npm ci
+      - name: Codegen drift
+        run: npm run codegen:check
       - name: Typecheck
         run: npx tsc --noEmit
       - name: Build

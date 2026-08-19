@@ -55,7 +55,7 @@ export default function ProofIndexPage() {
                     >
                       <code className={styles.mono}>{record.record_id}</code>
                     </Link>
-                    <p className={styles.indexMessage}>{record.message}</p>
+                    <p className={styles.indexMessage}>{record.message ?? "(no message on the record)"}</p>
                   </li>
                 ))}
               </ul>

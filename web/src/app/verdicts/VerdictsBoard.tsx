@@ -196,13 +196,13 @@ function RecordCard({
       >
         <code className={styles.ref}>{record.record_id}</code>
       </button>
-      <p className={styles.recordMessage}>{record.message}</p>
+      <p className={styles.recordMessage}>{record.message ?? "(no message on the record)"}</p>
       <p className={styles.recordChips}>
         <span className={styles.stateChip}>{record.status}</span>
         {record.unknown_cause && (
           <span className={styles.whyCode}>{record.unknown_cause}</span>
         )}
-        <span className={styles.severity}>severity {record.severity}</span>
+        <span className={styles.severity}>severity {record.severity ?? "not recorded"}</span>
         {meta.requires && (
           <span className={companion ? styles.companion : styles.companionMissing}>
             {meta.requires}: {companion ? String(companion) : "MISSING"}
@@ -234,7 +234,7 @@ function RecordDetail({
         <p className={styles.railMeta}>{meta.meaning}</p>
       </RailRow>
       <RailRow label="Message">
-        <p className={styles.railMeta}>{record.message}</p>
+        <p className={styles.railMeta}>{record.message ?? "(no message on the record)"}</p>
       </RailRow>
       <RailRow label="Population">
         <p className={styles.railMeta}>

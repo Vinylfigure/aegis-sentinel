@@ -141,8 +141,21 @@ ratification is the freeze — draft → frozen(=ratified) → superseded).
   route changes); `@`-bearing record ids prerender fine. Exhaustive stage/kind
   Records + never-arm inspector switch, so an eleventh stage or new kind fails
   tsc.
-- [ ] **C1** — pydantic JSON-Schema export + codegen (`json-schema-to-typescript`) +
-  assignability checks (needs SCH01).
+- [x] **C1** — codegen from the committed JSON Schemas
+  (`json-schema-to-typescript@15.0.4`, exact-pinned, the tree's first non-Next
+  dep): `web/scripts/codegen.mjs` generates six modules into
+  `web/src/data/__generated__/` (committed; `codegen:check` byte-diffs in
+  verify-web.sh + CI, mirroring the Python generate→commit→drift discipline);
+  `web/src/data/bridge.ts` holds compile-time `Exact` assertions — eleven enum
+  unions plus the wire verdict-record shape (index-signature artifact stripped;
+  `support` compared one-directionally, both documented). Deliberately NO
+  assertion between the ontology Verdict model and the wire record (Q1/Q2).
+  The schemas corrected the hand types: Severity is the five-value wire set
+  (answers Q7), TemporalKind gains `snapshot-cadence` and both registry
+  vocabularies are ontology (answers Q8), and message/severity are optional on
+  the wire with schema_version const-pinned. Falsifiers: dropped enum member →
+  4 tsc errors; hand-edited generated literal → codegen:check + bridge both
+  fail; schema $defs edit → drift; deleted generated file → missing-file fail.
 - [ ] **C2** — swap mocks for real `artifacts/demo-engagement/` output (needs VAL02);
   deep-link process-graph TA control points → reconciliation/verdicts.
 - [ ] **C3** — demo polish against PRD §6 acceptance: five verdict states visibly

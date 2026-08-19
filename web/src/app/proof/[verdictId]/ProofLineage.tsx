@@ -77,7 +77,7 @@ export function ProofLineage({
         <h1 className={styles.h1}>
           Proof <span className={styles.h1Dot}>·</span> {record.record_id}
         </h1>
-        <p className={styles.sub}>{record.message}</p>
+        <p className={styles.sub}>{record.message ?? "(no message on the record)"}</p>
         <p className={styles.meta}>
           <span className={styles.stateChip}>{record.status}</span>
           <span className={styles.metaSep}>·</span>

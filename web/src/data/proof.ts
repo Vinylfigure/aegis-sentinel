@@ -331,7 +331,7 @@ export function lineage(
         if (family === null) {
           return {
             kind: "trace-only",
-            fields: [{ label: "message", value: record.message }],
+            fields: [{ label: "message", value: record.message ?? "(no message on the record)" }],
             note: "Assertion family not on the wire for this run — the assertion id exists only inside the message prose (Q15).",
           };
         }
@@ -343,7 +343,7 @@ export function lineage(
               value: `${family} → ${FAMILY_TO_ASSERTION_TYPE[family]}`,
               mono: true,
             },
-            { label: "message", value: record.message },
+            { label: "message", value: record.message ?? "(no message on the record)" },
           ],
           note: "Inferred from which poisons.verdict_records group holds this record; family names do not match the ratified AssertionType spellings (Q4b), and the assertion id itself is only message prose (Q15).",
         };

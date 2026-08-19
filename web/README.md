@@ -60,7 +60,17 @@ artifacts above.
 ## SCH01/REC01 shape review questions
 
 Review artifact for the backend output shapes, recorded while hand-authoring
-the B1 types and mock engagement. Rule followed: the mock keeps the artifact
+the B1 types and mock engagement. Since C1, part of this review is
+mechanical: `npm run codegen` generates TypeScript from the committed JSON
+Schemas into `src/data/__generated__/` (committed; byte-drift checked by
+`npm run codegen:check` in `scripts/verify-web.sh` and CI), and
+`src/data/bridge.ts` holds compile-time `Exact` assertions between the
+hand-authored enums/wire-record and the generated ones. Two honest limits:
+the bridge guards the TYPES — JSON imports still widen enum literals to
+`string` (`Widen<T>` in index.ts), which C2's direct consumption of the
+pipeline-validated artifacts closes at the source; and `support.field_values`
+is compared one-directionally because the schema leaves it an open object
+while the hand type refines it (documented in bridge.ts). Rule followed: the mock keeps the artifact
 shape verbatim; every place the shape diverges from the ontology models or is
 awkward for rendering is a question here, not a silent frontend workaround.
 Numbers are referenced from comments in `src/data/types.ts`.
@@ -68,7 +78,9 @@ Numbers are referenced from comments in `src/data/types.ts`.
 - **Q1 — `unknown_cause` vs `unknown_why`.** Verdict records on the wire
   carry the UNKNOWN why-code as `unknown_cause`; `schema/models.py` `Verdict`
   calls the field `unknown_why`. Same D-U1 concept, two names — which one is
-  canonical for SCH01's exported schema?
+  canonical for SCH01's exported schema? *(C1 note: now schema-confirmed —
+  the ontology and wire schemas generate different TypeScript shapes, and
+  `bridge.ts` deliberately asserts nothing between them.)*
 - **Q2 — EXCEPTION ref naming.** Artifact records carry `disposition_ref`;
   the `Verdict` model calls it `exception_disposition_ref` (EXCLUDED's
   `ratification_ref` matches in both). Also: the conditional fields are
@@ -109,14 +121,18 @@ Numbers are referenced from comments in `src/data/types.ts`.
   excluded card labels that on screen (`PREFIX_JOIN_NOTE`) rather than
   stripping silently. Deleting the exclusion makes the card say so — it is a
   real join, not decoration.
-- **Q7 — `severity` vocabulary is not in the ontology.** Only `"high"` is
-  observed; `schema/enums.py` has no Severity enum. Typed as
-  `"low" | "medium" | "high"` by guess — needs ratification.
-- **Q8 — registry vocabularies not in the ontology.** `temporal.kind`
-  (`state-only` / `event-history` / `full-history`) and `pagination.method`
-  (`page` / `cursor` / `none`) are closed-looking sets that exist nowhere in
-  `schema/enums.py`. If they are ontology, they belong in SCH01; if they are
-  free text, the types should say `string`.
+- **Q7 — `severity` vocabulary is not in the ontology.**
+  *(ANSWERED at C1 — by the wire schema itself.)* `verdict-record.schema.json`
+  carries the full set: `critical | high | medium | low | informational`, and
+  `severity` is optional on the wire. The hand-authored three-value guess was
+  wrong and is now generated-checked (`bridge.ts` `_severity`). Remaining for
+  the Owner: should Severity also join `schema/enums.py` as ontology?
+- **Q8 — registry vocabularies not in the ontology.**
+  *(ANSWERED at C1 — they ARE ontology.)* `capability_entry.schema.json`
+  `$defs` carries both: `PaginationMethod = cursor | page | none` and
+  `TemporalKind = state-only | event-history | full-history |
+  snapshot-cadence` — a fourth member the hand-authored guess had missed.
+  Both are now generated-checked in `bridge.ts`.
 - **Q9 — no D-7 join-failure cause on the wire.** `Delta` carries `bucket` but
   not the D-7 cause family. B2 infers it (`unresolvable` → identity-fuzzy /
   `UNKNOWN_POPULATION`; `left_only` → basis-missing / `UNKNOWN_EVIDENCE`;

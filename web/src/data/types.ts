@@ -97,8 +97,15 @@ export interface TimeWindow {
   end: IsoDateTime;
 }
 
-/** Severity vocabulary is not in schema/enums.py — see README question Q7. */
-export type Severity = "low" | "medium" | "high";
+/** Severity vocabulary per schemas/verdict-record.schema.json (answers README
+ * Q7 — the wire schema carried the ratified set all along; the earlier
+ * three-value guess was wrong). */
+export type Severity =
+  | "critical"
+  | "high"
+  | "medium"
+  | "low"
+  | "informational";
 
 /* ------------------------------------------------------------------ */
 /* verdicts.json — array of VerdictRecord                              */
@@ -133,7 +140,8 @@ export interface VerdictRecord {
   /** Present only on EXCEPTION records. */
   disposition_ref?: string;
   evidence_refs: string[];
-  message: string;
+  /** Optional on the wire (schemas/verdict-record.schema.json required list). */
+  message?: string;
   population_count: number;
   population_id: string;
   /** Present only on EXCLUDED records. */
@@ -141,8 +149,10 @@ export interface VerdictRecord {
   record_hash: Sha256;
   record_id: string;
   run_id: string;
-  schema_version: string;
-  severity: Severity;
+  /** const-pinned by the wire schema; a version bump is a reviewed change. */
+  schema_version: "0.1.0";
+  /** Optional on the wire; independent of status. */
+  severity?: Severity;
   source: string;
   source_version: string;
   spec_hash: Sha256;
@@ -252,10 +262,17 @@ export interface CompileError {
   suggestion: string | null;
 }
 
-export type PaginationMethod = "page" | "cursor" | "none";
+/** Ontology per capability_entry.schema.json $defs (answers README Q8). */
+export type PaginationMethod = "cursor" | "page" | "none";
 
 /** Temporal capability vocabulary — not in schema/enums.py (README Q8). */
-export type TemporalKind = "state-only" | "event-history" | "full-history";
+/** Ontology per capability_entry.schema.json $defs (answers README Q8) —
+ * including `snapshot-cadence`, which the hand-authored guess had missed. */
+export type TemporalKind =
+  | "state-only"
+  | "event-history"
+  | "full-history"
+  | "snapshot-cadence";
 
 export interface RegistryPagination {
   exhaustion_method: string;
