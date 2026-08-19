@@ -156,6 +156,38 @@ export function verdictRecordHref(recordId: string): string {
   return `/verdicts#record=${encodeURIComponent(recordId)}`;
 }
 
+/**
+ * Colliding record ids whose contents differ (track verifier finding):
+ * combinedRecords collapses duplicates by record_id, which is correct for a
+ * true duplicate but would silently drop one of two DIFFERENT records
+ * sharing an id. record_hash is the content fingerprint the pipeline
+ * already carries — where it differs across a collision, that is a wire
+ * defect the board must surface, not smooth.
+ */
+export interface RecordCollision {
+  recordId: string;
+  hashes: string[];
+}
+
+export function recordCollisions(
+  verdicts: VerdictsArtifact,
+  poisons: PoisonsArtifact,
+): RecordCollision[] {
+  const byId = new Map<string, Set<string>>();
+  const note = (record: VerdictRecord) => {
+    const existing = byId.get(record.record_id);
+    if (existing) existing.add(record.record_hash);
+    else byId.set(record.record_id, new Set([record.record_hash]));
+  };
+  for (const record of verdicts) note(record);
+  for (const group of POISON_VERDICT_GROUPS) {
+    for (const record of poisons.verdict_records[group]) note(record);
+  }
+  return [...byId.entries()]
+    .filter(([, hashes]) => hashes.size > 1)
+    .map(([recordId, hashes]) => ({ recordId, hashes: [...hashes].sort() }));
+}
+
 /* ------------------------------------------------------------------ */
 /* Runs (C2)                                                           */
 /* ------------------------------------------------------------------ */
@@ -168,7 +200,11 @@ export function verdictRecordHref(recordId: string): string {
  * distinguish two legitimate runs from one corrupted one. */
 export interface RunGroup {
   runId: string;
+  /** Display form — comma-joined when a run disagrees with itself. */
   controlId: string;
+  /** Distinct control ids WITHIN the run; >1 is within-run corruption,
+   * which the board words differently from a cross-run disagreement. */
+  controlIds: string[];
   collectedAt: string;
   records: VerdictRecord[];
 }
@@ -183,12 +219,16 @@ export function verdictRuns(
     if (existing) existing.push(record);
     else groups.set(record.run_id, [record]);
   }
-  return [...groups.entries()].map(([runId, records]) => ({
-    runId,
-    controlId: runMetadata(records, "control_id").values.join(", "),
-    collectedAt: runMetadata(records, "collected_at").values.join(", "),
-    records,
-  }));
+  return [...groups.entries()].map(([runId, records]) => {
+    const controlIds = runMetadata(records, "control_id").values;
+    return {
+      runId,
+      controlId: controlIds.join(", "),
+      controlIds,
+      collectedAt: runMetadata(records, "collected_at").values.join(", "),
+      records,
+    };
+  });
 }
 
 /** The one cross-run fact that IS a breach when inconsistent: every run in

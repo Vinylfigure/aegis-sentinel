@@ -8,6 +8,7 @@ import {
   conditionalBreaches,
   detectionRateText,
   orderedCases,
+  recordCollisions,
   recordsByState,
   scorecard,
   splitClassification,
@@ -82,6 +83,8 @@ export function VerdictsBoard({
   const selected = records.find((r) => r.record_id === selectedId) ?? null;
   const runs = verdictRuns(verdicts, poisons);
   const control = crossRunControl(runs);
+  const corruptRuns = runs.filter((g) => g.controlIds.length > 1);
+  const collisions = recordCollisions(verdicts, poisons);
 
   const toggle = (id: string) => select(selectedId === id ? null : id);
 
@@ -135,12 +138,33 @@ export function VerdictsBoard({
             </li>
           ))}
         </ul>
-        {!control.consistent && (
+        {corruptRuns.length > 0 ? (
           <p className={styles.breach}>
-            Runs disagree on control id ({control.values.join(" vs ")}) — every
-            run in this engagement should test the same control. Two run ids are
-            data (walking-skeleton + poison runs, README Q17); a control
-            disagreement is not.
+            {corruptRuns
+              .map((g) => `run ${g.runId} carries multiple control ids (${g.controlIds.join(", ")})`)
+              .join("; ")}{" "}
+            — a single run testing two controls is within-run corruption, not a
+            run boundary.
+          </p>
+        ) : (
+          !control.consistent && (
+            <p className={styles.breach}>
+              Runs disagree on control id ({control.values.join(" vs ")}) — every
+              run in this engagement should test the same control. Two run ids
+              are data (walking-skeleton + poison runs, README Q17); a control
+              disagreement is not.
+            </p>
+          )
+        )}
+
+        {collisions.length > 0 && (
+          <p className={styles.breach}>
+            Record id collision with differing content:{" "}
+            {collisions
+              .map((c) => `${c.recordId} (${c.hashes.length} distinct record_hash values)`)
+              .join("; ")}{" "}
+            — the roster keeps the first occurrence, but two different records
+            sharing an id is a wire defect, not a duplicate.
           </p>
         )}
 
