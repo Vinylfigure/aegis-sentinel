@@ -125,7 +125,22 @@ ratification is the freeze — draft → frozen(=ratified) → superseded).
   (detection divergence, undetected case, non-empty misses, frozen→draft,
   missing ratifier, missing why-code), two deletion probes, and an exhaustiveness
   probe proving a new `VerdictState` fails the build.
-- [ ] **B4** — `/proof/[verdictId]` ten-stage SVG lineage + node inspector.
+- [x] **B4** — `/proof` (index grouped by the five states) + `/proof/[verdictId]`:
+  the ten-stage SVG lineage with typed arrows as visible edge labels (imposes →
+  compiled into → quantifies over → derived from → reconciled into → evidence
+  gated by → frozen in → executes → evaluates to) and a node inspector. Honest to
+  the wire: five stages render from data (population/sources/reconciliation via
+  the population_id join, contract identity via spec_hash == the EQC
+  contract_hash, verdict itself); the other five are labelled on-diagram —
+  not-emitted (commitment/requirement/snapshot, Q16), trace-only
+  (claim via compile_errors claim ids, Q15; assertion family inferred from the
+  poisons grouping, Q4b/Q15). Clicking the population node links into the
+  why-complete rail (UI01). Routes generated from `engagementVerdictRecords`
+  (verdicts.json + poisons verdict_records, deduped — the B1 mock duplicates
+  them; real artifacts are disjoint, so C2 lifts this to 11 pages with zero
+  route changes); `@`-bearing record ids prerender fine. Exhaustive stage/kind
+  Records + never-arm inspector switch, so an eleventh stage or new kind fails
+  tsc.
 - [ ] **C1** — pydantic JSON-Schema export + codegen (`json-schema-to-typescript`) +
   assignability checks (needs SCH01).
 - [ ] **C2** — swap mocks for real `artifacts/demo-engagement/` output (needs VAL02);

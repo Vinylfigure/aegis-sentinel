@@ -12,6 +12,7 @@
  * assignment only re-narrows those enum strings.
  */
 
+import { combinedRecords } from "@/data/verdicts";
 import type {
   ControlsSeed,
   GaugesSeed,
@@ -44,6 +45,9 @@ export * from "@/data/reconciliation";
 /* Verdict + registry derivations (B3) — computed from the engagement artifacts. */
 export * from "@/data/verdicts";
 export * from "@/data/registry";
+
+/* Proof-lineage derivations (B4). */
+export * from "@/data/proof";
 
 /** Literal unions -> primitives, recursively; structure and key presence
  * are preserved so assignment still checks them. */
@@ -85,3 +89,14 @@ export const engagementPoisons = checked<PoisonsArtifact>(poisonsJson);
  * the `checked<T>` assignability position (L-053) is untouched.
  */
 export const engagementReconciliations: ReconciliationReport[] = [engagementReconciliation];
+
+/**
+ * Every verdict record in the engagement (verdicts.json + the records
+ * embedded in poisons.verdict_records, deduped) — the roster /proof routes
+ * are generated from. Built FROM the checked exports above; the checked<T>
+ * assignability position (L-053) is untouched.
+ */
+export const engagementVerdictRecords = combinedRecords(
+  engagementVerdicts,
+  engagementPoisons,
+);

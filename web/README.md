@@ -155,6 +155,25 @@ Numbers are referenced from comments in `src/data/types.ts`.
   lives in `registry.json`) does not travel with the reconciliation — so the
   join panel cannot show whether a source could even observe the whole period.
   Should `ReconciliationSource` carry its own `time_window` + capability ref?
+- **Q14 — the EQC travels as an identity, not a contract.** `verdict.spec_hash`
+  IS the EvidenceQualityContract's `contract_hash`
+  (scripts/build_demo_engagement.py), but the contract itself — the five
+  quality properties with their independent methods and failure modes — is
+  never emitted. The /proof contract stage can name the contract by hash and
+  nothing more. Should the engagement emit the EQCs (they are already built
+  in-memory by every collector)?
+- **Q15 — claim and assertion ids are not fields anywhere.** Claims exist only
+  in Python memory (sole wire trace: `registry.compile_errors[].claim_id`), and
+  the assertion id appears only inside the verdict `message` prose; the
+  poisons `verdict_records` grouping implies the assertion family but with
+  non-ratified spellings (Q4b). /proof renders both stages as trace-only. Should
+  verdict records carry `claim_id` and `assertion_id` fields?
+- **Q16 — commitment, requirement, and manifest snapshot are absent from the
+  wire.** No artifact carries any of the three, so /proof renders those stages
+  as not-yet-emitted. The ManifestSnapshot model exists
+  (src/aegis_sentinel/manifest/snapshot.py) but the demo never builds one.
+  UI01's full chain needs at least the snapshot emitted; commitment/requirement
+  need modeling first.
 
 ## SATISFIED at B3: ratification caveats on `/registry`
 

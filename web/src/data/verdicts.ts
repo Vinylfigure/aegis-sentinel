@@ -16,10 +16,12 @@
 import type {
   CompileError,
   PoisonCase,
+  PoisonVerdictGroup,
   PoisonsArtifact,
   UnknownWhy,
   VerdictRecord,
   VerdictState,
+  VerdictsArtifact,
 } from "@/data/types";
 
 /* ------------------------------------------------------------------ */
@@ -92,6 +94,47 @@ export const VERDICT_STATES: readonly VerdictStateMeta[] = [
 
 export function verdictStateMeta(state: VerdictState): VerdictStateMeta {
   return STATE_META[state];
+}
+
+/* ------------------------------------------------------------------ */
+/* Combined record roster (B4)                                         */
+/* ------------------------------------------------------------------ */
+
+/** The poisons verdict_records grouping keys. The Record lookup below makes
+ * this exhaustive: a fourth family in the artifact type fails tsc here
+ * rather than silently dropping its records from every roster. */
+const POISON_GROUP_COMPLETE: Record<PoisonVerdictGroup, true> = {
+  existence: true,
+  non_existence: true,
+  timing: true,
+};
+export const POISON_VERDICT_GROUPS: readonly PoisonVerdictGroup[] = Object.keys(
+  POISON_GROUP_COMPLETE,
+) as PoisonVerdictGroup[];
+
+/**
+ * Every verdict record the engagement carries: verdicts.json plus the
+ * records embedded in poisons.verdict_records, deduped by record_id. The
+ * B1 mock duplicates all nine poison records across both artifacts; the
+ * real artifacts are disjoint, so post-C2 the dedup is a no-op. Order is
+ * verdicts.json first, then poison families in group order.
+ */
+export function combinedRecords(
+  verdicts: VerdictsArtifact,
+  poisons: PoisonsArtifact,
+): VerdictRecord[] {
+  const seen = new Set<string>();
+  const out: VerdictRecord[] = [];
+  const add = (record: VerdictRecord) => {
+    if (seen.has(record.record_id)) return;
+    seen.add(record.record_id);
+    out.push(record);
+  };
+  for (const record of verdicts) add(record);
+  for (const group of POISON_VERDICT_GROUPS) {
+    for (const record of poisons.verdict_records[group]) add(record);
+  }
+  return out;
 }
 
 /* ------------------------------------------------------------------ */
