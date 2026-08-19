@@ -391,11 +391,11 @@ Rules for curators (`/evolve`):
 - Status: candidate
 
 ## L-054 · 2026-08-18 · Commit the baseline before running revert-based falsifier probes
-- Trigger: the B2 deletion-falsifier run reverted each probe with `git checkout -- <mock>.json`, which discarded the SAME task's uncommitted edits to that file (four keys the emitter change had just added); probes 2–5 then ran against a half-reverted mock and all failed the build with a type error that read like a real defect, costing a full diagnostic detour before the cause — my own revert — was spotted. Committing the verified baseline first made all seven probes pass unchanged (origin: own observation, verify failure)
+- Trigger: the B2 deletion-falsifier run reverted each probe with `git checkout -- <mock>.json`, which discarded the SAME task's uncommitted edits to that file (four keys the emitter change had just added); probes 2–5 then ran against a half-reverted mock and all failed the build with a type error that read like a real defect, costing a full diagnostic detour before the cause — my own revert — was spotted. Committing the verified baseline first made all seven probes pass unchanged (origin: own observation, verify failure). Recurred at C1 (separate task, same session): falsifier F1 mutated types.ts and reverted with `git checkout -- types.ts` BEFORE the C1 commit existed, silently discarding the uncommitted Severity/Q8/optionality alignment; caught because the file vanished from `git status` rather than by any failure — the quiet variant is worse than B2's loud one
 - Rule: a falsifier probe whose undo is `git checkout --` can only restore committed state, so commit (or stash) the work under test before the first probe — and when a probe fails in a way the mutation cannot explain, suspect the harness before the code
 - Scope: portable
-- Evidence: 1
-- Status: candidate
+- Evidence: 2 (B2 probe run; C1 falsifier F1 — independent tasks)
+- Status: candidate — RIPE
 
 ## L-055 · 2026-08-18 · Prerendered HTML is one line — `grep -c` cannot count occurrences in it
 - Trigger: the B2 probe harness measured rendered signals with `grep -c`, which counts matching LINES; Next.js prerenders each route as a single-line HTML file, so every signal reported 0 or 1 regardless of how many times it appeared — two probes (source deletion, exclusion deletion) looked like no-ops until re-measured with `grep -o … | wc -l`, which showed the real 5→0 and 1→0 transitions (origin: own observation during falsifier verification)
