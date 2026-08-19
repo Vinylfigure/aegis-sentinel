@@ -156,8 +156,18 @@ ratification is the freeze — draft → frozen(=ratified) → superseded).
   the wire with schema_version const-pinned. Falsifiers: dropped enum member →
   4 tsc errors; hand-edited generated literal → codegen:check + bridge both
   fail; schema $defs edit → drift; deleted generated file → missing-file fail.
-- [ ] **C2** — swap mocks for real `artifacts/demo-engagement/` output (needs VAL02);
-  deep-link process-graph TA control points → reconciliation/verdicts.
+- [x] **C2** — mocks deleted; the engagement imports point straight at
+  `artifacts/demo-engagement/` via the `@artifacts/*` tsconfig path (the
+  drift-tested, pydantic-validated originals — no vendored copies by
+  construction, and the enum-value hole `Widen<T>` leaves open closes at the
+  source). The real verdicts.json carries one walking-skeleton record while
+  the five-state spread is embedded in poisons.json (Q17), so `/verdicts`
+  merges the two runs: `verdictRuns` groups the combined roster, a run legend
+  + per-record run chips label them, and the breach banner narrows to a
+  cross-run control_id disagreement — two run ids are data, not a defect.
+  Proof routes lift 9 → 11 pages with zero route changes. Process TA control
+  points gain data-driven `links` in the seed (TA-1 → the why-complete rail,
+  TA-2/TA-3 → /verdicts); LA/CM points honestly carry none and say so.
 - [ ] **C3** — demo polish against PRD §6 acceptance: five verdict states visibly
   distinct, every seeded defect visibly caught, population click answers "why complete".
 

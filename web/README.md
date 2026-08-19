@@ -29,14 +29,16 @@ npm run build
   page states the execution-plan task (A3–B4) that fills it in.
 - `src/components/` — `AppShell` (two-column shell), `NavTabs` (route tabs),
   `GaugesRail` (sticky right rail), `StubPage`.
-- `src/data/` — the data layer (A2 + B1). `types.ts` holds hand-authored
-  ontology/artifact types (C1 codegen replaces them); `seed/*.json` is the
-  prototype-ported demo data, genericized to the invented demo company
-  "Meridian Financial" (scope, controls, process lanes, gauges); `engagement/`
-  is the hand-authored mock engagement encoding the six poison cases, shaped
-  to the `artifacts/demo-engagement/` contracts; `index.ts` typed-exports all
-  of it so `tsc --noEmit` structurally checks every JSON file against the
-  types. Pages import from `@/data`, never from the JSON directly.
+- `src/data/` — the data layer. `types.ts` holds the hand-authored
+  ontology/artifact types, generated-checked by `bridge.ts` against
+  `__generated__/` (C1); `seed/*.json` is the prototype-ported demo data,
+  genericized to the invented demo company "Meridian Financial" (scope,
+  controls, process lanes, gauges); the engagement data is imported straight
+  from `artifacts/demo-engagement/` via the `@artifacts/*` tsconfig path
+  (C2) — the pipeline-emitted, drift-tested originals, never vendored
+  copies; `index.ts` typed-exports all of it so `tsc --noEmit` structurally
+  checks every JSON file against the types. Pages import from `@/data`,
+  never from the JSON directly.
 - `src/styles/tokens.css` — the single source of color/type/scale tokens.
   Extend it only from a prototype or ratified design, never ad hoc.
 
@@ -54,8 +56,11 @@ edit those files, and do not vendor copies into `web/`):
 | `poisons.json` | `cases` + `detection` + embedded `verdict_records` | `/verdicts` mutation scorecard (B3) |
 
 B1 landed hand-authored mocks in `web/src/data/engagement/` matching these
-shapes (Meridian Financial cast, synthetic hashes); C2 swaps them for the real
-artifacts above.
+shapes (Meridian Financial cast, synthetic hashes); C2 deleted them and
+pointed the imports at the real artifacts above via `@artifacts/*` — the
+no-vendoring rule is now honored by construction, and because the imported
+files are pydantic-validated before the pipeline emits them, the
+enum-value hole `Widen<T>` leaves open is closed at the source.
 
 ## SCH01/REC01 shape review questions
 
@@ -190,6 +195,13 @@ Numbers are referenced from comments in `src/data/types.ts`.
   (src/aegis_sentinel/manifest/snapshot.py) but the demo never builds one.
   UI01's full chain needs at least the snapshot emitted; commitment/requirement
   need modeling first.
+- **Q17 — the poison run's verdict records live only inside poisons.json.**
+  The real `verdicts.json` carries one walking-skeleton record; the five-state
+  spread (10 records) is embedded in `poisons.json.verdict_records`, so
+  `/verdicts` and `/proof` merge two runs client-side (`combinedRecords` /
+  `verdictRuns`, dedup by record_id). Should VAL02 emit the poison records
+  into a flat `verdicts.json` — or a run envelope (cf. Q3) — so the roster is
+  one artifact?
 
 ## SATISFIED at B3: ratification caveats on `/registry`
 

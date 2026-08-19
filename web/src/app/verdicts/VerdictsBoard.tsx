@@ -8,13 +8,15 @@ import {
   detectionRateText,
   orderedCases,
   recordsByState,
-  runMetadata,
   scorecard,
   splitClassification,
   unknownCauses,
+  verdictRuns,
+  crossRunControl,
   verdictStateMeta,
   type PoisonsArtifact,
   type VerdictRecord,
+  type VerdictsArtifact,
 } from "@/data";
 import styles from "./verdicts.module.css";
 
@@ -26,9 +28,12 @@ import styles from "./verdicts.module.css";
  */
 export function VerdictsBoard({
   records,
+  verdicts,
   poisons,
 }: {
+  /** The combined roster (all runs). */
   records: VerdictRecord[];
+  verdicts: VerdictsArtifact;
   poisons: PoisonsArtifact;
 }) {
   const [selectedId, setSelectedId] = useState<string | null>(null);
@@ -37,8 +42,8 @@ export function VerdictsBoard({
   const breaches = conditionalBreaches(records);
   const causes = unknownCauses(records);
   const selected = records.find((r) => r.record_id === selectedId) ?? null;
-  const run = runMetadata(records, "run_id");
-  const control = runMetadata(records, "control_id");
+  const runs = verdictRuns(verdicts, poisons);
+  const control = crossRunControl(runs);
 
   const toggle = (id: string) =>
     setSelectedId((current) => (current === id ? null : id));
@@ -68,18 +73,33 @@ export function VerdictsBoard({
           unanswered question, EXCLUDED is a ratified boundary decision.
         </p>
         <p className={styles.meta}>
-          run {run.values.join(", ") || "—"}
-          <span className={styles.metaSep}>·</span>
           control {control.values.join(", ") || "—"}
+          <span className={styles.metaSep}>·</span>
+          {runs.length} {runs.length === 1 ? "run" : "runs"}
           <span className={styles.metaSep}>·</span>
           {records.length} records
           <span className={styles.diagnostic}> diagnostic</span>
         </p>
-        {(!run.consistent || !control.consistent) && (
+
+        <ul className={styles.runLegend}>
+          {runs.map((group) => (
+            <li key={group.runId} className={styles.runItem}>
+              <code className={styles.ref}>{group.runId}</code>
+              <span className={styles.runMeta}>
+                {group.records.length}{" "}
+                {group.records.length === 1 ? "record" : "records"}
+                <span className={styles.diagnostic}> diagnostic</span> · collected{" "}
+                {group.collectedAt}
+              </span>
+            </li>
+          ))}
+        </ul>
+        {!control.consistent && (
           <p className={styles.breach}>
-            Records disagree on run or control id — verdicts.json is a bare array
-            with no run envelope (README Q3), so this is folded from the records
-            and the disagreement is real.
+            Runs disagree on control id ({control.values.join(" vs ")}) — every
+            run in this engagement should test the same control. Two run ids are
+            data (walking-skeleton + poison runs, README Q17); a control
+            disagreement is not.
           </p>
         )}
 
@@ -133,6 +153,7 @@ export function VerdictsBoard({
                       <RecordCard
                         record={record}
                         selected={selectedId === record.record_id}
+                        showRun={runs.length > 1}
                         onSelect={toggle}
                       />
                     </li>
@@ -176,10 +197,14 @@ export function VerdictsBoard({
 function RecordCard({
   record,
   selected,
+  showRun,
   onSelect,
 }: {
   record: VerdictRecord;
   selected: boolean;
+  /** Only label runs when more than one exists — a chip on every card in a
+   * single-run engagement is noise. */
+  showRun: boolean;
   onSelect: (id: string) => void;
 }) {
   const meta = verdictStateMeta(record.status);
@@ -199,6 +224,7 @@ function RecordCard({
       <p className={styles.recordMessage}>{record.message ?? "(no message on the record)"}</p>
       <p className={styles.recordChips}>
         <span className={styles.stateChip}>{record.status}</span>
+        {showRun && <span className={styles.runChip}>{record.run_id}</span>}
         {record.unknown_cause && (
           <span className={styles.whyCode}>{record.unknown_cause}</span>
         )}

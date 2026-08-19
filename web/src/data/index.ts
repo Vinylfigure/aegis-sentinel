@@ -1,5 +1,6 @@
 /**
- * Typed export barrel for the data layer (A2 seed + B1 mock engagement).
+ * Typed export barrel for the data layer (A2 seed + the C2 engagement
+ * artifacts, imported from artifacts/demo-engagement/ via @artifacts/*).
  *
  * Each JSON file is first ASSIGNED (not `as`-cast) to a `Widen<T>` of its
  * hand-authored type: assignment checks assignability recursively, so a
@@ -29,10 +30,10 @@ import gaugesJson from "@/data/seed/gauges.json";
 import processJson from "@/data/seed/process.json";
 import scopeJson from "@/data/seed/scope.json";
 
-import poisonsJson from "@/data/engagement/poisons.json";
-import reconciliationJson from "@/data/engagement/reconciliation.json";
-import registryJson from "@/data/engagement/registry.json";
-import verdictsJson from "@/data/engagement/verdicts.json";
+import poisonsJson from "@artifacts/poisons.json";
+import reconciliationJson from "@artifacts/reconciliation.json";
+import registryJson from "@artifacts/registry.json";
+import verdictsJson from "@artifacts/verdicts.json";
 
 export type * from "@/data/types";
 
@@ -75,8 +76,10 @@ export const controlsSeed = checked<ControlsSeed>(controlsJson);
 export const processSeed = checked<ProcessSeed>(processJson);
 export const gaugesSeed = checked<GaugesSeed>(gaugesJson);
 
-/* Mock engagement (B1) — the six poison cases, shaped to the
- * artifacts/demo-engagement contracts; C2 swaps these for the real files. */
+/* Engagement data (C2) — the pipeline-emitted, pydantic-validated
+ * artifacts/demo-engagement/ files themselves, imported via @artifacts/*.
+ * Never vendored: the imports point at the drift-tested originals, so the
+ * enum-value hole Widen<T> leaves open is closed at the source. */
 export const engagementVerdicts = checked<VerdictsArtifact>(verdictsJson);
 export const engagementReconciliation = checked<ReconciliationReport>(reconciliationJson);
 export const engagementRegistry = checked<RegistryArtifact>(registryJson);

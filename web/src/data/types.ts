@@ -498,7 +498,15 @@ export interface ProcessNode {
   tier: ProcessTier;
 }
 
+export interface ProcessLink {
+  label: string;
+  href: string;
+}
+
 export interface ProcessControlPoint {
+  /** Engagement surfaces wired to this point (C2). Optional and honest:
+   * points whose artifacts do not exist yet carry none. */
+  links?: ProcessLink[];
   id: string;
   name: string;
   nature: ControlNature;

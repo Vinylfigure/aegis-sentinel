@@ -416,3 +416,36 @@
   border-color: var(--accent);
   color: var(--accent-hover);
 }
+
+/* ---- runs (C2) ---- */
+
+.runLegend {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  list-style: none;
+  margin: 0;
+  padding: 9px 11px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--panel);
+}
+
+.runItem {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.runMeta {
+  font-size: var(--fs-label);
+  color: var(--faint);
+}
+
+.runChip {
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  color: var(--cyan);
+  letter-spacing: 0.03em;
+}

@@ -115,9 +115,10 @@ export const POISON_VERDICT_GROUPS: readonly PoisonVerdictGroup[] = Object.keys(
 /**
  * Every verdict record the engagement carries: verdicts.json plus the
  * records embedded in poisons.verdict_records, deduped by record_id. The
- * B1 mock duplicates all nine poison records across both artifacts; the
- * real artifacts are disjoint, so post-C2 the dedup is a no-op. Order is
- * verdicts.json first, then poison families in group order.
+ * real artifacts are disjoint so the dedup is normally a no-op; it existed
+ * because the B1 mocks duplicated the records, and it stays because an
+ * artifact repeating a record_id should collapse, not double-render. Order
+ * is verdicts.json first, then poison families in group order.
  */
 export function combinedRecords(
   verdicts: VerdictsArtifact,
@@ -135,6 +136,51 @@ export function combinedRecords(
     for (const record of poisons.verdict_records[group]) add(record);
   }
   return out;
+}
+
+/* ------------------------------------------------------------------ */
+/* Runs (C2)                                                           */
+/* ------------------------------------------------------------------ */
+
+/** One run's records, folded from the combined roster. Two run ids across
+ * the engagement are DATA (the walking-skeleton run plus the poison run),
+ * not a defect — the defect signal is a cross-run control_id disagreement,
+ * which crossRunControl() carries. runMetadata() survives for within-group
+ * folds; its old cross-collection breach use is retired because it cannot
+ * distinguish two legitimate runs from one corrupted one. */
+export interface RunGroup {
+  runId: string;
+  controlId: string;
+  collectedAt: string;
+  records: VerdictRecord[];
+}
+
+export function verdictRuns(
+  verdicts: VerdictsArtifact,
+  poisons: PoisonsArtifact,
+): RunGroup[] {
+  const groups = new Map<string, VerdictRecord[]>();
+  for (const record of combinedRecords(verdicts, poisons)) {
+    const existing = groups.get(record.run_id);
+    if (existing) existing.push(record);
+    else groups.set(record.run_id, [record]);
+  }
+  return [...groups.entries()].map(([runId, records]) => ({
+    runId,
+    controlId: runMetadata(records, "control_id").values.join(", "),
+    collectedAt: runMetadata(records, "collected_at").values.join(", "),
+    records,
+  }));
+}
+
+/** The one cross-run fact that IS a breach when inconsistent: every run in
+ * the engagement tests the same control. */
+export function crossRunControl(groups: readonly RunGroup[]): {
+  values: string[];
+  consistent: boolean;
+} {
+  const values = [...new Set(groups.map((g) => g.controlId))];
+  return { values, consistent: values.length <= 1 };
 }
 
 /* ------------------------------------------------------------------ */

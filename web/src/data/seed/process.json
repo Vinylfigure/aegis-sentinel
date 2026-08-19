@@ -2,18 +2,35 @@
   "context": {
     "product": "Credit Builder + Card",
     "tiers": [
-      { "id": 1, "label": "T1 — regulated (tradeline · CHD · NPI)" },
-      { "id": 2, "label": "T2 — confidential (PII · secrets)" },
-      { "id": 3, "label": "T3 — internal" }
+      {
+        "id": 1,
+        "label": "T1 \u2014 regulated (tradeline \u00b7 CHD \u00b7 NPI)"
+      },
+      {
+        "id": 2,
+        "label": "T2 \u2014 confidential (PII \u00b7 secrets)"
+      },
+      {
+        "id": 3,
+        "label": "T3 \u2014 internal"
+      }
     ]
   },
   "lanes": [
     {
       "id": "LA",
-      "name": "Logical access — JIT grant",
-      "subtitle": "provision → time-bound → auto-revoke",
+      "name": "Logical access \u2014 JIT grant",
+      "subtitle": "provision \u2192 time-bound \u2192 auto-revoke",
       "sequence": [
-        { "kind": "node", "node": { "key": "user", "label": "Requester", "sublabel": "engineer", "tier": 3 } },
+        {
+          "kind": "node",
+          "node": {
+            "key": "user",
+            "label": "Requester",
+            "sublabel": "engineer",
+            "tier": 3
+          }
+        },
         {
           "kind": "controlPoint",
           "controlPoint": {
@@ -21,15 +38,23 @@
             "name": "Access request approved",
             "nature": "auto",
             "function": "prev",
-            "enforces": "OIG request requires manager approval before any grant is executed — the deny-by-default gate.",
+            "enforces": "OIG request requires manager approval before any grant is executed \u2014 the deny-by-default gate.",
             "dataElement": "Okta OIG request object: requester, approver, target, timestamps",
             "api": "GET /api/v1/iam/requests/{id}",
-            "evidence": "Population export of all OIG requests · hash raw response",
+            "evidence": "Population export of all OIG requests \u00b7 hash raw response",
             "completenessAccuracy": "Two-source reconciliation: OIG requests vs. GitHub grant events",
-            "gap": "Approver ≠ requester enforced in policy config — evidence the config, not just the tickets."
+            "gap": "Approver \u2260 requester enforced in policy config \u2014 evidence the config, not just the tickets."
           }
         },
-        { "kind": "node", "node": { "key": "okta", "label": "Okta OIG", "sublabel": "identity governance", "tier": 2 } },
+        {
+          "kind": "node",
+          "node": {
+            "key": "okta",
+            "label": "Okta OIG",
+            "sublabel": "identity governance",
+            "tier": 2
+          }
+        },
         {
           "kind": "controlPoint",
           "controlPoint": {
@@ -37,55 +62,87 @@
             "name": "Grant matches approval",
             "nature": "auto",
             "function": "det",
-            "enforces": "Provisioning bot executes exactly the approved scope — grant compared to request, deltas flagged.",
+            "enforces": "Provisioning bot executes exactly the approved scope \u2014 grant compared to request, deltas flagged.",
             "dataElement": "Bot execution log: approved scope vs. granted scope",
-            "api": "bot audit log → SIEM query",
-            "evidence": "Log query per grant · hash",
-            "completenessAccuracy": "Bidirectional trace: grant→request and request→grant",
-            "gap": "The bot is a trusted actor — its own service account and code path need CM controls (see CM lane)."
+            "api": "bot audit log \u2192 SIEM query",
+            "evidence": "Log query per grant \u00b7 hash",
+            "completenessAccuracy": "Bidirectional trace: grant\u2192request and request\u2192grant",
+            "gap": "The bot is a trusted actor \u2014 its own service account and code path need CM controls (see CM lane)."
           }
         },
-        { "kind": "node", "node": { "key": "bot", "label": "Provisioning bot", "sublabel": "automation", "tier": 2 } },
+        {
+          "kind": "node",
+          "node": {
+            "key": "bot",
+            "label": "Provisioning bot",
+            "sublabel": "automation",
+            "tier": 2
+          }
+        },
         {
           "kind": "controlPoint",
           "controlPoint": {
             "id": "LA-3",
-            "name": "Time-bound · auto-revoke",
+            "name": "Time-bound \u00b7 auto-revoke",
             "nature": "cfg",
             "function": "prev",
             "enforces": "Grant carries an expiry; revocation fires without human action. The control is the configuration.",
             "dataElement": "Grant TTL config + revoke events",
             "api": "GET /orgs/{org}/outside_collaborators + expiry policy",
             "evidence": "Config snapshot (hashed) + revoke event log",
-            "completenessAccuracy": "Hash raw config · alert if TTL policy absent",
+            "completenessAccuracy": "Hash raw config \u00b7 alert if TTL policy absent",
             "gap": null
           }
         },
-        { "kind": "node", "node": { "key": "gh", "label": "GitHub", "sublabel": "repos · T2 secrets risk", "tier": 2 } }
+        {
+          "kind": "node",
+          "node": {
+            "key": "gh",
+            "label": "GitHub",
+            "sublabel": "repos \u00b7 T2 secrets risk",
+            "tier": 2
+          }
+        }
       ]
     },
     {
       "id": "CM",
-      "name": "Change management — code to production",
+      "name": "Change management \u2014 code to production",
       "subtitle": "the path to prod is the control surface",
       "sequence": [
-        { "kind": "node", "node": { "key": "dev", "label": "Developer", "sublabel": "author", "tier": 3 } },
+        {
+          "kind": "node",
+          "node": {
+            "key": "dev",
+            "label": "Developer",
+            "sublabel": "author",
+            "tier": 3
+          }
+        },
         {
           "kind": "controlPoint",
           "controlPoint": {
             "id": "CM-1",
-            "name": "Branch protection · SoD",
+            "name": "Branch protection \u00b7 SoD",
             "nature": "cfg",
             "function": "prev",
-            "enforces": "Approver ≠ author required before merge; enforced by ruleset, not by process.",
+            "enforces": "Approver \u2260 author required before merge; enforced by ruleset, not by process.",
             "dataElement": "Branch protection ruleset per in-scope repo",
             "api": "GET /repos/{o}/{r}/branches/{b}/protection",
             "evidence": "Config snapshot per repo, hashed, diffed daily",
             "completenessAccuracy": "Population = in-scope repo list from product mapping; drift alerts",
-            "gap": "Admin bypass is the residual — evidence the bypass log and the org-level allowance."
+            "gap": "Admin bypass is the residual \u2014 evidence the bypass log and the org-level allowance."
           }
         },
-        { "kind": "node", "node": { "key": "gh2", "label": "GitHub PR", "sublabel": "review gate", "tier": 2 } },
+        {
+          "kind": "node",
+          "node": {
+            "key": "gh2",
+            "label": "GitHub PR",
+            "sublabel": "review gate",
+            "tier": 2
+          }
+        },
         {
           "kind": "controlPoint",
           "controlPoint": {
@@ -93,15 +150,23 @@
             "name": "Required checks pass",
             "nature": "cfg",
             "function": "prev",
-            "enforces": "Security + functional CI checks are required statuses — a failed check mechanically blocks merge.",
+            "enforces": "Security + functional CI checks are required statuses \u2014 a failed check mechanically blocks merge.",
             "dataElement": "Required status checks config + check-run results",
             "api": "GET /repos/{o}/{r}/commits/{ref}/check-runs",
             "evidence": "Config snapshot + per-merge check-run record",
-            "completenessAccuracy": "Hash raw responses · classify checks security vs functional",
+            "completenessAccuracy": "Hash raw responses \u00b7 classify checks security vs functional",
             "gap": null
           }
         },
-        { "kind": "node", "node": { "key": "ci", "label": "CI / Actions", "sublabel": "build + test", "tier": 3 } },
+        {
+          "kind": "node",
+          "node": {
+            "key": "ci",
+            "label": "CI / Actions",
+            "sublabel": "build + test",
+            "tier": 3
+          }
+        },
         {
           "kind": "controlPoint",
           "controlPoint": {
@@ -109,15 +174,23 @@
             "name": "Apply bound to reviewed commit",
             "nature": "cfg",
             "function": "prev",
-            "enforces": "Terraform applies only from the merged commit via the pipeline — execution moved off laptops, credentials centralized, provenance preserved.",
+            "enforces": "Terraform applies only from the merged commit via the pipeline \u2014 execution moved off laptops, credentials centralized, provenance preserved.",
             "dataElement": "Pipeline run: source SHA vs. applied SHA",
             "api": "Actions run log + Terraform plan/apply record",
             "evidence": "Run record per apply, hashed",
             "completenessAccuracy": "Reconcile applied SHA to merged PR population",
-            "gap": "The value here is provenance and separation of duties — not cryptographic integrity in transit. Say it that way."
+            "gap": "The value here is provenance and separation of duties \u2014 not cryptographic integrity in transit. Say it that way."
           }
         },
-        { "kind": "node", "node": { "key": "tf", "label": "Terraform", "sublabel": "via CI/CD", "tier": 3 } },
+        {
+          "kind": "node",
+          "node": {
+            "key": "tf",
+            "label": "Terraform",
+            "sublabel": "via CI/CD",
+            "tier": 3
+          }
+        },
         {
           "kind": "controlPoint",
           "controlPoint": {
@@ -128,20 +201,36 @@
             "enforces": "Live state vs. IaC state compared on schedule; out-of-band change surfaces as an alert, not at audit.",
             "dataElement": "CAI live state vs. Terraform state delta",
             "api": "Cloud Asset Inventory export + state file compare",
-            "evidence": "Delta report per run · alert population",
+            "evidence": "Delta report per run \u00b7 alert population",
             "completenessAccuracy": "Two-source: live inventory vs. declared state",
             "gap": null
           }
         },
-        { "kind": "node", "node": { "key": "gcp", "label": "GCP", "sublabel": "prod · T1 data", "tier": 1 } }
+        {
+          "kind": "node",
+          "node": {
+            "key": "gcp",
+            "label": "GCP",
+            "sublabel": "prod \u00b7 T1 data",
+            "tier": 1
+          }
+        }
       ]
     },
     {
       "id": "TA",
-      "name": "Termination — access revocation",
+      "name": "Termination \u2014 access revocation",
       "subtitle": "HRIS event to verified deprovisioning",
       "sequence": [
-        { "kind": "node", "node": { "key": "hris", "label": "HRIS", "sublabel": "termination event", "tier": 2 } },
+        {
+          "kind": "node",
+          "node": {
+            "key": "hris",
+            "label": "HRIS",
+            "sublabel": "termination event",
+            "tier": 2
+          }
+        },
         {
           "kind": "controlPoint",
           "controlPoint": {
@@ -149,31 +238,59 @@
             "name": "Term feed completeness",
             "nature": "auto",
             "function": "det",
-            "enforces": "Every termination in the HRIS appears in the deprovisioning queue — the population control everything downstream depends on.",
+            "enforces": "Every termination in the HRIS appears in the deprovisioning queue \u2014 the population control everything downstream depends on.",
             "dataElement": "Termination feed: worker, type, term date",
             "api": "HRIS API export (daily)",
-            "evidence": "Population export · row-count reconciliation vs. HR report",
+            "evidence": "Population export \u00b7 row-count reconciliation vs. HR report",
             "completenessAccuracy": "Two-source reconciliation",
-            "gap": "Contractors and collaborators often live outside the HRIS — that population needs its own source."
+            "gap": "Contractors and collaborators often live outside the HRIS \u2014 that population needs its own source.",
+            "links": [
+              {
+                "label": "Why is this population complete?",
+                "href": "/reconciliation/pop-termination-events"
+              }
+            ]
           }
         },
-        { "kind": "node", "node": { "key": "okta2", "label": "Okta", "sublabel": "deprovision", "tier": 2 } },
+        {
+          "kind": "node",
+          "node": {
+            "key": "okta2",
+            "label": "Okta",
+            "sublabel": "deprovision",
+            "tier": 2
+          }
+        },
         {
           "kind": "controlPoint",
           "controlPoint": {
             "id": "TA-2",
-            "name": "Revoked ≤ 5 business days",
+            "name": "Revoked \u2264 5 business days",
             "nature": "auto",
             "function": "det",
-            "enforces": "Deprovision timestamp vs. termination date, tested across the full population — no sampling.",
+            "enforces": "Deprovision timestamp vs. termination date, tested across the full population \u2014 no sampling.",
             "dataElement": "Deactivation events joined to term feed",
             "api": "Okta system log query",
             "evidence": "Per-termination delta record, hashed",
             "completenessAccuracy": "Full-population test; exceptions alert",
-            "gap": null
+            "gap": null,
+            "links": [
+              {
+                "label": "Timing verdicts",
+                "href": "/verdicts"
+              }
+            ]
           }
         },
-        { "kind": "node", "node": { "key": "down", "label": "Downstream systems", "sublabel": "GitHub · GCP · tools", "tier": 2 } },
+        {
+          "kind": "node",
+          "node": {
+            "key": "down",
+            "label": "Downstream systems",
+            "sublabel": "GitHub \u00b7 GCP \u00b7 tools",
+            "tier": 2
+          }
+        },
         {
           "kind": "controlPoint",
           "controlPoint": {
@@ -181,15 +298,29 @@
             "name": "Downstream revocation verified",
             "nature": "auto",
             "function": "det",
-            "enforces": "SSO revocation ≠ local account revocation — verify per system where local accounts exist.",
+            "enforces": "SSO revocation \u2260 local account revocation \u2014 verify per system where local accounts exist.",
             "dataElement": "Per-system account status for terminated users",
             "api": "per-system API / SIEM auth log",
-            "evidence": "Log query per system · exceptions to review",
-            "completenessAccuracy": "Trace: term feed → per-system status",
-            "gap": "This is where most programs quietly fail — SCIM coverage map determines which systems need it."
+            "evidence": "Log query per system \u00b7 exceptions to review",
+            "completenessAccuracy": "Trace: term feed \u2192 per-system status",
+            "gap": "This is where most programs quietly fail \u2014 SCIM coverage map determines which systems need it.",
+            "links": [
+              {
+                "label": "Downstream verdicts",
+                "href": "/verdicts"
+              }
+            ]
           }
         },
-        { "kind": "node", "node": { "key": "siem", "label": "SIEM", "sublabel": "verification layer", "tier": 3 } }
+        {
+          "kind": "node",
+          "node": {
+            "key": "siem",
+            "label": "SIEM",
+            "sublabel": "verification layer",
+            "tier": 3
+          }
+        }
       ]
     }
   ]
