@@ -70,6 +70,7 @@ Rules for curators (`/evolve`):
 - Scope: portable
 - Evidence: 5
 - Status: inherited (was: promoted:CLAUDE.md in janus)
+- observed: 2026-08-20 — fired at issue #43: an Explore agent reported the verdict/E-code data shapes and flagged "no existing id-level join" to ProcessControlPoint; rather than accept its paraphrase of which spec_ids/claim_id belonged where, the exact record contents were read directly from verdicts.json/poisons.json/registry.json before wiring any seed association — the agent's report was directionally right but its own words were never quoted into the implementation unverified
 
 ## L-007 · 2026-07-06 · When changing a convention, sweep every mention of it, not just planned edit sites
 - Trigger: the adversarial verifier failed the refinement diff because docs/USAGE.md's day-1 section still said "optional Graphify" after the convention changed to default-on; the planned edit list had missed that mention (janus refinement session); recurred in round 3.5 — removing new-worktree.sh missed ARCHITECTURE's component-map row, caught by the docs-consistency fixture rather than a manual sweep. observed: 2026-08-18 — credited by name in L-049's own Trigger ("caught by own L-007 sweep"); fired again at B2 sweeping README question numbers and the EXECUTION-PLAN tick
