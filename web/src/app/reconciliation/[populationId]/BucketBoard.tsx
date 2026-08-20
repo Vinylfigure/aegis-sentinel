@@ -182,7 +182,12 @@ function DeltaCard({
       )}
 
       {disagreements.length > 0 && (
-        <div className={styles.tableWrap}>
+        <div
+          className={styles.tableWrap}
+          tabIndex={0}
+          role="region"
+          aria-label="Attribute disagreements"
+        >
           <table className={styles.attrTable}>
             <caption className={styles.caption}>
               Attribute disagreement (D-8) — a successful join, disagreeing values.

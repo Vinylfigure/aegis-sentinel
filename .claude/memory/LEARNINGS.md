@@ -410,3 +410,17 @@ Rules for curators (`/evolve`):
 - Scope: portable
 - Evidence: 1
 - Status: promoted:agent/verifier + CLAUDE.md (Evidence 1 — applied on explicit user confirmation, 2026-08-18); the probe procedure lives in the verifier's step 2, its plan-time half is the fourth adversarial axis on the L-008 bullet
+
+## L-057 · 2026-08-18 · Manual falsifier probes prove a page once; only a committed test keeps it proven
+- Trigger: five consecutive frontend rounds (A3, A4, A5, B2 twice over, in two independent sessions) were verified by an adversarial subagent deleting a seed/artifact row, rebuilding, and diffing the built HTML — every round PASSed and every round's verifier closed with the same uncovered finding: nothing automated guards the result, because `verify.sh full` is Python-only and `verify-web.sh` is tsc + build + redaction (origin: verifier reports, four rounds running)
+- Rule: when the same manual verification is re-performed every round, the repetition is the evidence it belongs in the suite — promote the probe to a committed test (parse the seed/artifact, assert every row and computed count appears in the built HTML) rather than re-running it by hand
+- Scope: portable
+- Evidence: 4 (A3, A4, A5, B2 verifier reports each flag it independently)
+- Status: candidate — the ladder rung is a build-output assertion test wired into `verify-web.sh` and web-verify CI
+
+## L-058 · 2026-08-18 · Two sessions picking "the next unticked box" will build the same box — claim it visibly before starting
+- Trigger: the daily heartbeat Routine fired into a fresh session that read the same plan, picked B2, built it, and merged it as PR #37 while this long-running session was independently building B2 for PR #38; the duplicate surfaced only as `mergeable_state: dirty` at merge time, after a full build + adversarial-verify cycle had been spent on the losing implementation, and both sessions had already appended a colliding `L-054` to the ledger (origin: own observation, merge conflict)
+- Rule: before starting a plan box, check for an in-flight claim on it (open PRs and unmerged remote branches) — and when starting, make the claim visible on the remote; a plan read from `main` is a snapshot, not a lock, and local memory does not travel between machines
+- Scope: portable
+- Evidence: 1
+- Status: promoted:hook — `session-start.sh` now pairs the next-box line with unmerged-remote-branch detection (bounded `ls-remote`, offline-safe), so the collision is announced at session start instead of at merge

@@ -62,7 +62,14 @@ export function IdentityJoinPanel({
         ))}
       </ul>
 
-      <div className={styles.tableWrap}>
+      {/* A scrollable region needs to be focusable, or keyboard users cannot
+          reach the columns that overflow (WCAG 2.1.1). */}
+      <div
+        className={styles.tableWrap}
+        tabIndex={0}
+        role="region"
+        aria-label="Canonical identity join matrix"
+      >
         <table className={styles.matrix}>
           <caption className={styles.caption}>
             Canonical identity join — one row per identity, one column per declared
