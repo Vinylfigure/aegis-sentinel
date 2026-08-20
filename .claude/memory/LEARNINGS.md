@@ -70,6 +70,7 @@ Rules for curators (`/evolve`):
 - Scope: portable
 - Evidence: 5
 - Status: inherited (was: promoted:CLAUDE.md in janus)
+- observed: 2026-08-20 — fired at issue #43: an Explore agent reported the verdict/E-code data shapes and flagged "no existing id-level join" to ProcessControlPoint; rather than accept its paraphrase of which spec_ids/claim_id belonged where, the exact record contents were read directly from verdicts.json/poisons.json/registry.json before wiring any seed association — the agent's report was directionally right but its own words were never quoted into the implementation unverified
 
 ## L-007 · 2026-07-06 · When changing a convention, sweep every mention of it, not just planned edit sites
 - Trigger: the adversarial verifier failed the refinement diff because docs/USAGE.md's day-1 section still said "optional Graphify" after the convention changed to default-on; the planned edit list had missed that mention (janus refinement session); recurred in round 3.5 — removing new-worktree.sh missed ARCHITECTURE's component-map row, caught by the docs-consistency fixture rather than a manual sweep. observed: 2026-08-18 — credited by name in L-049's own Trigger ("caught by own L-007 sweep"); fired again at B2 sweeping README question numbers and the EXECUTION-PLAN tick
@@ -412,10 +413,10 @@ Rules for curators (`/evolve`):
 - Status: promoted:agent/verifier + CLAUDE.md (Evidence 1 — applied on explicit user confirmation, 2026-08-18); the probe procedure lives in the verifier's step 2, its plan-time half is the fourth adversarial axis on the L-008 bullet
 
 ## L-057 · 2026-08-18 · Manual falsifier probes prove a page once; only a committed test keeps it proven
-- Trigger: five consecutive frontend rounds (A3, A4, A5, B2 twice over, in two independent sessions) were verified by an adversarial subagent deleting a seed/artifact row, rebuilding, and diffing the built HTML — every round PASSed and every round's verifier closed with the same uncovered finding: nothing automated guards the result, because `verify.sh full` is Python-only and `verify-web.sh` is tsc + build + redaction (origin: verifier reports, four rounds running)
+- Trigger: five consecutive frontend rounds (A3, A4, A5, B2 twice over, in two independent sessions) were verified by an adversarial subagent deleting a seed/artifact row, rebuilding, and diffing the built HTML — every round PASSed and every round's verifier closed with the same uncovered finding: nothing automated guards the result, because `verify.sh full` is Python-only and `verify-web.sh` is tsc + build + redaction (origin: verifier reports, four rounds running). Recurred 2026-08-20 (separate session, issue #43's verdict-tinted-process-graph): the verifier proved the new tint/gate join live (flip a record's status, delete the one compile error, rebuild, diff the static HTML, restore) and closed with the identical uncovered finding — no committed re-runnable script, so a future regression here is caught only if another human/agent repeats the manual probe
 - Rule: when the same manual verification is re-performed every round, the repetition is the evidence it belongs in the suite — promote the probe to a committed test (parse the seed/artifact, assert every row and computed count appears in the built HTML) rather than re-running it by hand
 - Scope: portable
-- Evidence: 4 (A3, A4, A5, B2 verifier reports each flag it independently)
+- Evidence: 5 (A3, A4, A5, B2, and issue #43 verifier reports each flag it independently)
 - Status: candidate — the ladder rung is a build-output assertion test wired into `verify-web.sh` and web-verify CI
 
 ## L-058 · 2026-08-18 · Two sessions picking "the next unticked box" will build the same box — claim it visibly before starting
@@ -439,6 +440,10 @@ Rules for curators (`/evolve`):
 - Evidence: 1
 - Status: candidate
 
+## L-062 · 2026-08-20 · A background verifier gates the PR, not the commit — commit once local checks are green
+- Trigger: this heartbeat session ran local verify (`scripts/verify.sh full`, `verify-web.sh`) green, then launched a background adversarial `verifier` agent and intended to wait for its report before touching git; the environment's Stop-hook (`stop-hook-git-check.sh`) fired mid-wait demanding uncommitted changes be committed and pushed, forcing a decision before the agent had returned (origin: own observation, this session)
+- Rule: once your own manual verify commands are green, commit and push immediately rather than blocking indefinitely on a background verifier agent — the commit is cheap to follow up with a fix commit if the verifier finds something; gate the real "claim done" moment (opening the PR, per CLAUDE.md's prime directive on closed loops) on the verifier's findings instead, not the commit
+- Scope: project — assumes an environment stop hook that forces action on uncommitted changes; the underlying principle (don't let an in-flight async check block a cheap, reversible local step) is portable but not yet proven outside this harness
 ## L-061 · 2026-08-12 (harvested 2026-08-20) · Verify editable installs resolve outside pytest on macOS
 - Trigger: walking-skeleton build on the stranded `feat/web-flow-redesign` branch (never merged) — pip's `__editable__.*.pth` got UF_HIDDEN re-applied within seconds on macOS, and Python 3.14's `site` skips hidden `.pth`, so `import aegis_sentinel` silently failed outside pytest while the suite stayed green (pytest `pythonpath` masked it). Harvested into main's ledger per issue #31 (the branch's own PR never landed, so this entry never reached main until now)
 - Rule: after `pip install -e .` on macOS, run a bare `python -c "import <pkg>"` outside pytest; if it fails with the package present, check the venv's `.pth` for the hidden flag and symlink the package into site-packages as the workaround

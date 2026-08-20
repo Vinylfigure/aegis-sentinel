@@ -249,7 +249,8 @@
                 "label": "Why is this population complete?",
                 "href": "/reconciliation/pop-termination-events"
               }
-            ]
+            ],
+            "verdictSpecIds": ["spec-hris-terminations-v1", "spec-poison-hris-existence-v1"]
           }
         },
         {
@@ -279,7 +280,9 @@
                 "label": "Timing verdicts",
                 "href": "/verdicts"
               }
-            ]
+            ],
+            "verdictSpecIds": ["spec-poison-idp-timing-v1"],
+            "compileErrorClaimIds": ["claim-poison-breakglass-coverage"]
           }
         },
         {
@@ -309,7 +312,8 @@
                 "label": "Downstream verdicts",
                 "href": "/verdicts"
               }
-            ]
+            ],
+            "verdictSpecIds": ["spec-poison-github-nonexistence-v1"]
           }
         },
         {

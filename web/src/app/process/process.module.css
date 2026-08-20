@@ -241,6 +241,7 @@
 }
 
 .cp {
+  position: relative;
   width: 30px;
   height: 30px;
   transform: rotate(45deg);
@@ -428,6 +429,110 @@
   font-size: 11.5px;
   color: var(--dim);
   margin-top: 3px;
+}
+
+/* ---------- live verdict state (#43) ----------
+ * Tone-color custom property, set once per state and consumed by whichever
+ * element needs the ring/border/text treatment — same --ok/--fail/--warn/
+ * --dim/--info tokens /verdicts uses for its section borders, so a FAIL
+ * reads the same red everywhere. */
+
+.ringFail {
+  --ring-color: var(--fail);
+}
+.ringUnknown {
+  --ring-color: var(--warn);
+}
+.ringException {
+  --ring-color: var(--info);
+}
+.ringExcluded {
+  --ring-color: var(--dim);
+}
+.ringOk {
+  --ring-color: var(--ok);
+}
+
+.cpLive {
+  box-shadow: 0 0 0 3px var(--ring-color, transparent);
+}
+
+.cp.cpSel.cpLive {
+  box-shadow:
+    0 0 0 3px var(--purple-tint),
+    0 0 0 6px var(--ring-color, transparent);
+}
+
+.bubbleLive {
+  box-shadow: 0 0 0 3px var(--ring-color, transparent);
+}
+
+.cpGate {
+  position: absolute;
+  bottom: -9px;
+  right: -6px;
+  transform: rotate(-45deg);
+  font-size: 11px;
+  line-height: 1;
+}
+
+.legendRing {
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  border: 2px solid var(--ring-color);
+}
+
+.legendGate {
+  font-size: 11px;
+}
+
+.stateChip {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-weight: 600;
+  font-size: 9.5px;
+  letter-spacing: 0.05em;
+  border: 1px solid var(--ring-color, var(--line));
+  color: var(--ring-color, var(--dim));
+  border-radius: 12px;
+  padding: 2px 8px;
+  margin-bottom: 4px;
+}
+
+/* ---------- compile refusal gate ---------- */
+
+.refusal {
+  border-top: 1px dashed var(--line);
+  margin-top: 16px;
+  padding-top: 14px;
+}
+
+.refusalBody {
+  background: var(--red-tint);
+  border-radius: var(--radius-sm, 6px);
+  padding: 8px 10px;
+  margin-top: 6px;
+}
+
+.refusalCode {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 10.5px;
+  color: var(--fail);
+}
+
+.refusalMsg {
+  font-size: 11.5px;
+  color: var(--dim);
+  margin: 4px 0;
+}
+
+.refusalConsequence {
+  font-size: 11px;
+  color: var(--faint);
+  font-style: italic;
+  margin: 0 0 6px;
 }
 
 /* ---------- related library controls ---------- */

@@ -517,6 +517,14 @@ export interface ProcessControlPoint {
   evidence: string;
   completenessAccuracy: string;
   gap: string | null;
+  /** spec_ids of engagement VerdictRecords this gate's live health is
+   * derived from (issue #43). Explicit and honest, like `links` above —
+   * the seed carries no generic point→record mapping (adjacency guesses
+   * are wrong here: two points can share flanking systems yet test
+   * different specs). Points without artifacts to show carry none. */
+  verdictSpecIds?: string[];
+  /** claim_ids of registry CompileErrors that gate this point. */
+  compileErrorClaimIds?: string[];
 }
 
 export type ProcessStep =
