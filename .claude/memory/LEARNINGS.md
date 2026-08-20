@@ -438,3 +438,10 @@ Rules for curators (`/evolve`):
 - Scope: portable
 - Evidence: 1
 - Status: candidate
+
+## L-061 · 2026-08-12 (harvested 2026-08-20) · Verify editable installs resolve outside pytest on macOS
+- Trigger: walking-skeleton build on the stranded `feat/web-flow-redesign` branch (never merged) — pip's `__editable__.*.pth` got UF_HIDDEN re-applied within seconds on macOS, and Python 3.14's `site` skips hidden `.pth`, so `import aegis_sentinel` silently failed outside pytest while the suite stayed green (pytest `pythonpath` masked it). Harvested into main's ledger per issue #31 (the branch's own PR never landed, so this entry never reached main until now)
+- Rule: after `pip install -e .` on macOS, run a bare `python -c "import <pkg>"` outside pytest; if it fails with the package present, check the venv's `.pth` for the hidden flag and symlink the package into site-packages as the workaround
+- Scope: portable
+- Evidence: 1
+- Status: candidate
