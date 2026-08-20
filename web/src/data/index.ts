@@ -1,5 +1,6 @@
 /**
- * Typed export barrel for the data layer (A2 seed + B1 mock engagement).
+ * Typed export barrel for the data layer (A2 seed + the C2 engagement
+ * artifacts, imported from artifacts/demo-engagement/ via @artifacts/*).
  *
  * Each JSON file is first ASSIGNED (not `as`-cast) to a `Widen<T>` of its
  * hand-authored type: assignment checks assignability recursively, so a
@@ -12,6 +13,7 @@
  * assignment only re-narrows those enum strings.
  */
 
+import { combinedRecords } from "@/data/verdicts";
 import type {
   ControlsSeed,
   GaugesSeed,
@@ -28,10 +30,10 @@ import gaugesJson from "@/data/seed/gauges.json";
 import processJson from "@/data/seed/process.json";
 import scopeJson from "@/data/seed/scope.json";
 
-import poisonsJson from "@/data/engagement/poisons.json";
-import reconciliationJson from "@/data/engagement/reconciliation.json";
-import registryJson from "@/data/engagement/registry.json";
-import verdictsJson from "@/data/engagement/verdicts.json";
+import poisonsJson from "@artifacts/poisons.json";
+import reconciliationJson from "@artifacts/reconciliation.json";
+import registryJson from "@artifacts/registry.json";
+import verdictsJson from "@artifacts/verdicts.json";
 
 export type * from "@/data/types";
 
@@ -40,6 +42,13 @@ export * from "@/data/derived";
 
 /* Reconciliation derivations (B2) — computed from the engagement artifact. */
 export * from "@/data/reconciliation";
+
+/* Verdict + registry derivations (B3) — computed from the engagement artifacts. */
+export * from "@/data/verdicts";
+export * from "@/data/registry";
+
+/* Proof-lineage derivations (B4). */
+export * from "@/data/proof";
 
 /** Literal unions -> primitives, recursively; structure and key presence
  * are preserved so assignment still checks them. */
@@ -67,8 +76,10 @@ export const controlsSeed = checked<ControlsSeed>(controlsJson);
 export const processSeed = checked<ProcessSeed>(processJson);
 export const gaugesSeed = checked<GaugesSeed>(gaugesJson);
 
-/* Mock engagement (B1) — the six poison cases, shaped to the
- * artifacts/demo-engagement contracts; C2 swaps these for the real files. */
+/* Engagement data (C2) — the pipeline-emitted, pydantic-validated
+ * artifacts/demo-engagement/ files themselves, imported via @artifacts/*.
+ * Never vendored: the imports point at the drift-tested originals, so the
+ * enum-value hole Widen<T> leaves open is closed at the source. */
 export const engagementVerdicts = checked<VerdictsArtifact>(verdictsJson);
 export const engagementReconciliation = checked<ReconciliationReport>(reconciliationJson);
 export const engagementRegistry = checked<RegistryArtifact>(registryJson);
@@ -81,3 +92,14 @@ export const engagementPoisons = checked<PoisonsArtifact>(poisonsJson);
  * the `checked<T>` assignability position (L-053) is untouched.
  */
 export const engagementReconciliations: ReconciliationReport[] = [engagementReconciliation];
+
+/**
+ * Every verdict record in the engagement (verdicts.json + the records
+ * embedded in poisons.verdict_records, deduped) — the roster /proof routes
+ * are generated from. Built FROM the checked exports above; the checked<T>
+ * assignability position (L-053) is untouched.
+ */
+export const engagementVerdictRecords = combinedRecords(
+  engagementVerdicts,
+  engagementPoisons,
+);

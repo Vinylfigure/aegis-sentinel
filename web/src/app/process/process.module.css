@@ -487,3 +487,10 @@
 .onwardLink:hover {
   text-decoration: underline;
 }
+
+/* C2: control points with no wired engagement surface say so. */
+.onwardEmpty {
+  font-size: var(--fs-label);
+  color: var(--faint);
+  font-style: italic;
+}

@@ -111,15 +111,76 @@ ratification is the freeze — draft → frozen(=ratified) → superseded).
   two truths; deletion-falsifier proven across counts, dispositions, sources,
   exclusions and the D-7 classification. No control on the page sets a
   disposition (invariant №11).
-- [ ] **B3** — `/verdicts` (five distinct states, why-code chips, mutation scorecard)
-  + `/registry` (capability entries, E-codes as compiler errors).
-- [ ] **B4** — `/proof/[verdictId]` ten-stage SVG lineage + node inspector.
-- [ ] **C1** — pydantic JSON-Schema export + codegen (`json-schema-to-typescript`) +
-  assignability checks (needs SCH01).
-- [ ] **C2** — swap mocks for real `artifacts/demo-engagement/` output (needs VAL02);
-  deep-link process-graph TA control points → reconciliation/verdicts.
-- [ ] **C3** — demo polish against PRD §6 acceptance: five verdict states visibly
-  distinct, every seeded defect visibly caught, population click answers "why complete".
+- [x] **B3** — `/verdicts`: the five states each render their own section with
+  their own on-screen definition (`Record<VerdictState, …>` is exhaustive, so a
+  sixth state fails `tsc` rather than vanishing), UNKNOWN why-code chips + a
+  per-cause roll-up (D-U1/D-7 §5), and the mutation scorecard recomputed from the
+  cases on screen rather than read from `detection` — divergence, misses and
+  conditional-field breaches (EXCLUDED without a ratification_ref, etc.) all
+  surface as visible defects. `/registry`: usability DERIVED per SCH02 (a DRAFT
+  entry can never read as available), the DEMO-ONLY note and every DRAFT caveat
+  rendered verbatim per the README's hard requirement, and E-codes rendered as
+  refusals with their consequence ("zero collectors execute", TYP01) rather than
+  warnings; server-only, no client state. Nine falsifiers: six VALUE probes
+  (detection divergence, undetected case, non-empty misses, frozen→draft,
+  missing ratifier, missing why-code), two deletion probes, and an exhaustiveness
+  probe proving a new `VerdictState` fails the build.
+- [x] **B4** — `/proof` (index grouped by the five states) + `/proof/[verdictId]`:
+  the ten-stage SVG lineage with typed arrows as visible edge labels (imposes →
+  compiled into → quantifies over → derived from → reconciled into → evidence
+  gated by → frozen in → executes → evaluates to) and a node inspector. Honest to
+  the wire: five stages render from data (population/sources/reconciliation via
+  the population_id join, contract identity via spec_hash == the EQC
+  contract_hash, verdict itself); the other five are labelled on-diagram —
+  not-emitted (commitment/requirement/snapshot, Q16), trace-only
+  (claim via compile_errors claim ids, Q15; assertion family inferred from the
+  poisons grouping, Q4b/Q15). Clicking the population node links into the
+  why-complete rail (UI01). Routes generated from `engagementVerdictRecords`
+  (verdicts.json + poisons verdict_records, deduped — the B1 mock duplicates
+  them; real artifacts are disjoint, so C2 lifts this to 11 pages with zero
+  route changes); `@`-bearing record ids prerender fine. Exhaustive stage/kind
+  Records + never-arm inspector switch, so an eleventh stage or new kind fails
+  tsc.
+- [x] **C1** — codegen from the committed JSON Schemas
+  (`json-schema-to-typescript@15.0.4`, exact-pinned, the tree's first non-Next
+  dep): `web/scripts/codegen.mjs` generates six modules into
+  `web/src/data/__generated__/` (committed; `codegen:check` byte-diffs in
+  verify-web.sh + CI, mirroring the Python generate→commit→drift discipline);
+  `web/src/data/bridge.ts` holds compile-time `Exact` assertions — eleven enum
+  unions plus the wire verdict-record shape (index-signature artifact stripped;
+  `support` compared one-directionally, both documented). Deliberately NO
+  assertion between the ontology Verdict model and the wire record (Q1/Q2).
+  The schemas corrected the hand types: Severity is the five-value wire set
+  (answers Q7), TemporalKind gains `snapshot-cadence` and both registry
+  vocabularies are ontology (answers Q8), and message/severity are optional on
+  the wire with schema_version const-pinned. Falsifiers: dropped enum member →
+  4 tsc errors; hand-edited generated literal → codegen:check + bridge both
+  fail; schema $defs edit → drift; deleted generated file → missing-file fail.
+- [x] **C2** — mocks deleted; the engagement imports point straight at
+  `artifacts/demo-engagement/` via the `@artifacts/*` tsconfig path (the
+  drift-tested, pydantic-validated originals — no vendored copies by
+  construction, and the enum-value hole `Widen<T>` leaves open closes at the
+  source). The real verdicts.json carries one walking-skeleton record while
+  the five-state spread is embedded in poisons.json (Q17), so `/verdicts`
+  merges the two runs: `verdictRuns` groups the combined roster, a run legend
+  + per-record run chips label them, and the breach banner narrows to a
+  cross-run control_id disagreement — two run ids are data, not a defect.
+  Proof routes lift 9 → 11 pages with zero route changes. Process TA control
+  points gain data-driven `links` in the seed (TA-1 → the why-complete rail,
+  TA-2/TA-3 → /verdicts); LA/CM points honestly carry none and say so.
+- [x] **C3** — the why-complete click and the link mesh: the `/verdicts`
+  inspector's population id links into the why-complete rail (only when a
+  reconciliation report exists for that id — otherwise honest no-report text;
+  `completeness_ref` stays labelled "ref string, not a URL"); every scorecard
+  case links to its verdict record and lineage (`verdict` kind) or to
+  `/registry` (`compile_error` kind) via a never-armed switch; the record
+  inspector gains "Full lineage →" and the proof verdict node links back —
+  all through one shared `verdictRecordAnchor`/`verdictRecordHref` helper pair
+  (`/verdicts#record=…` selects + scrolls, hash written back on select). Seed
+  TA-2/TA-3 stay at plain `/verdicts` by design (a seed-hardcoded record_id
+  would fail silently; TA-1's population href fails visibly). PRD §6
+  acceptance walkthrough (criterion → screen → falsifier) appended to
+  web/README.md.
 
 ## Phase 1.5 / 2 — blocked until VAL02 passes
 

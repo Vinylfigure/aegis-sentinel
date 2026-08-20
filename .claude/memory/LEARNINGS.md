@@ -391,11 +391,11 @@ Rules for curators (`/evolve`):
 - Status: candidate
 
 ## L-054 · 2026-08-18 · Commit the baseline before running revert-based falsifier probes
-- Trigger: the B2 deletion-falsifier run reverted each probe with `git checkout -- <mock>.json`, which discarded the SAME task's uncommitted edits to that file (four keys the emitter change had just added); probes 2–5 then ran against a half-reverted mock and all failed the build with a type error that read like a real defect, costing a full diagnostic detour before the cause — my own revert — was spotted. Committing the verified baseline first made all seven probes pass unchanged (origin: own observation, verify failure)
+- Trigger: the B2 deletion-falsifier run reverted each probe with `git checkout -- <mock>.json`, which discarded the SAME task's uncommitted edits to that file (four keys the emitter change had just added); probes 2–5 then ran against a half-reverted mock and all failed the build with a type error that read like a real defect, costing a full diagnostic detour before the cause — my own revert — was spotted. Committing the verified baseline first made all seven probes pass unchanged (origin: own observation, verify failure). Recurred at C1 (separate task, same session): falsifier F1 mutated types.ts and reverted with `git checkout -- types.ts` BEFORE the C1 commit existed, silently discarding the uncommitted Severity/Q8/optionality alignment; caught because the file vanished from `git status` rather than by any failure — the quiet variant is worse than B2's loud one
 - Rule: a falsifier probe whose undo is `git checkout --` can only restore committed state, so commit (or stash) the work under test before the first probe — and when a probe fails in a way the mutation cannot explain, suspect the harness before the code
 - Scope: portable
-- Evidence: 1
-- Status: candidate
+- Evidence: 2 (B2 probe run; C1 falsifier F1 — independent tasks)
+- Status: candidate — RIPE
 
 ## L-055 · 2026-08-18 · Prerendered HTML is one line — `grep -c` cannot count occurrences in it
 - Trigger: the B2 probe harness measured rendered signals with `grep -c`, which counts matching LINES; Next.js prerenders each route as a single-line HTML file, so every signal reported 0 or 1 regardless of how many times it appeared — two probes (source deletion, exclusion deletion) looked like no-ops until re-measured with `grep -o … | wc -l`, which showed the real 5→0 and 1→0 transitions (origin: own observation during falsifier verification)
@@ -423,4 +423,18 @@ Rules for curators (`/evolve`):
 - Rule: before starting a plan box, check for an in-flight claim on it (open PRs and unmerged remote branches) — and when starting, make the claim visible on the remote; a plan read from `main` is a snapshot, not a lock, and local memory does not travel between machines
 - Scope: portable
 - Evidence: 1
-- Status: promoted:hook — `session-start.sh` now pairs the next-box line with unmerged-remote-branch detection (bounded `ls-remote`, offline-safe), so the collision is announced at session start instead of at merge
+- Status: promoted:hook — `session-start.sh` now pairs the next-box line with unmerged-remote-branch detection (bounded `ls-remote`, offline-safe), so the collision is announced at session start instead of at merge. observed: 2026-08-20 — fired as designed: the hook's unmerged-branch line sent this firing to inspect `claude/next-build-priorities-nqfzg0` and `claude/janus-memory-skills-eval-vtnp3y` before picking work, which is what surfaced the stranded-branch problem in L-059 rather than a silent B3 duplicate
+
+## L-059 · 2026-08-20 · A branch reused after its PR merges stops being visible to the claim-check — cut a fresh branch per task, always
+- Trigger: own observation during the claim-check step — `claude/next-build-priorities-nqfzg0` and `claude/janus-memory-skills-eval-vtnp3y` each had their PR (#37, #39 respectively) merged, then MORE task commits (B3, B3-hardening, B4, C1, C2, C3) were pushed onto the same branch names afterward instead of cutting new branches per step 1; those later commits were never included in any PR and sat unmerged for over a day across multiple 4h heartbeat firings — correctly not duplicated (L-058's claim-check held), but also never delivered, since "open PR" and "claimed unmerged branch" are the only two states the protocol checks for, and "unmerged branch with no open PR, containing real finished work" is a third state nothing was watching for. Recovered this firing only by treating the stray branch as archaeology: diffing it against every already-merged PR to determine which commits were genuinely undelivered, merging main, independently verifying, and shipping it as PR #40
+- Rule: never push a new task's commits onto a branch whose PR has already merged or closed — step 1's `git checkout -B claude/<task-id>-<slug> origin/main` is per-task, not per-session, so re-run it fresh even when continuing work that feels related. And when the claim-check finds an unmerged `claude/*` branch with no corresponding open PR, don't just skip it as "claimed" — check whether its PR already merged for earlier content and it was silently reused: if so it's stranded finished work to recover (merge base, verify, PR), not live in-flight work to avoid
+- Scope: portable
+- Evidence: 1
+- Status: candidate
+
+## L-060 · 2026-08-20 · A red check on a PR may be an undocumented third-party integration, not the repo's own CI gate — verify which before reacting
+- Trigger: own observation — PR #40 showed a failing `Vercel` commit status while the repo's actual documented CI contract (`scripts/verify.sh full` + `scripts/verify-web.sh`, mirrored by GitHub Actions `verify`/`web-verify` per CLAUDE.md) was fully green; grepping the repo found no `vercel.json` and no docs mentioning Vercel, and the check didn't exist on either of the two prior merged PRs (#37, #39), confirming it was a newly-installed GitHub App integration whose config lives in a dashboard this session has no token for
+- Rule: before treating a red PR check as work to fix, confirm it's part of the repo's own documented CI contract (grep `CLAUDE.md`/`docs/` for the tool, check for its config file in-repo) — an undocumented third-party status with no in-repo config is very likely an Owner-side dashboard setting; don't guess at a fix by adding speculative config files, and don't hold the PR on it. File an Owner-action issue naming the specific setting suspected, note it on the PR, and let the documented gate be the delivery bar
+- Scope: portable
+- Evidence: 1
+- Status: candidate

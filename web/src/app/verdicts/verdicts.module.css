@@ -1,0 +1,475 @@
+/* /verdicts — the five states rendered distinctly, styled against tokens.css.
+   Each state gets its own border/tint AND its own text label; the label is
+   what carries the meaning, the colour only reinforces it. */
+
+.main {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.h1 {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--ink);
+  margin: 0;
+}
+
+.h1Dot {
+  color: var(--accent);
+}
+
+.sub {
+  margin: 0;
+  font-size: var(--fs-sub);
+  color: var(--dim);
+  max-width: 74ch;
+  line-height: 1.6;
+}
+
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 6px;
+  margin: 0;
+  font-size: var(--fs-label);
+  color: var(--dim);
+}
+
+.metaSep {
+  color: var(--faint);
+}
+
+.diagnostic {
+  color: var(--faint);
+  font-style: italic;
+}
+
+.scoreLine {
+  margin: 0;
+  padding: 11px 13px;
+  font-size: var(--fs-sub);
+  color: var(--dim);
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--accent);
+  border-radius: var(--radius-sm);
+  background: var(--panel);
+  line-height: 1.6;
+}
+
+.scoreOk {
+  color: var(--ok);
+  font-weight: 600;
+}
+
+.scoreBad {
+  color: var(--fail);
+  font-weight: 600;
+}
+
+.breach,
+.breachBox {
+  margin: 0;
+  padding: 10px 12px;
+  font-size: var(--fs-label);
+  color: var(--fail);
+  border: 1px solid var(--fail);
+  border-radius: var(--radius-sm);
+  background: var(--red-tint);
+  line-height: 1.6;
+}
+
+.breachTitle {
+  margin: 0 0 6px;
+  font-size: var(--fs-sub);
+  font-weight: 600;
+  color: var(--fail);
+}
+
+.breachList {
+  margin: 0;
+  padding-left: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+/* ---- state sections ---- */
+
+.stateSection {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 13px 15px;
+  border: 1px solid var(--line);
+  border-left-width: 3px;
+  border-radius: var(--radius-sm);
+  background: var(--panel);
+}
+
+.ok {
+  border-left-color: var(--ok);
+}
+.fail {
+  border-left-color: var(--fail);
+}
+.unknown {
+  border-left-color: var(--warn);
+}
+.excluded {
+  border-left-color: var(--dim);
+}
+.exception {
+  border-left-color: var(--info);
+}
+
+.stateTitle {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  margin: 0;
+}
+
+.stateName {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: var(--ink);
+}
+
+.stateCount {
+  font-size: var(--fs-label);
+  color: var(--dim);
+}
+
+.stateMeaning {
+  margin: 0;
+  font-size: var(--fs-label);
+  color: var(--dim);
+  line-height: 1.55;
+  max-width: 78ch;
+}
+
+.empty {
+  margin: 0;
+  font-size: var(--fs-sub);
+  color: var(--faint);
+}
+
+.recordList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.record {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--panel2);
+}
+
+.recordSelected {
+  border-color: var(--accent);
+  background: var(--purple-tint);
+}
+
+.recordButton {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  font: inherit;
+  text-align: left;
+  align-self: flex-start;
+}
+
+.recordButton[aria-pressed="true"] .ref {
+  background: var(--accent);
+  color: var(--bg);
+}
+
+.ref {
+  font-family: var(--font-mono);
+  font-size: var(--fs-label);
+  color: var(--ink);
+  background: var(--panel3);
+  padding: 2px 6px;
+  border-radius: 4px;
+  word-break: break-all;
+}
+
+.recordMessage {
+  margin: 0;
+  font-size: var(--fs-sub);
+  color: var(--dim);
+  line-height: 1.55;
+}
+
+.recordChips {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 8px;
+  margin: 0;
+}
+
+.stateChip {
+  font-family: var(--font-mono);
+  font-size: var(--fs-label);
+  letter-spacing: 0.05em;
+  color: var(--ink);
+  background: var(--panel3);
+  padding: 2px 7px;
+  border-radius: 4px;
+}
+
+.whyCode {
+  font-family: var(--font-mono);
+  font-size: var(--fs-label);
+  color: var(--warn);
+  letter-spacing: 0.04em;
+}
+
+.severity,
+.companion {
+  font-size: var(--fs-label);
+  color: var(--faint);
+}
+
+.companionMissing {
+  font-size: var(--fs-label);
+  color: var(--fail);
+  font-weight: 600;
+}
+
+/* ---- why-code roll-up ---- */
+
+.causes {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 13px 15px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--panel);
+}
+
+.causeList,
+.causeRefs {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.causeRefs {
+  margin-top: 4px;
+  padding-left: 10px;
+  border-left: 1px solid var(--line);
+}
+
+.causeItem {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+/* ---- rail ---- */
+
+.railTitle {
+  margin: 0 0 12px;
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.railSection {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 9px 0;
+  border-top: 1px solid var(--line);
+}
+
+.railSectionTitle {
+  margin: 0;
+  font-size: var(--fs-label);
+  font-weight: 600;
+  color: var(--ink);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.railBody {
+  margin: 0;
+  font-size: var(--fs-sub);
+  color: var(--dim);
+}
+
+.railMeta {
+  margin: 0;
+  font-size: var(--fs-label);
+  color: var(--faint);
+  line-height: 1.55;
+  word-break: break-word;
+}
+
+.railList {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  font-size: var(--fs-label);
+  color: var(--dim);
+}
+
+.hash {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  color: var(--faint);
+  word-break: break-all;
+  line-height: 1.5;
+}
+
+.caseList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  list-style: none;
+  margin: 12px 0 0;
+  padding: 0;
+}
+
+.caseOk,
+.caseMiss {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 8px 10px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--panel2);
+}
+
+.caseMiss {
+  border-color: var(--fail);
+  background: var(--red-tint);
+}
+
+.caseHead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 7px;
+  margin: 0;
+}
+
+.caseStage {
+  font-size: var(--fs-label);
+  color: var(--faint);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.caught {
+  font-size: var(--fs-label);
+  color: var(--ok);
+}
+
+.missed {
+  font-size: var(--fs-label);
+  color: var(--fail);
+  font-weight: 600;
+}
+
+.clearButton {
+  margin-top: 12px;
+  padding: 6px 12px;
+  font: inherit;
+  font-size: var(--fs-label);
+  color: var(--ink);
+  background: var(--panel3);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+}
+
+.clearButton:hover {
+  border-color: var(--accent);
+  color: var(--accent-hover);
+}
+
+/* ---- runs (C2) ---- */
+
+.runLegend {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  list-style: none;
+  margin: 0;
+  padding: 9px 11px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--panel);
+}
+
+.runItem {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.runMeta {
+  font-size: var(--fs-label);
+  color: var(--faint);
+}
+
+.runChip {
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  color: var(--cyan);
+  letter-spacing: 0.03em;
+}
+
+/* ---- C3 link mesh ---- */
+
+.popLink {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.popLink:hover {
+  color: var(--accent-hover);
+  text-decoration: underline;
+}
+
+.jump {
+  margin: 0;
+}
+
+.caseLinks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 2px 0 0;
+  font-size: var(--fs-label);
+}

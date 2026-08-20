@@ -219,15 +219,19 @@ function PointDetail({
 
       <div className={styles.onward}>
         <span className={styles.frowLabel}>Explore</span>
-        <Link className={styles.onwardLink} href="/controls">
-          Control library →
-        </Link>
-        <Link className={styles.onwardLink} href="/reconciliation">
-          Reconciliation →
-        </Link>
-        <Link className={styles.onwardLink} href="/verdicts">
-          Verdicts →
-        </Link>
+        {point.links && point.links.length > 0 ? (
+          point.links.map((link) => (
+            <Link key={link.href} className={styles.onwardLink} href={link.href}>
+              {link.label} →
+            </Link>
+          ))
+        ) : (
+          /* Honest empty state (C2): only points whose engagement artifacts
+           * exist carry links in the seed — the TA lane today. */
+          <span className={styles.onwardEmpty}>
+            No engagement surface is wired to this point yet.
+          </span>
+        )}
       </div>
     </div>
   );

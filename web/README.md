@@ -24,22 +24,21 @@ npm run build
 
 ## Layout
 
-- `src/app/` — App Router pages. Built: `/scope` (A3), `/controls`,
-  `/datasets`, `/overlord` (A4), `/process` (A5), `/reconciliation` +
-  `/reconciliation/[populationId]` (B2). Still stubs: `/verdicts`,
-  `/registry` (B3), `/proof` (B4); each stub states the execution-plan task
-  that fills it in.
-- `src/components/` — `AppShell` (header chrome), `NavTabs` (route tabs),
-  `RailLayout` (page-composed right rail), `GaugesRail` (gauge sections),
-  `StageTabs` (workbench stages 1–4), `StubPage`.
-- `src/data/` — the data layer (A2 + B1). `types.ts` holds hand-authored
-  ontology/artifact types (C1 codegen replaces them); `seed/*.json` is the
-  prototype-ported demo data, genericized to the invented demo company
-  "Meridian Financial" (scope, controls, process lanes, gauges); `engagement/`
-  is the hand-authored mock engagement encoding the six poison cases, shaped
-  to the `artifacts/demo-engagement/` contracts; `index.ts` typed-exports all
-  of it so `tsc --noEmit` structurally checks every JSON file against the
-  types. Pages import from `@/data`, never from the JSON directly.
+- `src/app/` — App Router pages. `/scope`, `/controls`, `/process`,
+  `/reconciliation`, `/verdicts`, `/registry`, `/proof` are stubs today; each
+  page states the execution-plan task (A3–B4) that fills it in.
+- `src/components/` — `AppShell` (two-column shell), `NavTabs` (route tabs),
+  `GaugesRail` (sticky right rail), `StubPage`.
+- `src/data/` — the data layer. `types.ts` holds the hand-authored
+  ontology/artifact types, generated-checked by `bridge.ts` against
+  `__generated__/` (C1); `seed/*.json` is the prototype-ported demo data,
+  genericized to the invented demo company "Meridian Financial" (scope,
+  controls, process lanes, gauges); the engagement data is imported straight
+  from `artifacts/demo-engagement/` via the `@artifacts/*` tsconfig path
+  (C2) — the pipeline-emitted, drift-tested originals, never vendored
+  copies; `index.ts` typed-exports all of it so `tsc --noEmit` structurally
+  checks every JSON file against the types. Pages import from `@/data`,
+  never from the JSON directly.
 - `src/styles/tokens.css` — the single source of color/type/scale tokens.
   Extend it only from a prototype or ratified design, never ad hoc.
 
@@ -57,13 +56,26 @@ edit those files, and do not vendor copies into `web/`):
 | `poisons.json` | `cases` + `detection` + embedded `verdict_records` | `/verdicts` mutation scorecard (B3) |
 
 B1 landed hand-authored mocks in `web/src/data/engagement/` matching these
-shapes (Meridian Financial cast, synthetic hashes); C2 swaps them for the real
-artifacts above.
+shapes (Meridian Financial cast, synthetic hashes); C2 deleted them and
+pointed the imports at the real artifacts above via `@artifacts/*` — the
+no-vendoring rule is now honored by construction, and because the imported
+files are pydantic-validated before the pipeline emits them, the
+enum-value hole `Widen<T>` leaves open is closed at the source.
 
 ## SCH01/REC01 shape review questions
 
 Review artifact for the backend output shapes, recorded while hand-authoring
-the B1 types and mock engagement. Rule followed: the mock keeps the artifact
+the B1 types and mock engagement. Since C1, part of this review is
+mechanical: `npm run codegen` generates TypeScript from the committed JSON
+Schemas into `src/data/__generated__/` (committed; byte-drift checked by
+`npm run codegen:check` in `scripts/verify-web.sh` and CI), and
+`src/data/bridge.ts` holds compile-time `Exact` assertions between the
+hand-authored enums/wire-record and the generated ones. Two honest limits:
+the bridge guards the TYPES — JSON imports still widen enum literals to
+`string` (`Widen<T>` in index.ts), which C2's direct consumption of the
+pipeline-validated artifacts closes at the source; and `support.field_values`
+is compared one-directionally because the schema leaves it an open object
+while the hand type refines it (documented in bridge.ts). Rule followed: the mock keeps the artifact
 shape verbatim; every place the shape diverges from the ontology models or is
 awkward for rendering is a question here, not a silent frontend workaround.
 Numbers are referenced from comments in `src/data/types.ts`.
@@ -71,7 +83,9 @@ Numbers are referenced from comments in `src/data/types.ts`.
 - **Q1 — `unknown_cause` vs `unknown_why`.** Verdict records on the wire
   carry the UNKNOWN why-code as `unknown_cause`; `schema/models.py` `Verdict`
   calls the field `unknown_why`. Same D-U1 concept, two names — which one is
-  canonical for SCH01's exported schema?
+  canonical for SCH01's exported schema? *(C1 note: now schema-confirmed —
+  the ontology and wire schemas generate different TypeScript shapes, and
+  `bridge.ts` deliberately asserts nothing between them.)*
 - **Q2 — EXCEPTION ref naming.** Artifact records carry `disposition_ref`;
   the `Verdict` model calls it `exception_disposition_ref` (EXCLUDED's
   `ratification_ref` matches in both). Also: the conditional fields are
@@ -112,14 +126,18 @@ Numbers are referenced from comments in `src/data/types.ts`.
   excluded card labels that on screen (`PREFIX_JOIN_NOTE`) rather than
   stripping silently. Deleting the exclusion makes the card say so — it is a
   real join, not decoration.
-- **Q7 — `severity` vocabulary is not in the ontology.** Only `"high"` is
-  observed; `schema/enums.py` has no Severity enum. Typed as
-  `"low" | "medium" | "high"` by guess — needs ratification.
-- **Q8 — registry vocabularies not in the ontology.** `temporal.kind`
-  (`state-only` / `event-history` / `full-history`) and `pagination.method`
-  (`page` / `cursor` / `none`) are closed-looking sets that exist nowhere in
-  `schema/enums.py`. If they are ontology, they belong in SCH01; if they are
-  free text, the types should say `string`.
+- **Q7 — `severity` vocabulary is not in the ontology.**
+  *(ANSWERED at C1 — by the wire schema itself.)* `verdict-record.schema.json`
+  carries the full set: `critical | high | medium | low | informational`, and
+  `severity` is optional on the wire. The hand-authored three-value guess was
+  wrong and is now generated-checked (`bridge.ts` `_severity`). Remaining for
+  the Owner: should Severity also join `schema/enums.py` as ontology?
+- **Q8 — registry vocabularies not in the ontology.**
+  *(ANSWERED at C1 — they ARE ontology.)* `capability_entry.schema.json`
+  `$defs` carries both: `PaginationMethod = cursor | page | none` and
+  `TemporalKind = state-only | event-history | full-history |
+  snapshot-cadence` — a fourth member the hand-authored guess had missed.
+  Both are now generated-checked in `bridge.ts`.
 - **Q9 — no D-7 join-failure cause on the wire.** `Delta` carries `bucket` but
   not the D-7 cause family. B2 infers it (`unresolvable` → identity-fuzzy /
   `UNKNOWN_POPULATION`; `left_only` → basis-missing / `UNKNOWN_EVIDENCE`;
@@ -158,8 +176,34 @@ Numbers are referenced from comments in `src/data/types.ts`.
   lives in `registry.json`) does not travel with the reconciliation — so the
   join panel cannot show whether a source could even observe the whole period.
   Should `ReconciliationSource` carry its own `time_window` + capability ref?
+- **Q14 — the EQC travels as an identity, not a contract.** `verdict.spec_hash`
+  IS the EvidenceQualityContract's `contract_hash`
+  (scripts/build_demo_engagement.py), but the contract itself — the five
+  quality properties with their independent methods and failure modes — is
+  never emitted. The /proof contract stage can name the contract by hash and
+  nothing more. Should the engagement emit the EQCs (they are already built
+  in-memory by every collector)?
+- **Q15 — claim and assertion ids are not fields anywhere.** Claims exist only
+  in Python memory (sole wire trace: `registry.compile_errors[].claim_id`), and
+  the assertion id appears only inside the verdict `message` prose; the
+  poisons `verdict_records` grouping implies the assertion family but with
+  non-ratified spellings (Q4b). /proof renders both stages as trace-only. Should
+  verdict records carry `claim_id` and `assertion_id` fields?
+- **Q16 — commitment, requirement, and manifest snapshot are absent from the
+  wire.** No artifact carries any of the three, so /proof renders those stages
+  as not-yet-emitted. The ManifestSnapshot model exists
+  (src/aegis_sentinel/manifest/snapshot.py) but the demo never builds one.
+  UI01's full chain needs at least the snapshot emitted; commitment/requirement
+  need modeling first.
+- **Q17 — the poison run's verdict records live only inside poisons.json.**
+  The real `verdicts.json` carries one walking-skeleton record; the five-state
+  spread (10 records) is embedded in `poisons.json.verdict_records`, so
+  `/verdicts` and `/proof` merge two runs client-side (`combinedRecords` /
+  `verdictRuns`, dedup by record_id). Should VAL02 emit the poison records
+  into a flat `verdicts.json` — or a run envelope (cf. Q3) — so the roster is
+  one artifact?
 
-## REQUIRED for B3: render ratification caveats on `/registry`
+## SATISFIED at B3: ratification caveats on `/registry`
 
 `registry.json` carries a top-level DEMO-ONLY `note` ("workday.terminated_workers
 appears frozen because the demo registry ratifies a COPY in memory; the on-disk
@@ -170,6 +214,39 @@ the `/registry` page MUST render the top-level `note` and every entry's DRAFT
 caveats verbatim alongside the lifecycle badge. A registry page that shows these
 entries as usable/frozen without the caveats misrepresents ratification state —
 that is a demo-correctness bug, not a styling choice.
+
+**Done at B3.** `/registry` renders `note` verbatim at the top of the page and
+every `DRAFT:` caveat verbatim inside the entry card, and usability is *derived*
+(`usability()` in `src/data/registry.ts`) from lifecycle + ratifier rather than
+asserted, so a DRAFT entry renders "NOT usable" with the SCH02 reason attached.
+A frozen entry missing its ratifier is surfaced as a self-contradiction rather
+than rounded off (D-L1 makes ratification the freeze). Proven by value
+falsifiers: flipping an entry to `draft` moves it to NOT-usable, and nulling
+`ratified_by` on a frozen entry produces the contradiction notice.
+
+## PRD §6 acceptance walkthrough (C3)
+
+PRD §6's acceptance, mapped to the screen that carries it and the falsifier
+that proves the screen is data, not prose:
+
+| Criterion | Screen | Falsifier that proves it |
+| --- | --- | --- |
+| Five verdict states render distinctly | `/verdicts` — five sections, each with its own on-screen definition; state is always text, colour only reinforces | `Record<VerdictState, …>` is exhaustive (a sixth state fails `tsc`); flipping a record's `status` moves it between sections and its `/proof` page follows |
+| Every seeded defect visibly caught | `/verdicts` mutation scorecard, recomputed from the cases on screen — never read from `detection` | setting a case `detected:false` renders MISSED and drops the rate; a stated/computed divergence renders the "cases are the truth" banner; non-empty `misses` cites PRD §7 |
+| A practitioner says "now I know why the population is complete" | `/verdicts` record inspector → population link → `/reconciliation/pop-termination-events` why-complete rail; same from the `/proof` population node (UI01) and the TA-1 process control point | the population link renders only when a reconciliation report exists for that id (else honest no-report text); deleting a blocker's disposition flips the rail's conclusion to "not reconciled" |
+
+Standing note: the detection-rate percentage on `/verdicts` is PRD §7's
+required headline metric (`detected / introduced`, denominator = the seeded
+defects), not the PRD §2-forbidden coverage percentage against an unratified
+population denominator — documented in `src/data/verdicts.ts`.
+
+Deep-link scheme: `/verdicts#record=<encodeURIComponent(record_id)>` selects
+and scrolls to a record (`verdictRecordAnchor`/`verdictRecordHref` in
+`src/data/verdicts.ts` — one helper pair, so producers and the consumer agree
+by construction). Seed TA-2/TA-3 deliberately link to plain `/verdicts`, not a
+record anchor: a seed hardcoding an engagement `record_id` would fail silently
+(dead fragment, no 404) if VAL02 ever renamed a record, while TA-1's
+population href fails visibly (404) under `dynamicParams=false`.
 
 ## Deployment (Owner console action — not automated)
 

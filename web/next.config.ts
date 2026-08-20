@@ -1,8 +1,12 @@
+import path from "node:path";
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  // Intentionally minimal. The app is a static-leaning demo surface; later
-  // tracks (C1/C2) add codegen and artifact ingestion, not runtime config.
+  // C2: the engagement data is imported straight from the repo's
+  // artifacts/demo-engagement/ (via the @artifacts/* tsconfig path) — the
+  // drift-tested originals, never vendored copies. Point file tracing at the
+  // repo root so Next resolves across the package boundary.
+  outputFileTracingRoot: path.join(__dirname, ".."),
   reactStrictMode: true,
 };
 

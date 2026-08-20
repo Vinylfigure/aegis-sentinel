@@ -1,14 +1,29 @@
 import type { Metadata } from "next";
-import { StubPage } from "@/components/StubPage/StubPage";
+import {
+  engagementPoisons,
+  engagementReconciliations,
+  engagementVerdictRecords,
+  engagementVerdicts,
+} from "@/data";
+import { VerdictsBoard } from "./VerdictsBoard";
 
 export const metadata: Metadata = { title: "Verdicts" };
 
+/**
+ * B3 — /verdicts: the five verdict states rendered distinctly, UNKNOWN
+ * why-code chips, and the mutation scorecard. PRD §6 acceptance: the five
+ * states must be visibly distinct and every seeded defect visibly caught.
+ */
 export default function VerdictsPage() {
+  // The combined roster: verdicts.json (walking-skeleton run) plus the
+  // poison run's records embedded in poisons.json. engagementVerdicts alone
+  // carries one record post-C2 — the five-state spread lives in the runs.
   return (
-    <StubPage
-      title="Verdicts"
-      plannedIn="B3"
-      description="Verdict records with the five states visibly distinct, why-code chips, and the mutation scorecard. Consumes artifacts/demo-engagement/verdicts.json and poisons.json."
+    <VerdictsBoard
+      records={engagementVerdictRecords}
+      verdicts={engagementVerdicts}
+      poisons={engagementPoisons}
+      knownPopulationIds={engagementReconciliations.map((r) => r.population_id)}
     />
   );
 }
