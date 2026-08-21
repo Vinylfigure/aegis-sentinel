@@ -3,7 +3,14 @@
 import { useState } from "react";
 import Link from "next/link";
 import { RailLayout } from "@/components/RailLayout/RailLayout";
+import {
+  compileErrorMeta,
+  engagementRegistry,
+  engagementVerdictRecords,
+  verdictStateMeta,
+} from "@/data";
 import type {
+  CompileError,
   ControlsSeed,
   ProcessControlPoint,
   ProcessLane,
@@ -12,8 +19,16 @@ import type {
   ProcessTier,
   ScopeSeed,
   SeedControl,
+  VerdictRecord,
+  VerdictState,
 } from "@/data";
 import styles from "./process.module.css";
+import {
+  pointCompileErrors,
+  pointVerdictRecords,
+  worstOfStates,
+  worstVerdictState,
+} from "./verdictFusion";
 
 /* ------------------------------------------------------------------ */
 /* Derivations                                                         */
@@ -25,6 +40,14 @@ interface PointOnFlow {
   /** Registry system ids flanking this point on the flow (either side
    * of the diamond), where the neighboring node resolves to one. */
   flankSystems: string[];
+  /** Issue #43 — live engagement verdict records joined via the point's
+   * explicit `verdictSpecIds`. Empty when the point has none wired. */
+  verdictRecords: VerdictRecord[];
+  /** Worst state among `verdictRecords`; null when there are none. */
+  worstState: VerdictState | null;
+  /** Compile-refusal errors gating this point, joined via
+   * `compileErrorClaimIds`. Empty when the point has none wired. */
+  compileErrors: CompileError[];
 }
 
 /** A process node key resolves to a scope-registry system when its base
@@ -53,10 +76,13 @@ function nearestFlank(
   return null;
 }
 
-/** Every control point in seed order, with its lane and flanking systems. */
+/** Every control point in seed order, with its lane, flanking systems, and
+ * (#43) the live verdict records / compile errors it's wired to. */
 function pointsOnFlow(
   seed: ProcessSeed,
   systemIds: ReadonlySet<string>,
+  verdictRecords: readonly VerdictRecord[],
+  compileErrors: readonly CompileError[],
 ): PointOnFlow[] {
   const points: PointOnFlow[] = [];
   for (const lane of seed.lanes) {
@@ -66,14 +92,37 @@ function pointsOnFlow(
         nearestFlank(lane.sequence, index, -1, systemIds),
         nearestFlank(lane.sequence, index, 1, systemIds),
       ].filter((s): s is string => s !== null);
+      const records = pointVerdictRecords(step.controlPoint, verdictRecords);
       points.push({
         lane,
         point: step.controlPoint,
         flankSystems: [...new Set(flanks)],
+        verdictRecords: records,
+        worstState: worstVerdictState(records),
+        compileErrors: pointCompileErrors(step.controlPoint, compileErrors),
       });
     });
   }
   return points;
+}
+
+/** Worst verdict state among the control points immediately flanking a
+ * node in its own lane's sequence (#43) — a system's live health is the
+ * worst outcome among the gates that touch it, not a property of its own. */
+function nodeWorstState(
+  lane: ProcessLane,
+  nodeIndex: number,
+  pointsById: ReadonlyMap<string, PointOnFlow>,
+): VerdictState | null {
+  const neighborStates: VerdictState[] = [];
+  for (const dir of [-1, 1] as const) {
+    const step = lane.sequence[nodeIndex + dir];
+    if (step?.kind === "controlPoint") {
+      const state = pointsById.get(step.controlPoint.id)?.worstState;
+      if (state) neighborStates.push(state);
+    }
+  }
+  return worstOfStates(neighborStates);
 }
 
 /** Library controls operating over every system flanking the point —
@@ -128,6 +177,18 @@ const FUNCTION_BADGE: Record<
   det: { text: "DETECTIVE", className: styles.bdDet ?? "" },
 };
 
+/** #43 — verdict-state ring color, keyed by the same `tone` as
+ * `verdictStateMeta` (verdicts.ts) and `/verdicts`'s section borders, so a
+ * FAIL means the same red everywhere in the app. Exhaustive `Record` so a
+ * sixth `VerdictState` fails `tsc` here rather than silently un-ringed. */
+const VERDICT_RING: Record<VerdictState, string> = {
+  FAIL: styles.ringFail ?? "",
+  UNKNOWN: styles.ringUnknown ?? "",
+  EXCEPTION: styles.ringException ?? "",
+  EXCLUDED: styles.ringExcluded ?? "",
+  PASS: styles.ringOk ?? "",
+};
+
 /* ------------------------------------------------------------------ */
 /* Detail rail                                                         */
 /* ------------------------------------------------------------------ */
@@ -139,7 +200,7 @@ function PointDetail({
   entry: PointOnFlow;
   controls: ControlsSeed;
 }) {
-  const { lane, point, flankSystems } = entry;
+  const { lane, point, flankSystems, verdictRecords, worstState, compileErrors } = entry;
   const nature = NATURE_BADGE[point.nature];
   const fn = FUNCTION_BADGE[point.function];
   const related = relatedControls(flankSystems, controls.controls);
@@ -180,6 +241,55 @@ function PointDetail({
           <p className={styles.gapBody}>{point.gap}</p>
         </div>
       ) : null}
+
+      {compileErrors.length > 0 ? (
+        <div className={styles.refusal}>
+          <span className={styles.frowLabel}>Compile refusal on this gate</span>
+          {compileErrors.map((error) => {
+            const meta = compileErrorMeta(error.code);
+            return (
+              <div key={`${error.claim_id}:${error.code}`} className={styles.refusalBody}>
+                <span className={styles.refusalCode}>{meta.code}</span>{" "}
+                <b>{meta.title}</b>
+                <p className={styles.refusalMsg}>{error.message}</p>
+                <p className={styles.refusalConsequence}>{meta.consequence}</p>
+                <code className={styles.api}>{error.claim_id}</code>
+              </div>
+            );
+          })}
+        </div>
+      ) : null}
+
+      <div className={styles.rel}>
+        <span className={styles.frowLabel}>Live verdict state</span>
+        {worstState ? (
+          <>
+            <span className={`${styles.stateChip} ${VERDICT_RING[worstState] ?? ""}`}>
+              worst: {worstState}
+            </span>
+            {verdictRecords.map((record) => (
+              <div key={record.record_id} className={styles.relCtl}>
+                <span className={`${styles.stateChip} ${VERDICT_RING[record.status] ?? ""}`}>
+                  {record.status}
+                </span>{" "}
+                <Link
+                  className={styles.onwardLink}
+                  href={`/proof/${encodeURIComponent(record.record_id)}`}
+                >
+                  {record.record_id}
+                </Link>
+                {record.message ? (
+                  <div className={styles.relDs}>{record.message}</div>
+                ) : null}
+              </div>
+            ))}
+          </>
+        ) : (
+          <p className={styles.relEmpty}>
+            No live verdict records are wired to this point yet.
+          </p>
+        )}
+      </div>
 
       <div className={styles.rel}>
         <span className={styles.frowLabel}>
@@ -253,7 +363,13 @@ export function ProcessGraph({
   const systemIds: ReadonlySet<string> = new Set(
     scope.systems.map((system) => system.id),
   );
-  const points = pointsOnFlow(seed, systemIds);
+  const points = pointsOnFlow(
+    seed,
+    systemIds,
+    engagementVerdictRecords,
+    engagementRegistry.compile_errors,
+  );
+  const pointsById = new Map(points.map((entry) => [entry.point.id, entry]));
 
   /* Default selection = first control point on the flow (seed order);
    * pages built from a seed without points render the empty rail. */
@@ -335,6 +451,14 @@ export function ProcessGraph({
           <span className={styles.legendItem}>
             <span className={`${styles.legendCi} ${styles.legendCiA}`} /> T2
           </span>
+          <span className={styles.legendItem}>
+            <span className={`${styles.legendRing} ${styles.ringFail}`} /> live
+            verdict state (worst of associated records)
+          </span>
+          <span className={styles.legendItem}>
+            <span className={styles.legendGate}>⛔</span> claim on this gate
+            doesn&apos;t compile
+          </span>
         </div>
 
         {seed.lanes.map((lane) => (
@@ -346,27 +470,35 @@ export function ProcessGraph({
             </div>
             <div className={styles.flow}>
               <div className={styles.chain}>
-                {lane.sequence.map((step) =>
-                  step.kind === "node" ? (
-                    <div
-                      key={`n-${step.node.key}`}
-                      className={`${styles.node} ${TIER_NODE[step.node.tier]}`}
-                    >
-                      <div className={styles.bubble}>
-                        {step.node.label}
-                        {step.node.tier < 3 ? (
-                          <span className={styles.tierBadge}>
-                            T{step.node.tier}
-                          </span>
-                        ) : null}
+                {lane.sequence.map((step, index) => {
+                  if (step.kind === "node") {
+                    const liveState = nodeWorstState(lane, index, pointsById);
+                    return (
+                      <div
+                        key={`n-${step.node.key}`}
+                        className={`${styles.node} ${TIER_NODE[step.node.tier]}`}
+                      >
+                        <div
+                          className={`${styles.bubble} ${
+                            liveState ? (styles.bubbleLive ?? "") : ""
+                          } ${liveState ? (VERDICT_RING[liveState] ?? "") : ""}`}
+                        >
+                          {step.node.label}
+                          {step.node.tier < 3 ? (
+                            <span className={styles.tierBadge}>
+                              T{step.node.tier}
+                            </span>
+                          ) : null}
+                        </div>
+                        <div className={styles.nodeLabel}>{step.node.sublabel}</div>
                       </div>
-                      <div className={styles.nodeLabel}>{step.node.sublabel}</div>
-                    </div>
-                  ) : (
-                    <div
-                      key={`cp-${step.controlPoint.id}`}
-                      className={styles.edge}
-                    >
+                    );
+                  }
+                  const cpEntry = pointsById.get(step.controlPoint.id);
+                  const hasRefusal = (cpEntry?.compileErrors.length ?? 0) > 0;
+                  const worst = cpEntry?.worstState ?? null;
+                  return (
+                    <div key={`cp-${step.controlPoint.id}`} className={styles.edge}>
                       <span className={styles.wire} />
                       <button
                         type="button"
@@ -374,17 +506,26 @@ export function ProcessGraph({
                           selectedId === step.controlPoint.id
                             ? (styles.cpSel ?? "")
                             : ""
+                        } ${worst ? (styles.cpLive ?? "") : ""} ${
+                          worst ? (VERDICT_RING[worst] ?? "") : ""
                         }`}
                         aria-pressed={selectedId === step.controlPoint.id}
-                        aria-label={`${step.controlPoint.id} — ${step.controlPoint.name}`}
+                        aria-label={`${step.controlPoint.id} — ${step.controlPoint.name}${
+                          worst ? ` — live state ${worst}` : ""
+                        }${hasRefusal ? " — compile refusal on this gate" : ""}`}
                         onClick={() => setSelectedId(step.controlPoint.id)}
                       >
                         <i className={styles.cpId}>{step.controlPoint.id}</i>
+                        {hasRefusal ? (
+                          <span className={styles.cpGate} aria-hidden="true">
+                            ⛔
+                          </span>
+                        ) : null}
                       </button>
                       <span className={styles.wire} />
                     </div>
-                  ),
-                )}
+                  );
+                })}
               </div>
             </div>
           </section>
