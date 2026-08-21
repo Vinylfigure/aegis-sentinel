@@ -781,6 +781,29 @@ def build_poison_artifacts() -> dict[str, str]:
     # artifacts: population/claim ids from the claims evaluated above,
     # capability ids from the same `registry` serialized into
     # registry_artifact, contract hashes from the same collector calls.
+    #
+    # EXERCISED_CAPABILITY_IDS is the one hand-maintained exception — there
+    # is no field on EvidenceQualityContract that names the capability id
+    # it was collected under, only `source` (the bare system: "workday",
+    # "okta", "github", "gcp"). This check keeps the constant honest against
+    # what was actually collected in THIS build: if a future change adds or
+    # drops a collector call without updating the constant, this raises
+    # instead of silently shipping a `collectors` block that misrepresents
+    # what was really invoked.
+    collected_systems = {
+        hris.contract.source,
+        okta.contract.source,
+        github.contract.source,
+        gcp.contract.source,
+    }
+    exercised_systems = {cap_id.split(".", 1)[0] for cap_id in EXERCISED_CAPABILITY_IDS}
+    if exercised_systems != collected_systems:
+        raise SystemExit(
+            "EXERCISED_CAPABILITY_IDS drifted from the collectors this build actually "
+            f"invokes: exercised systems {sorted(exercised_systems)} != "
+            f"collected systems {sorted(collected_systems)}"
+        )
+
     manifest_blocks = ManifestBlocks(
         populations=(event_pop.id,),
         claims=tuple(sorted({existence_claim.id, timing_claim.id, nonexistence_claim.id})),

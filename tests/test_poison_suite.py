@@ -279,6 +279,21 @@ def test_snapshot_capabilities_resolve_against_registry(snapshot, registry):
     assert collector_ids, "the snapshot must grant at least one collector"
 
 
+def test_snapshot_collectors_block_raises_if_hand_maintained_constant_drifts():
+    # EXERCISED_CAPABILITY_IDS (build_demo_engagement.py) is the one part of
+    # the snapshot not derived straight from pipeline objects — nothing on
+    # EvidenceQualityContract names a capability id, only a bare system. If
+    # a future change silently drops or adds a collector call without
+    # updating the constant, the build must fail loudly rather than emit a
+    # `collectors` block that misrepresents what was actually invoked.
+    module = load_builder()
+    module.EXERCISED_CAPABILITY_IDS = frozenset(
+        module.EXERCISED_CAPABILITY_IDS - {"gcp.service_accounts"}
+    )
+    with pytest.raises(SystemExit, match="EXERCISED_CAPABILITY_IDS drifted"):
+        module.build_poison_artifacts()
+
+
 def test_snapshot_claims_resolve_against_evaluated_verdict_specs(snapshot, poisons):
     # The pipeline builds claims in memory (no claims.json on the wire);
     # what it evaluated is provable via the spec_id prefixes those claims'
