@@ -323,6 +323,35 @@ export interface RegistryArtifact {
 }
 
 /* ------------------------------------------------------------------ */
+/* snapshot.json — the ratified ManifestSnapshot (Q16, partial)        */
+/* ------------------------------------------------------------------ */
+
+export interface ManifestCollectorGrant {
+  id: string;
+  permissions: string[];
+}
+
+export interface ManifestBlocks {
+  boundary: string[];
+  capabilities: string[];
+  claims: string[];
+  collectors: ManifestCollectorGrant[];
+  evidence_contracts: string[];
+  populations: string[];
+  tests: string[];
+}
+
+export interface ManifestSnapshotArtifact {
+  blocks: ManifestBlocks;
+  lifecycle: LifecycleState;
+  /** DEMO-ONLY carries in this string itself (see web/README.md) — the
+   * strict manifest_snapshot schema has no sibling note field to hold it. */
+  ratified_by: string | null;
+  ratified_at: IsoDateTime | null;
+  version: number;
+}
+
+/* ------------------------------------------------------------------ */
 /* poisons.json — mutation scorecard                                   */
 /* ------------------------------------------------------------------ */
 

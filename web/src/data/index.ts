@@ -17,6 +17,7 @@ import { combinedRecords } from "@/data/verdicts";
 import type {
   ControlsSeed,
   GaugesSeed,
+  ManifestSnapshotArtifact,
   PoisonsArtifact,
   ProcessSeed,
   ReconciliationReport,
@@ -33,6 +34,7 @@ import scopeJson from "@/data/seed/scope.json";
 import poisonsJson from "@artifacts/poisons.json";
 import reconciliationJson from "@artifacts/reconciliation.json";
 import registryJson from "@artifacts/registry.json";
+import snapshotJson from "@artifacts/snapshot.json";
 import verdictsJson from "@artifacts/verdicts.json";
 
 export type * from "@/data/types";
@@ -84,6 +86,7 @@ export const engagementVerdicts = checked<VerdictsArtifact>(verdictsJson);
 export const engagementReconciliation = checked<ReconciliationReport>(reconciliationJson);
 export const engagementRegistry = checked<RegistryArtifact>(registryJson);
 export const engagementPoisons = checked<PoisonsArtifact>(poisonsJson);
+export const engagementSnapshot = checked<ManifestSnapshotArtifact>(snapshotJson);
 
 /**
  * The population list the /reconciliation routes iterate. One report today;
