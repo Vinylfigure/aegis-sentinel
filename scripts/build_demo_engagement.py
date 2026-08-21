@@ -15,9 +15,13 @@ frontend track consumes; nothing in the verdict path renders.
 VAL02 second entrypoint (`python scripts/build_demo_engagement.py
 poisons`): runs the six poison cases of PRD-v3 §6 through the same real
 pipeline over tests/fixtures/poisons/ and writes
-artifacts/demo-engagement/{poisons,reconciliation,registry}.json
-(drift-tested byte-for-byte by tests/test_poison_suite.py). The default
-invocation still writes only verdicts.json, byte-identical to before.
+artifacts/demo-engagement/{poisons,reconciliation,registry,contracts}.json
+(drift-tested byte-for-byte by tests/test_poison_suite.py). contracts.json
+is Q14's EvidenceQualityContracts, keyed by contract_hash — the same
+objects every collector already builds in memory, previously dropped at
+serialization (each verdict record's spec_hash IS a key into this map).
+The default invocation still writes only verdicts.json, byte-identical
+to before.
 """
 
 import json
@@ -752,10 +756,27 @@ def build_poison_artifacts() -> dict[str, str]:
         "entries": [e.model_dump(mode="json") for e in sorted(registry.all(), key=lambda e: e.id)],
         "compile_errors": breakglass_errors,
     }
+
+    # Q14 — the EvidenceQualityContracts every collector above already
+    # built in memory, keyed by contract_hash. Scoped to the three
+    # contracts an evaluate_* call above was actually passed as
+    # `contract=` (hris for alpha_record, okta for the timing batch,
+    # github for nonexistence_record) — every emitted verdict record's
+    # spec_hash IS a key into this map by construction, and this map
+    # carries nothing else: gcp.contract is collected but never itself
+    # evaluated against (its records only feed the okta-contracted
+    # timing timelines), so including it here would orphan a contract no
+    # verdict cites.
+    contracts_artifact = {
+        contract.contract_hash: contract.model_dump(mode="json")
+        for contract in (hris.contract, okta.contract, github.contract)
+    }
+
     return {
         "poisons.json": _dumps(poisons_artifact),
         "reconciliation.json": _dumps(reconciliation_artifact),
         "registry.json": _dumps(registry_artifact),
+        "contracts.json": _dumps(contracts_artifact),
     }
 
 

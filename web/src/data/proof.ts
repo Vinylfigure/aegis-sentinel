@@ -23,6 +23,7 @@ import {
 } from "@/data/reconciliation";
 import type {
   AssertionType,
+  ContractsArtifact,
   PoisonVerdictGroup,
   PoisonsArtifact,
   ReconciliationReport,
@@ -194,6 +195,7 @@ export function lineage(
   reconciliations: readonly ReconciliationReport[],
   registry: RegistryArtifact,
   poisons: PoisonsArtifact,
+  contracts: ContractsArtifact = {},
 ): LineageNode[] {
   const report =
     reconciliations.find((r) => r.population_id === record.population_id) ?? null;
@@ -313,15 +315,37 @@ export function lineage(
           ],
         };
       }
-      case "contract":
+      case "contract": {
+        const contract = contracts[record.spec_hash];
+        if (!contract) {
+          return {
+            kind: "identity-only",
+            fields: [
+              { label: "spec_id", value: record.spec_id, mono: true },
+              { label: "spec_hash", value: record.spec_hash, mono: true },
+            ],
+            note: "No emitted contract resolves for this spec_hash — only the identity travels (Q14).",
+          };
+        }
         return {
-          kind: "identity-only",
+          kind: "emitted",
           fields: [
             { label: "spec_id", value: record.spec_id, mono: true },
-            { label: "spec_hash", value: record.spec_hash, mono: true },
+            { label: "contract_hash", value: contract.contract_hash, mono: true },
+            { label: "source", value: `${contract.source} (${contract.tenant})` },
+            {
+              label: "supported_assertion_types",
+              value: contract.supported_assertion_types.join(", "),
+              mono: true,
+            },
+            { label: "provenance", value: contract.quality.provenance.method },
+            { label: "integrity", value: contract.quality.integrity.method },
+            { label: "population", value: contract.quality.population.method },
+            { label: "semantics", value: contract.quality.semantics.method },
+            { label: "temporal_validity", value: contract.quality.temporal_validity.method },
           ],
-          note: "spec_hash IS the Evidence Quality Contract's contract_hash (build_demo_engagement.py); the contract's identity travels, its five quality properties are not emitted (Q14).",
         };
+      }
       case "snapshot":
         return {
           kind: "not-emitted",
