@@ -477,3 +477,10 @@ Rules for curators (`/evolve`):
 - Scope: portable
 - Evidence: 1
 - Status: candidate
+
+## L-064 · 2026-08-21 · A web/README.md "Q" item without an ANSWERED tag can still be settled — check prior proposal issues' "Not in scope" sections first
+- Trigger: this firing scanned `web/README.md`'s open Q-items for a step-2c grounded build-heartbeat proposal after both open PRs were green and every ready plan box/task issue was exhausted. Q17 ("the poison run's verdict records live only inside poisons.json... Should VAL02 emit the poison records into a flat verdicts.json?") carries no `ANSWERED` tag in the README, unlike Q5/Q7/Q8/Q11b/Q12 — but issue #48 (filed by a prior firing) states in its own "Not in scope" section: "Q17's flat-verdicts.json-vs-run-envelope question — that is a live shape fork that C2 deliberately answered with a client-side merge, and it should not be reopened as a side effect of this change." Only reading #48's full body, not just its title or the README, surfaced this; proceeding on the README alone would have re-proposed already-settled work (origin: own observation, caught before filing).
+- Rule: before filing a `task:` issue against a `web/README.md` Q-item, grep open issue bodies for that Q-number and read any hit's "Not in scope" section — a Q-item can be deliberately settled by a prior proposal/PR without the README itself being updated to say ANSWERED.
+- Scope: project
+- Evidence: 1
+- Status: candidate
