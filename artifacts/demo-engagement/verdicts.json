@@ -1,6 +1,8 @@
 [
   {
+    "assertion_id": "am06-hris-existence-A",
     "chain_prev": null,
+    "claim_id": "claim-am06-termination-existence",
     "collected_at": "2026-12-31T23:59:59Z",
     "completeness_ref": "reconciliations/pop-termination-events.json",
     "control_id": "AM-06",
@@ -10,7 +12,7 @@
     "message": "assertion am06-hris-existence-A: all 12 canonical members have a termination record in the workday feed",
     "population_count": 12,
     "population_id": "pop-termination-events",
-    "record_hash": "6c58536603dabe5ce306f5e612851f075ccfcd07db6142baf4b564791d192329",
+    "record_hash": "49449e2ce726426f923ca36e89ede810f19a6060c37b939f3cfe6c150957e567",
     "record_id": "vr-demo-engagement-0001",
     "run_id": "run-demo-engagement-0001",
     "schema_version": "0.1.0",

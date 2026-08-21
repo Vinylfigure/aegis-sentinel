@@ -183,12 +183,19 @@ Numbers are referenced from comments in `src/data/types.ts`.
   never emitted. The /proof contract stage can name the contract by hash and
   nothing more. Should the engagement emit the EQCs (they are already built
   in-memory by every collector)?
-- **Q15 — claim and assertion ids are not fields anywhere.** Claims exist only
-  in Python memory (sole wire trace: `registry.compile_errors[].claim_id`), and
-  the assertion id appears only inside the verdict `message` prose; the
-  poisons `verdict_records` grouping implies the assertion family but with
-  non-ratified spellings (Q4b). /proof renders both stages as trace-only. Should
-  verdict records carry `claim_id` and `assertion_id` fields?
+- **Q15 — claim and assertion ids are not fields anywhere. ANSWERED — issue
+  #53.** Every `evaluate_*` call site's `_base_record` (and
+  `evaluate.minimal.evaluate_existence`) now writes `claim_id`/`assertion_id`
+  onto the record from the `Claim`/`Assertion` objects already in scope at
+  evaluation time — no new modeling, the ids existed in memory and were
+  simply never written to the wire. `schemas/verdict-record.schema.json`
+  requires both; `tests/test_poison_suite.py` proves the join both directions
+  (no dangling `claim_id`, no `assertion_id` absent from that claim, no
+  assertion of the wrong type for the group it was evaluated under — same
+  join-exactness pattern as Q14/issue #48's contract test). `/proof`'s claim
+  and assertion stages render `emitted` with the real ids; the poisons
+  `verdict_records` grouping (Q4b) now shows only as a diagnostic
+  cross-reference, not the identification path.
 - **Q16 — commitment, requirement, and manifest snapshot are absent from the
   wire.** No artifact carries any of the three, so /proof renders those stages
   as not-yet-emitted. The ManifestSnapshot model exists

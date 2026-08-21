@@ -133,7 +133,12 @@ export interface VerdictSupport {
  * naming drift vs. schema/models.py Verdict).
  */
 export interface VerdictRecord {
+  /** The claim_id's Assertion this verdict evaluates, of the type actually
+   * tested (Q15). */
+  assertion_id: string;
   chain_prev: Sha256 | null;
+  /** The Claim this verdict was evaluated against (Q15). */
+  claim_id: string;
   collected_at: IsoDateTime;
   completeness_ref: string;
   control_id: string;

@@ -25,5 +25,7 @@
   "spec_id": "spec-branch-protection-v1",
   "spec_hash": "d4f02eaafd1a9e9de7d10972ca8e47fa7a985825c3c9c1e249c72683cb3e4f19",
   "test_function_version": "0.1.0",
-  "evidence_refs": ["captures/branch_protection/Vinylfigure-aegis-sentinel-main-403.json"]
+  "evidence_refs": ["captures/branch_protection/Vinylfigure-aegis-sentinel-main-403.json"],
+  "claim_id": "claim-cm03-branch-protection",
+  "assertion_id": "cm03-branch-protection-A"
 }

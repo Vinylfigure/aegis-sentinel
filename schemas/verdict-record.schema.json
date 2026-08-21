@@ -22,7 +22,9 @@
     "spec_id",
     "spec_hash",
     "test_function_version",
-    "evidence_refs"
+    "evidence_refs",
+    "claim_id",
+    "assertion_id"
   ],
   "properties": {
     "schema_version": {
@@ -34,6 +36,16 @@
       "type": "string",
       "minLength": 1,
       "description": "Control identifier from the testing library, e.g. CM-03"
+    },
+    "claim_id": {
+      "type": "string",
+      "minLength": 1,
+      "description": "The Claim this verdict was evaluated against (src/aegis_sentinel/schema/models.py Claim.id)"
+    },
+    "assertion_id": {
+      "type": "string",
+      "minLength": 1,
+      "description": "The claim's Assertion this verdict evaluates (Assertion.id), of the type this record's evaluator tests"
     },
     "status": {
       "enum": ["PASS", "FAIL", "UNKNOWN", "EXCLUDED", "EXCEPTION"],

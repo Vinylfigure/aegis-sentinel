@@ -129,12 +129,11 @@ ratification is the freeze — draft → frozen(=ratified) → superseded).
   the ten-stage SVG lineage with typed arrows as visible edge labels (imposes →
   compiled into → quantifies over → derived from → reconciled into → evidence
   gated by → frozen in → executes → evaluates to) and a node inspector. Honest to
-  the wire: five stages render from data (population/sources/reconciliation via
+  the wire: seven stages render from data (population/sources/reconciliation via
   the population_id join, contract identity via spec_hash == the EQC
-  contract_hash, verdict itself); the other five are labelled on-diagram —
-  not-emitted (commitment/requirement/snapshot, Q16), trace-only
-  (claim via compile_errors claim ids, Q15; assertion family inferred from the
-  poisons grouping, Q4b/Q15). Clicking the population node links into the
+  contract_hash, claim/assertion via their real claim_id/assertion_id fields
+  (Q15, issue #53), verdict itself); the other three are labelled on-diagram —
+  not-emitted (commitment/requirement/snapshot, Q16). Clicking the population node links into the
   why-complete rail (UI01). Routes generated from `engagementVerdictRecords`
   (verdicts.json + poisons verdict_records, deduped — the B1 mock duplicates
   them; real artifacts are disjoint, so C2 lifts this to 11 pages with zero

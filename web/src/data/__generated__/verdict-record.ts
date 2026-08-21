@@ -20,6 +20,14 @@ export type AegisSentinelVerdictRecord = {
    */
   control_id: string;
   /**
+   * The Claim this verdict was evaluated against (src/aegis_sentinel/schema/models.py Claim.id)
+   */
+  claim_id: string;
+  /**
+   * The claim's Assertion this verdict evaluates (Assertion.id), of the type this record's evaluator tests
+   */
+  assertion_id: string;
+  /**
    * The five ratified verdict states (docs/DECISIONS.md D-V1, PRD-v3 §2): EXCLUDED is the former NOT_APPLICABLE and keeps its ratification_ref requirement; EXCEPTION is a dispositioned legitimate exception and requires disposition_ref
    */
   status: "PASS" | "FAIL" | "UNKNOWN" | "EXCLUDED" | "EXCEPTION";

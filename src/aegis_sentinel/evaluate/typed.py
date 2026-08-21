@@ -96,6 +96,8 @@ def _base_record(
     spec_id: str,
     spec_hash: str,
     evidence_refs: Sequence[str],
+    claim_id: str,
+    assertion_id: str,
 ) -> dict:
     """The identity block shared by every emitted verdict record —
     field-for-field the shape evaluate.minimal.evaluate_existence emits,
@@ -118,6 +120,8 @@ def _base_record(
         "test_function_version": TEST_FUNCTION_VERSION,
         "evidence_refs": list(evidence_refs),
         "severity": "high",
+        "claim_id": claim_id,
+        "assertion_id": assertion_id,
     }
 
 
@@ -197,6 +201,7 @@ def evaluate_timing(
     if not constraint.business_days:
         raise ValueError("only business-day timing constraints are implemented (D-P4)")
     guard = _guard(claim, population, contract, AssertionType.TIMING)
+    assertion = next(a for a in claim.assertions if a.type is AssertionType.TIMING)
     window = contract.time_window
 
     records: list[dict] = []
@@ -217,6 +222,8 @@ def evaluate_timing(
             spec_id=spec_id,
             spec_hash=spec_hash,
             evidence_refs=evidence_refs,
+            claim_id=claim.id,
+            assertion_id=assertion.id,
         )
         if guard is not None:
             why, message, field_values = guard
@@ -318,6 +325,7 @@ def evaluate_non_existence(
     UNKNOWN_TESTABILITY as in evaluate.minimal.evaluate_existence.
     """
     guard = _guard(claim, population, contract, AssertionType.NON_EXISTENCE)
+    assertion = next(a for a in claim.assertions if a.type is AssertionType.NON_EXISTENCE)
     terminated_keys = {e for m in terminated if (e := canonical_email(m)) is not None}
     holder_keys = {e for m in access_holders if (e := canonical_email(m)) is not None}
     residual = sorted(terminated_keys & holder_keys)
@@ -336,6 +344,8 @@ def evaluate_non_existence(
         spec_id=spec_id,
         spec_hash=spec_hash,
         evidence_refs=evidence_refs,
+        claim_id=claim.id,
+        assertion_id=assertion.id,
     )
     if guard is not None:
         why, message, field_values = guard

@@ -3,7 +3,6 @@ import { notFound } from "next/navigation";
 import {
   engagementPoisons,
   engagementReconciliations,
-  engagementRegistry,
   engagementVerdictRecords,
 } from "@/data";
 import { ProofLineage } from "./ProofLineage";
@@ -60,7 +59,6 @@ export default async function ProofDetailPage({
     <ProofLineage
       record={record}
       reconciliations={engagementReconciliations}
-      registry={engagementRegistry}
       poisons={engagementPoisons}
     />
   );
