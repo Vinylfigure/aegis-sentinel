@@ -71,6 +71,7 @@ Rules for curators (`/evolve`):
 - Evidence: 5
 - Status: inherited (was: promoted:CLAUDE.md in janus)
 - observed: 2026-08-20 — fired at issue #43: an Explore agent reported the verdict/E-code data shapes and flagged "no existing id-level join" to ProcessControlPoint; rather than accept its paraphrase of which spec_ids/claim_id belonged where, the exact record contents were read directly from verdicts.json/poisons.json/registry.json before wiring any seed association — the agent's report was directionally right but its own words were never quoted into the implementation unverified
+- observed: 2026-08-21 — issue #53 (filed by a prior heartbeat firing) named the done-means schema file as `schemas/ontology/verdict.schema.json`; reading `evaluate/typed.py`'s own docstring and the schema's actual field shape showed the real file every emitted record validates against is `schemas/verdict-record.schema.json` — a differently-scoped schema happens to share a similar name. Built and tested against the code-confirmed file, not the issue's claim, and said so in the PR body
 
 ## L-007 · 2026-07-06 · When changing a convention, sweep every mention of it, not just planned edit sites
 - Trigger: the adversarial verifier failed the refinement diff because docs/USAGE.md's day-1 section still said "optional Graphify" after the convention changed to default-on; the planned edit list had missed that mention (janus refinement session); recurred in round 3.5 — removing new-worktree.sh missed ARCHITECTURE's component-map row, caught by the docs-consistency fixture rather than a manual sweep. observed: 2026-08-18 — credited by name in L-049's own Trigger ("caught by own L-007 sweep"); fired again at B2 sweeping README question numbers and the EXECUTION-PLAN tick
@@ -78,6 +79,7 @@ Rules for curators (`/evolve`):
 - Scope: portable
 - Evidence: 2
 - Status: inherited (was: promoted:CLAUDE.md in janus)
+- observed: 2026-08-21 — after Q15 was answered (issue #53), grepped the repo for "trace-only"/"compile_errors[].claim_id" near Q15/claim/assertion mentions and found two stale mentions the planned edit list hadn't listed (`web/README.md`'s Q15 bullet and `docs/EXECUTION-PLAN.md`'s B4 acceptance-criteria paragraph, which still said "trace-only … Q15" after the code stopped being trace-only) — both reconciled in the same commit
 
 ## L-008 · 2026-07-06 · Stress-test a plan against scale, concurrency, and headless modes before presenting it
 - Trigger: user rejected the round-3 plan approval asking "will this perform under stress and scaling?"; the resulting review found 4 real design bugs the plan had missed — ledger cap deadlock, worktree ID collisions, headless gates with no user, mtime loss across clones (janus round-3 session)
@@ -441,9 +443,11 @@ Rules for curators (`/evolve`):
 - Status: candidate
 
 ## L-062 · 2026-08-20 · A background verifier gates the PR, not the commit — commit once local checks are green
-- Trigger: this heartbeat session ran local verify (`scripts/verify.sh full`, `verify-web.sh`) green, then launched a background adversarial `verifier` agent and intended to wait for its report before touching git; the environment's Stop-hook (`stop-hook-git-check.sh`) fired mid-wait demanding uncommitted changes be committed and pushed, forcing a decision before the agent had returned (origin: own observation, this session)
+- Trigger: this heartbeat session ran local verify (`scripts/verify.sh full`, `verify-web.sh`) green, then launched a background adversarial `verifier` agent and intended to wait for its report before touching git; the environment's Stop-hook (`stop-hook-git-check.sh`) fired mid-wait demanding uncommitted changes be committed and pushed, forcing a decision before the agent had returned (origin: own observation, this session); recurred 2026-08-21 — a different firing (issue #53's PR #56) hit the exact same shape: local verify green, background verifier launched, stop-hook fired mid-wait demanding a commit before the verifier's report landed. Committed and pushed per this rule, then pushed a small follow-up commit once the verifier's one finding (a missing negative-path test) came back — confirming the "cheap to follow up" premise in practice, not just in theory
 - Rule: once your own manual verify commands are green, commit and push immediately rather than blocking indefinitely on a background verifier agent — the commit is cheap to follow up with a fix commit if the verifier finds something; gate the real "claim done" moment (opening the PR, per CLAUDE.md's prime directive on closed loops) on the verifier's findings instead, not the commit
 - Scope: project — assumes an environment stop hook that forces action on uncommitted changes; the underlying principle (don't let an in-flight async check block a cheap, reversible local step) is portable but not yet proven outside this harness
+- Evidence: 2
+- Status: candidate
 ## L-061 · 2026-08-12 (harvested 2026-08-20) · Verify editable installs resolve outside pytest on macOS
 - Trigger: walking-skeleton build on the stranded `feat/web-flow-redesign` branch (never merged) — pip's `__editable__.*.pth` got UF_HIDDEN re-applied within seconds on macOS, and Python 3.14's `site` skips hidden `.pth`, so `import aegis_sentinel` silently failed outside pytest while the suite stayed green (pytest `pythonpath` masked it). Harvested into main's ledger per issue #31 (the branch's own PR never landed, so this entry never reached main until now)
 - Rule: after `pip install -e .` on macOS, run a bare `python -c "import <pkg>"` outside pytest; if it fails with the package present, check the venv's `.pth` for the hidden flag and symlink the package into site-packages as the workaround
@@ -451,16 +455,31 @@ Rules for curators (`/evolve`):
 - Evidence: 1
 - Status: candidate
 
-## L-062 · 2026-08-20 · The heartbeat prompt's fallback skill path (.claude/skills/work-loop/SKILL.md) doesn't exist in this repo
-- Trigger: own observation — the scheduled build-heartbeat prompt's step 2b says "fall back to ONE ready `task:` issue per `.claude/skills/work-loop/SKILL.md`" when every EXECUTION-PLAN box is ticked/claimed/blocked; `Glob .claude/skills/**/SKILL.md` lists ten real skills and no `work-loop` among them, so the referenced readiness definition has to be reconstructed from the prompt's own inline gloss ("carries a done-means, is inside this environment's tool grant, and is not blocked by an unanswered `question:` or a `loop:hold` label") rather than read from a file
+## L-062b · 2026-08-20 · The heartbeat prompt's fallback skill path (.claude/skills/work-loop/SKILL.md) doesn't exist in this repo
+- Trigger: own observation — the scheduled build-heartbeat prompt's step 2b says "fall back to ONE ready `task:` issue per `.claude/skills/work-loop/SKILL.md`" when every EXECUTION-PLAN box is ticked/claimed/blocked; `Glob .claude/skills/**/SKILL.md` lists ten real skills and no `work-loop` among them, so the referenced readiness definition has to be reconstructed from the prompt's own inline gloss ("carries a done-means, is inside this environment's tool grant, and is not blocked by an unanswered `question:` or a `loop:hold` label") rather than read from a file; recurred 2026-08-21 — a fresh firing (issue #53) independently re-confirmed the same path is still missing (`Glob`/`ls .claude/skills` both came up empty for it) and again fell back to the prompt's own inline gloss without stalling
 - Rule: when a routine's stored prompt names a skill/doc path as the source of a rule, verify the path exists before relying on it — if it's missing, apply the routine prompt's own inline restatement of the rule instead of stalling on the Read, and flag the drift (this entry) rather than silently re-deriving it every firing unremarked
 - Scope: project
-- Evidence: 1
+- Evidence: 2
 - Status: candidate
+- Note: this entry collided with another session's `L-062` (both independently computed "highest existing id + 1" from a stale snapshot of main); renamed to `L-062b` on 2026-08-21 rather than silently left duplicate-numbered — see L-065
 
 ## L-063 · 2026-08-20 · This container's default python3 is 3.11; the project needs 3.12 — a venv must be created and activated before verify.sh
 - Trigger: own observation — `pip install -e '.[dev]'` against the ambient `python3`/`pip` failed with "Package 'aegis-sentinel' requires a different Python: 3.11.15 not in '>=3.12'" even though `/usr/bin/python3.12` was already present on the image; `scripts/verify.sh` shells out to bare `python3`/`pip`/`pytest`/`ruff` with no venv logic of its own, so `full` silently collected zero real tests (21 `ModuleNotFoundError` collection errors for pydantic/jsonschema, read at first as a broken repo) until a `python3.12 -m venv .venv` was created and activated ahead of the install
 - Rule: in this repo's remote container, before running `pip install -e '.[dev]'` or `scripts/verify.sh full`, create (or reuse) a `.venv` via `python3.12 -m venv .venv` and `source .venv/bin/activate` first — never assume ambient `python3` already satisfies the `>=3.12` requirement, and read a wall of `ModuleNotFoundError` collection errors as a missing-install signal before assuming the suite itself is broken
 - Scope: project
+- Evidence: 1
+- Status: candidate
+
+## L-065 · 2026-08-21 · Grep for an exact L-NNN id already in the file before assigning it — "highest + 1" can collide across concurrent sessions
+- Trigger: own observation during this firing's `/reflect` pass — main's `LEARNINGS.md` already carried two separate entries both headed `## L-062` (one on "a background verifier gates the PR, not the commit", one on "the heartbeat prompt's fallback skill path doesn't exist"), each evidently computed by a different session as "highest existing L-NNN + 1" against a snapshot of main that didn't yet contain the other session's commit. A third, still-open PR (#55) separately claims `L-064`. This is L-058's branch-claiming problem recurring at the granularity of ledger ids instead of plan boxes or branch names
+- Rule: before writing a new `## L-NNN` header, grep the checked-out file for that exact id (not just eyeball the last entry) — if the id you were about to use already exists, or a still-open PR's title/body claims it (as #55 does for L-064), pick the next id past that claim instead of trusting simple arithmetic. If you find an existing collision already committed to main, don't silently leave two entries sharing one id: rename the less-established one (lower Evidence, or clearly the newer of the two) to a disambiguated id like `L-062b` and note the rename in its own entry, per L-062b's own note
+- Scope: portable
+- Evidence: 1
+- Status: candidate
+
+## L-066 · 2026-08-21 · ScheduleWakeup is for /loop dynamic-mode sessions only — a background Agent call already auto-notifies on completion
+- Trigger: own observation — this firing launched a background adversarial `verifier` agent via the Agent tool (which the tool's own description says will notify automatically on completion) and then also called `ScheduleWakeup` to "wait" for it, only to have the tool's own description turn out to scope it to `/loop` dynamic-mode sessions specifically (its `prompt` field expects the `<<autonomous-loop-dynamic>>` sentinel or a `/loop` invocation) — this session is a scheduled build-heartbeat, not a `/loop` session. Caught before any harm (the stray wakeup was cancelled with `stop: true` in the same turn) but wasted a turn and risked firing a nonsensical dynamic-loop resume on a non-loop session
+- Rule: before calling `ScheduleWakeup`, confirm the current session is actually a `/loop` dynamic-mode session — if you are merely waiting on a background `Agent` call's own completion notification, do nothing further; no wakeup scheduling is needed or correct
+- Scope: portable
 - Evidence: 1
 - Status: candidate
