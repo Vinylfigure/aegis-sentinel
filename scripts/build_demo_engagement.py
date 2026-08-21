@@ -15,9 +15,12 @@ frontend track consumes; nothing in the verdict path renders.
 VAL02 second entrypoint (`python scripts/build_demo_engagement.py
 poisons`): runs the six poison cases of PRD-v3 §6 through the same real
 pipeline over tests/fixtures/poisons/ and writes
-artifacts/demo-engagement/{poisons,reconciliation,registry}.json
-(drift-tested byte-for-byte by tests/test_poison_suite.py). The default
-invocation still writes only verdicts.json, byte-identical to before.
+artifacts/demo-engagement/{poisons,reconciliation,registry,snapshot}.json
+(drift-tested byte-for-byte by tests/test_poison_suite.py). snapshot.json
+is Q16's ratified ManifestSnapshot (see SNAPSHOT_RATIFIER below) — its
+populations/claims/capabilities cite ids that also appear in the other
+three artifacts. The default invocation still writes only verdicts.json,
+byte-identical to before.
 """
 
 import json
@@ -34,6 +37,7 @@ from aegis_sentinel.compile import compile_claims
 from aegis_sentinel.evaluate.minimal import evaluate_existence
 from aegis_sentinel.evaluate.typed import MemberTimeline, evaluate_non_existence, evaluate_timing
 from aegis_sentinel.lanes import instantiate, load_template
+from aegis_sentinel.manifest import CollectorGrant, ManifestBlocks, genesis
 from aegis_sentinel.reconcile.engine import (
     BoundaryExclusion,
     SourceMember,
@@ -240,6 +244,24 @@ POISON_PROJECT = "meridian-prod-poisons"
 POISON_RUN_ID = "run-poison-engagement-0001"
 POISON_COLLECTED_AT = "2026-12-31T23:59:59Z"
 RECONCILIATION_REF = "artifacts/demo-engagement/reconciliation.json"
+
+# Q16 (partial) — the ManifestSnapshot the poison engagement's scope is
+# ratified under. Fixed clock input, no generated ids (D-P3): byte-identical
+# on every rebuild. `[DEMO-ONLY]` in ratified_by is the wire-level twin of
+# registry_artifact["note"] below — this is demo_registry()'s in-memory
+# ratification restated as a manifest fact, never the Owner's real act.
+SNAPSHOT_RATIFIED_AT = datetime(2026, 12, 31, 23, 59, 59, tzinfo=UTC)
+SNAPSHOT_RATIFIER = (
+    "vinylfigure (Ratifier) [DEMO-ONLY: mirrors demo_registry()'s in-memory "
+    "ratification; the on-disk registry stays DRAFT pending the Owner's real act]"
+)
+# The registry entries whose collectors this build actually exercises —
+# the snapshot's `collectors` block grants only what was really invoked,
+# never the full 7-entry registry (slack.scim_users, okta.users,
+# github.audit_log sit unused this run).
+EXERCISED_CAPABILITY_IDS = frozenset(
+    {"workday.terminated_workers", "okta.system_log", "github.members", "gcp.service_accounts"}
+)
 
 
 def _read_json(path: Path) -> dict:
@@ -752,10 +774,68 @@ def build_poison_artifacts() -> dict[str, str]:
         "entries": [e.model_dump(mode="json") for e in sorted(registry.all(), key=lambda e: e.id)],
         "compile_errors": breakglass_errors,
     }
+
+    # Q16 (partial) — the ratified ManifestSnapshot for this engagement.
+    # Every id below is drawn from the objects the pipeline itself just
+    # built, so it cannot drift into fiction relative to the other three
+    # artifacts: population/claim ids from the claims evaluated above,
+    # capability ids from the same `registry` serialized into
+    # registry_artifact, contract hashes from the same collector calls.
+    #
+    # EXERCISED_CAPABILITY_IDS is the one hand-maintained exception — there
+    # is no field on EvidenceQualityContract that names the capability id
+    # it was collected under, only `source` (the bare system: "workday",
+    # "okta", "github", "gcp"). This check keeps the constant honest against
+    # what was actually collected in THIS build: if a future change adds or
+    # drops a collector call without updating the constant, this raises
+    # instead of silently shipping a `collectors` block that misrepresents
+    # what was really invoked.
+    collected_systems = {
+        hris.contract.source,
+        okta.contract.source,
+        github.contract.source,
+        gcp.contract.source,
+    }
+    exercised_systems = {cap_id.split(".", 1)[0] for cap_id in EXERCISED_CAPABILITY_IDS}
+    if exercised_systems != collected_systems:
+        raise SystemExit(
+            "EXERCISED_CAPABILITY_IDS drifted from the collectors this build actually "
+            f"invokes: exercised systems {sorted(exercised_systems)} != "
+            f"collected systems {sorted(collected_systems)}"
+        )
+
+    manifest_blocks = ManifestBlocks(
+        populations=(event_pop.id,),
+        claims=tuple(sorted({existence_claim.id, timing_claim.id, nonexistence_claim.id})),
+        evidence_contracts=tuple(
+            sorted(
+                {
+                    hris.contract.contract_hash,
+                    okta.contract.contract_hash,
+                    github.contract.contract_hash,
+                    gcp.contract.contract_hash,
+                }
+            )
+        ),
+        capabilities=tuple(sorted(e.id for e in registry.all())),
+        collectors=tuple(
+            sorted(
+                (
+                    CollectorGrant(id=entry.id, permissions=(entry.auth_scope,))
+                    for entry in registry.all()
+                    if entry.id in EXERCISED_CAPABILITY_IDS
+                ),
+                key=lambda grant: grant.id,
+            )
+        ),
+    )
+    manifest_snapshot = genesis(manifest_blocks, SNAPSHOT_RATIFIER, SNAPSHOT_RATIFIED_AT)
+
     return {
         "poisons.json": _dumps(poisons_artifact),
         "reconciliation.json": _dumps(reconciliation_artifact),
         "registry.json": _dumps(registry_artifact),
+        "snapshot.json": _dumps(manifest_snapshot.model_dump(mode="json")),
     }
 
 

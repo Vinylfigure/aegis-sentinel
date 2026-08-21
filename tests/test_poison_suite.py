@@ -2,8 +2,13 @@
 real pipeline — assurance defect detection rate == 100%, each case's
 outcome class asserted individually, the five verdict states plus E117
 all visibly distinct across the set, and the committed
-artifacts/demo-engagement/{poisons,reconciliation,registry}.json pinned
-byte-for-byte (same idiom as tests/test_demo_engagement_drift.py)."""
+artifacts/demo-engagement/{poisons,reconciliation,registry,snapshot}.json
+pinned byte-for-byte (same idiom as tests/test_demo_engagement_drift.py).
+
+snapshot.json (Q16, partial — issue #47) is checked for more than drift:
+every id it cites in populations/claims/capabilities must resolve inside
+the other three artifacts, so the ratified scope can never drift into
+fiction relative to what was actually built."""
 
 import importlib.util
 import json
@@ -15,9 +20,12 @@ from jsonschema import Draft202012Validator
 
 ROOT = Path(__file__).resolve().parent.parent
 ARTIFACTS = ROOT / "artifacts" / "demo-engagement"
-ARTIFACT_NAMES = ("poisons.json", "reconciliation.json", "registry.json")
+ARTIFACT_NAMES = ("poisons.json", "reconciliation.json", "registry.json", "snapshot.json")
 VALIDATOR = Draft202012Validator(
     json.loads((ROOT / "schemas" / "verdict-record.schema.json").read_text())
+)
+SNAPSHOT_VALIDATOR = Draft202012Validator(
+    json.loads((ROOT / "schemas" / "ontology" / "manifest_snapshot.schema.json").read_text())
 )
 
 
@@ -39,6 +47,21 @@ def regenerated() -> dict[str, str]:
 @pytest.fixture(scope="module")
 def poisons(regenerated) -> dict:
     return json.loads(regenerated["poisons.json"])
+
+
+@pytest.fixture(scope="module")
+def reconciliation(regenerated) -> dict:
+    return json.loads(regenerated["reconciliation.json"])
+
+
+@pytest.fixture(scope="module")
+def registry(regenerated) -> dict:
+    return json.loads(regenerated["registry.json"])
+
+
+@pytest.fixture(scope="module")
+def snapshot(regenerated) -> dict:
+    return json.loads(regenerated["snapshot.json"])
 
 
 def case(poisons: dict, case_id: str) -> dict:
@@ -225,3 +248,66 @@ def test_registry_artifact_carries_lifecycles_and_the_e117(regenerated):
     assert lifecycles["workday.terminated_workers"] == "frozen"
     assert "DEMO-ONLY" in registry["note"]
     assert [e["code"] for e in registry["compile_errors"]] == ["E117"]
+
+
+# --- the manifest snapshot (Q16, partial — issue #47) ---
+
+
+def test_snapshot_is_schema_valid_and_ratified(snapshot):
+    errors = list(SNAPSHOT_VALIDATOR.iter_errors(snapshot))
+    assert not errors, [e.message for e in errors]
+    assert snapshot["version"] == 1
+    assert snapshot["lifecycle"] == "frozen"
+    assert snapshot["ratified_at"] == "2026-12-31T23:59:59Z"
+    # DEMO-ONLY travels on the wire, in the same field a real ratification
+    # would carry — never as a sibling note a strict schema would reject.
+    assert "DEMO-ONLY" in snapshot["ratified_by"]
+
+
+def test_snapshot_populations_resolve_against_reconciliation(snapshot, reconciliation):
+    assert set(snapshot["blocks"]["populations"]) == {reconciliation["population_id"]}
+
+
+def test_snapshot_capabilities_resolve_against_registry(snapshot, registry):
+    registry_ids = {e["id"] for e in registry["entries"]}
+    snapshot_ids = set(snapshot["blocks"]["capabilities"])
+    assert snapshot_ids, "the snapshot must cite at least one capability"
+    assert snapshot_ids <= registry_ids, snapshot_ids - registry_ids
+    # Every collector actually granted must resolve to a real entry too.
+    collector_ids = {c["id"] for c in snapshot["blocks"]["collectors"]}
+    assert collector_ids <= registry_ids, collector_ids - registry_ids
+    assert collector_ids, "the snapshot must grant at least one collector"
+
+
+def test_snapshot_collectors_block_raises_if_hand_maintained_constant_drifts():
+    # EXERCISED_CAPABILITY_IDS (build_demo_engagement.py) is the one part of
+    # the snapshot not derived straight from pipeline objects — nothing on
+    # EvidenceQualityContract names a capability id, only a bare system. If
+    # a future change silently drops or adds a collector call without
+    # updating the constant, the build must fail loudly rather than emit a
+    # `collectors` block that misrepresents what was actually invoked.
+    module = load_builder()
+    module.EXERCISED_CAPABILITY_IDS = frozenset(
+        module.EXERCISED_CAPABILITY_IDS - {"gcp.service_accounts"}
+    )
+    with pytest.raises(SystemExit, match="EXERCISED_CAPABILITY_IDS drifted"):
+        module.build_poison_artifacts()
+
+
+def test_snapshot_claims_resolve_against_evaluated_verdict_specs(snapshot, poisons):
+    # The pipeline builds claims in memory (no claims.json on the wire);
+    # what it evaluated is provable via the spec_id prefixes those claims'
+    # assertions produced on the recorded verdicts (poisons.json).
+    all_records = [r for group in poisons["verdict_records"].values() for r in group]
+    spec_ids = {r["spec_id"] for r in all_records}
+    claim_ids = set(snapshot["blocks"]["claims"])
+    assert claim_ids == {
+        "claim-poison-hris-existence",
+        "claim-cp-idp-deactivation-workday",
+        "claim-poison-github-nonexistence",
+    }
+    # Each claim's family shows up as an evaluated spec — no claim is cited
+    # in the snapshot without a verdict having actually run against it.
+    assert any(s.startswith("spec-poison-hris-existence") for s in spec_ids)
+    assert any(s.startswith("spec-poison-idp-timing") for s in spec_ids)
+    assert any(s.startswith("spec-poison-github-nonexistence") for s in spec_ids)

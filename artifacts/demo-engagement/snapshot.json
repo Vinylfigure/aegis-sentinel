@@ -1,0 +1,59 @@
+{
+  "blocks": {
+    "boundary": [],
+    "capabilities": [
+      "gcp.service_accounts",
+      "github.audit_log",
+      "github.members",
+      "okta.system_log",
+      "okta.users",
+      "slack.scim_users",
+      "workday.terminated_workers"
+    ],
+    "claims": [
+      "claim-cp-idp-deactivation-workday",
+      "claim-poison-github-nonexistence",
+      "claim-poison-hris-existence"
+    ],
+    "collectors": [
+      {
+        "id": "gcp.service_accounts",
+        "permissions": [
+          "iam.serviceAccounts.list (least-privilege role: roles/iam.serviceAccountViewer)"
+        ]
+      },
+      {
+        "id": "github.members",
+        "permissions": [
+          "read:org (GitHub App: Organization members, read-only)"
+        ]
+      },
+      {
+        "id": "okta.system_log",
+        "permissions": [
+          "okta.logs.read"
+        ]
+      },
+      {
+        "id": "workday.terminated_workers",
+        "permissions": [
+          "ISU account scoped to the terminations report only"
+        ]
+      }
+    ],
+    "evidence_contracts": [
+      "5412c8131859f166ca0c16abf8a5f9d4d9a0a69aada7294a63d6e660df9727c1",
+      "57a8be5a525eebb2f9905668fee93b9347b6cecca925539bee7aa440ff37793d",
+      "85b654c67b58f1c286a659d1f7a29571d055cbf4248ffac0b97442efd8b77b86",
+      "a826e0d585e4d6998b2dab4f0300606220481fdd7a179dbda2c4141765980a7b"
+    ],
+    "populations": [
+      "pop-termination-events"
+    ],
+    "tests": []
+  },
+  "lifecycle": "frozen",
+  "ratified_at": "2026-12-31T23:59:59Z",
+  "ratified_by": "vinylfigure (Ratifier) [DEMO-ONLY: mirrors demo_registry()'s in-memory ratification; the on-disk registry stays DRAFT pending the Owner's real act]",
+  "version": 1
+}
