@@ -223,6 +223,48 @@ def test_every_emitted_verdict_record_is_schema_valid(poisons):
         assert not errors, [e.message for e in errors]
 
 
+# The claim/assertion each verdict_records group's evaluator was actually
+# passed (scripts/build_demo_engagement.py's existence_claim/nonexistence_claim
+# literals and the template-instantiated timing_claim: Assertion.id is
+# f"{control_point_id}-{system}-{attribute}" per
+# src/aegis_sentinel/lanes/template.py's instantiate()).
+GROUP_TO_ASSERTION_TYPE = {
+    "existence": "EXISTENCE",
+    "non_existence": "NON-EXISTENCE",
+    "timing": "TIMING",
+}
+CLAIM_ASSERTIONS = {
+    "claim-poison-hris-existence": {"poison-am06-existence-A": "EXISTENCE"},
+    "claim-poison-github-nonexistence": {"poison-am06-nonexistence-A": "NON-EXISTENCE"},
+    "claim-cp-idp-deactivation-workday": {"cp-idp-deactivation-workday-B": "TIMING"},
+}
+
+
+def test_verdict_record_claim_and_assertion_ids_join_to_a_real_claim(poisons):
+    """Q15/issue #53: claim_id/assertion_id are proven, not assumed — a
+    dangling claim_id, an assertion_id absent from that claim, or an
+    assertion of the wrong type for the group it was evaluated under all
+    fail this test (same join-exactness pattern as PR #50's contract
+    test)."""
+    for group, records in poisons["verdict_records"].items():
+        expected_type = GROUP_TO_ASSERTION_TYPE[group]
+        for record in records:
+            claim_id = record["claim_id"]
+            assert claim_id in CLAIM_ASSERTIONS, (
+                f"{record['record_id']}: dangling claim_id {claim_id}"
+            )
+            assertions = CLAIM_ASSERTIONS[claim_id]
+            assertion_id = record["assertion_id"]
+            assert assertion_id in assertions, (
+                f"{record['record_id']}: assertion_id {assertion_id} is not among "
+                f"claim {claim_id}'s assertions"
+            )
+            assert assertions[assertion_id] == expected_type, (
+                f"{record['record_id']}: assertion {assertion_id} is "
+                f"{assertions[assertion_id]}, not the evaluated {expected_type}"
+            )
+
+
 def test_excluded_and_exception_records_carry_their_refs(poisons):
     timing = poisons["verdict_records"]["timing"]
     excluded = next(r for r in timing if r["status"] == "EXCLUDED")

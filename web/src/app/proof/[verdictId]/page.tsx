@@ -4,7 +4,6 @@ import {
   engagementContracts,
   engagementPoisons,
   engagementReconciliations,
-  engagementRegistry,
   engagementSnapshot,
   engagementVerdictRecords,
 } from "@/data";
@@ -62,7 +61,6 @@ export default async function ProofDetailPage({
     <ProofLineage
       record={record}
       reconciliations={engagementReconciliations}
-      registry={engagementRegistry}
       poisons={engagementPoisons}
       contracts={engagementContracts}
       snapshot={engagementSnapshot}

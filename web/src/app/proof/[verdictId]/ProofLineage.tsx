@@ -15,7 +15,6 @@ import {
   type ManifestSnapshotArtifact,
   type PoisonsArtifact,
   type ReconciliationReport,
-  type RegistryArtifact,
   type StageEvidence,
   type VerdictRecord,
 } from "@/data";
@@ -45,21 +44,19 @@ const KIND_CLASS: Record<StageEvidence["kind"], string> = {
 export function ProofLineage({
   record,
   reconciliations,
-  registry,
   poisons,
   contracts,
   snapshot,
 }: {
   record: VerdictRecord;
   reconciliations: ReconciliationReport[];
-  registry: RegistryArtifact;
   poisons: PoisonsArtifact;
   contracts: ContractsArtifact;
   snapshot: ManifestSnapshotArtifact | null;
 }) {
   const [selectedId, setSelectedId] = useState<LineageStageId>("verdict");
 
-  const nodes = lineage(record, reconciliations, registry, poisons, contracts, snapshot);
+  const nodes = lineage(record, reconciliations, poisons, contracts, snapshot);
   const selected = nodes.find((n) => n.meta.id === selectedId) ?? null;
   const stateMeta = verdictStateMeta(record.status);
 

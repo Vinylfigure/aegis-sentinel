@@ -94,6 +94,8 @@ def evaluate_existence(
         "test_function_version": TEST_FUNCTION_VERSION,
         "evidence_refs": list(evidence_refs),
         "severity": "high",
+        "claim_id": claim.id,
+        "assertion_id": assertion.id,
     }
 
     if population.state not in (AssuranceState.RECONCILED, AssuranceState.RATIFIED):

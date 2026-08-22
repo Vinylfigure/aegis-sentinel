@@ -28,7 +28,6 @@ import type {
   PoisonVerdictGroup,
   PoisonsArtifact,
   ReconciliationReport,
-  RegistryArtifact,
   VerdictRecord,
 } from "@/data/types";
 
@@ -194,7 +193,6 @@ export function assertionFamilyOf(
 export function lineage(
   record: VerdictRecord,
   reconciliations: readonly ReconciliationReport[],
-  registry: RegistryArtifact,
   poisons: PoisonsArtifact,
   contracts: ContractsArtifact = {},
   snapshot: ManifestSnapshotArtifact | null = null,
@@ -202,9 +200,6 @@ export function lineage(
   const report =
     reconciliations.find((r) => r.population_id === record.population_id) ?? null;
   const family = assertionFamilyOf(poisons, record.record_id);
-  const claimIds = [
-    ...new Set(registry.compile_errors.map((e) => e.claim_id)),
-  ];
 
   const evidenceFor = (id: LineageStageId): StageEvidence => {
     switch (id) {
@@ -220,16 +215,8 @@ export function lineage(
         };
       case "claim":
         return {
-          kind: "trace-only",
-          fields:
-            claimIds.length > 0
-              ? claimIds.map((id_) => ({
-                  label: "claim id (via compile_errors)",
-                  value: id_,
-                  mono: true,
-                }))
-              : [],
-          note: "Claims exist only in Python memory; the sole wire trace is registry.compile_errors[].claim_id (Q15).",
+          kind: "emitted",
+          fields: [{ label: "claim_id", value: record.claim_id, mono: true }],
         };
       case "population": {
         if (!report) {
@@ -383,26 +370,21 @@ export function lineage(
           ],
         };
       }
-      case "assertion":
-        if (family === null) {
-          return {
-            kind: "trace-only",
-            fields: [{ label: "message", value: record.message ?? "(no message on the record)" }],
-            note: "Assertion family not on the wire for this run — the assertion id exists only inside the message prose (Q15).",
-          };
+      case "assertion": {
+        const fields: EvidenceField[] = [
+          { label: "assertion_id", value: record.assertion_id, mono: true },
+        ];
+        if (family !== null) {
+          fields.push({
+            label: "poisons group (Q4b)",
+            value: `${family} → ${FAMILY_TO_ASSERTION_TYPE[family]}`,
+            mono: true,
+            diagnostic: true,
+          });
         }
-        return {
-          kind: "trace-only",
-          fields: [
-            {
-              label: "family (inferred)",
-              value: `${family} → ${FAMILY_TO_ASSERTION_TYPE[family]}`,
-              mono: true,
-            },
-            { label: "message", value: record.message ?? "(no message on the record)" },
-          ],
-          note: "Inferred from which poisons.verdict_records group holds this record; family names do not match the ratified AssertionType spellings (Q4b), and the assertion id itself is only message prose (Q15).",
-        };
+        fields.push({ label: "message", value: record.message ?? "(no message on the record)" });
+        return { kind: "emitted", fields };
+      }
       case "verdict":
         return {
           kind: "emitted",

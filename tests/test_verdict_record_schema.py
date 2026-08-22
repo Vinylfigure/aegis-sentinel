@@ -44,6 +44,18 @@ def test_unknown_without_cause_is_rejected():
     assert not VALIDATOR.is_valid(record)
 
 
+def test_missing_claim_id_is_rejected():
+    record = load("pass.json")
+    del record["claim_id"]
+    assert not VALIDATOR.is_valid(record)
+
+
+def test_missing_assertion_id_is_rejected():
+    record = load("pass.json")
+    del record["assertion_id"]
+    assert not VALIDATOR.is_valid(record)
+
+
 def test_fail_without_support_is_rejected():
     record = load("fail.json")
     del record["support"]

@@ -51,6 +51,8 @@ def test_demo_verdict_is_a_real_pass_over_the_reconciled_population():
     assert record["population_count"] == 12
     assert record["chain_prev"] is None  # first record in the chain
     assert record["control_id"] == "AM-06"
+    assert record["claim_id"] == "claim-am06-termination-existence"
+    assert record["assertion_id"] == "am06-hris-existence-A"
 
 
 def test_on_disk_workday_entry_is_still_draft():
