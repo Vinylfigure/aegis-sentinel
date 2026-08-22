@@ -18,6 +18,7 @@ import type {
   ContractsArtifact,
   ControlsSeed,
   GaugesSeed,
+  ManifestSnapshotArtifact,
   PoisonsArtifact,
   ProcessSeed,
   ReconciliationReport,
@@ -35,6 +36,7 @@ import contractsJson from "@artifacts/contracts.json";
 import poisonsJson from "@artifacts/poisons.json";
 import reconciliationJson from "@artifacts/reconciliation.json";
 import registryJson from "@artifacts/registry.json";
+import snapshotJson from "@artifacts/snapshot.json";
 import verdictsJson from "@artifacts/verdicts.json";
 
 export type * from "@/data/types";
@@ -87,6 +89,7 @@ export const engagementReconciliation = checked<ReconciliationReport>(reconcilia
 export const engagementRegistry = checked<RegistryArtifact>(registryJson);
 export const engagementPoisons = checked<PoisonsArtifact>(poisonsJson);
 export const engagementContracts = checked<ContractsArtifact>(contractsJson);
+export const engagementSnapshot = checked<ManifestSnapshotArtifact>(snapshotJson);
 
 /**
  * The population list the /reconciliation routes iterate. One report today;

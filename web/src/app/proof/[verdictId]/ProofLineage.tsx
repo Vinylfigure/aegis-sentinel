@@ -12,6 +12,7 @@ import {
   type ContractsArtifact,
   type LineageNode,
   type LineageStageId,
+  type ManifestSnapshotArtifact,
   type PoisonsArtifact,
   type ReconciliationReport,
   type RegistryArtifact,
@@ -47,16 +48,18 @@ export function ProofLineage({
   registry,
   poisons,
   contracts,
+  snapshot,
 }: {
   record: VerdictRecord;
   reconciliations: ReconciliationReport[];
   registry: RegistryArtifact;
   poisons: PoisonsArtifact;
   contracts: ContractsArtifact;
+  snapshot: ManifestSnapshotArtifact | null;
 }) {
   const [selectedId, setSelectedId] = useState<LineageStageId>("verdict");
 
-  const nodes = lineage(record, reconciliations, registry, poisons, contracts);
+  const nodes = lineage(record, reconciliations, registry, poisons, contracts, snapshot);
   const selected = nodes.find((n) => n.meta.id === selectedId) ?? null;
   const stateMeta = verdictStateMeta(record.status);
 
