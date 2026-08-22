@@ -87,14 +87,31 @@ def test_tools_list_is_only_the_query_tool(server):
 
 
 def test_query_verdicts_filters():
+    """verdicts.json now carries the full 11-record roster (walking-skeleton
+    + poison run, Q17 issue #58) — every real status class present, so the
+    status filter genuinely discriminates rather than trivially matching
+    a single-record set."""
     store = ArtifactStore(root=ARTIFACTS_DIR)
     everything = store.query_verdicts()
-    assert [r["record_id"] for r in everything] == ["vr-demo-engagement-0001"]
-    assert store.query_verdicts(status="PASS") == everything
+    assert len(everything) == 11
+    assert "vr-demo-engagement-0001" in {r["record_id"] for r in everything}
+
+    pass_records = store.query_verdicts(status="PASS")
+    assert pass_records == [r for r in everything if r["status"] == "PASS"]
+    assert pass_records and all(r["status"] == "PASS" for r in pass_records)
+    assert pass_records != everything  # non-PASS records exist now
+
+    # every record in this engagement shares one control
     assert store.query_verdicts(control_id="AM-06") == everything
-    assert store.query_verdicts(record_id="vr-demo-engagement-0001") == everything
-    assert store.query_verdicts(control_id="AM-06", status="PASS") == everything
-    assert store.query_verdicts(status="FAIL") == []
+    assert store.query_verdicts(record_id="vr-demo-engagement-0001") == [
+        r for r in everything if r["record_id"] == "vr-demo-engagement-0001"
+    ]
+    assert store.query_verdicts(control_id="AM-06", status="PASS") == pass_records
+
+    fail_records = store.query_verdicts(status="FAIL")
+    assert fail_records == [r for r in everything if r["status"] == "FAIL"]
+    assert fail_records and all(r["status"] == "FAIL" for r in fail_records)
+
     assert store.query_verdicts(control_id="XX-99") == []
     assert store.query_verdicts(status="PASS", record_id="vr-nope") == []
 
@@ -102,8 +119,11 @@ def test_query_verdicts_filters():
 def test_query_verdicts_via_server_call_tool(server):
     hit = _run(server.call_tool("query_verdicts", {"status": "PASS"}))
     assert not hit.is_error
-    assert hit.structured_content["result"][0]["record_id"] == "vr-demo-engagement-0001"
-    miss = _run(server.call_tool("query_verdicts", {"status": "FAIL"}))
+    results = hit.structured_content["result"]
+    assert results and all(r["status"] == "PASS" for r in results)
+    assert any(r["record_id"] == "vr-demo-engagement-0001" for r in results)
+
+    miss = _run(server.call_tool("query_verdicts", {"control_id": "XX-99"}))
     assert not miss.is_error
     assert miss.structured_content["result"] == []
 

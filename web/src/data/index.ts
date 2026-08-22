@@ -100,10 +100,12 @@ export const engagementSnapshot = checked<ManifestSnapshotArtifact>(snapshotJson
 export const engagementReconciliations: ReconciliationReport[] = [engagementReconciliation];
 
 /**
- * Every verdict record in the engagement (verdicts.json + the records
- * embedded in poisons.verdict_records, deduped) — the roster /proof routes
- * are generated from. Built FROM the checked exports above; the checked<T>
- * assignability position (L-053) is untouched.
+ * Every verdict record in the engagement — the roster /proof routes are
+ * generated from. verdicts.json is the consolidated artifact on its own now
+ * (Q17, issue #58); combinedRecords still folds in poisons.verdict_records
+ * as a redundancy check (see its docstring), not a real merge. Built FROM
+ * the checked exports above; the checked<T> assignability position
+ * (L-053) is untouched.
  */
 export const engagementVerdictRecords = combinedRecords(
   engagementVerdicts,

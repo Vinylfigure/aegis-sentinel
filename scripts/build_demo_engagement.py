@@ -22,8 +22,14 @@ objects every collector already builds in memory, previously dropped at
 serialization (each verdict record's spec_hash IS a key into this map).
 snapshot.json is Q16's ratified ManifestSnapshot (see SNAPSHOT_RATIFIER
 below) — its populations/claims/capabilities cite ids that also appear in
-the other artifacts. The default invocation still writes only
-verdicts.json, byte-identical to before.
+the other artifacts. The default invocation (`build()`/`main()` alone)
+still writes only the one walking-skeleton record, byte-identical to
+before. The poisons entrypoint additionally rewrites verdicts.json into
+the consolidated roster — the walking-skeleton record plus the ten poison
+records, one artifact instead of a client-side merge of two (Q17,
+issue #58); poisons.json keeps its own grouped verdict_records too, but
+both are serializations of the SAME in-memory record objects, so there is
+no second, independently-computed source to drift out of sync.
 """
 
 import json
@@ -849,12 +855,26 @@ def build_poison_artifacts() -> dict[str, str]:
     )
     manifest_snapshot = genesis(manifest_blocks, SNAPSHOT_RATIFIER, SNAPSHOT_RATIFIED_AT)
 
+    # Q17 (issue #58) — verdicts.json becomes the consolidated roster: the
+    # walking-skeleton record (same pipeline, called fresh here — build() is
+    # pure, demo_registry() is already re-instantiated once per artifact
+    # above) plus the ten poison records, sorted by record_id for a
+    # deterministic, rebuild-stable order. No independent recomputation of
+    # the poison records: they are the exact same dict objects poisons.json
+    # embeds under verdict_records, so the two artifacts cannot disagree.
+    (walking_skeleton_record,) = json.loads(build())
+    all_verdict_records = sorted(
+        [walking_skeleton_record, alpha_record, nonexistence_record, *timing_records],
+        key=lambda r: r["record_id"],
+    )
+
     return {
         "poisons.json": _dumps(poisons_artifact),
         "reconciliation.json": _dumps(reconciliation_artifact),
         "registry.json": _dumps(registry_artifact),
         "contracts.json": _dumps(contracts_artifact),
         "snapshot.json": _dumps(manifest_snapshot.model_dump(mode="json")),
+        "verdicts.json": _dumps(all_verdict_records),
     }
 
 

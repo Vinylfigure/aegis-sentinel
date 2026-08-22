@@ -113,12 +113,14 @@ export const POISON_VERDICT_GROUPS: readonly PoisonVerdictGroup[] = Object.keys(
 ) as PoisonVerdictGroup[];
 
 /**
- * Every verdict record the engagement carries: verdicts.json plus the
- * records embedded in poisons.verdict_records, deduped by record_id. The
- * real artifacts are disjoint so the dedup is normally a no-op; it existed
- * because the B1 mocks duplicated the records, and it stays because an
- * artifact repeating a record_id should collapse, not double-render. Order
- * is verdicts.json first, then poison families in group order.
+ * Every verdict record the engagement carries. verdicts.json is now the
+ * consolidated roster on its own (Q17, issue #58) — the walking-skeleton
+ * record plus every poison record, one artifact instead of two merged
+ * client-side — so folding in poisons.verdict_records here is a redundancy
+ * check, not a real merge: the dedup-by-record_id makes it a no-op when the
+ * two artifacts agree (the normal case), and recordCollisions() below is
+ * what actually surfaces it if they ever didn't. Order is verdicts.json
+ * first, then poison families in group order.
  */
 export function combinedRecords(
   verdicts: VerdictsArtifact,
@@ -162,7 +164,10 @@ export function verdictRecordHref(recordId: string): string {
  * true duplicate but would silently drop one of two DIFFERENT records
  * sharing an id. record_hash is the content fingerprint the pipeline
  * already carries — where it differs across a collision, that is a wire
- * defect the board must surface, not smooth.
+ * defect the board must surface, not smooth. Now that verdicts.json embeds
+ * the same record objects poisons.json groups (Q17, issue #58), this
+ * should never fire in practice — it stays as the sanity check that would
+ * catch it if a future build ever let the two artifacts diverge.
  */
 export interface RecordCollision {
   recordId: string;

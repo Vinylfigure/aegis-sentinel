@@ -1,8 +1,17 @@
-"""Drift gate for the committed demo-engagement artifact: regenerating
-via scripts/build_demo_engagement.py must be byte-identical to the
-committed artifacts/demo-engagement/verdicts.json, and every record in
-it must validate against the verdict-record schema. The compile gate
-inside build() also proves the claim compiles before evaluation."""
+"""Drift gate for the committed demo-engagement artifact.
+
+verdicts.json is now the consolidated roster (Q17, issue #58): the
+walking-skeleton record build()/main() alone would write, plus the ten
+poison records build_poison_artifacts() adds — whole-file byte-identity
+against the committed artifact is pinned by
+tests/test_poison_suite.py's parametrized drift test (which regenerates
+via build_poison_artifacts(), and that function calls build() itself),
+since running main() alone no longer reproduces the committed file
+byte-for-byte. This module instead pins that the walking-skeleton
+record itself survives into the merged artifact unchanged, and that
+every record in it validates against the verdict-record schema. The
+compile gate inside build() also proves the claim compiles before
+evaluation."""
 
 import importlib.util
 import json
@@ -25,11 +34,22 @@ def load_builder():
     return module
 
 
-def test_regenerating_matches_committed_byte_for_byte():
+def test_walking_skeleton_record_survives_into_the_merged_artifact():
+    """verdicts.json is the consolidated roster (Q17, issue #58) written by
+    the poisons entrypoint, not build()'s bare output — but build()'s one
+    walking-skeleton record must still appear inside it, byte-for-byte
+    (as a value, not as the whole file's literal bytes)."""
     assert ARTIFACT.exists(), "run scripts/build_demo_engagement.py and commit the artifact"
-    assert load_builder().build() == ARTIFACT.read_text(), (
-        "artifacts/demo-engagement/verdicts.json drifted — "
-        "re-run scripts/build_demo_engagement.py and commit"
+    (skeleton_record,) = json.loads(load_builder().build())
+    committed = json.loads(ARTIFACT.read_text())
+    match = next((r for r in committed if r["record_id"] == skeleton_record["record_id"]), None)
+    assert match is not None, (
+        f"{skeleton_record['record_id']} missing from artifacts/demo-engagement/verdicts.json — "
+        "re-run scripts/build_demo_engagement.py poisons and commit"
+    )
+    assert match == skeleton_record, (
+        "the walking-skeleton record inside artifacts/demo-engagement/verdicts.json drifted — "
+        "re-run scripts/build_demo_engagement.py poisons and commit"
     )
 
 
@@ -45,7 +65,11 @@ def test_committed_artifact_records_are_schema_valid():
 
 
 def test_demo_verdict_is_a_real_pass_over_the_reconciled_population():
-    (record,) = json.loads(ARTIFACT.read_text())
+    """verdicts.json now carries the full 11-record roster (Q17, issue #58);
+    pick out the walking-skeleton record by its fixed id rather than
+    assuming it's the file's only entry."""
+    records = json.loads(ARTIFACT.read_text())
+    record = next(r for r in records if r["record_id"] == load_builder().RECORD_ID)
     assert record["status"] == "PASS"
     assert record["population_id"] == "pop-termination-events"
     assert record["population_count"] == 12
