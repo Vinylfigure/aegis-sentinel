@@ -140,10 +140,26 @@
     "after_dispositions": "RECONCILED",
     "at_first_verdict": "DISCOVERED",
     "blocked_by_open_deltas": [
-      "email:mira.chen@example.com",
-      "email:quinn.ash@example.com",
-      "email:uma.wynn@example.com",
-      "okta:00u9104"
+      {
+        "bucket": "right_only",
+        "dispositioned": true,
+        "ref": "email:mira.chen@example.com"
+      },
+      {
+        "bucket": "left_only",
+        "dispositioned": true,
+        "ref": "email:quinn.ash@example.com"
+      },
+      {
+        "bucket": "conflict",
+        "dispositioned": true,
+        "ref": "email:uma.wynn@example.com"
+      },
+      {
+        "bucket": "unresolvable",
+        "dispositioned": true,
+        "ref": "okta:00u9104"
+      }
     ]
   },
   "period": {

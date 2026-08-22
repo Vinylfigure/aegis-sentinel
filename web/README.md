@@ -152,12 +152,13 @@ Numbers are referenced from comments in `src/data/types.ts`.
   fact. B2 renders `buckets[b].length` as truth and shows `counts[b]` beside it
   as the artifact's own diagnostic, flagging any divergence on screen. Is
   `counts` a deliberate checksum, or should it drop off the wire as computable?
-- **Q11 — `blocked_by_open_deltas` is a flat ref list.** No bucket, no
-  resolution state; the page re-derives both by cross-referencing `buckets` and
-  `dispositions`, and cannot distinguish "was blocking, now answered" from
-  "still blocking" except by that join. Should the ladder carry
-  `{ref, bucket, dispositioned}`? Related: nothing on the wire says *why*
-  RATIFIED was not reached.
+- **Q11 — `blocked_by_open_deltas` is a flat ref list. ANSWERED — issue #54.**
+  Each entry is now `{ref, bucket, dispositioned}`, computed once in
+  `scripts/build_demo_engagement.py` from the same `Delta` objects the
+  buckets hold — `bucket` and `dispositioned` travel with the ref instead of
+  the page re-deriving both by joining against `buckets`/`dispositions`.
+  Related, still open: nothing on the wire says *why* RATIFIED was not
+  reached.
 - **Q12 — derivation basis on the wire.** *(ANSWERED at B2 — it now travels.)*
   `reconciliation.json` gained `population_type`, `definition`,
   `derivation_rule` and `authoritative_source`, emitted from the `Population`

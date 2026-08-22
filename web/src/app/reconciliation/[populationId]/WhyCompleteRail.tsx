@@ -154,31 +154,39 @@ function Argument({
           <p className={styles.railBody}>No deltas blocked the ladder.</p>
         ) : (
           <ul className={styles.railList}>
-            {blockers.map((blocker) => (
-              <li key={blocker.ref} className={styles.blockerRow}>
-                <code className={styles.ref}>{blocker.ref}</code>
-                <span className={styles.railMeta}>
-                  {blocker.bucket ?? "no matching delta"}
-                </span>
-                {blocker.answer ? (
-                  <>
-                    <p className={styles.railMeta}>
-                      <span className={styles.dispositionValue}>
-                        {blocker.answer.record.value}
-                      </span>{" "}
-                      by {blocker.answer.record.owner}
+            {blockers.map((blocker) => {
+              const diverges = blocker.dispositioned !== (blocker.answer !== null);
+              return (
+                <li key={blocker.ref} className={styles.blockerRow}>
+                  <code className={styles.ref}>{blocker.ref}</code>
+                  <span className={styles.railMeta}>{blocker.bucket}</span>
+                  {diverges && (
+                    <p className={styles.divergence}>
+                      Ladder divergence: the artifact says dispositioned={" "}
+                      {String(blocker.dispositioned)}, the dispositions on file say{" "}
+                      {String(blocker.answer !== null)}. The dispositions are the truth.
                     </p>
-                    <p className={styles.rationale}>
-                      {blocker.answer.record.rationale ?? "no rationale recorded"}
+                  )}
+                  {blocker.answer ? (
+                    <>
+                      <p className={styles.railMeta}>
+                        <span className={styles.dispositionValue}>
+                          {blocker.answer.record.value}
+                        </span>{" "}
+                        by {blocker.answer.record.owner}
+                      </p>
+                      <p className={styles.rationale}>
+                        {blocker.answer.record.rationale ?? "no rationale recorded"}
+                      </p>
+                    </>
+                  ) : (
+                    <p className={styles.undispositioned}>
+                      UNANSWERED — the ladder cannot advance
                     </p>
-                  </>
-                ) : (
-                  <p className={styles.undispositioned}>
-                    UNANSWERED — the ladder cannot advance
-                  </p>
-                )}
-              </li>
-            ))}
+                  )}
+                </li>
+              );
+            })}
           </ul>
         )}
       </RailSection>
@@ -235,7 +243,7 @@ function SelectedChain({
   const answer = resolveDisposition(report, memberRef);
   const classification = delta ? d7Family(delta.bucket) : null;
   const meta = delta ? bucketMeta(delta.bucket) : null;
-  const blocked = report.ladder.blocked_by_open_deltas.includes(memberRef);
+  const blocked = report.ladder.blocked_by_open_deltas.some((entry) => entry.ref === memberRef);
   const disagreements =
     delta?.bucket === "conflict" ? attributeDisagreements(report, memberRef) : [];
   const held = report.sources.filter((s) =>
