@@ -54,6 +54,8 @@ edit those files, and do not vendor copies into `web/`):
 | `reconciliation.json` | one population: `ladder`, `sources`, `canonical_members`, six-bucket `buckets`, `dispositions`, `counts` | `/reconciliation` (B2) |
 | `registry.json` | `entries` (capability entries with `lifecycle` + `history_caveats`), `compile_errors` (E-codes), top-level `note` | `/registry` (B3) |
 | `poisons.json` | `cases` + `detection` + embedded `verdict_records` | `/verdicts` mutation scorecard (B3) |
+| `contracts.json` | Evidence Quality Contracts keyed by `contract_hash`: five `quality` properties, `supported_assertion_types`, identity fields | `/proof` contract stage (Q14, issue #48) |
+| `snapshot.json` | ratified `ManifestSnapshot`: `version`, `lifecycle`, `ratified_by`/`ratified_at`, `blocks` (populations/claims/capabilities/collectors/evidence_contracts) | `/proof` snapshot stage (Q16, issue #47) |
 
 B1 landed hand-authored mocks in `web/src/data/engagement/` matching these
 shapes (Meridian Financial cast, synthetic hashes); C2 deleted them and
@@ -176,13 +178,21 @@ Numbers are referenced from comments in `src/data/types.ts`.
   lives in `registry.json`) does not travel with the reconciliation — so the
   join panel cannot show whether a source could even observe the whole period.
   Should `ReconciliationSource` carry its own `time_window` + capability ref?
-- **Q14 — the EQC travels as an identity, not a contract.** `verdict.spec_hash`
-  IS the EvidenceQualityContract's `contract_hash`
-  (scripts/build_demo_engagement.py), but the contract itself — the five
-  quality properties with their independent methods and failure modes — is
-  never emitted. The /proof contract stage can name the contract by hash and
-  nothing more. Should the engagement emit the EQCs (they are already built
-  in-memory by every collector)?
+- **Q14 — the EQC travels as an identity, not a contract. ANSWERED — issue
+  #48.** `scripts/build_demo_engagement.py poisons` now emits
+  `artifacts/demo-engagement/contracts.json`, keyed by `contract_hash`: the
+  three EvidenceQualityContracts an `evaluate_*` call was actually passed
+  (hris/okta/github — `gcp.contract` is collected but never itself the
+  contract behind a verdict, so it stays out of this artifact rather than
+  emitting an orphan). Every verdict record's `spec_hash` IS a key into this
+  map; `tests/test_poison_suite.py` proves the join both directions (no
+  dangling hash, no orphaned contract) and that each contract's
+  `supported_assertion_types` covers the assertion type it was evaluated
+  against. `evidence_quality_contract.schema.json` joined the codegen
+  `ROSTER` (`web/scripts/codegen.mjs`). `/proof`'s contract stage renders
+  `emitted` — the five quality properties' methods, `supported_assertion_types`,
+  and the contract's identity — for any record whose `spec_hash` resolves;
+  otherwise it still falls back to the old identity-only rendering.
 - **Q15 — claim and assertion ids are not fields anywhere. ANSWERED — issue
   #53.** Every `evaluate_*` call site's `_base_record` (and
   `evaluate.minimal.evaluate_existence`) now writes `claim_id`/`assertion_id`
@@ -196,12 +206,21 @@ Numbers are referenced from comments in `src/data/types.ts`.
   and assertion stages render `emitted` with the real ids; the poisons
   `verdict_records` grouping (Q4b) now shows only as a diagnostic
   cross-reference, not the identification path.
-- **Q16 — commitment, requirement, and manifest snapshot are absent from the
-  wire.** No artifact carries any of the three, so /proof renders those stages
-  as not-yet-emitted. The ManifestSnapshot model exists
-  (src/aegis_sentinel/manifest/snapshot.py) but the demo never builds one.
-  UI01's full chain needs at least the snapshot emitted; commitment/requirement
-  need modeling first.
+- **Q16 — commitment and requirement are absent from the wire.**
+  *(Manifest snapshot half ANSWERED — issue #47.)* No artifact carries either,
+  so /proof still renders those two stages as not-yet-emitted; they need
+  modeling first. The manifest snapshot is now emitted:
+  `scripts/build_demo_engagement.py poisons` calls `genesis()`
+  (src/aegis_sentinel/manifest/snapshot.py) over the ids the same pipeline run
+  just produced and writes `artifacts/demo-engagement/snapshot.json`, ratified
+  by a DEMO-ONLY identity (`ratified_by` carries the caveat on the wire itself,
+  the same way `registry.json`'s `note` does) — never the Owner's real act.
+  `/proof`'s snapshot stage renders `emitted` for any record whose
+  `population_id` the snapshot's `blocks.populations` covers, listing version,
+  ratifier, ratified-at, and the frozen populations/claims/collectors.
+  `tests/test_poison_suite.py` proves every population/claim/capability id the
+  snapshot cites resolves inside `reconciliation.json`/`poisons.json`/
+  `registry.json`, so the ratified scope cannot drift into fiction.
 - **Q17 — the poison run's verdict records live only inside poisons.json.**
   The real `verdicts.json` carries one walking-skeleton record; the five-state
   spread (10 records) is embedded in `poisons.json.verdict_records`, so

@@ -33,6 +33,7 @@ const ROSTER = [
   ["schemas/ontology/population.schema.json", "population.ts"],
   ["schemas/ontology/assertion.schema.json", "assertion.ts"],
   ["schemas/ontology/capability_entry.schema.json", "capability-entry.ts"],
+  ["schemas/ontology/evidence_quality_contract.schema.json", "evidence-quality-contract.ts"],
 ];
 
 const banner = (schemaRel) =>

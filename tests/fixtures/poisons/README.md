@@ -5,7 +5,7 @@ GCP project `meridian-prod-poisons`), seeded with the mutation
 playbook's six poison cases. `scripts/build_demo_engagement.py poisons`
 runs them through the REAL pipeline — lane instantiation → compile gate
 → collectors → `reconcile_sets` → typed evaluator — and writes
-`artifacts/demo-engagement/{poisons,reconciliation,registry}.json`;
+`artifacts/demo-engagement/{poisons,reconciliation,registry,contracts,snapshot}.json`;
 `tests/test_poison_suite.py` asserts detection rate == 100% and pins the
 artifacts byte-for-byte.
 

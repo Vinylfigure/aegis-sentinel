@@ -9,8 +9,10 @@ import {
   lineage,
   verdictRecordHref,
   verdictStateMeta,
+  type ContractsArtifact,
   type LineageNode,
   type LineageStageId,
+  type ManifestSnapshotArtifact,
   type PoisonsArtifact,
   type ReconciliationReport,
   type StageEvidence,
@@ -43,14 +45,18 @@ export function ProofLineage({
   record,
   reconciliations,
   poisons,
+  contracts,
+  snapshot,
 }: {
   record: VerdictRecord;
   reconciliations: ReconciliationReport[];
   poisons: PoisonsArtifact;
+  contracts: ContractsArtifact;
+  snapshot: ManifestSnapshotArtifact | null;
 }) {
   const [selectedId, setSelectedId] = useState<LineageStageId>("verdict");
 
-  const nodes = lineage(record, reconciliations, poisons);
+  const nodes = lineage(record, reconciliations, poisons, contracts, snapshot);
   const selected = nodes.find((n) => n.meta.id === selectedId) ?? null;
   const stateMeta = verdictStateMeta(record.status);
 

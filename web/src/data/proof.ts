@@ -23,6 +23,8 @@ import {
 } from "@/data/reconciliation";
 import type {
   AssertionType,
+  ContractsArtifact,
+  ManifestSnapshotArtifact,
   PoisonVerdictGroup,
   PoisonsArtifact,
   ReconciliationReport,
@@ -192,6 +194,8 @@ export function lineage(
   record: VerdictRecord,
   reconciliations: readonly ReconciliationReport[],
   poisons: PoisonsArtifact,
+  contracts: ContractsArtifact = {},
+  snapshot: ManifestSnapshotArtifact | null = null,
 ): LineageNode[] {
   const report =
     reconciliations.find((r) => r.population_id === record.population_id) ?? null;
@@ -300,20 +304,72 @@ export function lineage(
           ],
         };
       }
-      case "contract":
+      case "contract": {
+        const contract = contracts[record.spec_hash];
+        if (!contract) {
+          return {
+            kind: "identity-only",
+            fields: [
+              { label: "spec_id", value: record.spec_id, mono: true },
+              { label: "spec_hash", value: record.spec_hash, mono: true },
+            ],
+            note: "No emitted contract resolves for this spec_hash — only the identity travels (Q14).",
+          };
+        }
         return {
-          kind: "identity-only",
+          kind: "emitted",
           fields: [
             { label: "spec_id", value: record.spec_id, mono: true },
-            { label: "spec_hash", value: record.spec_hash, mono: true },
+            { label: "contract_hash", value: contract.contract_hash, mono: true },
+            { label: "source", value: `${contract.source} (${contract.tenant})` },
+            {
+              label: "supported_assertion_types",
+              value: contract.supported_assertion_types.join(", "),
+              mono: true,
+            },
+            { label: "provenance", value: contract.quality.provenance.method },
+            { label: "integrity", value: contract.quality.integrity.method },
+            { label: "population", value: contract.quality.population.method },
+            { label: "semantics", value: contract.quality.semantics.method },
+            { label: "temporal_validity", value: contract.quality.temporal_validity.method },
           ],
-          note: "spec_hash IS the Evidence Quality Contract's contract_hash (build_demo_engagement.py); the contract's identity travels, its five quality properties are not emitted (Q14).",
         };
-      case "snapshot":
+      }
+      case "snapshot": {
+        if (snapshot === null || !snapshot.blocks.populations.includes(record.population_id)) {
+          return {
+            kind: "not-emitted",
+            note: `No manifest snapshot is emitted for ${record.population_id} (Q16). Nearest wire trace: schema ${record.schema_version}, source ${record.source_version}, test fn ${record.test_function_version} live on the record itself, not in a ratified snapshot.`,
+          };
+        }
         return {
-          kind: "not-emitted",
-          note: `No manifest snapshot is emitted (Q16). Nearest wire trace: schema ${record.schema_version}, source ${record.source_version}, test fn ${record.test_function_version} live on the record itself, not in a ratified snapshot.`,
+          kind: "emitted",
+          fields: [
+            { label: "version", value: String(snapshot.version) },
+            { label: "lifecycle", value: snapshot.lifecycle },
+            // The DEMO-ONLY caveat travels inside this string itself
+            // (web/README.md) — the strict schema has no sibling note field.
+            { label: "ratified_by", value: snapshot.ratified_by ?? "(none)" },
+            { label: "ratified_at", value: snapshot.ratified_at ?? "(none)", mono: true },
+            {
+              label: "populations frozen",
+              value: snapshot.blocks.populations.join(", "),
+              mono: true,
+            },
+            { label: "claims frozen", value: snapshot.blocks.claims.join(", "), mono: true },
+            {
+              label: "capabilities in scope",
+              value: `${snapshot.blocks.capabilities.length} entries`,
+              diagnostic: true,
+            },
+            {
+              label: "collectors granted",
+              value: snapshot.blocks.collectors.map((c) => c.id).join(", "),
+              mono: true,
+            },
+          ],
         };
+      }
       case "assertion": {
         const fields: EvidenceField[] = [
           { label: "assertion_id", value: record.assertion_id, mono: true },

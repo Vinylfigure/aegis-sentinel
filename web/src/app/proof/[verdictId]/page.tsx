@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import {
+  engagementContracts,
   engagementPoisons,
   engagementReconciliations,
+  engagementSnapshot,
   engagementVerdictRecords,
 } from "@/data";
 import { ProofLineage } from "./ProofLineage";
@@ -60,6 +62,8 @@ export default async function ProofDetailPage({
       record={record}
       reconciliations={engagementReconciliations}
       poisons={engagementPoisons}
+      contracts={engagementContracts}
+      snapshot={engagementSnapshot}
     />
   );
 }
