@@ -15,6 +15,7 @@
 
 import { combinedRecords } from "@/data/verdicts";
 import type {
+  ContractsArtifact,
   ControlsSeed,
   GaugesSeed,
   ManifestSnapshotArtifact,
@@ -31,6 +32,7 @@ import gaugesJson from "@/data/seed/gauges.json";
 import processJson from "@/data/seed/process.json";
 import scopeJson from "@/data/seed/scope.json";
 
+import contractsJson from "@artifacts/contracts.json";
 import poisonsJson from "@artifacts/poisons.json";
 import reconciliationJson from "@artifacts/reconciliation.json";
 import registryJson from "@artifacts/registry.json";
@@ -86,6 +88,7 @@ export const engagementVerdicts = checked<VerdictsArtifact>(verdictsJson);
 export const engagementReconciliation = checked<ReconciliationReport>(reconciliationJson);
 export const engagementRegistry = checked<RegistryArtifact>(registryJson);
 export const engagementPoisons = checked<PoisonsArtifact>(poisonsJson);
+export const engagementContracts = checked<ContractsArtifact>(contractsJson);
 export const engagementSnapshot = checked<ManifestSnapshotArtifact>(snapshotJson);
 
 /**

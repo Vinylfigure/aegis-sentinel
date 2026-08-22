@@ -54,6 +54,7 @@ edit those files, and do not vendor copies into `web/`):
 | `reconciliation.json` | one population: `ladder`, `sources`, `canonical_members`, six-bucket `buckets`, `dispositions`, `counts` | `/reconciliation` (B2) |
 | `registry.json` | `entries` (capability entries with `lifecycle` + `history_caveats`), `compile_errors` (E-codes), top-level `note` | `/registry` (B3) |
 | `poisons.json` | `cases` + `detection` + embedded `verdict_records` | `/verdicts` mutation scorecard (B3) |
+| `contracts.json` | Evidence Quality Contracts keyed by `contract_hash`: five `quality` properties, `supported_assertion_types`, identity fields | `/proof` contract stage (Q14, issue #48) |
 | `snapshot.json` | ratified `ManifestSnapshot`: `version`, `lifecycle`, `ratified_by`/`ratified_at`, `blocks` (populations/claims/capabilities/collectors/evidence_contracts) | `/proof` snapshot stage (Q16, issue #47) |
 
 B1 landed hand-authored mocks in `web/src/data/engagement/` matching these
@@ -177,13 +178,21 @@ Numbers are referenced from comments in `src/data/types.ts`.
   lives in `registry.json`) does not travel with the reconciliation — so the
   join panel cannot show whether a source could even observe the whole period.
   Should `ReconciliationSource` carry its own `time_window` + capability ref?
-- **Q14 — the EQC travels as an identity, not a contract.** `verdict.spec_hash`
-  IS the EvidenceQualityContract's `contract_hash`
-  (scripts/build_demo_engagement.py), but the contract itself — the five
-  quality properties with their independent methods and failure modes — is
-  never emitted. The /proof contract stage can name the contract by hash and
-  nothing more. Should the engagement emit the EQCs (they are already built
-  in-memory by every collector)?
+- **Q14 — the EQC travels as an identity, not a contract. ANSWERED — issue
+  #48.** `scripts/build_demo_engagement.py poisons` now emits
+  `artifacts/demo-engagement/contracts.json`, keyed by `contract_hash`: the
+  three EvidenceQualityContracts an `evaluate_*` call was actually passed
+  (hris/okta/github — `gcp.contract` is collected but never itself the
+  contract behind a verdict, so it stays out of this artifact rather than
+  emitting an orphan). Every verdict record's `spec_hash` IS a key into this
+  map; `tests/test_poison_suite.py` proves the join both directions (no
+  dangling hash, no orphaned contract) and that each contract's
+  `supported_assertion_types` covers the assertion type it was evaluated
+  against. `evidence_quality_contract.schema.json` joined the codegen
+  `ROSTER` (`web/scripts/codegen.mjs`). `/proof`'s contract stage renders
+  `emitted` — the five quality properties' methods, `supported_assertion_types`,
+  and the contract's identity — for any record whose `spec_hash` resolves;
+  otherwise it still falls back to the old identity-only rendering.
 - **Q15 — claim and assertion ids are not fields anywhere.** Claims exist only
   in Python memory (sole wire trace: `registry.compile_errors[].claim_id`), and
   the assertion id appears only inside the verdict `message` prose; the

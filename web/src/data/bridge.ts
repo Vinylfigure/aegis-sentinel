@@ -28,6 +28,7 @@
 import type * as GenAssertion from "@/data/__generated__/assertion";
 import type * as GenCapability from "@/data/__generated__/capability-entry";
 import type * as GenDelta from "@/data/__generated__/delta";
+import type * as GenEvidenceQualityContract from "@/data/__generated__/evidence-quality-contract";
 import type * as GenPopulation from "@/data/__generated__/population";
 import type { AegisSentinelVerdictRecord } from "@/data/__generated__/verdict-record";
 import type * as GenVerdict from "@/data/__generated__/verdict";
@@ -63,6 +64,10 @@ const _assuranceState: Exact<AssuranceState, GenPopulation.AssuranceState> = tru
 const _populationType: Exact<PopulationType, GenPopulation.PopulationType> = true;
 const _sourceRole: Exact<SourceRole, GenPopulation.SourceRole> = true;
 const _assertionType: Exact<AssertionType, GenAssertion.AssertionType> = true;
+/** The EQC schema carries its own independent copy of the AssertionType
+ * $def (supported_assertion_types) — bridged separately from assertion.ts's
+ * copy above so either schema drifting the enum fails here. */
+const _eqcAssertionType: Exact<AssertionType, GenEvidenceQualityContract.AssertionType> = true;
 const _lifecycleState: Exact<LifecycleState, GenCapability.LifecycleState> = true;
 const _paginationMethod: Exact<PaginationMethod, GenCapability.PaginationMethod> = true;
 const _temporalKind: Exact<TemporalKind, GenCapability.TemporalKind> = true;
@@ -120,6 +125,7 @@ export const BRIDGE_ASSERTIONS = [
   _populationType,
   _sourceRole,
   _assertionType,
+  _eqcAssertionType,
   _lifecycleState,
   _paginationMethod,
   _temporalKind,

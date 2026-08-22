@@ -2,13 +2,20 @@
 real pipeline — assurance defect detection rate == 100%, each case's
 outcome class asserted individually, the five verdict states plus E117
 all visibly distinct across the set, and the committed
-artifacts/demo-engagement/{poisons,reconciliation,registry,snapshot}.json
+artifacts/demo-engagement/{poisons,reconciliation,registry,contracts,snapshot}.json
 pinned byte-for-byte (same idiom as tests/test_demo_engagement_drift.py).
+
+contracts.json (Q14 — issue #48) is checked for more than drift: every
+spec_hash a verdict record cites must resolve to exactly one emitted
+contract (no dangling hash, no orphaned contract), and each contract's
+supported_assertion_types must cover the assertion type it was actually
+used to evaluate — the no-PASS-without-fit-evidence invariant, checkable
+from the wire rather than trusted.
 
 snapshot.json (Q16, partial — issue #47) is checked for more than drift:
 every id it cites in populations/claims/capabilities must resolve inside
-the other three artifacts, so the ratified scope can never drift into
-fiction relative to what was actually built."""
+the other artifacts, so the ratified scope can never drift into fiction
+relative to what was actually built."""
 
 import importlib.util
 import json
@@ -20,13 +27,29 @@ from jsonschema import Draft202012Validator
 
 ROOT = Path(__file__).resolve().parent.parent
 ARTIFACTS = ROOT / "artifacts" / "demo-engagement"
-ARTIFACT_NAMES = ("poisons.json", "reconciliation.json", "registry.json", "snapshot.json")
+ARTIFACT_NAMES = (
+    "poisons.json",
+    "reconciliation.json",
+    "registry.json",
+    "contracts.json",
+    "snapshot.json",
+)
 VALIDATOR = Draft202012Validator(
     json.loads((ROOT / "schemas" / "verdict-record.schema.json").read_text())
 )
+CONTRACT_SCHEMA = ROOT / "schemas" / "ontology" / "evidence_quality_contract.schema.json"
+CONTRACT_VALIDATOR = Draft202012Validator(json.loads(CONTRACT_SCHEMA.read_text()))
 SNAPSHOT_VALIDATOR = Draft202012Validator(
     json.loads((ROOT / "schemas" / "ontology" / "manifest_snapshot.schema.json").read_text())
 )
+# poisons.json groups verdict_records under these lower-snake family names
+# (README Q4b — non-ratified spellings); mirrors web/src/data/proof.ts's
+# FAMILY_TO_ASSERTION_TYPE.
+GROUP_TO_ASSERTION_TYPE = {
+    "existence": "EXISTENCE",
+    "non_existence": "NON-EXISTENCE",
+    "timing": "TIMING",
+}
 
 
 def load_builder():
@@ -47,6 +70,11 @@ def regenerated() -> dict[str, str]:
 @pytest.fixture(scope="module")
 def poisons(regenerated) -> dict:
     return json.loads(regenerated["poisons.json"])
+
+
+@pytest.fixture(scope="module")
+def contracts(regenerated) -> dict:
+    return json.loads(regenerated["contracts.json"])
 
 
 @pytest.fixture(scope="module")
@@ -248,6 +276,55 @@ def test_registry_artifact_carries_lifecycles_and_the_e117(regenerated):
     assert lifecycles["workday.terminated_workers"] == "frozen"
     assert "DEMO-ONLY" in registry["note"]
     assert [e["code"] for e in registry["compile_errors"]] == ["E117"]
+
+
+# --- the evidence quality contracts (Q14 — issue #48) ---
+
+
+def test_every_contract_is_schema_valid(contracts):
+    for contract_hash, contract in contracts.items():
+        errors = list(CONTRACT_VALIDATOR.iter_errors(contract))
+        assert not errors, [e.message for e in errors]
+        assert contract["contract_hash"] == contract_hash
+
+
+def test_contracts_carry_all_five_quality_properties(contracts):
+    assert contracts, "the engagement must emit at least one contract"
+    for contract in contracts.values():
+        quality = contract["quality"]
+        assert set(quality) == {
+            "provenance",
+            "integrity",
+            "population",
+            "semantics",
+            "temporal_validity",
+        }
+        for prop in quality.values():
+            assert prop["method"]
+            assert prop["failure_mode"]
+
+
+def test_every_verdict_spec_hash_resolves_to_exactly_one_contract(contracts, poisons):
+    # The join is proven, not assumed: no dangling hash on any verdict
+    # record, and no contract emitted that nothing on the wire cites.
+    all_records = [r for group in poisons["verdict_records"].values() for r in group]
+    record_spec_hashes = {r["spec_hash"] for r in all_records}
+    assert set(contracts) == record_spec_hashes
+
+
+def test_contracts_entitle_the_assertion_type_they_were_evaluated_against(contracts, poisons):
+    # Entitlement is visible: for each verdict, the contract that produced
+    # it must declare support for the assertion type actually evaluated —
+    # the no-PASS-without-fit-evidence invariant, checked from the wire.
+    for group, assertion_type in GROUP_TO_ASSERTION_TYPE.items():
+        records = poisons["verdict_records"][group]
+        assert records, group
+        for record in records:
+            contract = contracts[record["spec_hash"]]
+            assert assertion_type in contract["supported_assertion_types"], (
+                record["record_id"],
+                contract["supported_assertion_types"],
+            )
 
 
 # --- the manifest snapshot (Q16, partial — issue #47) ---
