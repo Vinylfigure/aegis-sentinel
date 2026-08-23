@@ -317,7 +317,48 @@ def test_reconciliation_board_populates_all_six_buckets(regenerated):
     # after every open delta carries a human disposition.
     assert board["ladder"]["at_first_verdict"] == "DISCOVERED"
     assert board["ladder"]["after_dispositions"] == "RECONCILED"
-    assert set(board["ladder"]["blocked_by_open_deltas"]) == set(board["dispositions"])
+    blocked = board["ladder"]["blocked_by_open_deltas"]
+    assert {entry["ref"] for entry in blocked} == set(board["dispositions"])
+    assert all(entry["dispositioned"] for entry in blocked)
+
+
+def test_blocked_by_open_deltas_bucket_matches_source_delta(regenerated):
+    """No drift between the ladder's enriched `bucket` field and the
+    `Delta` it was derived from (README Q11's own framing)."""
+    board = json.loads(regenerated["reconciliation.json"])
+    bucket_by_ref = {
+        delta["member_ref"]: bucket_name
+        for bucket_name, deltas in board["buckets"].items()
+        for delta in deltas
+    }
+    blocked = board["ladder"]["blocked_by_open_deltas"]
+    assert blocked, "poison fixtures must exercise at least one blocked delta"
+    for entry in blocked:
+        assert entry["bucket"] == bucket_by_ref[entry["ref"]]
+
+
+def test_blocked_by_open_deltas_still_unanswered_case():
+    """Every fixture-driven artifact reconciles to RECONCILED, where by
+    `advance()`'s own invariant every open delta is already dispositioned —
+    so `dispositioned: false` never appears in a committed artifact. Drive
+    `_blocked_by_open_deltas` directly so that branch has real coverage."""
+    from aegis_sentinel.schema import Delta, DeltaBucket, DispositionRecord, DispositionValue
+
+    module = load_builder()
+    deltas = (
+        Delta(bucket=DeltaBucket.LEFT_ONLY, member_ref="answered-ref"),
+        Delta(bucket=DeltaBucket.RIGHT_ONLY, member_ref="still-open-ref"),
+    )
+    dispositions = {
+        "answered-ref": DispositionRecord(value=DispositionValue.IMPLEMENTED, owner="a.human"),
+    }
+
+    result = module._blocked_by_open_deltas(deltas, dispositions)
+
+    assert result == [
+        {"ref": "answered-ref", "bucket": "left_only", "dispositioned": True},
+        {"ref": "still-open-ref", "bucket": "right_only", "dispositioned": False},
+    ]
 
 
 def test_reconciliation_excluded_delta_is_born_dispositioned(regenerated):
