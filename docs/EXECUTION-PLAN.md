@@ -198,6 +198,7 @@ ratification is the freeze — draft → frozen(=ratified) → superseded).
 1. Mutation playbook document (fixtures authored from PRD §6 carry `TODO(playbook)`).
 2. Reference-engagement population sizes (placeholders ~200 employees / ~15
    terminations, documented in fixture READMEs).
-3. D-L1 lifecycle ruling at SCH00 PR.
-4. D7 Cartographer doc-allowlist ruling (blocks CAP10 only).
-5. Branch protection on `main` (required checks `verify` + `web-verify`, CODEOWNERS).
+3. D7 Cartographer doc-allowlist ruling (blocks CAP10 only).
+4. Branch protection on `main` (required checks `verify` + `web-verify`, CODEOWNERS).
+
+Resolved: D-L1 lifecycle ruling landed 2026-08-16 at the SCH00 PR (`docs/DECISIONS.md` D-L1).
