@@ -167,13 +167,26 @@ Numbers are referenced from comments in `src/data/types.ts`.
   own `state` was deliberately *not* added — `ladder.after_dispositions`
   already carries it, and duplicating it would manufacture another Q10-shaped
   disagreement.
-- **Q11b — a legal AssuranceState can leave the strip.** `STALE` is reachable
-  from RATIFIED (`schema/models.py` LADDER_TRANSITIONS) but is not a rung. The
-  stepper now handles it as an explicit off-strip marker via `ladderPosition`,
-  whose `never` arm makes any unhandled state a compile error. Should the
-  ladder block on the wire say *why* it went stale (period rolled, source
-  drift, re-collection due), the way `blocked_by_open_deltas` says why
-  RECONCILED was blocked?
+- **Q11b — a legal AssuranceState can leave the strip. Narrowed — issue #59.**
+  `STALE` is reachable from RATIFIED (`schema/models.py` LADDER_TRANSITIONS)
+  but is not a rung. The stepper handles it as an explicit off-strip marker
+  via `ladderPosition`, whose `never` arm makes any unhandled state a compile
+  error. Two separable questions were tangled here:
+  - *Is STALE ever really reached?* ANSWERED —
+    `tests/test_ladder.py::test_ratified_stale_discovered_cycle_reaches_the_wire`
+    now disposes a real delta to legally clear the RECONCILED gate, then walks
+    RATIFIED → STALE → DISCOVERED through `advance()`, asserting `.state.value`
+    (the same field the real `ladder` wire block serializes) at each step —
+    not just the isolated `advance()` unit call `test_full_forward_chain_is_legal`
+    already made. The real pipeline (`build_demo_engagement.py`) still never
+    produces a STALE population itself; this proves the transition is real
+    and wire-safe, not that the demo engagement exercises it end-to-end.
+  - *Should the ladder block on the wire say why it went stale* (period
+    rolled, source drift, re-collection due), the way `blocked_by_open_deltas`
+    says why RECONCILED was blocked? Still OPEN — no in-scope model field
+    (timestamp, freshness window, source-fingerprint) exists to read a reason
+    from, and no real trigger path produces STALE today, so this needs actual
+    new modeling, not exposure of data already in scope.
 - **Q13 — no per-source temporal window.** `period` is on the report, but each
   source's own collection window (and CAP01's Okta 90-day history caveat, which
   lives in `registry.json`) does not travel with the reconciliation — so the
