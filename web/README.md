@@ -235,13 +235,21 @@ Numbers are referenced from comments in `src/data/types.ts`.
   `tests/test_poison_suite.py` proves every population/claim/capability id the
   snapshot cites resolves inside `reconciliation.json`/`poisons.json`/
   `registry.json`, so the ratified scope cannot drift into fiction.
-- **Q17 — the poison run's verdict records live only inside poisons.json.**
-  The real `verdicts.json` carries one walking-skeleton record; the five-state
-  spread (10 records) is embedded in `poisons.json.verdict_records`, so
-  `/verdicts` and `/proof` merge two runs client-side (`combinedRecords` /
-  `verdictRuns`, dedup by record_id). Should VAL02 emit the poison records
-  into a flat `verdicts.json` — or a run envelope (cf. Q3) — so the roster is
-  one artifact?
+- **Q17 — the poison run's verdict records live only inside poisons.json.
+  ANSWERED — issue #58.** `build_poison_artifacts()` now writes
+  `verdicts.json` as the consolidated roster — the walking-skeleton record
+  plus all ten poison records, sorted by `record_id` — instead of leaving
+  the five-state spread embedded only in `poisons.json.verdict_records`.
+  Both artifacts carry the same record objects (no independent
+  recomputation, so they cannot drift apart;
+  `tests/test_poison_suite.py::test_verdicts_json_carries_every_poison_record_no_second_source_of_truth`
+  checks it). Took the flat-merge branch of the question, not a run
+  envelope — Q3 stays open. `combinedRecords`/`recordCollisions` in
+  `web/src/data/verdicts.ts` stay, but only as a redundancy check over an
+  already-consolidated artifact now, not a real client-side merge;
+  `verdictRuns` is unaffected — two `run_id`s inside one array is still
+  legitimate. `main()` alone is unaffected: it still writes the one
+  walking-skeleton record, byte-identical to before.
 
 ## SATISFIED at B3: ratification caveats on `/registry`
 

@@ -2,8 +2,13 @@
 real pipeline — assurance defect detection rate == 100%, each case's
 outcome class asserted individually, the five verdict states plus E117
 all visibly distinct across the set, and the committed
-artifacts/demo-engagement/{poisons,reconciliation,registry,contracts,snapshot}.json
-pinned byte-for-byte (same idiom as tests/test_demo_engagement_drift.py).
+artifacts/demo-engagement/{poisons,reconciliation,registry,contracts,
+snapshot,verdicts}.json pinned byte-for-byte (same idiom as
+tests/test_demo_engagement_drift.py). verdicts.json is the consolidated
+roster (Q17, issue #58) — the walking-skeleton record plus the ten
+poison records in one artifact — so this module is also where its
+whole-file byte-identity is pinned; test_demo_engagement_drift.py only
+checks that the walking-skeleton record survives into it unchanged.
 
 contracts.json (Q14 — issue #48) is checked for more than drift: every
 spec_hash a verdict record cites must resolve to exactly one emitted
@@ -33,6 +38,7 @@ ARTIFACT_NAMES = (
     "registry.json",
     "contracts.json",
     "snapshot.json",
+    "verdicts.json",
 )
 VALIDATOR = Draft202012Validator(
     json.loads((ROOT / "schemas" / "verdict-record.schema.json").read_text())
@@ -92,6 +98,11 @@ def snapshot(regenerated) -> dict:
     return json.loads(regenerated["snapshot.json"])
 
 
+@pytest.fixture(scope="module")
+def verdicts(regenerated) -> list:
+    return json.loads(regenerated["verdicts.json"])
+
+
 def case(poisons: dict, case_id: str) -> dict:
     return next(c for c in poisons["cases"] if c["id"] == case_id)
 
@@ -107,6 +118,18 @@ def test_regenerating_matches_committed_byte_for_byte(regenerated, name):
         f"artifacts/demo-engagement/{name} drifted — "
         "re-run scripts/build_demo_engagement.py poisons and commit"
     )
+
+
+def test_verdicts_json_carries_every_poison_record_no_second_source_of_truth(verdicts, poisons):
+    """Q17 (issue #58): poisons.json keeps its own grouped verdict_records,
+    but verdicts.json is now the consolidated roster — every poison record
+    must appear in it byte-for-byte (same object, not an independent
+    recomputation that could drift out of sync)."""
+    poison_records = [r for group in poisons["verdict_records"].values() for r in group]
+    verdicts_by_id = {r["record_id"]: r for r in verdicts}
+    assert len(verdicts) == len(poison_records) + 1  # + the walking-skeleton record
+    for record in poison_records:
+        assert verdicts_by_id.get(record["record_id"]) == record
 
 
 # --- the headline number ---
