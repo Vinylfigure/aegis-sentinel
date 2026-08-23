@@ -245,20 +245,28 @@ export function deltaEntries(report: ReconciliationReport): DeltaEntry[] {
 
 export interface Blocker {
   ref: string;
-  bucket: DeltaBucket | null;
+  bucket: DeltaBucket;
+  /** The ladder entry's own claim (README Q11) — a diagnostic, like
+   * `counts` (HANDOFF §2): `answer`, independently joined against the raw
+   * `dispositions`/inline records, is the truth; a divergence is flagged
+   * (see WhyCompleteRail), never silently preferred over `answer`. */
+  dispositioned: boolean;
   answer: ResolvedDisposition | null;
 }
 
 /**
- * One row per `ladder.blocked_by_open_deltas` ref, joined back to its bucket
- * and its disposition. The spine of the why-complete rail: it is what turns
- * "RECONCILED" from a claim into an argument.
+ * One row per `ladder.blocked_by_open_deltas` entry. The bucket travels
+ * with the entry itself (README Q11) — only the full disposition record
+ * (value/owner/rationale, not just whether one exists) still needs a join.
+ * The spine of the why-complete rail: it is what turns "RECONCILED" from a
+ * claim into an argument.
  */
 export function openBlockers(report: ReconciliationReport): Blocker[] {
-  return report.ladder.blocked_by_open_deltas.map((ref) => ({
-    ref,
-    bucket: findDelta(report, ref)?.bucket ?? null,
-    answer: resolveDisposition(report, ref),
+  return report.ladder.blocked_by_open_deltas.map((entry) => ({
+    ref: entry.ref,
+    bucket: entry.bucket,
+    dispositioned: entry.dispositioned,
+    answer: resolveDisposition(report, entry.ref),
   }));
 }
 

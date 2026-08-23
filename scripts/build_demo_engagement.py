@@ -58,6 +58,7 @@ from aegis_sentinel.schema import (
     AssertionType,
     AssuranceState,
     Claim,
+    Delta,
     DerivationRule,
     DispositionRecord,
     LifecycleState,
@@ -355,6 +356,29 @@ def _record_class(record: dict) -> str:
     if record["status"] == "UNKNOWN":
         return f"UNKNOWN:{record['unknown_cause']}"
     return record["status"]
+
+
+def _blocked_by_open_deltas(
+    deltas: tuple[Delta, ...], dispositions: dict[str, DispositionRecord]
+) -> list[dict]:
+    """Deltas open at first verdict, each self-describing (README Q11):
+    its own bucket, and whether `dispositions` — applied AFTER that first
+    verdict — has since answered it. Pulled out of build_poison_artifacts
+    so the False branch (an unanswered blocker) is unit-testable: every
+    fixture-driven artifact reaches RECONCILED, where every open delta is
+    by definition answered, so `dispositioned: false` never appears there."""
+    return sorted(
+        (
+            {
+                "ref": d.member_ref,
+                "bucket": d.bucket.value,
+                "dispositioned": d.member_ref in dispositions,
+            }
+            for d in deltas
+            if not d.dispositioned
+        ),
+        key=lambda entry: entry["ref"],
+    )
 
 
 def build_poison_artifacts() -> dict[str, str]:
@@ -720,9 +744,7 @@ def build_poison_artifacts() -> dict[str, str]:
             "timing": list(timing_records),
         },
     }
-    open_before_disposition = sorted(
-        d.member_ref for d in result.population.deltas if not d.dispositioned
-    )
+    blocked_by_open_deltas = _blocked_by_open_deltas(result.population.deltas, dispositions)
     reconciliation_artifact = {
         "population_id": event_pop.id,
         "population_name": event_pop.name,
@@ -764,7 +786,7 @@ def build_poison_artifacts() -> dict[str, str]:
         },
         "ladder": {
             "at_first_verdict": result.population.state.value,
-            "blocked_by_open_deltas": open_before_disposition,
+            "blocked_by_open_deltas": blocked_by_open_deltas,
             "after_dispositions": reconciled.state.value,
         },
     }

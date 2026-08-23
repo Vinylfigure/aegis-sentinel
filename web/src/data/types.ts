@@ -225,10 +225,19 @@ export interface DerivationRule {
   sources: SourceRef[];
 }
 
+/** One entry per delta still open at first verdict — carries its own
+ * bucket and whether it has since been answered, rather than a bare ref
+ * a reader must join back against `buckets`/`dispositions` (README Q11). */
+export interface OpenDelta {
+  ref: string;
+  bucket: DeltaBucket;
+  dispositioned: boolean;
+}
+
 export interface ReconciliationLadder {
   after_dispositions: AssuranceState;
   at_first_verdict: AssuranceState;
-  blocked_by_open_deltas: string[];
+  blocked_by_open_deltas: OpenDelta[];
 }
 
 export interface ReconciliationReport {
