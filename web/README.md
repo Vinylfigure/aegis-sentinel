@@ -148,10 +148,16 @@ Numbers are referenced from comments in `src/data/types.ts`.
   inferred. Given D-7 §5 makes the per-cause UNKNOWN rate itself a verdict
   input, should `Delta` carry `cause` plus its D-U1 why-code so the UI stops
   guessing?
-- **Q10 — `counts` can disagree with `buckets`.** Two representations of one
-  fact. B2 renders `buckets[b].length` as truth and shows `counts[b]` beside it
-  as the artifact's own diagnostic, flagging any divergence on screen. Is
-  `counts` a deliberate checksum, or should it drop off the wire as computable?
+- **Q10 — `counts` can disagree with `buckets`. ANSWERED — issue #68.** A
+  deliberate checksum, not a candidate for dropping. `DeltaBucket`'s own
+  docstring (`schema/enums.py`) states it: *"counts are diagnostics, never
+  evidence."* `build_demo_engagement.py` emits both fields on purpose, with an
+  explicit `counts_note` saying the same. `reconciliation.ts` renders
+  `counts[b]` beside the real `buckets[b].length` specifically so a divergence
+  between the two is visible on screen rather than silently reconciled away —
+  that cross-check is the entire point of carrying a value that could in
+  principle be computed from `buckets`. Dropping it would delete the check
+  `BucketBoard.tsx` was built to perform.
 - **Q11 — `blocked_by_open_deltas` is a flat ref list. ANSWERED — issue #54.**
   Each entry is now `{ref, bucket, dispositioned}`, computed once in
   `scripts/build_demo_engagement.py` from the same `Delta` objects the
