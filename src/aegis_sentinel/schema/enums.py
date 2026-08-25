@@ -1,9 +1,10 @@
 """Ontology enums (SCH01), exactly as ratified.
 
 Verdict states per docs/DECISIONS.md D-V1; UNKNOWN why-codes per D-U1
-(D-7 cause families map in: basis_missing → UNKNOWN_EVIDENCE,
-identity_fuzzy → UNKNOWN_POPULATION, no_basis_anywhere →
-UNKNOWN_TESTABILITY; see
+(D-7 cause families map in: basis-missing → UNKNOWN_EVIDENCE,
+identity-fuzzy → UNKNOWN_POPULATION, no-basis-anywhere →
+UNKNOWN_TESTABILITY — exactly as ratified in D-U1, docs/DECISIONS.md:39-47;
+see also
 knowledge/01_corpus/02_design_decisions/Aegis_Design_Fix_D7_UNKNOWN_Decomposition.md).
 Lifecycle per D-L1: ratification IS the freeze. Vocabulary follows
 docs/HANDOFF.md §5 — no invented synonyms.
@@ -88,6 +89,18 @@ class DeltaBucket(StrEnum):
     CONFLICT = "conflict"
     UNRESOLVABLE = "unresolvable"
     EXCLUDED = "excluded"
+
+
+class D7Family(StrEnum):
+    """Join-failure cause families (D-7) — a pure function of
+    `DeltaBucket`, never independently chosen. `conflict` has no family:
+    it is a successful join with disagreeing attributes (D-8), not a
+    join failure. See knowledge/01_corpus/02_design_decisions/
+    Aegis_Design_Fix_D7_UNKNOWN_Decomposition.md §1."""
+
+    BASIS_MISSING = "basis-missing"
+    IDENTITY_FUZZY = "identity-fuzzy"
+    NO_BASIS_ANYWHERE = "no-basis-anywhere"
 
 
 class LifecycleState(StrEnum):

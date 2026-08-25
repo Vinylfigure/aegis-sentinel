@@ -356,8 +356,18 @@ def test_blocked_by_open_deltas_still_unanswered_case():
     result = module._blocked_by_open_deltas(deltas, dispositions)
 
     assert result == [
-        {"ref": "answered-ref", "bucket": "left_only", "dispositioned": True},
-        {"ref": "still-open-ref", "bucket": "right_only", "dispositioned": False},
+        {
+            "ref": "answered-ref",
+            "bucket": "left_only",
+            "cause": "basis-missing",
+            "dispositioned": True,
+        },
+        {
+            "ref": "still-open-ref",
+            "bucket": "right_only",
+            "cause": "no-basis-anywhere",
+            "dispositioned": False,
+        },
     ]
 
 

@@ -1,10 +1,9 @@
 import {
   CANONICAL_RULE,
-  D7_INFERENCE_CAVEAT,
   OPEN_BUCKETS,
   attributeDisagreements,
   bucketMeta,
-  d7Family,
+  d7Classify,
   derivationBasis,
   findDelta,
   formatPeriod,
@@ -107,7 +106,7 @@ function Argument({
         {unjoinable.length > 0 && (
           <ul className={styles.railList}>
             {unjoinable.map((row) => {
-              const classification = row.bucket ? d7Family(row.bucket) : null;
+              const classification = d7Classify(row.cause);
               return (
                 <li key={row.key}>
                   <code className={styles.ref}>{row.key}</code>
@@ -241,7 +240,7 @@ function SelectedChain({
 }) {
   const delta = findDelta(report, memberRef);
   const answer = resolveDisposition(report, memberRef);
-  const classification = delta ? d7Family(delta.bucket) : null;
+  const classification = d7Classify(delta?.cause ?? null);
   const meta = delta ? bucketMeta(delta.bucket) : null;
   const blocked = report.ladder.blocked_by_open_deltas.some((entry) => entry.ref === memberRef);
   const disagreements =
@@ -288,7 +287,6 @@ function SelectedChain({
             <span className={styles.whyCode}>{classification.whyCode}</span>
           </p>
           <p className={styles.railMeta}>{classification.meaning}</p>
-          <p className={styles.caveat}>{D7_INFERENCE_CAVEAT}</p>
         </RailSection>
       )}
 

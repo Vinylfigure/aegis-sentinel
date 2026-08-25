@@ -79,6 +79,13 @@ export type DeltaBucket =
   | "unresolvable"
   | "excluded";
 
+/** D-7 join-failure cause family — a pure function of `DeltaBucket`
+ * (schema/models.py's `_D7_FAMILY_BY_BUCKET`), carried on the wire as of
+ * README Q9 (issue #69). `conflict` (and `intersection`/`excluded`) carry
+ * no family: a conflict is a successful join with disagreeing attributes
+ * (D-8), not a join failure. */
+export type D7Family = "basis-missing" | "identity-fuzzy" | "no-basis-anywhere";
+
 /** D-L1: ratification IS the freeze. */
 export type LifecycleState = "draft" | "frozen" | "superseded";
 
@@ -186,6 +193,10 @@ export interface DispositionRecord {
 /** A reconciliation difference as a first-class object — never just a count. */
 export interface Delta {
   bucket: DeltaBucket;
+  /** D-7 family for this delta's bucket, or null for conflict/intersection/
+   * excluded (README Q9). Always present — computed server-side, never
+   * independently re-derived here. */
+  cause: D7Family | null;
   disposition: DispositionRecord | null;
   member_ref: string;
   owner: string | null;
@@ -231,6 +242,8 @@ export interface DerivationRule {
 export interface OpenDelta {
   ref: string;
   bucket: DeltaBucket;
+  /** This delta's wire-carried D-7 family, or null (README Q9). */
+  cause: D7Family | null;
   dispositioned: boolean;
 }
 

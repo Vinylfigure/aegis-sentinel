@@ -15,6 +15,7 @@
     "conflict": [
       {
         "bucket": "conflict",
+        "cause": null,
         "disposition": null,
         "member_ref": "email:uma.wynn@example.com",
         "owner": null
@@ -23,6 +24,7 @@
     "excluded": [
       {
         "bucket": "excluded",
+        "cause": null,
         "disposition": {
           "owner": "vinylfigure (Ratifier)",
           "rationale": "ratified boundary exclusion boundary/poisons-v1#advisors (D-9)",
@@ -35,36 +37,42 @@
     "intersection": [
       {
         "bucket": "intersection",
+        "cause": null,
         "disposition": null,
         "member_ref": "email:nia.park@example.com",
         "owner": null
       },
       {
         "bucket": "intersection",
+        "cause": null,
         "disposition": null,
         "member_ref": "email:omar.diaz@example.com",
         "owner": null
       },
       {
         "bucket": "intersection",
+        "cause": null,
         "disposition": null,
         "member_ref": "email:pia.voss@example.com",
         "owner": null
       },
       {
         "bucket": "intersection",
+        "cause": null,
         "disposition": null,
         "member_ref": "email:rhea.bell@example.com",
         "owner": null
       },
       {
         "bucket": "intersection",
+        "cause": null,
         "disposition": null,
         "member_ref": "email:sam.cole@example.com",
         "owner": null
       },
       {
         "bucket": "intersection",
+        "cause": null,
         "disposition": null,
         "member_ref": "email:tess.umber@example.com",
         "owner": null
@@ -73,6 +81,7 @@
     "left_only": [
       {
         "bucket": "left_only",
+        "cause": "basis-missing",
         "disposition": null,
         "member_ref": "email:quinn.ash@example.com",
         "owner": null
@@ -81,6 +90,7 @@
     "right_only": [
       {
         "bucket": "right_only",
+        "cause": "no-basis-anywhere",
         "disposition": null,
         "member_ref": "email:mira.chen@example.com",
         "owner": null
@@ -89,6 +99,7 @@
     "unresolvable": [
       {
         "bucket": "unresolvable",
+        "cause": "identity-fuzzy",
         "disposition": null,
         "member_ref": "okta:00u9104",
         "owner": null
@@ -142,21 +153,25 @@
     "blocked_by_open_deltas": [
       {
         "bucket": "right_only",
+        "cause": "no-basis-anywhere",
         "dispositioned": true,
         "ref": "email:mira.chen@example.com"
       },
       {
         "bucket": "left_only",
+        "cause": "basis-missing",
         "dispositioned": true,
         "ref": "email:quinn.ash@example.com"
       },
       {
         "bucket": "conflict",
+        "cause": null,
         "dispositioned": true,
         "ref": "email:uma.wynn@example.com"
       },
       {
         "bucket": "unresolvable",
+        "cause": "identity-fuzzy",
         "dispositioned": true,
         "ref": "okta:00u9104"
       }

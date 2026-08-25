@@ -4,7 +4,7 @@ import {
   RESOLVED_BUCKETS,
   attributeDisagreements,
   countPairs,
-  d7Family,
+  d7Classify,
   resolveDisposition,
   strippedMemberRef,
   type BucketMeta,
@@ -127,7 +127,7 @@ function DeltaCard({
   onSelect: (ref: string) => void;
 }) {
   const answer = resolveDisposition(report, delta.member_ref);
-  const classification = d7Family(delta.bucket);
+  const classification = d7Classify(delta.cause);
   const disagreements =
     delta.bucket === "conflict" ? attributeDisagreements(report, delta.member_ref) : [];
   const exclusion = report.boundary_exclusions.find(
@@ -151,7 +151,6 @@ function DeltaCard({
         {classification && (
           <span className={styles.d7Chip}>
             {classification.family} · {classification.whyCode}
-            <span className={styles.diagnostic}> · inferred</span>
           </span>
         )}
       </p>

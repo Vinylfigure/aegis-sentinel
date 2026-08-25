@@ -4,6 +4,7 @@
 from aegis_sentinel.schema.enums import (
     AssertionType,
     AssuranceState,
+    D7Family,
     DeltaBucket,
     DispositionValue,
     LifecycleState,
@@ -42,6 +43,7 @@ ONTOLOGY_MODELS = (
 __all__ = [
     "AssertionType",
     "AssuranceState",
+    "D7Family",
     "DeltaBucket",
     "DispositionValue",
     "LifecycleState",
