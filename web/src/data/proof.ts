@@ -22,7 +22,6 @@ import {
   reconciledClaimHolds,
 } from "@/data/reconciliation";
 import type {
-  AssertionType,
   ContractsArtifact,
   ManifestSnapshotArtifact,
   PoisonVerdictGroup,
@@ -152,19 +151,10 @@ export const EVIDENCE_KIND_LABEL: Record<StageEvidence["kind"], string> = {
 /* Assertion-family inference (Q4b)                                    */
 /* ------------------------------------------------------------------ */
 
-/** poisons.json groups records under lower-snake family names that do not
- * match the ratified AssertionType spellings (README Q4b) — map explicitly
- * rather than string-munging, so a new family fails tsc. */
-export const FAMILY_TO_ASSERTION_TYPE: Record<PoisonVerdictGroup, AssertionType> = {
-  existence: "EXISTENCE",
-  non_existence: "NON-EXISTENCE",
-  timing: "TIMING",
-};
-
 export const POISON_GROUPS: readonly PoisonVerdictGroup[] = [
-  "existence",
-  "non_existence",
-  "timing",
+  "EXISTENCE",
+  "NON-EXISTENCE",
+  "TIMING",
 ];
 
 /** Which verdict_records family carries this record, if any. */
@@ -376,8 +366,8 @@ export function lineage(
         ];
         if (family !== null) {
           fields.push({
-            label: "poisons group (Q4b)",
-            value: `${family} → ${FAMILY_TO_ASSERTION_TYPE[family]}`,
+            label: "poisons group",
+            value: family,
             mono: true,
             diagnostic: true,
           });

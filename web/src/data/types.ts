@@ -460,9 +460,10 @@ export interface PoisonDetection {
   total: number;
 }
 
-/** Grouping keys for the embedded verdict records — lower-snake assertion
- * families, not AssertionType values (README question Q4b). */
-export type PoisonVerdictGroup = "existence" | "non_existence" | "timing";
+/** Grouping keys for the embedded verdict records — reuses the ratified
+ * AssertionType spelling verbatim (README Q4b, ANSWERED #77), restricted to
+ * the three families poisons.json actually emits. */
+export type PoisonVerdictGroup = Extract<AssertionType, "EXISTENCE" | "NON-EXISTENCE" | "TIMING">;
 
 export interface PoisonsArtifact {
   cases: PoisonCase[];

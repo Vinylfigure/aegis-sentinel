@@ -746,9 +746,9 @@ def build_poison_artifacts() -> dict[str, str]:
         "cases": cases,
         "detection": detection,
         "verdict_records": {
-            "existence": [alpha_record],
-            "non_existence": [nonexistence_record],
-            "timing": list(timing_records),
+            AssertionType.EXISTENCE: [alpha_record],
+            AssertionType.NON_EXISTENCE: [nonexistence_record],
+            AssertionType.TIMING: list(timing_records),
         },
     }
     blocked_by_open_deltas = _blocked_by_open_deltas(result.population.deltas, dispositions)
