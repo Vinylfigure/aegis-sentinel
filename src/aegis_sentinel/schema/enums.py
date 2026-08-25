@@ -3,7 +3,8 @@
 Verdict states per docs/DECISIONS.md D-V1; UNKNOWN why-codes per D-U1
 (D-7 cause families map in: basis-missing → UNKNOWN_EVIDENCE,
 identity-fuzzy → UNKNOWN_POPULATION, no-basis-anywhere →
-UNKNOWN_POPULATION; see
+UNKNOWN_TESTABILITY — exactly as ratified in D-U1, docs/DECISIONS.md:39-47;
+see also
 knowledge/01_corpus/02_design_decisions/Aegis_Design_Fix_D7_UNKNOWN_Decomposition.md).
 Lifecycle per D-L1: ratification IS the freeze. Vocabulary follows
 docs/HANDOFF.md §5 — no invented synonyms.

@@ -97,7 +97,9 @@ class Delta(Base):
     @property
     def cause(self) -> D7Family | None:
         """D-7 join-failure family, a pure function of `bucket` — never
-        set independently, so it cannot drift from it (issue #69)."""
+        set independently, so it cannot drift from it (issue #69). Output-only:
+        `extra="forbid"` means `Delta.model_validate(a_delta.model_dump())`
+        raises on the emitted `cause` key — no code path does this today."""
         return _D7_FAMILY_BY_BUCKET.get(self.bucket)
 
 

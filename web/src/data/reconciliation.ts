@@ -402,10 +402,15 @@ export function joinMatrix(report: ReconciliationReport): {
  */
 export interface D7Classification {
   family: D7Family;
-  whyCode: "UNKNOWN_EVIDENCE" | "UNKNOWN_POPULATION";
+  whyCode: "UNKNOWN_EVIDENCE" | "UNKNOWN_POPULATION" | "UNKNOWN_TESTABILITY";
   meaning: string;
 }
 
+/** Why-codes per D-U1 (docs/DECISIONS.md:39-47, RATIFIED): basis-missing →
+ * UNKNOWN_EVIDENCE, identity-fuzzy → UNKNOWN_POPULATION, no-basis-anywhere →
+ * UNKNOWN_TESTABILITY. Verified against the ratified decision directly
+ * (issue #69 verifier pass) — this module previously carried
+ * no-basis-anywhere → UNKNOWN_POPULATION, contradicting D-U1. */
 const D7_META: Record<D7Family, Omit<D7Classification, "family">> = {
   "basis-missing": {
     whyCode: "UNKNOWN_EVIDENCE",
@@ -417,7 +422,7 @@ const D7_META: Record<D7Family, Omit<D7Classification, "family">> = {
     meaning: "the join key itself is soft — no canonical key could be derived.",
   },
   "no-basis-anywhere": {
-    whyCode: "UNKNOWN_POPULATION",
+    whyCode: "UNKNOWN_TESTABILITY",
     meaning: "keys to nothing in the authoritative source — it is in no declared population.",
   },
 };
