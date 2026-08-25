@@ -104,9 +104,9 @@ export function verdictStateMeta(state: VerdictState): VerdictStateMeta {
  * this exhaustive: a fourth family in the artifact type fails tsc here
  * rather than silently dropping its records from every roster. */
 const POISON_GROUP_COMPLETE: Record<PoisonVerdictGroup, true> = {
-  existence: true,
-  non_existence: true,
-  timing: true,
+  EXISTENCE: true,
+  "NON-EXISTENCE": true,
+  TIMING: true,
 };
 export const POISON_VERDICT_GROUPS: readonly PoisonVerdictGroup[] = Object.keys(
   POISON_GROUP_COMPLETE,

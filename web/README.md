@@ -104,11 +104,13 @@ Numbers are referenced from comments in `src/data/types.ts`.
   would avoid string-splitting in the scorecard. Related: `evidence` is an
   open keyset that varies per case (typed as `PoisonEvidence` with all-optional
   known keys — fragile by construction).
-- **Q4b — `verdict_records` grouping keys.** poisons.json groups embedded
-  records under `existence` / `non_existence` / `timing` — lower-snake family
-  names that do not match the ratified `AssertionType` values (`EXISTENCE`,
-  `NON-EXISTENCE`, `TIMING`; note the hyphen). Is the key set closed at these
-  three, and should it reuse the enum spelling?
+- **Q4b — `verdict_records` grouping keys.** *(ANSWERED — issue #77.)* Closed
+  at these three families, and now spelled with the ratified `AssertionType`
+  values verbatim (`EXISTENCE`, `NON-EXISTENCE`, `TIMING`; note the hyphen)
+  instead of lower-snake names — the key IS the assertion type, so there is
+  no second hand-maintained vocabulary to drift out of sync
+  (`tests/test_poison_suite.py::test_poison_verdict_record_groups_match_ratified_assertion_type`
+  proves it).
 - **Q5 — dispositions live in two places in reconciliation.json.**
   *(ANSWERED at B2 — they are two moments, not two truths.)* The buckets are
   the pre-disposition snapshot (taken before `apply_dispositions`); the

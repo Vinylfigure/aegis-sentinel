@@ -280,7 +280,7 @@
   "run_id": "run-poison-engagement-0001",
   "tenant": "meridian-financial-poisons",
   "verdict_records": {
-    "existence": [
+    "EXISTENCE": [
       {
         "assertion_id": "poison-am06-existence-A",
         "chain_prev": null,
@@ -316,7 +316,7 @@
         "unknown_cause": "UNKNOWN_POPULATION"
       }
     ],
-    "non_existence": [
+    "NON-EXISTENCE": [
       {
         "assertion_id": "poison-am06-nonexistence-A",
         "chain_prev": null,
@@ -353,7 +353,7 @@
         "test_function_version": "0.1.0"
       }
     ],
-    "timing": [
+    "TIMING": [
       {
         "assertion_id": "cp-idp-deactivation-workday-B",
         "chain_prev": null,

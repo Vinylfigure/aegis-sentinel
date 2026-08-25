@@ -30,6 +30,8 @@ from pathlib import Path
 import pytest
 from jsonschema import Draft202012Validator
 
+from aegis_sentinel.schema import AssertionType
+
 ROOT = Path(__file__).resolve().parent.parent
 ARTIFACTS = ROOT / "artifacts" / "demo-engagement"
 ARTIFACT_NAMES = (
@@ -48,14 +50,11 @@ CONTRACT_VALIDATOR = Draft202012Validator(json.loads(CONTRACT_SCHEMA.read_text()
 SNAPSHOT_VALIDATOR = Draft202012Validator(
     json.loads((ROOT / "schemas" / "ontology" / "manifest_snapshot.schema.json").read_text())
 )
-# poisons.json groups verdict_records under these lower-snake family names
-# (README Q4b — non-ratified spellings); mirrors web/src/data/proof.ts's
-# FAMILY_TO_ASSERTION_TYPE.
-GROUP_TO_ASSERTION_TYPE = {
-    "existence": "EXISTENCE",
-    "non_existence": "NON-EXISTENCE",
-    "timing": "TIMING",
-}
+# poisons.json groups verdict_records under the ratified AssertionType
+# spelling verbatim (README Q4b, ANSWERED #77) — the key IS the assertion
+# type, so there is no second hand-maintained vocabulary left to drift out
+# of sync with src/aegis_sentinel/schema/enums.py.
+POISON_VERDICT_GROUPS = (AssertionType.EXISTENCE, AssertionType.NON_EXISTENCE, AssertionType.TIMING)
 
 
 def load_builder():
@@ -251,11 +250,6 @@ def test_every_emitted_verdict_record_is_schema_valid(poisons):
 # literals and the template-instantiated timing_claim: Assertion.id is
 # f"{control_point_id}-{system}-{attribute}" per
 # src/aegis_sentinel/lanes/template.py's instantiate()).
-GROUP_TO_ASSERTION_TYPE = {
-    "existence": "EXISTENCE",
-    "non_existence": "NON-EXISTENCE",
-    "timing": "TIMING",
-}
 CLAIM_ASSERTIONS = {
     "claim-poison-hris-existence": {"poison-am06-existence-A": "EXISTENCE"},
     "claim-poison-github-nonexistence": {"poison-am06-nonexistence-A": "NON-EXISTENCE"},
@@ -270,7 +264,7 @@ def test_verdict_record_claim_and_assertion_ids_join_to_a_real_claim(poisons):
     fail this test (same join-exactness pattern as PR #50's contract
     test)."""
     for group, records in poisons["verdict_records"].items():
-        expected_type = GROUP_TO_ASSERTION_TYPE[group]
+        expected_type = group
         for record in records:
             claim_id = record["claim_id"]
             assert claim_id in CLAIM_ASSERTIONS, (
@@ -288,8 +282,23 @@ def test_verdict_record_claim_and_assertion_ids_join_to_a_real_claim(poisons):
             )
 
 
+def test_poison_verdict_record_groups_match_ratified_assertion_type(poisons):
+    """Q4b, ANSWERED #77: the grouping keys reuse AssertionType's ratified
+    spelling verbatim — this fails the moment a new family is added to one
+    side (poisons.json's builder or the enum) without the other."""
+    assert (
+        set(poisons["verdict_records"])
+        == set(POISON_VERDICT_GROUPS)
+        == {
+            AssertionType.EXISTENCE,
+            AssertionType.NON_EXISTENCE,
+            AssertionType.TIMING,
+        }
+    )
+
+
 def test_excluded_and_exception_records_carry_their_refs(poisons):
-    timing = poisons["verdict_records"]["timing"]
+    timing = poisons["verdict_records"][AssertionType.TIMING]
     excluded = next(r for r in timing if r["status"] == "EXCLUDED")
     assert excluded["ratification_ref"] == "boundary/poisons-v1#break-glass"
     exception = next(r for r in timing if r["status"] == "EXCEPTION")
@@ -432,9 +441,9 @@ def test_contracts_entitle_the_assertion_type_they_were_evaluated_against(contra
     # Entitlement is visible: for each verdict, the contract that produced
     # it must declare support for the assertion type actually evaluated —
     # the no-PASS-without-fit-evidence invariant, checked from the wire.
-    for group, assertion_type in GROUP_TO_ASSERTION_TYPE.items():
-        records = poisons["verdict_records"][group]
-        assert records, group
+    for assertion_type in POISON_VERDICT_GROUPS:
+        records = poisons["verdict_records"][assertion_type]
+        assert records, assertion_type
         for record in records:
             contract = contracts[record["spec_hash"]]
             assert assertion_type in contract["supported_assertion_types"], (
