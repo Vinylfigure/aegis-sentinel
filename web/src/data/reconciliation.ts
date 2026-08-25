@@ -13,6 +13,7 @@
 
 import type {
   AssuranceState,
+  D7Family,
   Delta,
   DeltaBucket,
   DispositionRecord,
@@ -317,6 +318,9 @@ export interface JoinRow {
   cells: Record<string, string | null>;
   inCanonicalMembers: boolean;
   bucket: DeltaBucket | null;
+  /** The matching delta's wire-carried D-7 family (README Q9), or null when
+   * there is no delta or the bucket carries no family. */
+  cause: D7Family | null;
   /** Raw email as the source stated it — shown verbatim for unjoinable rows
    * so the garbled key is visible rather than described. */
   rawEmail: string | null;
@@ -342,12 +346,14 @@ export function joinMatrix(report: ReconciliationReport): {
     for (const member of source.members) {
       const canonical = canonicalIdentity(member.email);
       if (canonical === null) {
+        const delta = findDelta(report, member.ref);
         unjoinable.push({
           key: member.ref,
           canonical: null,
           cells: { ...emptyCells(), [source.name]: member.ref },
           inCanonicalMembers: false,
-          bucket: findDelta(report, member.ref)?.bucket ?? null,
+          bucket: delta?.bucket ?? null,
+          cause: delta?.cause ?? null,
           rawEmail: member.email,
         });
         continue;
@@ -357,12 +363,14 @@ export function joinMatrix(report: ReconciliationReport): {
         existing.cells[source.name] = member.ref;
         continue;
       }
+      const delta = findDelta(report, `email:${canonical}`);
       keyed.set(canonical, {
         key: canonical,
         canonical,
         cells: { ...emptyCells(), [source.name]: member.ref },
         inCanonicalMembers: report.canonical_members.includes(canonical),
-        bucket: findDelta(report, `email:${canonical}`)?.bucket ?? null,
+        bucket: delta?.bucket ?? null,
+        cause: delta?.cause ?? null,
         rawEmail: member.email,
       });
     }
@@ -382,46 +390,42 @@ export function joinMatrix(report: ReconciliationReport): {
  * D-7 decomposes UNKNOWN by *why the deterministic join failed*
  * (knowledge/01_corpus/02_design_decisions/
  * Aegis_Design_Fix_D7_UNKNOWN_Decomposition.md §1), and D-U1 maps each
- * family onto a why-code. The wire carries only the bucket, so this is an
- * inference — every rendering of it says so (README Q9).
+ * family onto a why-code. The family itself is computed once in
+ * `schema/models.py` (`Delta.cause`) and carried on the wire — this module
+ * only attaches the presentational why-code/meaning strings, keyed by the
+ * family the wire already names, and never re-derives the family from the
+ * bucket (README Q9, issue #69).
  *
- * `conflict` is deliberately absent: a conflict is a *successful* join with
- * disagreeing attributes, which is D-8 model reconciliation, not a join
- * failure. Filing it under D-7 would misreport what happened.
+ * `conflict` (and `intersection`/`excluded`) carry no family: a conflict is
+ * a *successful* join with disagreeing attributes, which is D-8 model
+ * reconciliation, not a join failure.
  */
-export type D7Family = "basis-missing" | "identity-fuzzy" | "no-basis-anywhere";
-
 export interface D7Classification {
   family: D7Family;
   whyCode: "UNKNOWN_EVIDENCE" | "UNKNOWN_POPULATION";
   meaning: string;
 }
 
-const D7_BY_BUCKET: Partial<Record<DeltaBucket, D7Classification>> = {
-  left_only: {
-    family: "basis-missing",
+const D7_META: Record<D7Family, Omit<D7Classification, "family">> = {
+  "basis-missing": {
     whyCode: "UNKNOWN_EVIDENCE",
     meaning:
       "in the authoritative source but absent from a corroborating one — the basis is not where it should be.",
   },
-  unresolvable: {
-    family: "identity-fuzzy",
+  "identity-fuzzy": {
     whyCode: "UNKNOWN_POPULATION",
     meaning: "the join key itself is soft — no canonical key could be derived.",
   },
-  right_only: {
-    family: "no-basis-anywhere",
+  "no-basis-anywhere": {
     whyCode: "UNKNOWN_POPULATION",
     meaning: "keys to nothing in the authoritative source — it is in no declared population.",
   },
 };
 
-export function d7Family(bucket: DeltaBucket): D7Classification | null {
-  return D7_BY_BUCKET[bucket] ?? null;
+/** Attaches display metadata to a wire-carried D-7 family. */
+export function d7Classify(cause: D7Family | null): D7Classification | null {
+  return cause ? { family: cause, ...D7_META[cause] } : null;
 }
-
-export const D7_INFERENCE_CAVEAT =
-  "cause family inferred from the bucket; not carried on the wire (README Q9)";
 
 /** Refs grouped by D-7 family, for the taxonomy strip. */
 export function d7Groups(
@@ -429,7 +433,7 @@ export function d7Groups(
 ): { classification: D7Classification; refs: string[] }[] {
   const groups = new Map<D7Family, { classification: D7Classification; refs: string[] }>();
   for (const { delta } of deltaEntries(report)) {
-    const classification = d7Family(delta.bucket);
+    const classification = d7Classify(delta.cause);
     if (!classification) continue;
     const existing = groups.get(classification.family);
     if (existing) existing.refs.push(delta.member_ref);

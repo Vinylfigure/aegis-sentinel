@@ -378,6 +378,7 @@ def _blocked_by_open_deltas(
             {
                 "ref": d.member_ref,
                 "bucket": d.bucket.value,
+                "cause": d.cause.value if d.cause is not None else None,
                 "dispositioned": d.member_ref in dispositions,
             }
             for d in deltas

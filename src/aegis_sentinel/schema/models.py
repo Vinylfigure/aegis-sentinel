@@ -10,11 +10,12 @@ records which invariant each one carries.
 
 from datetime import datetime
 
-from pydantic import BaseModel, ConfigDict, Field, model_validator
+from pydantic import BaseModel, ConfigDict, Field, computed_field, model_validator
 
 from aegis_sentinel.schema.enums import (
     AssertionType,
     AssuranceState,
+    D7Family,
     DeltaBucket,
     DispositionValue,
     PopulationType,
@@ -22,6 +23,16 @@ from aegis_sentinel.schema.enums import (
     UnknownWhy,
     VerdictState,
 )
+
+# D-7 join-failure cause per bucket (issue #69) — mirrors
+# web/src/data/reconciliation.ts's D7_BY_BUCKET exactly: `conflict` is a
+# successful join with disagreeing attributes, not a join failure, so it
+# (and intersection/excluded) carry no family.
+_D7_FAMILY_BY_BUCKET: dict[DeltaBucket, D7Family] = {
+    DeltaBucket.LEFT_ONLY: D7Family.BASIS_MISSING,
+    DeltaBucket.UNRESOLVABLE: D7Family.IDENTITY_FUZZY,
+    DeltaBucket.RIGHT_ONLY: D7Family.NO_BASIS_ANYWHERE,
+}
 
 SHA256 = r"^[0-9a-f]{64}$"
 
@@ -81,6 +92,13 @@ class Delta(Base):
     @property
     def dispositioned(self) -> bool:
         return self.disposition is not None
+
+    @computed_field  # type: ignore[prop-decorator]
+    @property
+    def cause(self) -> D7Family | None:
+        """D-7 join-failure family, a pure function of `bucket` — never
+        set independently, so it cannot drift from it (issue #69)."""
+        return _D7_FAMILY_BY_BUCKET.get(self.bucket)
 
 
 class Population(Base):

@@ -140,14 +140,21 @@ Numbers are referenced from comments in `src/data/types.ts`.
   `TemporalKind = state-only | event-history | full-history |
   snapshot-cadence` — a fourth member the hand-authored guess had missed.
   Both are now generated-checked in `bridge.ts`.
-- **Q9 — no D-7 join-failure cause on the wire.** `Delta` carries `bucket` but
-  not the D-7 cause family. B2 infers it (`unresolvable` → identity-fuzzy /
-  `UNKNOWN_POPULATION`; `left_only` → basis-missing / `UNKNOWN_EVIDENCE`;
-  `right_only` → no-basis-anywhere / `UNKNOWN_POPULATION`; `conflict` is a D-8
-  attribute disagreement, *not* a join failure) and marks every rendering as
-  inferred. Given D-7 §5 makes the per-cause UNKNOWN rate itself a verdict
-  input, should `Delta` carry `cause` plus its D-U1 why-code so the UI stops
-  guessing?
+- **Q9 — no D-7 join-failure cause on the wire. ANSWERED — issue #69.** `Delta`
+  now carries `cause`, a `@computed_field` on `schema/models.py`'s `Delta`
+  computed once from `bucket` (`unresolvable` → identity-fuzzy; `left_only` →
+  basis-missing; `right_only` → no-basis-anywhere; `conflict` /
+  `intersection` / `excluded` → `null`, since a conflict is a D-8 attribute
+  disagreement, not a join failure — never independently settable, so it
+  cannot drift from `bucket`). `reconciliation.ts`'s retired `D7_BY_BUCKET` /
+  `d7Family()` / `D7_INFERENCE_CAVEAT` are gone; `d7Classify()` now just
+  attaches the presentational why-code/meaning to the wire-carried family.
+  **Caveat this does not settle:** the verdict-level `unknown_cause`
+  (`evaluate/minimal.py` / `evaluate/typed.py`) is computed independently
+  from `population.state` and `contract.supports(...)` at evaluation time — a
+  different pipeline stage — and is *not* actually derived from which
+  `Delta` bucket a member fell into. Wiring reconciliation-time D-7
+  classification into that computation would be new modeling, left open.
 - **Q10 — `counts` can disagree with `buckets`. ANSWERED — issue #68.** A
   deliberate checksum, not a candidate for dropping. `DeltaBucket`'s own
   docstring (`schema/enums.py`) states it: *"counts are diagnostics, never
@@ -159,7 +166,8 @@ Numbers are referenced from comments in `src/data/types.ts`.
   principle be computed from `buckets`. Dropping it would delete the check
   `BucketBoard.tsx` was built to perform.
 - **Q11 — `blocked_by_open_deltas` is a flat ref list. ANSWERED — issue #54.**
-  Each entry is now `{ref, bucket, dispositioned}`, computed once in
+  Each entry is now `{ref, bucket, cause, dispositioned}` (`cause` added by
+  issue #69), computed once in
   `scripts/build_demo_engagement.py` from the same `Delta` objects the
   buckets hold — `bucket` and `dispositioned` travel with the ref instead of
   the page re-deriving both by joining against `buckets`/`dispositions`.

@@ -1,7 +1,6 @@
 import {
   BUCKET_ORDER,
   CANONICAL_RULE,
-  D7_INFERENCE_CAVEAT,
   d7Groups,
   joinMatrix,
   type ReconciliationReport,
@@ -16,8 +15,9 @@ import styles from "../reconciliation.module.css";
  *
  * D-7 (knowledge/01_corpus/02_design_decisions/
  * Aegis_Design_Fix_D7_UNKNOWN_Decomposition.md §1) supplies the cause
- * families; D-U1 supplies the why-codes. Both are inferred from the bucket —
- * the wire carries no cause — and every rendering says so.
+ * families; D-U1 supplies the why-codes. The family is carried on the wire
+ * as `Delta.cause` (README Q9) — only the why-code/meaning display strings
+ * are attached client-side.
  */
 export function IdentityJoinPanel({
   report,
@@ -179,7 +179,6 @@ export function IdentityJoinPanel({
 
       <div className={styles.d7}>
         <h3 className={styles.d7Title}>Join-failure taxonomy (D-7)</h3>
-        <p className={styles.caveat}>{D7_INFERENCE_CAVEAT}</p>
         {groups.length === 0 ? (
           <p className={styles.empty}>No join failures — every identity keyed.</p>
         ) : (

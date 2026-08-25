@@ -21,6 +21,7 @@ from aegis_sentinel.reconcile.engine import (
 from aegis_sentinel.reconcile.minimal import apply_dispositions
 from aegis_sentinel.schema import (
     AssuranceState,
+    D7Family,
     DeltaBucket,
     DispositionRecord,
     Population,
@@ -74,6 +75,22 @@ def test_all_six_buckets_as_first_class_deltas():
     assert refs(b.excluded) == ["email:svc-deploy@example.com"]
     assert all(d.bucket is bucket for bucket in DeltaBucket for d in getattr(b, bucket.value))
     assert result.canonical_members == ("ada@example.com", "ben@example.com")
+
+
+def test_delta_cause_mirrors_d7_family_per_bucket():
+    """D-7 cause (issue #69) is a pure function of bucket, computed once
+    on schema.models.Delta — mirrors web/src/data/reconciliation.ts's
+    (retired) D7_BY_BUCKET table exactly. conflict/intersection/excluded
+    carry no cause: a conflict is a successful join with disagreeing
+    attributes (D-8), not a join failure."""
+    result = reconcile()
+    b = result.buckets
+    assert {d.cause for d in b.left_only} == {D7Family.BASIS_MISSING}
+    assert {d.cause for d in b.unresolvable} == {D7Family.IDENTITY_FUZZY}
+    assert {d.cause for d in b.right_only} == {D7Family.NO_BASIS_ANYWHERE}
+    assert all(d.cause is None for d in b.conflict)
+    assert all(d.cause is None for d in b.intersection)
+    assert all(d.cause is None for d in b.excluded)
 
 
 def test_counts_are_diagnostics_only():
