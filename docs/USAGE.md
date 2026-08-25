@@ -49,6 +49,7 @@ goal. What fires when:
 | `/reflect` | a correction happened or the session ends | **Stop hook blocks once** when signals exist · leftover signals resurface at session start | — |
 | `/evolve` | between tasks with ripe learnings | session-start ripe count · heartbeat | **CLAUDE.md edits** (headless: PR) |
 | `/recalibrate` | the status says recalibration is stale, or a documented practice misbehaves | session-start stale line · heartbeat | — (writes candidates + stamp only) |
+| `/work-loop` | the build-heartbeat's execution plan has no ready box left this firing | heartbeat step 2b (fallback arm) | — |
 | `/ship` | a verified change is ready to leave the machine | — | **branch + remote** before first push (headless: PR only) |
 | `/worktree-parallel` | work splits into independent tracks | — | **track table** before any worktree |
 | `/replicate` | you want a new project from this scaffold | — | **name/visibility/path** before creation |

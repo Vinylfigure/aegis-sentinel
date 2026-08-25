@@ -11,7 +11,7 @@ CLAUDE.md                     always-on memory (≤20 concepts; sentinel-marked 
 .claude/
   settings.json               hook wiring + safe-command permissions
   hooks/                      4 shell hooks (protocol below)
-  skills/                     10 skills — load on demand (progressive disclosure)
+  skills/                     11 skills — load on demand (progressive disclosure)
   agents/                     2 subagents — run in their own context windows
   memory/LEARNINGS.md         append-only learnings ledger (git-tracked)
   memory/sources-seen.md      committed watermark of what /recalibrate has read
