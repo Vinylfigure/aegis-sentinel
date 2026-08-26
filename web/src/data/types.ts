@@ -203,7 +203,7 @@ export interface Delta {
 }
 
 export interface BoundaryExclusion {
-  /** Bare identifier — buckets use prefixed member_ref (README question Q6). */
+  /** Prefixed member_ref (`email:...`), same scheme bucket entries use (Q6, #78). */
   member: string;
   ratified_by: string;
   ref: string;

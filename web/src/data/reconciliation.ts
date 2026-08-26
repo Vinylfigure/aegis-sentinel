@@ -180,17 +180,13 @@ export const CANONICAL_RULE =
 
 /**
  * Bucket deltas use a prefixed `member_ref` (`email:…`, `okta:…`) while
- * `boundary_exclusions[].member` is a bare identifier — README Q6. Joining
- * the two needs this, and every screen that uses it says so rather than
- * stripping silently.
+ * `sources[].members[].email` is a bare identifier. Comparing a delta's ref
+ * against a source's raw email needs this.
  */
 export function strippedMemberRef(ref: string): string {
   const marker = ref.indexOf(":");
   return marker === -1 ? ref : ref.slice(marker + 1);
 }
-
-export const PREFIX_JOIN_NOTE =
-  "matched by stripping the member_ref prefix — boundary_exclusions carry a bare identifier (README Q6)";
 
 /* ------------------------------------------------------------------ */
 /* Dispositions (README Q5 — two moments, not two truths)              */

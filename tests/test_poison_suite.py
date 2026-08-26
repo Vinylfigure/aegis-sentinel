@@ -331,6 +331,17 @@ def test_reconciliation_board_populates_all_six_buckets(regenerated):
     assert all(entry["dispositioned"] for entry in blocked)
 
 
+def test_boundary_exclusions_member_matches_excluded_delta_ref(regenerated):
+    """Q6/#78: boundary_exclusions[].member carries the same prefixed
+    member_ref scheme as bucket entries, so the two join directly with no
+    prefix-stripping heuristic."""
+    board = json.loads(regenerated["reconciliation.json"])
+    (exclusion,) = board["boundary_exclusions"]
+    assert exclusion["member"] == "email:vik.rao@example.com"
+    (excluded,) = board["buckets"]["excluded"]
+    assert exclusion["member"] == excluded["member_ref"]
+
+
 def test_blocked_by_open_deltas_bucket_matches_source_delta(regenerated):
     """No drift between the ladder's enriched `bucket` field and the
     `Delta` it was derived from (README Q11's own framing)."""

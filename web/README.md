@@ -122,14 +122,17 @@ Numbers are referenced from comments in `src/data/types.ts`.
   (`resolveDisposition` returns `source: "inline" | "map"`), so the choice is
   visible rather than merged away. Still worth the Owner's confirmation that
   the pre-disposition snapshot is deliberate and should stay on the wire.
-- **Q6 — member identifier scheme is inconsistent.** `boundary_exclusions[].member`
-  is a bare email; every bucket entry uses a prefixed `member_ref`
-  (`email:...`, `okta:...`). One scheme, please — joins in the UI otherwise
-  need prefix-stripping heuristics. **B2 consequence:** the excluded delta ↔
-  `boundary_exclusions` join is performed by `strippedMemberRef`, and the
-  excluded card labels that on screen (`PREFIX_JOIN_NOTE`) rather than
-  stripping silently. Deleting the exclusion makes the card say so — it is a
-  real join, not decoration.
+- **Q6 — member identifier scheme is inconsistent.** *(ANSWERED — issue #78.)*
+  `boundary_exclusions[].member` now carries the same prefixed `member_ref`
+  scheme (`email:...`) bucket entries use, derived from
+  `BoundaryExclusion.member_ref` (`reconcile/engine.py`) via the same
+  `canonical_email` the engine already joins on — no new identity model. The
+  excluded-delta ↔ `boundary_exclusions` join in `BucketBoard.tsx` is now a
+  direct `===` compare; the prefix-stripping heuristic (`strippedMemberRef`
+  applied to `boundary_exclusions`) and its on-screen caveat are gone.
+  `strippedMemberRef` itself stays — it still strips a delta's `member_ref`
+  prefix to compare against a source's raw email in `attributeDisagreements`,
+  an unrelated join.
 - **Q7 — `severity` vocabulary is not in the ontology.**
   *(ANSWERED at C1 — by the wire schema itself.)* `verdict-record.schema.json`
   carries the full set: `critical | high | medium | low | informational`, and
