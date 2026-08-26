@@ -82,17 +82,28 @@ shape verbatim; every place the shape diverges from the ontology models or is
 awkward for rendering is a question here, not a silent frontend workaround.
 Numbers are referenced from comments in `src/data/types.ts`.
 
-- **Q1 — `unknown_cause` vs `unknown_why`.** Verdict records on the wire
-  carry the UNKNOWN why-code as `unknown_cause`; `schema/models.py` `Verdict`
-  calls the field `unknown_why`. Same D-U1 concept, two names — which one is
-  canonical for SCH01's exported schema? *(C1 note: now schema-confirmed —
-  the ontology and wire schemas generate different TypeScript shapes, and
-  `bridge.ts` deliberately asserts nothing between them.)*
-- **Q2 — EXCEPTION ref naming.** Artifact records carry `disposition_ref`;
-  the `Verdict` model calls it `exception_disposition_ref` (EXCLUDED's
-  `ratification_ref` matches in both). Also: the conditional fields are
-  *absent keys* on the wire but nullable-always-present on the model — codegen
-  (C1) needs one convention.
+- **Q1 — `unknown_cause` vs `unknown_why`. ANSWERED at C1.** Verdict records
+  on the wire carry the UNKNOWN why-code as `unknown_cause`; `schema/models.py`
+  `Verdict` calls the field `unknown_why`. Same D-U1 concept, two names —
+  which one is canonical for SCH01's exported schema? *Neither — the
+  divergence is intentional.* The ontology `Verdict` model (internal,
+  nullable-always-present fields) and the wire `VerdictRecord` (external
+  audit artifact, conditionally-present fields per D-V1) are legitimately
+  different shapes for the same concept; unifying the field names would
+  paper over that difference rather than represent it. `bridge.ts:12-19`
+  asserts this deliberately: no compile-time equality is drawn between the
+  two `unknown_*` fields, on the documented grounds that doing so "would
+  paper over exactly the divergence the questions exist to surface."
+- **Q2 — EXCEPTION ref naming. ANSWERED at C1.** Artifact records carry
+  `disposition_ref`; the `Verdict` model calls it `exception_disposition_ref`
+  (EXCLUDED's `ratification_ref` matches in both). Also: the conditional
+  fields are *absent keys* on the wire but nullable-always-present on the
+  model — codegen (C1) needs one convention. Same answer as Q1, and by the
+  same citation: `bridge.ts:12-19` deliberately omits an assertion between
+  the ontology model's `exception_disposition_ref` and the wire record's
+  `disposition_ref`, and between their absent-key-vs-nullable conventions,
+  because the two are different shapes for the same concept rather than one
+  canonical shape with two names.
 - **Q3 — `verdicts.json` has no run envelope.** It is a bare array;
   `run_id`, `period`, `tenant`, `collected_at` exist only per-record (period
   not at all). `/verdicts` must derive run metadata by folding over records —
