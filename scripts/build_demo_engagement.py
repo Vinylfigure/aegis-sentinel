@@ -787,7 +787,9 @@ def build_poison_artifacts() -> dict[str, str]:
         "counts": result.buckets.counts,
         "counts_note": "counts are diagnostics, never evidence (HANDOFF §2)",
         "canonical_members": list(result.canonical_members),
-        "boundary_exclusions": [e.model_dump(mode="json") for e in boundary],
+        "boundary_exclusions": [
+            {**e.model_dump(mode="json"), "member": e.member_ref} for e in boundary
+        ],
         "dispositions": {
             ref: record.model_dump(mode="json") for ref, record in dispositions.items()
         },

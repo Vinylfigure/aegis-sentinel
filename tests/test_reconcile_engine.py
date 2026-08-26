@@ -225,3 +225,19 @@ def test_boundary_exclusion_without_canonical_member_rejected():
     bogus = (BoundaryExclusion(member="   ", ref="boundary/v3#x", ratified_by="vinylfigure"),)
     with pytest.raises(ValueError, match="no canonical member"):
         reconcile(boundary_exclusions=bogus)
+
+
+def test_boundary_exclusion_member_ref_matches_bucket_scheme():
+    """Q6/#78: member_ref carries the same email: prefix bucket entries do,
+    derived from the same canonical_email the engine joins on — not a
+    second identity model."""
+    exclusion = BoundaryExclusion(
+        member="  SVC-Deploy@Example.com  ", ref="boundary/v3#x", ratified_by="vinylfigure"
+    )
+    assert exclusion.member_ref == "email:svc-deploy@example.com"
+
+
+def test_boundary_exclusion_member_ref_rejects_unresolvable_member():
+    exclusion = BoundaryExclusion(member="   ", ref="boundary/v3#x", ratified_by="vinylfigure")
+    with pytest.raises(ValueError, match="no canonical member"):
+        exclusion.member_ref

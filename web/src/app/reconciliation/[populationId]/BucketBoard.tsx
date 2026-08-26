@@ -1,12 +1,10 @@
 import {
   OPEN_BUCKETS,
-  PREFIX_JOIN_NOTE,
   RESOLVED_BUCKETS,
   attributeDisagreements,
   countPairs,
   d7Classify,
   resolveDisposition,
-  strippedMemberRef,
   type BucketMeta,
   type Delta,
   type ReconciliationReport,
@@ -130,9 +128,7 @@ function DeltaCard({
   const classification = d7Classify(delta.cause);
   const disagreements =
     delta.bucket === "conflict" ? attributeDisagreements(report, delta.member_ref) : [];
-  const exclusion = report.boundary_exclusions.find(
-    (e) => e.member === strippedMemberRef(delta.member_ref),
-  );
+  const exclusion = report.boundary_exclusions.find((e) => e.member === delta.member_ref);
 
   return (
     <div className={selected ? `${styles.delta} ${styles.deltaSelected}` : styles.delta}>
@@ -222,7 +218,6 @@ function DeltaCard({
           <p className={styles.exclusion}>
             ratified exclusion <code className={styles.ref}>{exclusion.ref}</code> by{" "}
             {exclusion.ratified_by}
-            <span className={styles.diagnostic}> · {PREFIX_JOIN_NOTE}</span>
           </p>
         ) : (
           <p className={styles.undispositioned}>

@@ -84,6 +84,17 @@ class BoundaryExclusion(Base):
     ref: str = Field(min_length=1)
     ratified_by: str = Field(min_length=1)
 
+    @property
+    def member_ref(self) -> str:
+        """The same prefixed identity scheme bucket entries carry on the
+        wire (Q6/#78) — derived from `member` via the same
+        `canonical_email` normalization the engine already joins on, not
+        a new identity model."""
+        key = canonical_email(self.member)
+        if key is None:
+            raise ValueError(f"boundary exclusion {self.ref} names no canonical member")
+        return f"email:{key}"
+
 
 class DeltaBuckets(Base):
     """All six buckets as first-class Delta objects. Member refs are

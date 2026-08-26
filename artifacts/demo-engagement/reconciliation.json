@@ -6,7 +6,7 @@
   },
   "boundary_exclusions": [
     {
-      "member": "vik.rao@example.com",
+      "member": "email:vik.rao@example.com",
       "ratified_by": "vinylfigure (Ratifier)",
       "ref": "boundary/poisons-v1#advisors"
     }
