@@ -16,6 +16,7 @@
 import type {
   CompileError,
   PoisonCase,
+  PoisonClassification,
   PoisonVerdictGroup,
   PoisonsArtifact,
   UnknownWhy,
@@ -369,15 +370,39 @@ export function orderedCases(poisons: PoisonsArtifact): PoisonCase[] {
   });
 }
 
-/** Split "UNKNOWN:UNKNOWN_POPULATION" into its parts; an E-code or a bare
- * state passes through as-is. Stringly-typed on the wire (README Q4). */
-export function splitClassification(value: string): {
+/** Render a structured `PoisonClassification` (README Q4, resolved by
+ * issue #87) as a head/cause pair for the scorecard chip. Exhaustive over
+ * `kind` with a `never` arm, so an unhandled kind fails `tsc` rather than
+ * silently rendering nothing — the frontend counterpart to the backend's
+ * `_classification` construction-time check. */
+export function classificationLabel(value: PoisonClassification): {
   head: string;
   cause: string | null;
 } {
-  const marker = value.indexOf(":");
-  if (marker === -1) return { head: value, cause: null };
-  return { head: value.slice(0, marker), cause: value.slice(marker + 1) };
+  switch (value.kind) {
+    case "PASS":
+    case "FAIL":
+    case "EXCLUDED":
+    case "EXCEPTION":
+    case "COMPILED":
+      return { head: value.kind, cause: null };
+    case "UNKNOWN":
+      return { head: value.kind, cause: value.unknown_cause };
+    case "E-CODE":
+      return { head: value.code, cause: null };
+    default: {
+      const exhaustive: never = value;
+      throw new Error(`unhandled poison classification: ${JSON.stringify(exhaustive)}`);
+    }
+  }
+}
+
+/** The classification as one string, e.g. "UNKNOWN:UNKNOWN_POPULATION" or
+ * "FAIL" — for contexts (like the "expected …" line) that want text
+ * rather than a head/cause split. */
+export function classificationText(value: PoisonClassification): string {
+  const { head, cause } = classificationLabel(value);
+  return cause ? `${head}:${cause}` : head;
 }
 
 export function compileErrorsOf(poisonCase: PoisonCase): CompileError[] {

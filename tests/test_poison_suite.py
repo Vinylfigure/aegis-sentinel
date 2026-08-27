@@ -145,7 +145,7 @@ def test_assurance_defect_detection_rate_is_100_percent(poisons):
     assert all(c["detected"] for c in poisons["cases"])
     assert all(c["actual_class"] == c["expected"] for c in poisons["cases"])
     # A silent PASS is a miss by construction: no case may expect PASS.
-    assert all(c["expected"] != "PASS" for c in poisons["cases"])
+    assert all(c["expected"]["kind"] != "PASS" for c in poisons["cases"])
 
 
 # --- the six cases, each asserted individually ---
@@ -156,6 +156,7 @@ def test_case_1_contractor_absent_from_hris_is_unknown_population(poisons):
     record = c["actual"]["record"]
     assert record["status"] == "UNKNOWN"
     assert record["unknown_cause"] == "UNKNOWN_POPULATION"
+    assert c["actual_class"] == {"kind": "UNKNOWN", "unknown_cause": "UNKNOWN_POPULATION"}
     assert c["evidence"] == {"bucket": "right_only", "member_ref": "email:mira.chen@example.com"}
     # The reconciler's bucket fed the evaluator: the verdict was recorded
     # against the blocked denominator, left of RECONCILED.
@@ -174,6 +175,7 @@ def test_case_3_breakglass_claim_is_an_e117_compile_error_before_collection(pois
     c = case(poisons, "breakglass-capability-missing")
     assert c["stage"] == "compile"
     assert c["actual"]["kind"] == "compile_error"
+    assert c["actual_class"] == {"kind": "E-CODE", "code": "E117"}
     (error,) = c["actual"]["errors"]
     assert error["code"] == "E117"
     assert "breakglass.config" in error["message"]
@@ -188,6 +190,7 @@ def test_case_4_garbled_identity_join_is_unresolvable_then_unknown(poisons, rege
     record = c["actual"]["record"]
     assert record["status"] == "UNKNOWN"
     assert record["unknown_cause"] == "UNKNOWN_EVIDENCE"
+    assert c["actual_class"] == {"kind": "UNKNOWN", "unknown_cause": "UNKNOWN_EVIDENCE"}
     assert record["record_id"].endswith("quinn.ash@example.com")
     # The reconciler surfaced the garbled source member as UNRESOLVABLE.
     board = json.loads(regenerated["reconciliation.json"])
@@ -226,15 +229,34 @@ def test_five_verdict_states_and_e117_all_visibly_distinct(poisons):
         "EXCLUDED",
         "EXCEPTION",
     }
-    assert case(poisons, "breakglass-capability-missing")["actual_class"] == "E117"
-    # Two distinct UNKNOWN why-codes across the poisons, never one blur.
-    assert {c["actual_class"] for c in poisons["cases"]} == {
-        "UNKNOWN:UNKNOWN_POPULATION",
-        "FAIL",
-        "E117",
-        "UNKNOWN:UNKNOWN_EVIDENCE",
-        "EXCEPTION",
+    assert case(poisons, "breakglass-capability-missing")["actual_class"] == {
+        "kind": "E-CODE",
+        "code": "E117",
     }
+    # Two distinct UNKNOWN why-codes across the poisons, never one blur.
+    # Classification dicts aren't hashable, so distinctness is checked via
+    # the (kind, unknown_cause, code) tuple each one flattens to.
+    classifications = {
+        (c["kind"], c.get("unknown_cause"), c.get("code"))
+        for c in (case_["actual_class"] for case_ in poisons["cases"])
+    }
+    assert classifications == {
+        ("UNKNOWN", "UNKNOWN_POPULATION", None),
+        ("FAIL", None, None),
+        ("E-CODE", None, "E117"),
+        ("UNKNOWN", "UNKNOWN_EVIDENCE", None),
+        ("EXCEPTION", None, None),
+    }
+
+
+def test_classification_rejects_an_unrecognized_kind():
+    """A malformed/unexpected `kind` fails loudly at construction rather
+    than reaching the wire — the backend counterpart to the frontend's
+    exhaustive-switch falsifier on `PoisonClassification` (web/README.md
+    Q4, issue #87)."""
+    module = load_builder()
+    with pytest.raises(ValueError, match="unrecognized poison classification kind"):
+        module._classification("MOSTLY_PASS")
 
 
 def test_every_emitted_verdict_record_is_schema_valid(poisons):
