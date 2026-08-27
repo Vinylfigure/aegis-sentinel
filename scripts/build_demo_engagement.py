@@ -273,6 +273,19 @@ EXERCISED_CAPABILITY_IDS = frozenset(
     {"workday.terminated_workers", "okta.system_log", "github.members", "gcp.service_accounts"}
 )
 
+# README Q13 (issue #94) — which registry capability, if any, actually
+# collected each reconciliation source. The front-end joins this against
+# registry.json's temporal.window_days to flag a source whose retained
+# history might not reach across the whole report period, rather than
+# duplicating a time_window value onto the source itself (that already
+# travels on contracts.json's per-contract time_window, keyed by source
+# name — see web/README.md Q13). "offboarding-tracker" is deliberately
+# absent: it's a static ticket file, never a collected capability.
+SOURCE_CAPABILITY_IDS: dict[str, str] = {
+    "workday": "workday.terminated_workers",
+    "okta": "okta.system_log",
+}
+
 
 def _read_json(path: Path) -> dict:
     return json.loads(path.read_text())
@@ -777,6 +790,7 @@ def build_poison_artifacts() -> dict[str, str]:
             {
                 "name": s.name,
                 "role": s.role.value,
+                "capability_id": SOURCE_CAPABILITY_IDS.get(s.name),
                 "members": [
                     {"ref": m.ref, "email": m.email, "attributes": m.attributes} for m in s.members
                 ],
@@ -851,6 +865,17 @@ def build_poison_artifacts() -> dict[str, str]:
             "EXERCISED_CAPABILITY_IDS drifted from the collectors this build actually "
             f"invokes: exercised systems {sorted(exercised_systems)} != "
             f"collected systems {sorted(collected_systems)}"
+        )
+
+    # SOURCE_CAPABILITY_IDS (Q13, issue #94) must name only real, currently
+    # registered capabilities — a stale or misspelled id would ship a
+    # reconciliation source whose capability_id resolves to nothing on the
+    # front-end's join.
+    registry_ids = {entry.id for entry in registry.all()}
+    unresolved = set(SOURCE_CAPABILITY_IDS.values()) - registry_ids
+    if unresolved:
+        raise SystemExit(
+            f"SOURCE_CAPABILITY_IDS names a capability id not in the registry: {sorted(unresolved)}"
         )
 
     manifest_blocks = ManifestBlocks(

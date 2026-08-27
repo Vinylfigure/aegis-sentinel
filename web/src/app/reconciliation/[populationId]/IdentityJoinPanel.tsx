@@ -3,7 +3,9 @@ import {
   CANONICAL_RULE,
   d7Groups,
   joinMatrix,
+  sourceCoverage,
   type ReconciliationReport,
+  type RegistryArtifact,
 } from "@/data";
 import styles from "../reconciliation.module.css";
 
@@ -21,15 +23,18 @@ import styles from "../reconciliation.module.css";
  */
 export function IdentityJoinPanel({
   report,
+  registry,
   selectedRef,
   onSelect,
 }: {
   report: ReconciliationReport;
+  registry: RegistryArtifact;
   selectedRef: string | null;
   onSelect: (ref: string) => void;
 }) {
   const { keyed, unjoinable } = joinMatrix(report);
   const groups = d7Groups(report);
+  const coverageByName = new Map(sourceCoverage(report, registry).map((c) => [c.name, c]));
 
   return (
     <div className={styles.panel}>
@@ -43,23 +48,37 @@ export function IdentityJoinPanel({
       </ol>
 
       <ul className={styles.sourceChips}>
-        {report.sources.map((source) => (
-          <li
-            key={source.name}
-            className={
-              source.role === "authoritative"
-                ? `${styles.sourceChip} ${styles.sourceAuthoritative}`
-                : styles.sourceChip
-            }
-          >
-            <span className={styles.sourceName}>{source.name}</span>
-            <span className={styles.sourceRole}>{source.role}</span>
-            <span className={styles.sourceCount}>
-              {source.members.length}
-              <span className={styles.diagnostic}> members · diagnostic</span>
-            </span>
-          </li>
-        ))}
+        {report.sources.map((source) => {
+          const coverage = coverageByName.get(source.name);
+          return (
+            <li
+              key={source.name}
+              className={
+                source.role === "authoritative"
+                  ? `${styles.sourceChip} ${styles.sourceAuthoritative}`
+                  : styles.sourceChip
+              }
+            >
+              <span className={styles.sourceName}>{source.name}</span>
+              <span className={styles.sourceRole}>{source.role}</span>
+              <span className={styles.sourceCount}>
+                {source.members.length}
+                <span className={styles.diagnostic}> members · diagnostic</span>
+              </span>
+              {coverage?.windowDays !== null && coverage?.windowDays !== undefined && (
+                <span
+                  className={
+                    coverage.coversPeriod ? styles.coverageOk : styles.coverageInsufficient
+                  }
+                >
+                  {coverage.coversPeriod
+                    ? `retains ${coverage.windowDays}d — covers the report period`
+                    : `retains only ${coverage.windowDays}d — may not cover the whole report period`}
+                </span>
+              )}
+            </li>
+          );
+        })}
       </ul>
 
       {/* A scrollable region needs to be focusable, or keyboard users cannot

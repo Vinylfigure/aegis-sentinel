@@ -186,6 +186,7 @@
   "population_type": "event",
   "sources": [
     {
+      "capability_id": "workday.terminated_workers",
       "members": [
         {
           "attributes": {
@@ -248,6 +249,7 @@
       "role": "authoritative"
     },
     {
+      "capability_id": "okta.system_log",
       "members": [
         {
           "attributes": {},
@@ -299,6 +301,7 @@
       "role": "contributing"
     },
     {
+      "capability_id": null,
       "members": [
         {
           "attributes": {},

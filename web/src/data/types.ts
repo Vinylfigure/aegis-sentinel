@@ -217,6 +217,9 @@ export interface SourceMember {
 }
 
 export interface ReconciliationSource {
+  /** registry.json capability id this source was collected under, or null
+   * when the source is not capability-backed at all (README Q13). */
+  capability_id: string | null;
   members: SourceMember[];
   name: string;
   role: SourceRole;

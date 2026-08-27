@@ -19,6 +19,7 @@ import type {
   DispositionRecord,
   ReconciliationReport,
   ReconciliationSource,
+  RegistryArtifact,
 } from "@/data/types";
 
 /* ------------------------------------------------------------------ */
@@ -528,6 +529,59 @@ export function derivationBasis(report: ReconciliationReport): DerivationBasis {
     authoritative,
     corroborating,
   };
+}
+
+/* ------------------------------------------------------------------ */
+/* Source coverage (README Q13, issue #94)                             */
+/* ------------------------------------------------------------------ */
+
+export interface SourceCoverage {
+  name: string;
+  /** registry.json capability id this source was collected under, or null
+   * when the source isn't capability-backed (e.g. a static ticket file). */
+  capabilityId: string | null;
+  /** The capability's retained history window, or null when its temporal
+   * kind carries no bound (state-only / full-history / snapshot-cadence —
+   * capability/entry.py forbids window_days outside event-history). */
+  windowDays: number | null;
+  /**
+   * Whether the capability could have observed the whole report period.
+   * Null when there is nothing to check (no capability, or an unbounded
+   * window) — true/false only when a real event-history window exists.
+   */
+  coversPeriod: boolean | null;
+}
+
+/**
+ * Per-source coverage against the report's own `period` — the concrete
+ * question README Q13 raised ("can the join panel show whether a source
+ * could even observe the whole period"). Deliberately does NOT add a
+ * duplicate `time_window` to `ReconciliationSource`: that value already
+ * travels on contracts.json's per-contract `time_window` keyed by source
+ * name, and duplicating it here would be another Q10/Q12-shaped
+ * disagreement risk. The one genuinely missing join key was the capability
+ * ref, which `capability_id` now supplies.
+ */
+export function sourceCoverage(
+  report: ReconciliationReport,
+  registry: RegistryArtifact,
+): SourceCoverage[] {
+  const periodDays =
+    (Date.parse(report.period.end) - Date.parse(report.period.start)) / 86_400_000;
+
+  return report.sources.map((source) => {
+    if (source.capability_id === null) {
+      return { name: source.name, capabilityId: null, windowDays: null, coversPeriod: null };
+    }
+    const entry = registry.entries.find((e) => e.id === source.capability_id);
+    const windowDays = entry?.temporal.window_days ?? null;
+    return {
+      name: source.name,
+      capabilityId: source.capability_id,
+      windowDays,
+      coversPeriod: windowDays === null ? null : windowDays >= periodDays,
+    };
+  });
 }
 
 /* ------------------------------------------------------------------ */

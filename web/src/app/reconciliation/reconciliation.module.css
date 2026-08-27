@@ -293,6 +293,18 @@
   color: var(--dim);
 }
 
+/* README Q13 — whether a source's capability could observe the whole
+   report period (issue #94). */
+.coverageOk {
+  font-size: var(--fs-label);
+  color: var(--faint);
+}
+
+.coverageInsufficient {
+  font-size: var(--fs-label);
+  color: var(--warn);
+}
+
 /* ---- tables ---- */
 
 .tableWrap {
