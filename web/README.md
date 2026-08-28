@@ -118,12 +118,16 @@ Numbers are referenced from comments in `src/data/types.ts`.
   workaround: it already treats two `run_id`s inside one array as legitimate
   while still flagging *within-run* disagreement as a defect. Consistent
   with Q17's flat-merge precedent (issue #48 "Not in scope").
-- **Q4 — poison classification is stringly typed.** `expected` /
-  `actual_class` encode "UNKNOWN:UNKNOWN_POPULATION" and E-codes as strings
-  the client must parse; a structured `{kind, status, unknown_cause?, code?}`
-  would avoid string-splitting in the scorecard. Related: `evidence` is an
-  open keyset that varies per case (typed as `PoisonEvidence` with all-optional
-  known keys — fragile by construction).
+- **Q4 — poison classification is stringly typed.** *(ANSWERED — issue #87.)*
+  `expected`/`actual_class` are now `PoisonClassification` — a discriminated
+  union (`{kind: "UNKNOWN"; unknown_cause}` · `{kind: "E-CODE"; code}` ·
+  `{kind: "PASS"|"FAIL"|"EXCLUDED"|"EXCEPTION"|"COMPILED"}`) instead of
+  "UNKNOWN:UNKNOWN_POPULATION"-style strings. The emitter's `_classification`
+  helper (`scripts/build_demo_engagement.py`) rejects an unrecognized `kind`
+  at construction; `classificationLabel`'s exhaustive switch (`verdicts.ts`)
+  is the frontend mirror — a new `kind` fails `tsc`. Left out of scope: the
+  related `evidence` open keyset (`PoisonEvidence`) — a separate, smaller
+  question not folded into this fix.
 - **Q4b — `verdict_records` grouping keys.** *(ANSWERED — issue #77.)* Closed
   at these three families, and now spelled with the ratified `AssertionType`
   values verbatim (`EXISTENCE`, `NON-EXISTENCE`, `TIMING`; note the hyphen)

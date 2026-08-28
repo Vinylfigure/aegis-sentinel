@@ -73,6 +73,7 @@ from aegis_sentinel.schema import (
     SourceRef,
     SourceRole,
     TimeWindow,
+    VerdictState,
     advance,
 )
 
@@ -371,10 +372,30 @@ def _breakglass_case(registry: Registry):
     return compile_claims((claim,), (population,), registry)
 
 
-def _record_class(record: dict) -> str:
+# Structured poison classification (README Q4, issue #87): replaces the
+# stringly-typed "UNKNOWN:<cause>" / bare E-code values the client used to
+# string-split. `kind` is one of the five ratified VerdictState values or
+# the sentinel "E-CODE" (a compile-time error caught before a verdict
+# record exists at all); `unknown_cause`/`code` carry the payload the old
+# string encoded positionally. `_classification` is the single place that
+# constructs one, so an unrecognized kind fails loudly here rather than
+# reaching the wire silently malformed. "COMPILED" is the defensive
+# fallback for a compile-error case whose compiler produced no error at
+# all — never expected to fire against the committed fixtures, but a
+# legitimate outcome kind rather than an unrecognized one.
+_CLASSIFICATION_KINDS = frozenset({*VerdictState, "E-CODE", "COMPILED"})
+
+
+def _classification(kind: str, **extra: str) -> dict:
+    if kind not in _CLASSIFICATION_KINDS:
+        raise ValueError(f"unrecognized poison classification kind: {kind!r}")
+    return {"kind": kind, **extra}
+
+
+def _record_class(record: dict) -> dict:
     if record["status"] == "UNKNOWN":
-        return f"UNKNOWN:{record['unknown_cause']}"
-    return record["status"]
+        return _classification("UNKNOWN", unknown_cause=record["unknown_cause"])
+    return _classification(record["status"])
 
 
 def _blocked_by_open_deltas(
@@ -672,7 +693,7 @@ def build_poison_artifacts() -> dict[str, str]:
                 "POF-3309) but absent from the authoritative HRIS feed"
             ),
             "stage": "evaluate",
-            "expected": "UNKNOWN:UNKNOWN_POPULATION",
+            "expected": _classification("UNKNOWN", unknown_cause="UNKNOWN_POPULATION"),
             "evidence": {"bucket": "right_only", "member_ref": "email:mira.chen@example.com"},
             "actual": {"kind": "verdict", "record": alpha_record},
             "actual_class": _record_class(alpha_record),
@@ -684,7 +705,7 @@ def build_poison_artifacts() -> dict[str, str]:
                 "local (non-SSO) account, rhea-bell-local"
             ),
             "stage": "evaluate",
-            "expected": "FAIL",
+            "expected": _classification("FAIL"),
             "evidence": {"login": "rhea-bell-local", "member": "rhea.bell@example.com"},
             "actual": {"kind": "verdict", "record": nonexistence_record},
             "actual_class": _record_class(nonexistence_record),
@@ -696,10 +717,14 @@ def build_poison_artifacts() -> dict[str, str]:
                 "breakglass.config, a system with no capability entry"
             ),
             "stage": "compile",
-            "expected": "E117",
+            "expected": _classification("E-CODE", code="E117"),
             "evidence": {"system": "breakglass.config", "population": "pop-breakglass-capable"},
             "actual": {"kind": "compile_error", "errors": breakglass_errors},
-            "actual_class": (breakglass_errors[0]["code"] if breakglass_errors else "COMPILED"),
+            "actual_class": (
+                _classification("E-CODE", code=breakglass_errors[0]["code"])
+                if breakglass_errors
+                else _classification("COMPILED")
+            ),
         },
         {
             "id": "garbled-identity-join",
@@ -708,7 +733,7 @@ def build_poison_artifacts() -> dict[str, str]:
                 "(quinn.ash%example.com) — the identity join cannot resolve it"
             ),
             "stage": "evaluate",
-            "expected": "UNKNOWN:UNKNOWN_EVIDENCE",
+            "expected": _classification("UNKNOWN", unknown_cause="UNKNOWN_EVIDENCE"),
             "evidence": {"bucket": "unresolvable", "member_ref": "okta:00u9104"},
             "actual": {"kind": "verdict", "record": timing_by_member["quinn.ash@example.com"]},
             "actual_class": _record_class(timing_by_member["quinn.ash@example.com"]),
@@ -720,7 +745,7 @@ def build_poison_artifacts() -> dict[str, str]:
                 "against the 5-business-day constraint"
             ),
             "stage": "evaluate",
-            "expected": "FAIL",
+            "expected": _classification("FAIL"),
             "evidence": {"member": "omar.diaz@example.com"},
             "actual": {"kind": "verdict", "record": timing_by_member["omar.diaz@example.com"]},
             "actual_class": _record_class(timing_by_member["omar.diaz@example.com"]),
@@ -732,7 +757,7 @@ def build_poison_artifacts() -> dict[str, str]:
                 "dispositioned exception — EXCEPTION, never a silent PASS"
             ),
             "stage": "evaluate",
-            "expected": "EXCEPTION",
+            "expected": _classification("EXCEPTION"),
             "evidence": {"member": "pia.voss@example.com"},
             "actual": {"kind": "verdict", "record": timing_by_member["pia.voss@example.com"]},
             "actual_class": _record_class(timing_by_member["pia.voss@example.com"]),
