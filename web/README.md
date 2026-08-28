@@ -104,11 +104,20 @@ Numbers are referenced from comments in `src/data/types.ts`.
   `disposition_ref`, and between their absent-key-vs-nullable conventions,
   because the two are different shapes for the same concept rather than one
   canonical shape with two names.
-- **Q3 — `verdicts.json` has no run envelope.** It is a bare array;
-  `run_id`, `period`, `tenant`, `collected_at` exist only per-record (period
-  not at all). `/verdicts` must derive run metadata by folding over records —
-  a `{run, records}` wrapper (like poisons.json's envelope) would render
-  directly. Intentional?
+- **Q3 — `verdicts.json` has no run envelope. ANSWERED — issue #86.**
+  Intentional divergence, not an oversight. A `{run, records}` wrapper
+  mirroring `poisons.json`'s envelope would need one top-level `run_id`/
+  `collected_at` for the whole array — but the array legitimately spans
+  *two* runs (`run-demo-engagement-0001` from the walking skeleton,
+  `run-poison-engagement-0001` from the poison suite, both present in
+  `artifacts/demo-engagement/verdicts.json` since Q17 consolidated them into
+  one roster). A single-run envelope shape cannot represent that without
+  either picking one run arbitrarily or inventing a multi-run envelope
+  `poisons.json` doesn't have either. Folding run metadata out of the
+  records (`verdicts.ts:305-309`) is therefore the correct shape, not a
+  workaround: it already treats two `run_id`s inside one array as legitimate
+  while still flagging *within-run* disagreement as a defect. Consistent
+  with Q17's flat-merge precedent (issue #48 "Not in scope").
 - **Q4 — poison classification is stringly typed.** `expected` /
   `actual_class` encode "UNKNOWN:UNKNOWN_POPULATION" and E-codes as strings
   the client must parse; a structured `{kind, status, unknown_cause?, code?}`
