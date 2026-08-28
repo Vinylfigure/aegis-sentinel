@@ -40,6 +40,7 @@ ARTIFACT_NAMES = (
     "registry.json",
     "contracts.json",
     "snapshot.json",
+    "commitments.json",
     "verdicts.json",
 )
 VALIDATOR = Draft202012Validator(
@@ -49,6 +50,9 @@ CONTRACT_SCHEMA = ROOT / "schemas" / "ontology" / "evidence_quality_contract.sch
 CONTRACT_VALIDATOR = Draft202012Validator(json.loads(CONTRACT_SCHEMA.read_text()))
 SNAPSHOT_VALIDATOR = Draft202012Validator(
     json.loads((ROOT / "schemas" / "ontology" / "manifest_snapshot.schema.json").read_text())
+)
+COMMITMENT_VALIDATOR = Draft202012Validator(
+    json.loads((ROOT / "schemas" / "ontology" / "commitment.schema.json").read_text())
 )
 # poisons.json groups verdict_records under the ratified AssertionType
 # spelling verbatim (README Q4b, ANSWERED #77) — the key IS the assertion
@@ -95,6 +99,11 @@ def registry(regenerated) -> dict:
 @pytest.fixture(scope="module")
 def snapshot(regenerated) -> dict:
     return json.loads(regenerated["snapshot.json"])
+
+
+@pytest.fixture(scope="module")
+def commitments(regenerated) -> dict:
+    return json.loads(regenerated["commitments.json"])
 
 
 @pytest.fixture(scope="module")
@@ -524,3 +533,41 @@ def test_snapshot_claims_resolve_against_evaluated_verdict_specs(snapshot, poiso
     assert any(s.startswith("spec-poison-hris-existence") for s in spec_ids)
     assert any(s.startswith("spec-poison-idp-timing") for s in spec_ids)
     assert any(s.startswith("spec-poison-github-nonexistence") for s in spec_ids)
+
+
+# --- commitments (Q16, commitment half — issue #97) ---
+
+
+def test_commitments_are_schema_valid(commitments):
+    assert commitments, "at least one commitment must be emitted"
+    for commitment in commitments.values():
+        errors = list(COMMITMENT_VALIDATOR.iter_errors(commitment))
+        assert not errors, [e.message for e in errors]
+
+
+def test_commitments_claim_ids_resolve_against_evaluated_verdict_specs(commitments, poisons):
+    # claim_ids is derived from Claim.framework_refs, never hand-listed — this
+    # proves the derivation actually ran over the claims this build evaluates,
+    # and that every id it names produced a real verdict record (no dangling
+    # ref, the same join-exactness pattern as the snapshot's claims block).
+    all_records = [r for group in poisons["verdict_records"].values() for r in group]
+    recorded_claim_ids = {r["claim_id"] for r in all_records}
+    commitment = commitments["commitment-soc2-am-06"]
+    assert commitment["name"] == "SOC2 AM-06"
+    assert commitment["source"] == "audit"
+    assert set(commitment["claim_ids"]) == {
+        "claim-poison-github-nonexistence",
+        "claim-poison-hris-existence",
+    }
+    assert set(commitment["claim_ids"]) <= recorded_claim_ids
+
+
+def test_commitments_raises_if_a_cited_framework_ref_has_no_catalog_entry():
+    # COMMITMENT_CATALOG is the one hand-maintained part of commitments.json
+    # (no Claim field derives a commitment's source/obligation text from its
+    # bare framework_ref string) — this proves a claim citing an unrecognized
+    # ref fails the build loudly rather than shipping a guessed commitment.
+    module = load_builder()
+    module.COMMITMENT_CATALOG = {}
+    with pytest.raises(SystemExit, match="no COMMITMENT_CATALOG entry"):
+        module.build_poison_artifacts()

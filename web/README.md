@@ -251,9 +251,9 @@ Numbers are referenced from comments in `src/data/types.ts`.
   `verdict_records` grouping (Q4b) now shows only as a diagnostic
   cross-reference, not the identification path.
 - **Q16 — commitment and requirement are absent from the wire.**
-  *(Manifest snapshot half ANSWERED — issue #47.)* No artifact carries either,
-  so /proof still renders those two stages as not-yet-emitted; they need
-  modeling first. The manifest snapshot is now emitted:
+  *(Manifest snapshot half ANSWERED — issue #47. Commitment half ANSWERED —
+  issue #97. Requirement half — still OPEN, needs an Owner ruling — issue
+  #100.)* The manifest snapshot is emitted:
   `scripts/build_demo_engagement.py poisons` calls `genesis()`
   (src/aegis_sentinel/manifest/snapshot.py) over the ids the same pipeline run
   just produced and writes `artifacts/demo-engagement/snapshot.json`, ratified
@@ -265,6 +265,28 @@ Numbers are referenced from comments in `src/data/types.ts`.
   `tests/test_poison_suite.py` proves every population/claim/capability id the
   snapshot cites resolves inside `reconciliation.json`/`poisons.json`/
   `registry.json`, so the ratified scope cannot drift into fiction.
+
+  The commitment half is now also emitted: `Commitment`
+  (`src/aegis_sentinel/schema/models.py`) is scoped to exactly PRD-v3 §2's
+  paragraph — a name, a `source` category (contract/regulation/audit/
+  internal-standard), the obligation text, and `claim_ids`. `claim_ids` is
+  derived straight from `Claim.framework_refs` (never hand-listed), so it
+  cannot drift from the claims the build script actually evaluates.
+  `artifacts/demo-engagement/commitments.json` carries one `Commitment` for
+  "SOC2 AM-06" (the only `framework_ref` any evaluated claim cites), joined
+  against `claim-poison-hris-existence` and `claim-poison-github-nonexistence`.
+  `/proof`'s commitment stage renders `emitted` for any record whose
+  `claim_id` a commitment's `claim_ids` covers; `tests/test_poison_suite.py`
+  proves the join and that a claim citing an unrecognized `framework_ref`
+  fails the build loudly (`COMMITMENT_CATALOG`'s drift guard) rather than
+  shipping a guessed source/obligation.
+
+  The requirement half stays not-emitted: unlike `Commitment`, `docs/PRD-v3.md`
+  has no defining paragraph for `Requirement` anywhere — it exists only as a
+  stage name and an edge label (`"compiled into"`) in the ten-stage chain
+  string. Modeling it would mean inventing its shape from nothing, so issue
+  #100 asks the Owner to rule on what it actually is before a future firing
+  builds it.
 - **Q17 — the poison run's verdict records live only inside poisons.json.
   ANSWERED — issue #58.** `build_poison_artifacts()` now writes
   `verdicts.json` as the consolidated roster — the walking-skeleton record

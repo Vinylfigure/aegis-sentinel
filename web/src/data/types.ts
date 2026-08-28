@@ -418,6 +418,24 @@ export interface ManifestSnapshotArtifact {
 }
 
 /* ------------------------------------------------------------------ */
+/* commitments.json — the obligation source at the head of the /proof   */
+/* lineage (Q16, commitment half — issue #97)                          */
+/* ------------------------------------------------------------------ */
+
+export type CommitmentSource = "contract" | "regulation" | "audit" | "internal_standard";
+
+export interface Commitment {
+  id: string;
+  name: string;
+  source: CommitmentSource;
+  obligation: string;
+  claim_ids: string[];
+}
+
+/** Keyed by commitment id. */
+export type CommitmentsArtifact = Record<string, Commitment>;
+
+/* ------------------------------------------------------------------ */
 /* poisons.json — mutation scorecard                                   */
 /* ------------------------------------------------------------------ */
 
