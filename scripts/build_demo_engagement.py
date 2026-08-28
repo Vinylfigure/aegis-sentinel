@@ -15,14 +15,18 @@ frontend track consumes; nothing in the verdict path renders.
 VAL02 second entrypoint (`python scripts/build_demo_engagement.py
 poisons`): runs the six poison cases of PRD-v3 §6 through the same real
 pipeline over tests/fixtures/poisons/ and writes
-artifacts/demo-engagement/{poisons,reconciliation,registry,contracts,snapshot}.json
+artifacts/demo-engagement/{poisons,reconciliation,registry,contracts,
+snapshot,commitments}.json
 (drift-tested byte-for-byte by tests/test_poison_suite.py). contracts.json
 is Q14's EvidenceQualityContracts, keyed by contract_hash — the same
 objects every collector already builds in memory, previously dropped at
 serialization (each verdict record's spec_hash IS a key into this map).
 snapshot.json is Q16's ratified ManifestSnapshot (see SNAPSHOT_RATIFIER
 below) — its populations/claims/capabilities cite ids that also appear in
-the other artifacts. The default invocation (`build()`/`main()` alone)
+the other artifacts. commitments.json is Q16's other half (issue #97): one
+Commitment per framework_ref an evaluated claim cites, keyed by commitment
+id, claim_ids derived straight from Claim.framework_refs (see
+COMMITMENT_CATALOG below). The default invocation (`build()`/`main()` alone)
 still writes only the one walking-skeleton record, byte-identical to
 before. The poisons entrypoint additionally rewrites verdicts.json into
 the consolidated roster — the walking-skeleton record plus the ten poison
@@ -64,6 +68,8 @@ from aegis_sentinel.schema import (
     AssertionType,
     AssuranceState,
     Claim,
+    Commitment,
+    CommitmentSource,
     Delta,
     DerivationRule,
     DispositionRecord,
@@ -286,6 +292,65 @@ SOURCE_CAPABILITY_IDS: dict[str, str] = {
     "workday": "workday.terminated_workers",
     "okta": "okta.system_log",
 }
+
+
+# Q16 (commitment half, issue #97) — the source category and obligation text
+# for every `framework_ref` a claim below actually cites. The catalog holds
+# only what no `Claim` field can derive (SOC2 AM-06 is an audit-tested
+# control, not something the bare ref string says); which claims a
+# commitment implicates is never hand-listed here — `_commitments_from_claims`
+# derives `claim_ids` straight from `Claim.framework_refs`, so it cannot
+# drift the way a duplicated id list could (Q3/Q10/Q12's established
+# discipline). Obligation text is the AM-06 control description verbatim
+# from knowledge/01_corpus/03_testing_libraries/SOC2_Control_Testing_Matrix.md.
+COMMITMENT_CATALOG: dict[str, tuple[CommitmentSource, str]] = {
+    "SOC2 AM-06": (
+        CommitmentSource.AUDIT,
+        "Logical access to systems for employees and contractors is revoked "
+        "as part of the termination process within 5 business days of the "
+        "individual's termination date.",
+    ),
+}
+
+
+def _commitments_from_claims(claims: tuple[Claim, ...]) -> dict[str, Commitment]:
+    """One `Commitment` per distinct `framework_ref` cited by an evaluated
+    claim, `claim_ids` the exact set of claims that cited it — never
+    hand-duplicated, so it cannot drift from what the claims above actually
+    carry. Raises if a cited ref has no catalog entry, the same drift-guard
+    shape as the `EXERCISED_CAPABILITY_IDS` check below: a claim citing an
+    unknown framework must fail the build loudly, not ship a commitment
+    with guessed source/obligation text."""
+    claim_ids_by_ref: dict[str, list[str]] = {}
+    for claim in claims:
+        for ref in claim.framework_refs:
+            claim_ids_by_ref.setdefault(ref, []).append(claim.id)
+    commitments: dict[str, Commitment] = {}
+    for ref, claim_ids in sorted(claim_ids_by_ref.items()):
+        if ref not in COMMITMENT_CATALOG:
+            raise SystemExit(f"no COMMITMENT_CATALOG entry for framework_ref {ref!r}")
+        source, obligation = COMMITMENT_CATALOG[ref]
+        commitment_id = f"commitment-{ref.lower().replace(' ', '-')}"
+        commitments[commitment_id] = Commitment(
+            id=commitment_id,
+            name=ref,
+            source=source,
+            obligation=obligation,
+            claim_ids=tuple(sorted(claim_ids)),
+        )
+    # /proof's commitment join (web/src/data/proof.ts) picks the first
+    # commitment whose claim_ids contains a record's claim_id — silently
+    # ambiguous if two commitments ever both cited the same claim (e.g. one
+    # claim citing two framework_refs, each with its own catalog entry).
+    # Not reachable today (one commitment total), but fail loudly rather
+    # than let the frontend's first-match pick one arbitrarily.
+    seen: set[str] = set()
+    for commitment in commitments.values():
+        dupes = seen & set(commitment.claim_ids)
+        if dupes:
+            raise SystemExit(f"claim_ids cited by more than one commitment: {sorted(dupes)}")
+        seen |= set(commitment.claim_ids)
+    return commitments
 
 
 def _read_json(path: Path) -> dict:
@@ -930,6 +995,16 @@ def build_poison_artifacts() -> dict[str, str]:
     )
     manifest_snapshot = genesis(manifest_blocks, SNAPSHOT_RATIFIER, SNAPSHOT_RATIFIED_AT)
 
+    # Q16 (commitment half, issue #97) — scoped to the claims this function
+    # itself evaluates (existence_claim, timing_claim, nonexistence_claim),
+    # the same boundary contracts_artifact already draws above: the
+    # walking-skeleton claim (claim-am06-termination-existence, built inside
+    # the separate `build()` entrypoint) also cites "SOC2 AM-06" but is
+    # deliberately out of scope here — no Commitment cites a claim this
+    # function did not itself evaluate.
+    commitments = _commitments_from_claims(evaluated_claims)
+    commitments_artifact = {cid: c.model_dump(mode="json") for cid, c in commitments.items()}
+
     # Q17 (issue #58) — verdicts.json becomes the consolidated roster: the
     # walking-skeleton record (same pipeline, called fresh here — build() is
     # pure, demo_registry() is already re-instantiated once per artifact
@@ -949,6 +1024,7 @@ def build_poison_artifacts() -> dict[str, str]:
         "registry.json": _dumps(registry_artifact),
         "contracts.json": _dumps(contracts_artifact),
         "snapshot.json": _dumps(manifest_snapshot.model_dump(mode="json")),
+        "commitments.json": _dumps(commitments_artifact),
         "verdicts.json": _dumps(all_verdict_records),
     }
 

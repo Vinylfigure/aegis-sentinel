@@ -4,6 +4,7 @@
 from aegis_sentinel.schema.enums import (
     AssertionType,
     AssuranceState,
+    CommitmentSource,
     D7Family,
     DeltaBucket,
     DispositionValue,
@@ -16,6 +17,7 @@ from aegis_sentinel.schema.enums import (
 from aegis_sentinel.schema.models import (
     Assertion,
     Claim,
+    Commitment,
     Delta,
     DerivationRule,
     DispositionRecord,
@@ -38,11 +40,13 @@ ONTOLOGY_MODELS = (
     Verdict,
     Delta,
     DispositionRecord,
+    Commitment,
 )
 
 __all__ = [
     "AssertionType",
     "AssuranceState",
+    "CommitmentSource",
     "D7Family",
     "DeltaBucket",
     "DispositionValue",
@@ -53,6 +57,7 @@ __all__ = [
     "VerdictState",
     "Assertion",
     "Claim",
+    "Commitment",
     "Delta",
     "DerivationRule",
     "DispositionRecord",
