@@ -226,11 +226,30 @@ Numbers are referenced from comments in `src/data/types.ts`.
     (timestamp, freshness window, source-fingerprint) exists to read a reason
     from, and no real trigger path produces STALE today, so this needs actual
     new modeling, not exposure of data already in scope.
-- **Q13 — no per-source temporal window.** `period` is on the report, but each
-  source's own collection window (and CAP01's Okta 90-day history caveat, which
-  lives in `registry.json`) does not travel with the reconciliation — so the
-  join panel cannot show whether a source could even observe the whole period.
-  Should `ReconciliationSource` carry its own `time_window` + capability ref?
+- **Q13 — no per-source temporal window. ANSWERED — issue #94.** Split into
+  the two things the question conflated:
+  - A per-source `time_window` duplicating what already travels would have
+    been another Q10/Q12-shaped disagreement risk: `contracts.json`'s
+    per-contract `time_window` already carries this for every
+    capability-backed source, keyed by `source` name. Adding a second copy
+    onto `ReconciliationSource` was rejected for the same reason Q12
+    declined to duplicate `Population.state`.
+  - The capability ref, though, was genuinely missing everywhere — not even
+    `EvidenceQualityContract` names the capability id it was collected
+    under (`scripts/build_demo_engagement.py`'s own `EXERCISED_CAPABILITY_IDS`
+    comment already flagged this gap). `ReconciliationSource` now carries a
+    nullable `capability_id`, populated in `build_demo_engagement.py` and
+    checked there against the live registry so a stale or misspelled id
+    fails the build rather than shipping a dead join key. `null` for
+    `offboarding-tracker`, which is a static ticket file, never a collected
+    capability.
+  - `web/src/data/reconciliation.ts`'s new `sourceCoverage()` joins that id
+    against `registry.json`'s `temporal.window_days` and the report's own
+    `period` to answer the concrete question Q13 raised — can this source's
+    retained history even reach across the whole period — surfaced on the
+    `/reconciliation/[populationId]` join panel as a per-source coverage
+    note. `window_days: null` (state-only / full-history / snapshot-cadence)
+    means no bound exists, so nothing is flagged.
 - **Q14 — the EQC travels as an identity, not a contract. ANSWERED — issue
   #48.** `scripts/build_demo_engagement.py poisons` now emits
   `artifacts/demo-engagement/contracts.json`, keyed by `contract_hash`: the

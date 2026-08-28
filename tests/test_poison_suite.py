@@ -357,6 +357,25 @@ def test_blocked_by_open_deltas_bucket_matches_source_delta(regenerated):
         assert entry["bucket"] == bucket_by_ref[entry["ref"]]
 
 
+def test_reconciliation_sources_carry_a_resolvable_capability_id_or_null(regenerated):
+    """README Q13 (issue #94) — each source names the registry capability
+    id its collector was collected under (the join key the front-end uses
+    to check coverage against the report period), or null when the source
+    isn't capability-backed at all. "offboarding-tracker" is a static
+    ticket file, never a collected capability, so it must stay null."""
+    board = json.loads(regenerated["reconciliation.json"])
+    registry_ids = {e["id"] for e in json.loads(regenerated["registry.json"])["entries"]}
+    capability_id_by_source = {s["name"]: s["capability_id"] for s in board["sources"]}
+    assert capability_id_by_source == {
+        "workday": "workday.terminated_workers",
+        "okta": "okta.system_log",
+        "offboarding-tracker": None,
+    }
+    for name, capability_id in capability_id_by_source.items():
+        if capability_id is not None:
+            assert capability_id in registry_ids, f"{name}'s capability_id does not resolve"
+
+
 def test_blocked_by_open_deltas_still_unanswered_case():
     """Every fixture-driven artifact reconciles to RECONCILED, where by
     `advance()`'s own invariant every open delta is already dispositioned —

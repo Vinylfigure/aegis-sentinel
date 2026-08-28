@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { engagementReconciliations } from "@/data";
+import { engagementRegistry, engagementReconciliations } from "@/data";
 import { ReconciliationDetail } from "./ReconciliationDetail";
 
 /** Unknown ids 404 at the route level rather than rendering an empty shell. */
@@ -39,5 +39,5 @@ export default async function ReconciliationDetailPage({
   const { populationId } = await params;
   const report = findReport(populationId);
   if (!report) notFound();
-  return <ReconciliationDetail report={report} />;
+  return <ReconciliationDetail report={report} registry={engagementRegistry} />;
 }

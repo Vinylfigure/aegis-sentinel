@@ -8,6 +8,7 @@ import {
   openBlockers,
   reconciledClaimHolds,
   type ReconciliationReport,
+  type RegistryArtifact,
 } from "@/data";
 import { BucketBoard } from "./BucketBoard";
 import { IdentityJoinPanel } from "./IdentityJoinPanel";
@@ -24,7 +25,13 @@ import styles from "../reconciliation.module.css";
  * ATTRIBUTES the human act — there is no control anywhere on this page that
  * sets a disposition.
  */
-export function ReconciliationDetail({ report }: { report: ReconciliationReport }) {
+export function ReconciliationDetail({
+  report,
+  registry,
+}: {
+  report: ReconciliationReport;
+  registry: RegistryArtifact;
+}) {
   const [selectedRef, setSelectedRef] = useState<string | null>(null);
 
   const blockers = openBlockers(report);
@@ -71,6 +78,7 @@ export function ReconciliationDetail({ report }: { report: ReconciliationReport 
           </h2>
           <IdentityJoinPanel
             report={report}
+            registry={registry}
             selectedRef={selectedRef}
             onSelect={toggle}
           />
