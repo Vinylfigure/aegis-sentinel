@@ -421,6 +421,24 @@ export interface ManifestSnapshotArtifact {
 }
 
 /* ------------------------------------------------------------------ */
+/* commitments.json — the obligation source at the head of the /proof   */
+/* lineage (Q16, commitment half — issue #97)                          */
+/* ------------------------------------------------------------------ */
+
+export type CommitmentSource = "contract" | "regulation" | "audit" | "internal_standard";
+
+export interface Commitment {
+  id: string;
+  name: string;
+  source: CommitmentSource;
+  obligation: string;
+  claim_ids: string[];
+}
+
+/** Keyed by commitment id. */
+export type CommitmentsArtifact = Record<string, Commitment>;
+
+/* ------------------------------------------------------------------ */
 /* poisons.json — mutation scorecard                                   */
 /* ------------------------------------------------------------------ */
 
@@ -433,7 +451,8 @@ export type PoisonActual =
   | { kind: "compile_error"; errors: CompileError[] };
 
 /** Free-form pointer(s) at the poisoned element — the key set varies per
- * case in the artifact (README question Q4). Known keys so far: */
+ * case in the artifact (README question Q4, resolved by issue #87). Known
+ * keys so far: */
 export interface PoisonEvidence {
   bucket?: string;
   member_ref?: string;
@@ -443,14 +462,22 @@ export interface PoisonEvidence {
   system?: string;
 }
 
+/** Structured poison classification (README Q4, resolved by issue #87) —
+ * a VerdictState, an E-code, or the defensive "COMPILED" fallback (a
+ * compile-error case whose compiler produced no error). Replaces the
+ * former "UNKNOWN:<UnknownWhy>" / bare-E-code string the client used to
+ * split on `:`. */
+export type PoisonClassification =
+  | { kind: "PASS" | "FAIL" | "EXCLUDED" | "EXCEPTION" | "COMPILED" }
+  | { kind: "UNKNOWN"; unknown_cause: string }
+  | { kind: "E-CODE"; code: string };
+
 export interface PoisonCase {
   actual: PoisonActual;
-  /** Classification string: a VerdictState, "UNKNOWN:<UnknownWhy>", or an
-   * E-code — stringly-typed on the wire (README question Q4). */
-  actual_class: string;
+  actual_class: PoisonClassification;
   detected: boolean;
   evidence: PoisonEvidence;
-  expected: string;
+  expected: PoisonClassification;
   id: string;
   poison: string;
   stage: PoisonStage;

@@ -40,6 +40,7 @@ ARTIFACT_NAMES = (
     "registry.json",
     "contracts.json",
     "snapshot.json",
+    "commitments.json",
     "verdicts.json",
 )
 VALIDATOR = Draft202012Validator(
@@ -49,6 +50,9 @@ CONTRACT_SCHEMA = ROOT / "schemas" / "ontology" / "evidence_quality_contract.sch
 CONTRACT_VALIDATOR = Draft202012Validator(json.loads(CONTRACT_SCHEMA.read_text()))
 SNAPSHOT_VALIDATOR = Draft202012Validator(
     json.loads((ROOT / "schemas" / "ontology" / "manifest_snapshot.schema.json").read_text())
+)
+COMMITMENT_VALIDATOR = Draft202012Validator(
+    json.loads((ROOT / "schemas" / "ontology" / "commitment.schema.json").read_text())
 )
 # poisons.json groups verdict_records under the ratified AssertionType
 # spelling verbatim (README Q4b, ANSWERED #77) — the key IS the assertion
@@ -95,6 +99,11 @@ def registry(regenerated) -> dict:
 @pytest.fixture(scope="module")
 def snapshot(regenerated) -> dict:
     return json.loads(regenerated["snapshot.json"])
+
+
+@pytest.fixture(scope="module")
+def commitments(regenerated) -> dict:
+    return json.loads(regenerated["commitments.json"])
 
 
 @pytest.fixture(scope="module")
@@ -145,7 +154,7 @@ def test_assurance_defect_detection_rate_is_100_percent(poisons):
     assert all(c["detected"] for c in poisons["cases"])
     assert all(c["actual_class"] == c["expected"] for c in poisons["cases"])
     # A silent PASS is a miss by construction: no case may expect PASS.
-    assert all(c["expected"] != "PASS" for c in poisons["cases"])
+    assert all(c["expected"]["kind"] != "PASS" for c in poisons["cases"])
 
 
 # --- the six cases, each asserted individually ---
@@ -156,6 +165,7 @@ def test_case_1_contractor_absent_from_hris_is_unknown_population(poisons):
     record = c["actual"]["record"]
     assert record["status"] == "UNKNOWN"
     assert record["unknown_cause"] == "UNKNOWN_POPULATION"
+    assert c["actual_class"] == {"kind": "UNKNOWN", "unknown_cause": "UNKNOWN_POPULATION"}
     assert c["evidence"] == {"bucket": "right_only", "member_ref": "email:mira.chen@example.com"}
     # The reconciler's bucket fed the evaluator: the verdict was recorded
     # against the blocked denominator, left of RECONCILED.
@@ -174,6 +184,7 @@ def test_case_3_breakglass_claim_is_an_e117_compile_error_before_collection(pois
     c = case(poisons, "breakglass-capability-missing")
     assert c["stage"] == "compile"
     assert c["actual"]["kind"] == "compile_error"
+    assert c["actual_class"] == {"kind": "E-CODE", "code": "E117"}
     (error,) = c["actual"]["errors"]
     assert error["code"] == "E117"
     assert "breakglass.config" in error["message"]
@@ -188,6 +199,7 @@ def test_case_4_garbled_identity_join_is_unresolvable_then_unknown(poisons, rege
     record = c["actual"]["record"]
     assert record["status"] == "UNKNOWN"
     assert record["unknown_cause"] == "UNKNOWN_EVIDENCE"
+    assert c["actual_class"] == {"kind": "UNKNOWN", "unknown_cause": "UNKNOWN_EVIDENCE"}
     assert record["record_id"].endswith("quinn.ash@example.com")
     # The reconciler surfaced the garbled source member as UNRESOLVABLE.
     board = json.loads(regenerated["reconciliation.json"])
@@ -226,15 +238,34 @@ def test_five_verdict_states_and_e117_all_visibly_distinct(poisons):
         "EXCLUDED",
         "EXCEPTION",
     }
-    assert case(poisons, "breakglass-capability-missing")["actual_class"] == "E117"
-    # Two distinct UNKNOWN why-codes across the poisons, never one blur.
-    assert {c["actual_class"] for c in poisons["cases"]} == {
-        "UNKNOWN:UNKNOWN_POPULATION",
-        "FAIL",
-        "E117",
-        "UNKNOWN:UNKNOWN_EVIDENCE",
-        "EXCEPTION",
+    assert case(poisons, "breakglass-capability-missing")["actual_class"] == {
+        "kind": "E-CODE",
+        "code": "E117",
     }
+    # Two distinct UNKNOWN why-codes across the poisons, never one blur.
+    # Classification dicts aren't hashable, so distinctness is checked via
+    # the (kind, unknown_cause, code) tuple each one flattens to.
+    classifications = {
+        (c["kind"], c.get("unknown_cause"), c.get("code"))
+        for c in (case_["actual_class"] for case_ in poisons["cases"])
+    }
+    assert classifications == {
+        ("UNKNOWN", "UNKNOWN_POPULATION", None),
+        ("FAIL", None, None),
+        ("E-CODE", None, "E117"),
+        ("UNKNOWN", "UNKNOWN_EVIDENCE", None),
+        ("EXCEPTION", None, None),
+    }
+
+
+def test_classification_rejects_an_unrecognized_kind():
+    """A malformed/unexpected `kind` fails loudly at construction rather
+    than reaching the wire — the backend counterpart to the frontend's
+    exhaustive-switch falsifier on `PoisonClassification` (web/README.md
+    Q4, issue #87)."""
+    module = load_builder()
+    with pytest.raises(ValueError, match="unrecognized poison classification kind"):
+        module._classification("MOSTLY_PASS")
 
 
 def test_every_emitted_verdict_record_is_schema_valid(poisons):
@@ -543,3 +574,41 @@ def test_snapshot_claims_resolve_against_evaluated_verdict_specs(snapshot, poiso
     assert any(s.startswith("spec-poison-hris-existence") for s in spec_ids)
     assert any(s.startswith("spec-poison-idp-timing") for s in spec_ids)
     assert any(s.startswith("spec-poison-github-nonexistence") for s in spec_ids)
+
+
+# --- commitments (Q16, commitment half — issue #97) ---
+
+
+def test_commitments_are_schema_valid(commitments):
+    assert commitments, "at least one commitment must be emitted"
+    for commitment in commitments.values():
+        errors = list(COMMITMENT_VALIDATOR.iter_errors(commitment))
+        assert not errors, [e.message for e in errors]
+
+
+def test_commitments_claim_ids_resolve_against_evaluated_verdict_specs(commitments, poisons):
+    # claim_ids is derived from Claim.framework_refs, never hand-listed — this
+    # proves the derivation actually ran over the claims this build evaluates,
+    # and that every id it names produced a real verdict record (no dangling
+    # ref, the same join-exactness pattern as the snapshot's claims block).
+    all_records = [r for group in poisons["verdict_records"].values() for r in group]
+    recorded_claim_ids = {r["claim_id"] for r in all_records}
+    commitment = commitments["commitment-soc2-am-06"]
+    assert commitment["name"] == "SOC2 AM-06"
+    assert commitment["source"] == "audit"
+    assert set(commitment["claim_ids"]) == {
+        "claim-poison-github-nonexistence",
+        "claim-poison-hris-existence",
+    }
+    assert set(commitment["claim_ids"]) <= recorded_claim_ids
+
+
+def test_commitments_raises_if_a_cited_framework_ref_has_no_catalog_entry():
+    # COMMITMENT_CATALOG is the one hand-maintained part of commitments.json
+    # (no Claim field derives a commitment's source/obligation text from its
+    # bare framework_ref string) — this proves a claim citing an unrecognized
+    # ref fails the build loudly rather than shipping a guessed commitment.
+    module = load_builder()
+    module.COMMITMENT_CATALOG = {}
+    with pytest.raises(SystemExit, match="no COMMITMENT_CATALOG entry"):
+        module.build_poison_artifacts()
