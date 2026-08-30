@@ -125,9 +125,17 @@ Numbers are referenced from comments in `src/data/types.ts`.
   "UNKNOWN:UNKNOWN_POPULATION"-style strings. The emitter's `_classification`
   helper (`scripts/build_demo_engagement.py`) rejects an unrecognized `kind`
   at construction; `classificationLabel`'s exhaustive switch (`verdicts.ts`)
-  is the frontend mirror — a new `kind` fails `tsc`. Left out of scope: the
-  related `evidence` open keyset (`PoisonEvidence`) — a separate, smaller
-  question not folded into this fix.
+  is the frontend mirror — a new `kind` fails `tsc`. The related `evidence`
+  open keyset *(ANSWERED — issue #93)*: `PoisonEvidence` is now a
+  discriminated union too, keyed by what the pointer identifies rather than
+  by `PoisonClassification.kind` (two "FAIL" cases carry different evidence
+  shapes, so the classification outcome wasn't the right discriminant) —
+  `{kind: "identity_delta"; bucket; member_ref}` ·
+  `{kind: "identity_mismatch"; login; member}` ·
+  `{kind: "compile_context"; system; population}` ·
+  `{kind: "member"; member}`. The emitter's `_evidence()` validates the
+  field set against the kind at construction, mirroring `_classification`'s
+  own pattern.
 - **Q4b — `verdict_records` grouping keys.** *(ANSWERED — issue #77.)* Closed
   at these three families, and now spelled with the ratified `AssertionType`
   values verbatim (`EXISTENCE`, `NON-EXISTENCE`, `TIMING`; note the hyphen)

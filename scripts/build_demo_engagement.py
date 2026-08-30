@@ -463,6 +463,35 @@ def _record_class(record: dict) -> dict:
     return _classification(record["status"])
 
 
+# Structured poison evidence (README Q4's related "evidence" question, issue
+# #93): the pointer at the poisoned element does not vary per case
+# arbitrarily — it varies by what the pointer identifies (a reconciliation
+# delta, a dual-identity conflict, a compile-time context, or a single
+# member), which cuts across `PoisonClassification.kind` rather than lining
+# up with it one-to-one (two "FAIL" cases below carry different evidence
+# shapes). `_evidence` mirrors `_classification`'s construction-time
+# validation: an unrecognized kind, or a field set that doesn't match the
+# kind exactly, fails loudly here rather than reaching the wire as a
+# silently-wrong shape.
+_EVIDENCE_KINDS: dict[str, frozenset[str]] = {
+    "identity_delta": frozenset({"bucket", "member_ref"}),
+    "identity_mismatch": frozenset({"login", "member"}),
+    "compile_context": frozenset({"system", "population"}),
+    "member": frozenset({"member"}),
+}
+
+
+def _evidence(kind: str, **fields: str) -> dict:
+    expected = _EVIDENCE_KINDS.get(kind)
+    if expected is None:
+        raise ValueError(f"unrecognized poison evidence kind: {kind!r}")
+    if frozenset(fields) != expected:
+        raise ValueError(
+            f"poison evidence kind {kind!r} expects fields {sorted(expected)}, got {sorted(fields)}"
+        )
+    return {"kind": kind, **fields}
+
+
 def _blocked_by_open_deltas(
     deltas: tuple[Delta, ...], dispositions: dict[str, DispositionRecord]
 ) -> list[dict]:
@@ -759,7 +788,9 @@ def build_poison_artifacts() -> dict[str, str]:
             ),
             "stage": "evaluate",
             "expected": _classification("UNKNOWN", unknown_cause="UNKNOWN_POPULATION"),
-            "evidence": {"bucket": "right_only", "member_ref": "email:mira.chen@example.com"},
+            "evidence": _evidence(
+                "identity_delta", bucket="right_only", member_ref="email:mira.chen@example.com"
+            ),
             "actual": {"kind": "verdict", "record": alpha_record},
             "actual_class": _record_class(alpha_record),
         },
@@ -771,7 +802,9 @@ def build_poison_artifacts() -> dict[str, str]:
             ),
             "stage": "evaluate",
             "expected": _classification("FAIL"),
-            "evidence": {"login": "rhea-bell-local", "member": "rhea.bell@example.com"},
+            "evidence": _evidence(
+                "identity_mismatch", login="rhea-bell-local", member="rhea.bell@example.com"
+            ),
             "actual": {"kind": "verdict", "record": nonexistence_record},
             "actual_class": _record_class(nonexistence_record),
         },
@@ -783,7 +816,9 @@ def build_poison_artifacts() -> dict[str, str]:
             ),
             "stage": "compile",
             "expected": _classification("E-CODE", code="E117"),
-            "evidence": {"system": "breakglass.config", "population": "pop-breakglass-capable"},
+            "evidence": _evidence(
+                "compile_context", system="breakglass.config", population="pop-breakglass-capable"
+            ),
             "actual": {"kind": "compile_error", "errors": breakglass_errors},
             "actual_class": (
                 _classification("E-CODE", code=breakglass_errors[0]["code"])
@@ -799,7 +834,9 @@ def build_poison_artifacts() -> dict[str, str]:
             ),
             "stage": "evaluate",
             "expected": _classification("UNKNOWN", unknown_cause="UNKNOWN_EVIDENCE"),
-            "evidence": {"bucket": "unresolvable", "member_ref": "okta:00u9104"},
+            "evidence": _evidence(
+                "identity_delta", bucket="unresolvable", member_ref="okta:00u9104"
+            ),
             "actual": {"kind": "verdict", "record": timing_by_member["quinn.ash@example.com"]},
             "actual_class": _record_class(timing_by_member["quinn.ash@example.com"]),
         },
@@ -811,7 +848,7 @@ def build_poison_artifacts() -> dict[str, str]:
             ),
             "stage": "evaluate",
             "expected": _classification("FAIL"),
-            "evidence": {"member": "omar.diaz@example.com"},
+            "evidence": _evidence("member", member="omar.diaz@example.com"),
             "actual": {"kind": "verdict", "record": timing_by_member["omar.diaz@example.com"]},
             "actual_class": _record_class(timing_by_member["omar.diaz@example.com"]),
         },
@@ -823,7 +860,7 @@ def build_poison_artifacts() -> dict[str, str]:
             ),
             "stage": "evaluate",
             "expected": _classification("EXCEPTION"),
-            "evidence": {"member": "pia.voss@example.com"},
+            "evidence": _evidence("member", member="pia.voss@example.com"),
             "actual": {"kind": "verdict", "record": timing_by_member["pia.voss@example.com"]},
             "actual_class": _record_class(timing_by_member["pia.voss@example.com"]),
         },

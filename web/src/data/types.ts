@@ -450,17 +450,19 @@ export type PoisonActual =
   | { kind: "verdict"; record: VerdictRecord }
   | { kind: "compile_error"; errors: CompileError[] };
 
-/** Free-form pointer(s) at the poisoned element — the key set varies per
- * case in the artifact (README question Q4, resolved by issue #87). Known
- * keys so far: */
-export interface PoisonEvidence {
-  bucket?: string;
-  member_ref?: string;
-  member?: string;
-  login?: string;
-  population?: string;
-  system?: string;
-}
+/** Pointer(s) at the poisoned element, discriminated on `kind` (README Q4's
+ * related evidence question, resolved by issue #93). What varies per case is
+ * not the classification outcome — two "FAIL" cases below carry different
+ * evidence shapes — but what the pointer identifies: a reconciliation delta,
+ * a dual-identity conflict, a compile-time context, or a single member.
+ * Each variant lists only the keys that kind's evidence actually carries;
+ * mirrors `_evidence()`'s construction-time validation in
+ * scripts/build_demo_engagement.py. */
+export type PoisonEvidence =
+  | { kind: "identity_delta"; bucket: string; member_ref: string }
+  | { kind: "identity_mismatch"; login: string; member: string }
+  | { kind: "compile_context"; system: string; population: string }
+  | { kind: "member"; member: string };
 
 /** Structured poison classification (README Q4, resolved by issue #87) —
  * a VerdictState, an E-code, or the defensive "COMPILED" fallback (a

@@ -45,6 +45,7 @@
       "detected": true,
       "evidence": {
         "bucket": "right_only",
+        "kind": "identity_delta",
         "member_ref": "email:mira.chen@example.com"
       },
       "expected": {
@@ -99,6 +100,7 @@
       },
       "detected": true,
       "evidence": {
+        "kind": "identity_mismatch",
         "login": "rhea-bell-local",
         "member": "rhea.bell@example.com"
       },
@@ -127,6 +129,7 @@
       },
       "detected": true,
       "evidence": {
+        "kind": "compile_context",
         "population": "pop-breakglass-capable",
         "system": "breakglass.config"
       },
@@ -184,6 +187,7 @@
       "detected": true,
       "evidence": {
         "bucket": "unresolvable",
+        "kind": "identity_delta",
         "member_ref": "okta:00u9104"
       },
       "expected": {
@@ -240,6 +244,7 @@
       },
       "detected": true,
       "evidence": {
+        "kind": "member",
         "member": "omar.diaz@example.com"
       },
       "expected": {
@@ -284,6 +289,7 @@
       },
       "detected": true,
       "evidence": {
+        "kind": "member",
         "member": "pia.voss@example.com"
       },
       "expected": {
