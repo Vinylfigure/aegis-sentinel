@@ -195,14 +195,27 @@ ratification is the freeze — draft → frozen(=ratified) → superseded).
   `mcp` SDK as an optional extra (core package imports without it); mutation
   structurally impossible (exact tool-set assertion + AST scan banning write- and
   deletion-shaped calls; stdio e2e subprocess test).
-- [ ] CAP10 (Cartographer, needs D7 allowlist ruling) · REC10 (Surveyor probes).
+- [x] **CAP10** — Cartographer allowlist + draft-proposal mechanism
+  (`src/aegis_sentinel/capability/allowlist.py`, `.../cartographer.py`): D7's three
+  rules mechanized — `is_allowed_citation()` is the deterministic per-vendor
+  first-party-domain check; `propose_entry()` builds a `CapabilityEntry` that is
+  always `lifecycle=DRAFT`/`ratified_by=None` (no parameter exists to set either),
+  and refuses a proposal citing a disallowed source unless the caller records a
+  `DRAFT:`/`source_unreachable` caveat naming the gap (Workday's exception
+  included). Cannot probe: the module never imports `collectors/` or touches a
+  live tenant. Falsifiers: disallowed citation without a caveat raises; a
+  hand-supplied `ratified_by`/`lifecycle` kwarg is rejected by the function
+  signature itself (`TypeError`, not a runtime check); re-derives
+  `github.audit_log`'s on-disk entry byte-for-byte from its own citations to prove
+  fidelity to the real registry shape.
+- [ ] REC10 — Surveyor deterministic probes (dep: CAP01, ready; not yet built).
 
 ## Owner's open items
 
 1. Mutation playbook document (fixtures authored from PRD §6 carry `TODO(playbook)`).
 2. Reference-engagement population sizes (placeholders ~200 employees / ~15
    terminations, documented in fixture READMEs).
-3. D7 Cartographer doc-allowlist ruling (blocks CAP10 only).
-4. Branch protection on `main` (required checks `verify` + `web-verify`, CODEOWNERS).
+3. Branch protection on `main` (required checks `verify` + `web-verify`, CODEOWNERS).
 
 Resolved: D-L1 lifecycle ruling landed 2026-08-16 at the SCH00 PR (`docs/DECISIONS.md` D-L1).
+D7 Cartographer doc-allowlist ruling landed 2026-08-29 (`docs/DECISIONS.md` D7); CAP10 above.

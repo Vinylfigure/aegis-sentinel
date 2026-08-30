@@ -92,3 +92,32 @@ change, not a code change.
 at `docs/prototypes/`; reconciliation at `docs/manifest-reconciliation.md`; merged
 invariants at `docs/invariants.md`; this ledger at `docs/DECISIONS.md`; the living
 build plan at `docs/EXECUTION-PLAN.md`.
+
+## D7 · 2026-08-29 · RATIFIED · Owner
+
+**Cartographer documentation-source allowlist** (PRD-v3 §8's own open question D7 —
+distinct from the corpus's identically-numbered `Aegis_Design_Fix_D7_UNKNOWN_Decomposition.md`,
+already cited under D-U1). Ruled via issue #46, comment 2026-08-29 (posted through an
+operator-directed session):
+
+1. **Allowlist for V1, by rule rather than enumeration:** a source is allowed iff it is
+   the vendor's own first-party documentation domain. Applied to the five in-scope
+   systems: GitHub → `docs.github.com`; GCP → `cloud.google.com`; Okta →
+   `help.okta.com` and `developer.okta.com`; Slack → `api.slack.com` and
+   `slack.com/help`; Workday → official Workday documentation only.
+2. **Workday exception, explicit:** Workday's documentation sits behind Community
+   authentication a sandboxed session cannot reach. Workday capabilities stay DRAFT
+   with UNKNOWN-cause `source_unreachable` until the Owner supplies cited excerpts —
+   no substituting secondary sources to ratify.
+3. **Unreachable-source rule, general:** when an allowed source is unreachable (the
+   `docs.github.com` 404-through-proxy case already recorded in
+   `registry/capabilities/github.audit_log.json` is the canonical example), the
+   capability stays DRAFT, records `source_unreachable`, and may carry secondary-source
+   notes marked non-ratifiable. Missing evidence is UNKNOWN, never PASS.
+4. **D-L1 holds unchanged:** proposals stay DRAFT; only the Owner ratifies.
+
+Unblocks CAP10 (`src/aegis_sentinel/capability/allowlist.py`,
+`src/aegis_sentinel/capability/cartographer.py` mechanize rules 1–3: citations outside
+the allowlist force a recorded `DRAFT:`/`source_unreachable` caveat rather than silent
+omission; the propose function has no parameter through which a caller can set
+`ratified_by` or a non-DRAFT lifecycle, so ratification stays structurally a human act).
