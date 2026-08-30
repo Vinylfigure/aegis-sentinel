@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import {
+  engagementCommitments,
   engagementContracts,
   engagementPoisons,
   engagementReconciliations,
@@ -64,6 +65,7 @@ export default async function ProofDetailPage({
       poisons={engagementPoisons}
       contracts={engagementContracts}
       snapshot={engagementSnapshot}
+      commitments={engagementCommitments}
     />
   );
 }

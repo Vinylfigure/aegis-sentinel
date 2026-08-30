@@ -15,6 +15,7 @@ from pydantic import BaseModel, ConfigDict, Field, computed_field, model_validat
 from aegis_sentinel.schema.enums import (
     AssertionType,
     AssuranceState,
+    CommitmentSource,
     D7Family,
     DeltaBucket,
     DispositionValue,
@@ -173,6 +174,24 @@ class Assertion(Base):
                 "timing constraint is required for TIMING assertions and forbidden otherwise"
             )
         return self
+
+
+class Commitment(Base):
+    """The obligation source at the head of UI01's ten-stage chain
+    (PRD-v3 §2, `Commitment — contract / regulation / audit / internal
+    standard → obligation → implicated products, processes, data →
+    boundary implication`). Scoped to exactly what /proof's commitment
+    stage renders (README Q16): a name, its source category, the
+    obligation text, and the claims it implicates — not the full
+    boundary-implication chain, and not `Requirement` (PRD-v3 has no
+    defining prose for that stage; left to issue #100 rather than
+    invented here, per L-014/L-015)."""
+
+    id: str = Field(min_length=1)
+    name: str = Field(min_length=1)
+    source: CommitmentSource
+    obligation: str = Field(min_length=1)
+    claim_ids: tuple[str, ...] = Field(min_length=1)
 
 
 class Claim(Base):

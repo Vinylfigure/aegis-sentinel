@@ -129,11 +129,15 @@ ratification is the freeze — draft → frozen(=ratified) → superseded).
   the ten-stage SVG lineage with typed arrows as visible edge labels (imposes →
   compiled into → quantifies over → derived from → reconciled into → evidence
   gated by → frozen in → executes → evaluates to) and a node inspector. Honest to
-  the wire: seven stages render from data (population/sources/reconciliation via
-  the population_id join, contract identity via spec_hash == the EQC
-  contract_hash, claim/assertion via their real claim_id/assertion_id fields
-  (Q15, issue #53), verdict itself); the other three are labelled on-diagram —
-  not-emitted (commitment/requirement/snapshot, Q16). Clicking the population node links into the
+  the wire: originally seven of ten stages rendered from data (population/
+  sources/reconciliation via the population_id join, contract identity via
+  spec_hash == the EQC contract_hash, claim/assertion via their real
+  claim_id/assertion_id fields (Q15, issue #53), verdict itself), with
+  commitment/requirement/snapshot labelled not-emitted (Q16). Snapshot
+  (issue #47) and commitment (issue #97) are since conditionally emitted —
+  real when the join resolves, not-emitted otherwise; requirement stays
+  not-emitted (issue #100, needs an Owner ruling — PRD-v3 has no defining
+  prose for it). Clicking the population node links into the
   why-complete rail (UI01). Routes generated from `engagementVerdictRecords`
   (verdicts.json + poisons verdict_records, deduped — the B1 mock duplicates
   them; real artifacts are disjoint, so C2 lifts this to 11 pages with zero

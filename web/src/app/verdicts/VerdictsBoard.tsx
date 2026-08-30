@@ -5,13 +5,14 @@ import Link from "next/link";
 import { RailLayout } from "@/components/RailLayout/RailLayout";
 import {
   VERDICT_STATES,
+  classificationLabel,
+  classificationText,
   conditionalBreaches,
   detectionRateText,
   orderedCases,
   recordCollisions,
   recordsByState,
   scorecard,
-  splitClassification,
   unknownCauses,
   verdictRuns,
   crossRunControl,
@@ -431,7 +432,7 @@ function Scorecard({ poisons }: { poisons: PoisonsArtifact }) {
       )}
       <ul className={styles.caseList}>
         {cases.map((poisonCase) => {
-          const cls = splitClassification(poisonCase.actual_class);
+          const cls = classificationLabel(poisonCase.actual_class);
           return (
             <li
               key={poisonCase.id}
@@ -446,7 +447,7 @@ function Scorecard({ poisons }: { poisons: PoisonsArtifact }) {
               </p>
               <p className={styles.railMeta}>{poisonCase.poison}</p>
               <p className={styles.railMeta}>
-                expected {poisonCase.expected} · actual{" "}
+                expected {classificationText(poisonCase.expected)} · actual{" "}
                 <span className={styles.stateChip}>{cls.head}</span>
                 {cls.cause && <span className={styles.whyCode}> {cls.cause}</span>}
               </p>

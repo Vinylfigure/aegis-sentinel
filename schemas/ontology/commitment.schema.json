@@ -1,0 +1,54 @@
+{
+  "$defs": {
+    "CommitmentSource": {
+      "description": "The obligation's origin (PRD-v3 \u00a72, Commitment) \u2014 one of the four\nkinds the PRD chain names; never invented per claim.",
+      "enum": [
+        "contract",
+        "regulation",
+        "audit",
+        "internal_standard"
+      ],
+      "title": "CommitmentSource",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "description": "The obligation source at the head of UI01's ten-stage chain\n(PRD-v3 \u00a72, `Commitment \u2014 contract / regulation / audit / internal\nstandard \u2192 obligation \u2192 implicated products, processes, data \u2192\nboundary implication`). Scoped to exactly what /proof's commitment\nstage renders (README Q16): a name, its source category, the\nobligation text, and the claims it implicates \u2014 not the full\nboundary-implication chain, and not `Requirement` (PRD-v3 has no\ndefining prose for that stage; left to issue #100 rather than\ninvented here, per L-014/L-015).",
+  "properties": {
+    "claim_ids": {
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1,
+      "title": "Claim Ids",
+      "type": "array"
+    },
+    "id": {
+      "minLength": 1,
+      "title": "Id",
+      "type": "string"
+    },
+    "name": {
+      "minLength": 1,
+      "title": "Name",
+      "type": "string"
+    },
+    "obligation": {
+      "minLength": 1,
+      "title": "Obligation",
+      "type": "string"
+    },
+    "source": {
+      "$ref": "#/$defs/CommitmentSource"
+    }
+  },
+  "required": [
+    "id",
+    "name",
+    "source",
+    "obligation",
+    "claim_ids"
+  ],
+  "title": "Commitment",
+  "type": "object"
+}

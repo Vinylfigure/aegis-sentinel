@@ -38,13 +38,19 @@
           "unknown_cause": "UNKNOWN_POPULATION"
         }
       },
-      "actual_class": "UNKNOWN:UNKNOWN_POPULATION",
+      "actual_class": {
+        "kind": "UNKNOWN",
+        "unknown_cause": "UNKNOWN_POPULATION"
+      },
       "detected": true,
       "evidence": {
         "bucket": "right_only",
         "member_ref": "email:mira.chen@example.com"
       },
-      "expected": "UNKNOWN:UNKNOWN_POPULATION",
+      "expected": {
+        "kind": "UNKNOWN",
+        "unknown_cause": "UNKNOWN_POPULATION"
+      },
       "id": "contractor-absent-from-hris",
       "poison": "contractor offboarded downstream (okta pvt-0009, tracker POF-3309) but absent from the authoritative HRIS feed",
       "stage": "evaluate"
@@ -88,13 +94,17 @@
           "test_function_version": "0.1.0"
         }
       },
-      "actual_class": "FAIL",
+      "actual_class": {
+        "kind": "FAIL"
+      },
       "detected": true,
       "evidence": {
         "login": "rhea-bell-local",
         "member": "rhea.bell@example.com"
       },
-      "expected": "FAIL",
+      "expected": {
+        "kind": "FAIL"
+      },
       "id": "dormant-github-local-account",
       "poison": "terminated employee still an org member via a dormant local (non-SSO) account, rhea-bell-local",
       "stage": "evaluate"
@@ -111,13 +121,19 @@
         ],
         "kind": "compile_error"
       },
-      "actual_class": "E117",
+      "actual_class": {
+        "code": "E117",
+        "kind": "E-CODE"
+      },
       "detected": true,
       "evidence": {
         "population": "pop-breakglass-capable",
         "system": "breakglass.config"
       },
-      "expected": "E117",
+      "expected": {
+        "code": "E117",
+        "kind": "E-CODE"
+      },
       "id": "breakglass-capability-missing",
       "poison": "break-glass cloud account claim derives from breakglass.config, a system with no capability entry",
       "stage": "compile"
@@ -161,13 +177,19 @@
           "unknown_cause": "UNKNOWN_EVIDENCE"
         }
       },
-      "actual_class": "UNKNOWN:UNKNOWN_EVIDENCE",
+      "actual_class": {
+        "kind": "UNKNOWN",
+        "unknown_cause": "UNKNOWN_EVIDENCE"
+      },
       "detected": true,
       "evidence": {
         "bucket": "unresolvable",
         "member_ref": "okta:00u9104"
       },
-      "expected": "UNKNOWN:UNKNOWN_EVIDENCE",
+      "expected": {
+        "kind": "UNKNOWN",
+        "unknown_cause": "UNKNOWN_EVIDENCE"
+      },
       "id": "garbled-identity-join",
       "poison": "deactivation event target alternate_id garbled (quinn.ash%example.com) \u2014 the identity join cannot resolve it",
       "stage": "evaluate"
@@ -213,12 +235,16 @@
           "test_function_version": "0.1.0"
         }
       },
-      "actual_class": "FAIL",
+      "actual_class": {
+        "kind": "FAIL"
+      },
       "detected": true,
       "evidence": {
         "member": "omar.diaz@example.com"
       },
-      "expected": "FAIL",
+      "expected": {
+        "kind": "FAIL"
+      },
       "id": "delayed-revocation",
       "poison": "omar.diaz revoked 9 business days after termination against the 5-business-day constraint",
       "stage": "evaluate"
@@ -253,12 +279,16 @@
           "test_function_version": "0.1.0"
         }
       },
-      "actual_class": "EXCEPTION",
+      "actual_class": {
+        "kind": "EXCEPTION"
+      },
       "detected": true,
       "evidence": {
         "member": "pia.voss@example.com"
       },
-      "expected": "EXCEPTION",
+      "expected": {
+        "kind": "EXCEPTION"
+      },
       "id": "legitimate-exception",
       "poison": "pia.voss's phased offboarding ran long under a dispositioned exception \u2014 EXCEPTION, never a silent PASS",
       "stage": "evaluate"

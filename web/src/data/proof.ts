@@ -22,6 +22,7 @@ import {
   reconciledClaimHolds,
 } from "@/data/reconciliation";
 import type {
+  CommitmentsArtifact,
   ContractsArtifact,
   ManifestSnapshotArtifact,
   PoisonVerdictGroup,
@@ -186,6 +187,7 @@ export function lineage(
   poisons: PoisonsArtifact,
   contracts: ContractsArtifact = {},
   snapshot: ManifestSnapshotArtifact | null = null,
+  commitments: CommitmentsArtifact = {},
 ): LineageNode[] {
   const report =
     reconciliations.find((r) => r.population_id === record.population_id) ?? null;
@@ -193,15 +195,30 @@ export function lineage(
 
   const evidenceFor = (id: LineageStageId): StageEvidence => {
     switch (id) {
-      case "commitment":
+      case "commitment": {
+        const commitment = Object.values(commitments).find((c) =>
+          c.claim_ids.includes(record.claim_id),
+        );
+        if (!commitment) {
+          return {
+            kind: "not-emitted",
+            note: `No commitment cites ${record.claim_id} (Q16, issue #97) — commitments.json only covers claims built inside build_poison_artifacts().`,
+          };
+        }
         return {
-          kind: "not-emitted",
-          note: "No commitment object is emitted anywhere on the wire (Q16).",
+          kind: "emitted",
+          fields: [
+            { label: "name", value: commitment.name },
+            { label: "source", value: commitment.source },
+            { label: "obligation", value: commitment.obligation },
+            { label: "claim_ids", value: commitment.claim_ids.join(", "), mono: true },
+          ],
         };
+      }
       case "requirement":
         return {
           kind: "not-emitted",
-          note: "No requirement object travels; the nearest trace is the control id on the verdict record (Q16).",
+          note: "No requirement object travels; the nearest trace is the control id on the verdict record. PRD-v3 has no defining prose for Requirement (unlike Commitment) — modeling it needs an Owner ruling first (Q16, issue #100).",
         };
       case "claim":
         return {
