@@ -103,6 +103,16 @@ class D7Family(StrEnum):
     NO_BASIS_ANYWHERE = "no-basis-anywhere"
 
 
+class CommitmentSource(StrEnum):
+    """The obligation's origin (PRD-v3 §2, Commitment) — one of the four
+    kinds the PRD chain names; never invented per claim."""
+
+    CONTRACT = "contract"
+    REGULATION = "regulation"
+    AUDIT = "audit"
+    INTERNAL_STANDARD = "internal_standard"
+
+
 class LifecycleState(StrEnum):
     """D-L1 (RATIFIED): ratification IS the freeze — one lifecycle for
     collection specs, capability entries, and manifest snapshots."""
