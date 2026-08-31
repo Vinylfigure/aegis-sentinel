@@ -199,10 +199,12 @@ ratification is the freeze — draft → frozen(=ratified) → superseded).
 
 ## Owner's open items
 
-1. Mutation playbook document (fixtures authored from PRD §6 carry `TODO(playbook)`).
 2. Reference-engagement population sizes (placeholders ~200 employees / ~15
    terminations, documented in fixture READMEs).
 3. D7 Cartographer doc-allowlist ruling (blocks CAP10 only).
 4. Branch protection on `main` (required checks `verify` + `web-verify`, CODEOWNERS).
 
 Resolved: D-L1 lifecycle ruling landed 2026-08-16 at the SCH00 PR (`docs/DECISIONS.md` D-L1).
+Resolved: open item 1 (mutation playbook document) — ruled on issue #51
+(2026-08-29): no standalone source exists; PRD §6 promoted directly into
+`docs/MUTATION-PLAYBOOK.md`, all `TODO(playbook)` markers closed.

@@ -7,7 +7,7 @@
   "email:mira.chen@example.com": {
     "value": "not_applicable",
     "owner": "vinylfigure",
-    "rationale": "agency contractor offboarded under the vendor MSA and absent from the HRIS worker population per the ratified boundary — TODO(playbook): the contractor-absent poison case lands with VAL02"
+    "rationale": "agency contractor offboarded under the vendor MSA and absent from the HRIS worker population per the ratified boundary — see docs/MUTATION-PLAYBOOK.md, case 1, for the full poison-suite (VAL02) treatment of this same case"
   },
   "worker:W-1012": {
     "value": "compensating",

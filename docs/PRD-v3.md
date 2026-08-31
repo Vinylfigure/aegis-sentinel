@@ -3,7 +3,7 @@
 **Author:** `vinylfigure` (drafted with Claude)
 **Date:** 2026-08-12
 **Status:** Draft v3 — Build Spec for `vinylfigure/aegis-sentinel` (product: **Aegis**; the agents are **Sentinels**) · supersedes v2 · incorporates adjudicated rulings from external reviews (docs 28–31)
-**Canonical diagram:** the Owner's hand sketch (2026-08-12). **Canonical prior art:** the Aegis corpus (investigator architecture, D7/D8/D9, SOC 2 testing matrix, Build Execution PRD v2), the Aegis GCP control matrix, the Demo Mutation Playbook.
+**Canonical diagram:** the Owner's hand sketch (2026-08-12). **Canonical prior art:** the Aegis corpus (investigator architecture, D7/D8/D9, SOC 2 testing matrix, Build Execution PRD v2), the Aegis GCP control matrix, the Demo Mutation Playbook (`docs/MUTATION-PLAYBOOK.md` — per the Owner's ruling on issue #51, no standalone source document exists; this PRD's own §6 was promoted into that file directly).
 
 ---
 

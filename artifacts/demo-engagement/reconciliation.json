@@ -128,22 +128,22 @@
   "dispositions": {
     "email:mira.chen@example.com": {
       "owner": "vinylfigure",
-      "rationale": "the contractor-absent-from-HRIS poison, dispositioned only AFTER the population defect was surfaced as UNKNOWN_POPULATION: agency contractor engaged outside the HRIS worker population; offboarded via IT ticket POF-3309 and okta deactivation pvt-0009; escalated to HR as finding, vendor-MSA boundary review scheduled. TODO(playbook)",
+      "rationale": "the contractor-absent-from-HRIS poison, dispositioned only AFTER the population defect was surfaced as UNKNOWN_POPULATION: agency contractor engaged outside the HRIS worker population; offboarded via IT ticket POF-3309 and okta deactivation pvt-0009; escalated to HR as finding, vendor-MSA boundary review scheduled. See docs/MUTATION-PLAYBOOK.md, case 1.",
       "value": "compensating"
     },
     "email:quinn.ash@example.com": {
       "owner": "vinylfigure",
-      "rationale": "IdP deactivation event exists but its target login attribute is garbled, so the deterministic identity join cannot attribute it; workforce membership confirmed manually against the payroll extract \u2014 revocation evidence remains unattributable and the timing verdict stays UNKNOWN. TODO(playbook)",
+      "rationale": "IdP deactivation event exists but its target login attribute is garbled, so the deterministic identity join cannot attribute it; workforce membership confirmed manually against the payroll extract \u2014 revocation evidence remains unattributable and the timing verdict stays UNKNOWN. See docs/MUTATION-PLAYBOOK.md, case 4.",
       "value": "compensating"
     },
     "email:uma.wynn@example.com": {
       "owner": "vinylfigure",
-      "rationale": "worker_type conflicts across sources (HRIS says employee, offboarding tracker ticket POF-3308 says contractor); HRIS value ratified as authoritative and the tracker correction filed. TODO(playbook)",
+      "rationale": "worker_type conflicts across sources (HRIS says employee, offboarding tracker ticket POF-3308 says contractor); HRIS value ratified as authoritative and the tracker correction filed. See docs/MUTATION-PLAYBOOK.md's 'Non-poison board seasoning' section.",
       "value": "compensating"
     },
     "okta:00u9104": {
       "owner": "vinylfigure",
-      "rationale": "System Log target alternate_id 'quinn.ash%example.com' derives no canonical identity (the failed-identity-join poison); source record quarantined for IdP profile repair. TODO(playbook)",
+      "rationale": "System Log target alternate_id 'quinn.ash%example.com' derives no canonical identity (the failed-identity-join poison); source record quarantined for IdP profile repair. See docs/MUTATION-PLAYBOOK.md, case 4.",
       "value": "compensating"
     }
   },
