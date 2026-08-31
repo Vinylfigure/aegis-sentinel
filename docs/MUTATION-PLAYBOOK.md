@@ -22,9 +22,12 @@ the real pipeline (lane instantiation → compile gate → collectors →
 `reconcile_sets` → typed evaluator), asserted case-by-case in
 `tests/test_poison_suite.py`. The headline metric this suite exists to
 prove (PRD §7): **assurance defect detection rate == 100%** — every seeded
-defect must produce a compile error, `UNKNOWN`, or `FAIL`; a silent `PASS`
-on a poisoned case is a build-stopping bug, not a suite failure to be
-tuned around.
+defect must produce a compile error, `UNKNOWN`, `FAIL`, or a ratified
+`EXCEPTION` carrying its disposition ref; a silent `PASS` on a poisoned
+case is a build-stopping bug, not a suite failure to be tuned around
+(`tests/test_poison_suite.py::test_assurance_defect_detection_rate_is_
+100_percent` enforces this exact invariant: `expected.kind != "PASS"`
+for every case).
 
 ## Case 1 — Contractor absent from HRIS
 
