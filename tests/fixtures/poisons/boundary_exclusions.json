@@ -1,5 +1,5 @@
 {
-  "note": "Ratified boundary exclusions (D-9: the human act happened upstream; the engine only matches the ref). TODO(playbook): exclusion refs will be re-pointed at the playbook's boundary snapshot when it lands.",
+  "note": "Ratified boundary exclusions (D-9: the human act happened upstream; the engine only matches the ref). See docs/MUTATION-PLAYBOOK.md's 'Non-poison board seasoning' section (vik.rao) and case 3 (breakglass-admin).",
   "reconciliation": [
     { "member": "vik.rao@example.com", "ref": "boundary/poisons-v1#advisors", "ratified_by": "vinylfigure (Ratifier)" }
   ],

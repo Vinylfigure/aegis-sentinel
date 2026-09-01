@@ -9,10 +9,11 @@ runs them through the REAL pipeline — lane instantiation → compile gate
 `tests/test_poison_suite.py` asserts detection rate == 100% and pins the
 artifacts byte-for-byte.
 
-**TODO(playbook):** the mutation playbook document is not in this repo
-(`[NEED: Owner]`, HANDOFF §3). Every case below derives from PRD §6's
-one-line description; refs marked TODO(playbook) re-point at the
-playbook when it lands.
+Every case below derives from PRD §6's one-line description, expanded
+into full detection-path and expected-verdict detail in
+`docs/MUTATION-PLAYBOOK.md` — the canonical mutation playbook per the
+Owner's ruling on issue #51 (no standalone source document exists; PRD
+§6 plus these fixtures were promoted into that file directly).
 
 **Placeholder population sizes (Owner open item 2):** the reference
 engagement's real sizes are pending; placeholders are ~200 employees /
