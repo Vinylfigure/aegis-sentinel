@@ -208,7 +208,18 @@ ratification is the freeze — draft → frozen(=ratified) → superseded).
   signature itself (`TypeError`, not a runtime check); re-derives
   `github.audit_log`'s on-disk entry byte-for-byte from its own citations to prove
   fidelity to the real registry shape.
-- [ ] REC10 — Surveyor deterministic probes (dep: CAP01, ready; not yet built).
+- [x] **REC10** — Surveyor deterministic probes (`src/aegis_sentinel/capability/surveyor.py`):
+  `run_probe()` mirrors the collectors' injected-transport shape (no live-tenant
+  calls in tests; fixture bytes stand in for a real extract). Refuses outright on
+  any entry that isn't `lifecycle=FROZEN` — no ratified read scope to probe — and
+  on a response whose tenant doesn't match the engagement, mirroring the
+  collectors' wrong-tenant refusal. Diffs observed-vs-documented across schema
+  attributes, pagination method, and (for event-history entries) actual retention
+  depth derived from the earliest reachable record, never a self-reported number;
+  drift becomes a `Finding`, never a silent correction. Acceptance test reproduces
+  the exact gap `okta.system_log`'s own `history_caveats` names ("Surveyor
+  verification of actual depth required") with an observed 45-day retention
+  against the documented 90.
 
 ## Owner's open items
 

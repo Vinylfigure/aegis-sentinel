@@ -16,6 +16,13 @@ from aegis_sentinel.capability.entry import (
     YieldedPopulation,
 )
 from aegis_sentinel.capability.registry import Registry
+from aegis_sentinel.capability.surveyor import (
+    Finding,
+    ObservedCapability,
+    ProbeRefusal,
+    ProbeResult,
+    run_probe,
+)
 
 REGISTRY_MODELS = (CapabilityEntry,)
 
@@ -23,8 +30,12 @@ __all__ = [
     "AccessMode",
     "CapabilityEntry",
     "CartographerRefusal",
+    "Finding",
+    "ObservedCapability",
     "Pagination",
     "PaginationMethod",
+    "ProbeRefusal",
+    "ProbeResult",
     "Provenance",
     "Registry",
     "REGISTRY_MODELS",
@@ -34,4 +45,5 @@ __all__ = [
     "YieldedPopulation",
     "is_allowed_citation",
     "propose_entry",
+    "run_probe",
 ]
