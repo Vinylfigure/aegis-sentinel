@@ -127,7 +127,7 @@ Unchanged: not a GRC platform; not a scanner; no LLM in the verdict path; not mu
 | Derivation coverage | Instrumented | derived vs. authored-residual claims, reported per engagement, never pre-published |
 | Registry health | Secondary | ratified capability entries with Surveyor verification ÷ total; doc-vs-observed drift findings |
 
-Baselines: `[NEED: hours + incompleteness findings from the last two greenfield scoping exercises — owner: the Owner; also the reference-engagement termination-population sizes for realistic V1 seed data]`.
+Baselines: `[NEED: hours + incompleteness findings from the last two greenfield scoping exercises — owner: the Owner]`. Reference-engagement termination-population sizes for V1 seed data ruled on issue #52 (2026-08-29) — see `docs/HANDOFF.md` §6.
 
 ## 8. Decisions — resolved and open
 

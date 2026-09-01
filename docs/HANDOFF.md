@@ -41,7 +41,7 @@
 - **Python** (`pyproject.toml` present). Schemas as typed models (pydantic or dataclasses — pick once in SCH01, record in the decision ledger). Layout: `src/aegis_sentinel/{schema,capability,collectors,reconcile,evaluate,compile,manifest}` + `tests/` mirroring.
 - **Manual-by-design steps (do not automate):** ratification of scope, capability entries, delta dispositions, residual-UNKNOWN acceptance, and authoritative-source/derivation-rule declarations. Build the surfaces that make the human act visible and attributable; automating the judgment violates invariant 6 and the Owner's manual-first principle.
 - **No LLM calls anywhere in `collectors/ reconcile/ evaluate/ compile/`.** LLM-lane code (Cartographer, Overlord) lives apart and cannot import the verdict path.
-- **Seed data realism:** V1 termination-lane fixtures derive from the mutation playbook's six poison cases as described in PRD §6, now promoted into `docs/MUTATION-PLAYBOOK.md` (Owner ruling, issue #51); `[NEED from the Owner: realistic population sizes from the reference engagement for seeds]`.
+- **Seed data realism:** V1 termination-lane fixtures derive from the mutation playbook's six poison cases as described in PRD §6, now promoted into `docs/MUTATION-PLAYBOOK.md` (Owner ruling, issue #51); reference-engagement population sizes ruled on issue #52 (2026-08-29) — see the "Resolved" note under §6.
 - Stop-and-ask triggers: invariant conflicts; manifest-schema mismatches that require changing the Build Execution PRD side; any temptation to add a framework-content feature, GRC-platform feature, or freeform editor (all non-goals).
 
 ## 4. Task list (spec-to-task format; prefixes adapted for this repo)
@@ -89,11 +89,14 @@ Assurance Manifest · ratified scope snapshot · PROPOSED_SCOPE_CHANGE · popula
 
 ## 6. Owner's open items (`[NEED]` ledger)
 
-1. Realistic termination-population sizes from the reference engagement for fixtures (VAL02 realism).
-2. D2 ruling (open schema vs. proprietary rules) — not blocking P0/P1.
-3. Greenfield-scoping hour baselines — metrics doc only.
-4. Ratifier identities for the fixture engagement (who signs the snapshot in the demo — probably "vinylfigure (Ratifier)").
+1. D2 ruling (open schema vs. proprietary rules) — not blocking P0/P1.
+2. Greenfield-scoping hour baselines — metrics doc only.
+3. Ratifier identities for the fixture engagement (who signs the snapshot in the demo — probably "vinylfigure (Ratifier)").
 
 Resolved: D7 ruling (Cartographer doc allowlist) landed 2026-08-29 (`docs/DECISIONS.md` D7); unblocked CAP10.
+Resolved: realistic termination-population sizes from the reference engagement,
+ruled on issue #52 (2026-08-29) — sanitized synthetic profile (750 employees /
+12-mo window / 105 terminations / 90 contractors / 3 rehires / 2 same-day / 1
+period-boundary).
 
 *Session ritual: end every Claude Code session with `/reflect`; promote stable lessons with `/evolve`; the learnings genome is part of the deliverable.*

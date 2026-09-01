@@ -15,13 +15,20 @@ into full detection-path and expected-verdict detail in
 Owner's ruling on issue #51 (no standalone source document exists; PRD
 §6 plus these fixtures were promoted into that file directly).
 
-**Placeholder population sizes (Owner open item 2):** the reference
-engagement's real sizes are pending; placeholders are ~200 employees /
-~15 terminations per six months. This poison tenant seeds **8
-terminations in a 77-day window** (2026-10-15 → 2026-12-31) — the
-window is deliberately inside the Okta System Log 90-day history
+**Reference-engagement scale (ruled on issue #52, 2026-08-29):** the
+sanitized synthetic profile for the V1 termination lane is 750
+employees at period start, a 12-month review window, 105 terminations
+in-window, 90 active contractors, 3 rehires, 2 same-day terminations,
+and 1 termination in the final week of the window. This poison tenant
+does not scale to that profile — it stays a deliberately small, hand-
+engineered set (**8 terminations in a 77-day window**, 2026-10-15 →
+2026-12-31) built to exercise the six specific poison cases below, with
+the window deliberately inside the Okta System Log 90-day history
 caveat so the TIMING claim compiles honestly (the six-month period is
-the E204 trap, exercised in `tests/test_type_checker.py`).
+the E204 trap, exercised in `tests/test_type_checker.py`). Scaling this
+fixture to the full reference-engagement profile would dilute the
+targeted mechanics without adding detection-rate signal, so it is left
+as-is per L-014/L-015 unless a future case needs the larger volume.
 
 ## Case → fixture → expected outcome
 
