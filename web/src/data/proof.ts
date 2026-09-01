@@ -3,12 +3,16 @@
  *
  * UI01's chain is commitment → requirement → claim → population → sources →
  * reconciliation → contract → snapshot → assertion → verdict, with typed
- * arrows. Only part of that chain exists on the wire today, and this module
- * is honest about which part: every stage resolves to a `StageEvidence`
- * whose kind says whether the stage is emitted, identity-only, trace-only,
- * or not emitted at all (README Q14–Q16). Rendering a missing stage as if
- * it were backed by data would be exactly the misrepresentation the
- * registry page refuses for DRAFT entries.
+ * arrows. "Requirement" names the compiled-into relationship between a
+ * commitment and the claims that cite it, not a standalone ontology object
+ * (Q16 ruling, issue #100, docs/DECISIONS.md D-Q16) — PRD-v3 has no defining
+ * prose for a `Requirement` model, and none is needed for the stage to
+ * render honestly. Only part of the chain exists on the wire today, and
+ * this module is honest about which part: every stage resolves to a
+ * `StageEvidence` whose kind says whether the stage is emitted,
+ * identity-only, trace-only, or not emitted at all (README Q14–Q16).
+ * Rendering a missing stage as if it were backed by data would be exactly
+ * the misrepresentation the registry page refuses for DRAFT entries.
  *
  * House discipline: artifacts are passed explicitly, so the falsifier
  * probes bite; the stage table and evidence kinds are exhaustive Records,
@@ -215,11 +219,30 @@ export function lineage(
           ],
         };
       }
-      case "requirement":
+      case "requirement": {
+        // Q16 ruling (issue #100, docs/DECISIONS.md D-Q16): Requirement is
+        // not a distinct ontology object in V1 — the "compiled into" arrow
+        // is Commitment.claim_ids tracing which claims cite this
+        // Commitment's framework_ref (Claim.framework_refs). Same lookup as
+        // the commitment stage above; trace-only, no new field on the wire.
+        const commitment = Object.values(commitments).find((c) =>
+          c.claim_ids.includes(record.claim_id),
+        );
+        if (!commitment) {
+          return {
+            kind: "not-emitted",
+            note: "No commitment cites this claim (see the commitment stage above), so there is nothing to trace a compiled-into relationship from.",
+          };
+        }
         return {
-          kind: "not-emitted",
-          note: "No requirement object travels; the nearest trace is the control id on the verdict record. PRD-v3 has no defining prose for Requirement (unlike Commitment) — modeling it needs an Owner ruling first (Q16, issue #100).",
+          kind: "trace-only",
+          fields: [
+            { label: "framework_ref", value: commitment.name, mono: true },
+            { label: "claim_ids", value: commitment.claim_ids.join(", "), mono: true },
+          ],
+          note: "Requirement is not a standalone modeled object (Q16, issue #100, docs/DECISIONS.md D-Q16); this is Commitment.claim_ids tracing which claims (Claim.framework_refs) compile from this commitment's obligation, inferred rather than carried as its own field.",
         };
+      }
       case "claim":
         return {
           kind: "emitted",

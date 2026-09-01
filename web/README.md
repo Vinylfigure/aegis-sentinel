@@ -308,8 +308,8 @@ Numbers are referenced from comments in `src/data/types.ts`.
   cross-reference, not the identification path.
 - **Q16 — commitment and requirement are absent from the wire.**
   *(Manifest snapshot half ANSWERED — issue #47. Commitment half ANSWERED —
-  issue #97. Requirement half — still OPEN, needs an Owner ruling — issue
-  #100.)* The manifest snapshot is emitted:
+  issue #97. Requirement half ANSWERED — issue #100, ruled 2026-08-29,
+  `docs/DECISIONS.md` D-Q16.)* The manifest snapshot is emitted:
   `scripts/build_demo_engagement.py poisons` calls `genesis()`
   (src/aegis_sentinel/manifest/snapshot.py) over the ids the same pipeline run
   just produced and writes `artifacts/demo-engagement/snapshot.json`, ratified
@@ -337,12 +337,17 @@ Numbers are referenced from comments in `src/data/types.ts`.
   fails the build loudly (`COMMITMENT_CATALOG`'s drift guard) rather than
   shipping a guessed source/obligation.
 
-  The requirement half stays not-emitted: unlike `Commitment`, `docs/PRD-v3.md`
-  has no defining paragraph for `Requirement` anywhere — it exists only as a
-  stage name and an edge label (`"compiled into"`) in the ten-stage chain
-  string. Modeling it would mean inventing its shape from nothing, so issue
-  #100 asks the Owner to rule on what it actually is before a future firing
-  builds it.
+  The requirement half is now trace-only, per the Owner's Q16 ruling
+  (issue #100, `docs/DECISIONS.md` D-Q16, option 1): `Requirement` is not a
+  distinct ontology object in V1 — the ten-stage chain's "requirement" link
+  is the compiled aspect of `Claim`, traceable via the same
+  `Commitment.claim_ids` join the commitment stage already resolves, paired
+  with the commitment's `name` (the `Claim.framework_refs` value it
+  catalogs). `/proof`'s requirement stage renders `trace-only` for any
+  record whose commitment resolves, showing the `framework_ref` and
+  `claim_ids` it was inferred from — never a field carried on its own; the
+  chain documentation was updated instead of inventing a new model
+  (`docs/PRD-v3.md`, `docs/HANDOFF.md`, this module's doc comment).
 - **Q17 — the poison run's verdict records live only inside poisons.json.
   ANSWERED — issue #58.** `build_poison_artifacts()` now writes
   `verdicts.json` as the consolidated roster — the walking-skeleton record

@@ -135,9 +135,10 @@ ratification is the freeze — draft → frozen(=ratified) → superseded).
   claim_id/assertion_id fields (Q15, issue #53), verdict itself), with
   commitment/requirement/snapshot labelled not-emitted (Q16). Snapshot
   (issue #47) and commitment (issue #97) are since conditionally emitted —
-  real when the join resolves, not-emitted otherwise; requirement stays
-  not-emitted (issue #100, needs an Owner ruling — PRD-v3 has no defining
-  prose for it). Clicking the population node links into the
+  real when the join resolves, not-emitted otherwise; requirement now
+  renders trace-only (issue #100, ruled: not a standalone ontology object,
+  the compiled-into arrow from `Commitment.claim_ids`/`Claim.framework_refs`
+  — `docs/DECISIONS.md` D-Q16). Clicking the population node links into the
   why-complete rail (UI01). Routes generated from `engagementVerdictRecords`
   (verdicts.json + poisons verdict_records, deduped — the B1 mock duplicates
   them; real artifacts are disjoint, so C2 lifts this to 11 pages with zero
