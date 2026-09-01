@@ -200,9 +200,11 @@ ratification is the freeze — draft → frozen(=ratified) → superseded).
 ## Owner's open items
 
 1. Mutation playbook document (fixtures authored from PRD §6 carry `TODO(playbook)`).
-2. Reference-engagement population sizes (placeholders ~200 employees / ~15
-   terminations, documented in fixture READMEs).
-3. D7 Cartographer doc-allowlist ruling (blocks CAP10 only).
-4. Branch protection on `main` (required checks `verify` + `web-verify`, CODEOWNERS).
+2. D7 Cartographer doc-allowlist ruling (blocks CAP10 only).
+3. Branch protection on `main` (required checks `verify` + `web-verify`, CODEOWNERS).
 
 Resolved: D-L1 lifecycle ruling landed 2026-08-16 at the SCH00 PR (`docs/DECISIONS.md` D-L1).
+Resolved: reference-engagement population sizes ruled on issue #52 (2026-08-29) —
+sanitized synthetic profile (750 employees / 12-mo window / 105 terminations / 90
+contractors / 3 rehires / 2 same-day / 1 period-boundary); see
+`tests/fixtures/poisons/README.md`.
