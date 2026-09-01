@@ -78,7 +78,7 @@ Prefixes: `SCH` schema/ontology · `CAP` capability registry · `COL` collectors
 |---|---|---|---|---|
 | LANE02 | Rudd AP-automation lane from template | VAL02 | M | AP lane instantiates from the same template schema; where it doesn't fit, the misfit is *recorded* in the decision ledger as evidence, not papered over. |
 | MCP01 | Sentinel MCP server (collectors as tools, evidence as resources) | VAL02 | L | Read-only; Overlord/auditor can query verdicts and pull WORM samples; no tool mutates scope or records verdicts. |
-| CAP10 | Cartographer agent (LLM lane) | CAP01, SCH03 | L | Proposes capability entries with citations from an allowlisted doc set (D7-open: allowlist pending the Owner); proposals are drafts; cannot probe; cannot ratify. |
+| CAP10 | Cartographer agent (LLM lane) | CAP01, SCH03 | L | Proposes capability entries with citations from an allowlisted doc set (D7-ruled, `docs/DECISIONS.md`); proposals are drafts; cannot probe; cannot ratify. |
 | REC10 | Surveyor deterministic probes | CAP01 | M | One ratified enumeration per entry against real tenant; observed-vs-documented drift emitted as findings. |
 
 **Critical path:** SCH00 → SCH01 → TYP01 → COL01–05 → REC01 → EVAL01 → VAL02. Bottleneck: SCH01 blocks everything — get the ontology reviewed by the Owner before Phase 1 starts. Second bottleneck: TYP01 gates all collectors by design (that's the compiler being a compiler).
@@ -91,8 +91,9 @@ Assurance Manifest · ratified scope snapshot · PROPOSED_SCOPE_CHANGE · popula
 
 1. Realistic termination-population sizes from the reference engagement for fixtures (VAL02 realism).
 2. D2 ruling (open schema vs. proprietary rules) — not blocking P0/P1.
-3. D7 ruling (Cartographer doc allowlist) — blocks CAP10 only.
-4. Greenfield-scoping hour baselines — metrics doc only.
-5. Ratifier identities for the fixture engagement (who signs the snapshot in the demo — probably "vinylfigure (Ratifier)").
+3. Greenfield-scoping hour baselines — metrics doc only.
+4. Ratifier identities for the fixture engagement (who signs the snapshot in the demo — probably "vinylfigure (Ratifier)").
+
+Resolved: D7 ruling (Cartographer doc allowlist) landed 2026-08-29 (`docs/DECISIONS.md` D7); unblocked CAP10.
 
 *Session ritual: end every Claude Code session with `/reflect`; promote stable lessons with `/evolve`; the learnings genome is part of the deliverable.*

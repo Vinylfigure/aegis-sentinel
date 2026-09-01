@@ -131,9 +131,9 @@ Baselines: `[NEED: hours + incompleteness findings from the last two greenfield 
 
 ## 8. Decisions — resolved and open
 
-**Resolved by adjudication:** D1 bounded claim, instrumented (no percentage). D3 templates only. D5 derivation rules + source roles (authoritative source = degenerate case). D6 shallow OSCAL — serialization boundary, never the ontology; Aegis-native concepts (derivation rules, reconciliation deltas, evidence fitness, UNKNOWN provenance, ratification, drift) stay Aegis's.
+**Resolved by adjudication:** D1 bounded claim, instrumented (no percentage). D3 templates only. D5 derivation rules + source roles (authoritative source = degenerate case). D6 shallow OSCAL — serialization boundary, never the ontology; Aegis-native concepts (derivation rules, reconciliation deltas, evidence fitness, UNKNOWN provenance, ratification, drift) stay Aegis's. **D7** (Cartographer documentation-source allowlist): ruled — allowlist by rule (vendor first-party doc domains only), with a Workday unreachable-source exception; see `docs/DECISIONS.md` D7.
 
-**Open, deliberately deferred until the lane is proven:** D2 (open schema + curated proprietary rule library is the leading option — the format wants adoption, the rules are where expertise compounds); D4 (Rudd lane instantiation — call happens regardless; lane is conditional). **New — D7:** does the Cartographer get a curated allowlist of documentation sources per vendor, or open web research with citation requirements? (Lean: allowlist for V1 — determinism of the knowledge supply chain matters too.)
+**Open, deliberately deferred until the lane is proven:** D2 (open schema + curated proprietary rule library is the leading option — the format wants adoption, the rules are where expertise compounds); D4 (Rudd lane instantiation — call happens regardless; lane is conditional).
 
 ---
 
