@@ -166,7 +166,11 @@ def test_case_1_contractor_absent_from_hris_is_unknown_population(poisons):
     assert record["status"] == "UNKNOWN"
     assert record["unknown_cause"] == "UNKNOWN_POPULATION"
     assert c["actual_class"] == {"kind": "UNKNOWN", "unknown_cause": "UNKNOWN_POPULATION"}
-    assert c["evidence"] == {"bucket": "right_only", "member_ref": "email:mira.chen@example.com"}
+    assert c["evidence"] == {
+        "kind": "identity_delta",
+        "bucket": "right_only",
+        "member_ref": "email:mira.chen@example.com",
+    }
     # The reconciler's bucket fed the evaluator: the verdict was recorded
     # against the blocked denominator, left of RECONCILED.
     assert record["support"]["field_values"]["population_state"] == "DISCOVERED"
