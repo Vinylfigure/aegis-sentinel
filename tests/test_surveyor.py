@@ -127,6 +127,33 @@ def test_state_only_entry_has_no_temporal_drift_even_with_no_earliest_record():
     assert result.findings == ()
 
 
+def test_refuses_a_reversed_date_response():
+    """earliest_record_at after extracted_at is malformed, not a −Nd
+    finding — refused before any drift is recorded."""
+    entry = _entry("okta.system_log")
+    raw = _response(
+        extracted_at="2026-10-01T00:00:00Z",
+        earliest_record_at="2026-10-15T00:00:00Z",
+    )
+    with pytest.raises(ProbeRefusal, match="earliest_record_at"):
+        run_probe(entry, transport_returning(raw), tenant=TENANT)
+
+
+def test_schema_drift_covers_every_yielded_population_not_just_the_first():
+    """github.members documents two populations on one surface (entity +
+    relationship attributes); a probe response missing 'role' — only
+    present in populations_yielded[1] — must still surface as drift."""
+    entry = _entry("github.members")
+    raw = _response(
+        pagination_method="page",
+        earliest_record_at=None,
+        schema_attributes=["login", "id", "type", "site_admin"],
+    )
+    result = run_probe(entry, transport_returning(raw), tenant=TENANT)
+    findings = {f.kind: f for f in result.findings}
+    assert "role" in findings["schema_drift"].detail
+
+
 def test_run_probe_never_mutates_the_entry():
     entry = _entry("okta.system_log")
     before = entry.model_copy(deep=True)

@@ -8,12 +8,17 @@ documented. Drift between docs and reality is itself a finding."
 collectors' injected-transport shape (COL01-05): the transport is a
 callable returning raw probe-response bytes, so this module performs no
 I/O of its own — fixture bytes in tests, a real extract later, identical
-code path either way (no live-tenant calls in tests). It is structurally
-unable to exceed the granted read scope: `run_probe()` refuses outright
-on any entry that isn't `lifecycle=FROZEN` (HANDOFF §4 REC10 — "one
-ratified enumeration per entry"; a DRAFT entry has no ratified scope to
-probe), and refuses a response whose tenant doesn't match the engagement
-tenant, exactly as the collectors do.
+code path either way (no live-tenant calls in tests). `run_probe()`
+refuses outright on any entry that isn't `lifecycle=FROZEN` (HANDOFF §4
+REC10 — "one ratified enumeration per entry"; a DRAFT entry has not been
+ratified, so there is nothing to probe), and refuses a response whose
+tenant doesn't match the engagement tenant, exactly as the collectors
+do. This mirrors the collectors' own scope precisely: like COL01-05,
+`run_probe()` checks the capability entry's own ratification, not
+whether a specific ratified manifest snapshot actually grants this
+engagement that capability — snapshot-level scope enforcement is a
+call-site concern (the manifest gates which collectors/probes a run may
+invoke at all), not re-implemented per collector or probe.
 
 The probe never writes, ratifies, or corrects the registry — it only
 reports drift as `Finding`s for a human to act on (registry health
@@ -74,7 +79,13 @@ class ProbeResult(Base):
 
 
 def _schema_drift(entry: CapabilityEntry, observed: ObservedCapability) -> Finding | None:
-    documented = set(entry.populations_yielded[0].attributes)
+    # Union across every yielded population (github.members-shaped entries
+    # document more than one, e.g. entity + relationship attributes from the
+    # same surface) — the probe response carries one flat observed set, so
+    # drift is judged against everything documented, not just population[0].
+    documented = {
+        attr for population in entry.populations_yielded for attr in population.attributes
+    }
     seen = set(observed.schema_attributes)
     if documented == seen:
         return None
@@ -142,9 +153,11 @@ def run_probe(
     response bytes) and diff observed-vs-documented.
 
     Raises `ProbeRefusal` if the entry isn't ratified (`lifecycle !=
-    FROZEN` — no granted read scope to probe) or if the response's
-    tenant doesn't match `tenant` (provenance, mirroring the collectors'
-    wrong-tenant refusal). Never partial: a refusal always precedes any
+    FROZEN`), if the response's tenant doesn't match `tenant` (provenance,
+    mirroring the collectors' wrong-tenant refusal), or if the response
+    claims an `earliest_record_at` after its own `extracted_at`
+    (malformed — refused rather than reported as a nonsensical negative
+    retention depth). Never partial: a refusal always precedes any
     finding being recorded.
     """
     if entry.lifecycle is not LifecycleState.FROZEN:
@@ -162,6 +175,16 @@ def run_probe(
         raise ProbeRefusal(
             f"{entry.id}: probe response tenant {observed.tenant!r} != engagement "
             f"tenant {tenant!r} (provenance)"
+        )
+    if (
+        observed.earliest_record_at is not None
+        and observed.earliest_record_at > observed.extracted_at
+    ):
+        raise ProbeRefusal(
+            f"{entry.id}: probe response earliest_record_at "
+            f"{observed.earliest_record_at.isoformat()} is after extracted_at "
+            f"{observed.extracted_at.isoformat()} — malformed response, refusing "
+            "rather than reporting a nonsensical negative retention depth"
         )
     findings = tuple(
         finding
