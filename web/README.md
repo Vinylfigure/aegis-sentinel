@@ -200,8 +200,17 @@ Numbers are referenced from comments in `src/data/types.ts`.
   `scripts/build_demo_engagement.py` from the same `Delta` objects the
   buckets hold — `bucket` and `dispositioned` travel with the ref instead of
   the page re-deriving both by joining against `buckets`/`dispositions`.
-  Related, still open: nothing on the wire says *why* RATIFIED was not
-  reached.
+  Related — *why* RATIFIED was not reached: ANSWERED — issue #98. Nothing
+  new needs to travel on the wire: `WhyCompleteRail.tsx`'s Conclusion
+  section already assembles it from data that already travels —
+  `"Not reconciled: N of M blocking deltas are unanswered (refs...)"` when
+  the claim doesn't hold — and each named ref is traceable to its bucket
+  (§5 Dispositions, `Blocker.bucket` sourced from
+  `blocked_by_open_deltas[].bucket`) and, on drill-down, its D-7
+  join-failure `cause` (the per-member "Join-failure cause" rail section,
+  `SelectedChain`'s `d7Classify(delta?.cause)`). Bucket + cause + unanswered
+  is the "why," assembled client-side the same way Q3/Q10/Q12 derive rather
+  than duplicate — not a gap needing a new summary field.
 - **Q12 — derivation basis on the wire.** *(ANSWERED at B2 — it now travels.)*
   `reconciliation.json` gained `population_type`, `definition`,
   `derivation_rule` and `authoritative_source`, emitted from the `Population`
@@ -229,7 +238,14 @@ Numbers are referenced from comments in `src/data/types.ts`.
     says why RECONCILED was blocked? Still OPEN — no in-scope model field
     (timestamp, freshness window, source-fingerprint) exists to read a reason
     from, and no real trigger path produces STALE today, so this needs actual
-    new modeling, not exposure of data already in scope.
+    new modeling, not exposure of data already in scope. Re-confirmed —
+    issue #98 (2026-08-28): still no freshness/fingerprint/period-roll field
+    on `Population` in `schema/models.py`, and `build_demo_engagement.py`
+    still never produces a STALE population. Deferring per L-014 (a
+    mechanism earns scaffold space only once dogfooded use demonstrates the
+    need): with no real STALE-producing path yet, a reason field would sit
+    unread. Revisit once a collector run actually drives a population to
+    STALE.
 - **Q13 — no per-source temporal window. ANSWERED — issue #94.** Split into
   the two things the question conflated:
   - A per-source `time_window` duplicating what already travels would have
