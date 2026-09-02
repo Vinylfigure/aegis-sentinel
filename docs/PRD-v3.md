@@ -112,7 +112,7 @@ Unchanged: not a GRC platform; not a scanner; no LLM in the verdict path; not mu
 
 **Build phases on `aegis-sentinel`:**
 - **P0 (now → post-Kikoff-loop):** manifest schema reconciliation; ontology as typed schemas (`src/schema/`); capability-entry format; the three HTML prototypes preserved as `docs/prototypes/` design references.
-- **P1 (pre-Rudd, wk of 8/17):** termination lane — five capability entries, collectors for the lane, set reconciler, typed evaluator, lineage view (proof graph: commitment → requirement → claim → population → sources → reconciliation → contract → snapshot → assertion → verdict, every arrow typed). Mutation suite from the playbook wired into CI (`scripts/verify.sh` — the Janus loop makes the mutation suite the verify step).
+- **P1 (pre-Rudd, wk of 8/17):** termination lane — five capability entries, collectors for the lane, set reconciler, typed evaluator, lineage view (proof graph: commitment → requirement → claim → population → sources → reconciliation → contract → snapshot → assertion → verdict, every arrow typed; "requirement" names the compiled-into relationship between a commitment and the claims that cite it, not a standalone ontology object — Q16, `docs/DECISIONS.md` D-Q16). Mutation suite from the playbook wired into CI (`scripts/verify.sh` — the Janus loop makes the mutation suite the verify step).
 - **P1.5 (post-lane-proof only):** Rudd AP lane instantiation from the template — the template thesis's first external validation; if AP doesn't fit the lane model, that's recorded as evidence, not bent around.
 - **P2:** discovery feeds (CAI, GitHub org, IdP app catalog) as Surveyor inputs → PROPOSED flows; scope-delta mode for year-two engagements; Overlord planning over Sentinel-MCP.
 

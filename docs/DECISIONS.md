@@ -121,3 +121,27 @@ Unblocks CAP10 (`src/aegis_sentinel/capability/allowlist.py`,
 the allowlist force a recorded `DRAFT:`/`source_unreachable` caveat rather than silent
 omission; the propose function has no parameter through which a caller can set
 `ratified_by` or a non-DRAFT lifecycle, so ratification stays structurally a human act).
+
+## D-Q16 · 2026-08-29 · RATIFIED · Owner
+
+**Requirement is not a distinct ontology object in V1** (PRD-v3 §2's requirement half
+of Q16, `docs/PRD-v3.md` has no defining paragraph for `Requirement` unlike
+`Commitment`). Ruled via issue #100, comment 2026-08-29 (posted through an
+operator-directed session), option 1:
+
+1. The ten-stage chain's "requirement" link is the compiled aspect of `Claim`: a
+   `Commitment`'s obligation compiles into `Claim`s, traceable via
+   `Commitment.claim_ids` → `Claim.framework_refs`. The chain documentation, not the
+   ontology, needed updating — not a new model.
+2. `/proof`'s requirement stage resolves **trace-only** against
+   `Claim.framework_refs` + `Commitment.claim_ids` — no new field on the wire.
+3. Per L-014/L-015, no mechanism enters the scaffold without a dogfooded need, and
+   none has surfaced for a standalone `Requirement`. If a future engagement
+   demonstrates a need (e.g., a compiled intermediate carrying fields neither
+   `Commitment` nor `Claim` can hold), re-open with that evidence.
+
+Mechanized in `web/src/data/proof.ts`'s `requirement` stage (trace-only, same
+commitment lookup as the `commitment` stage, showing `framework_ref` +
+`claim_ids`); chain prose updated at `docs/PRD-v3.md`, `docs/HANDOFF.md`, and this
+module's doc comment; `src/aegis_sentinel/schema/models.py::Commitment`'s docstring
+records that no `Requirement` model was invented, consistent with this ruling.

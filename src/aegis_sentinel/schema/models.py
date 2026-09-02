@@ -183,9 +183,11 @@ class Commitment(Base):
     boundary implication`). Scoped to exactly what /proof's commitment
     stage renders (README Q16): a name, its source category, the
     obligation text, and the claims it implicates — not the full
-    boundary-implication chain, and not `Requirement` (PRD-v3 has no
-    defining prose for that stage; left to issue #100 rather than
-    invented here, per L-014/L-015)."""
+    boundary-implication chain, and not `Requirement`. Q16's requirement
+    half was ruled (issue #100, docs/DECISIONS.md D-Q16): not a distinct
+    ontology object, so no model was invented here per L-014/L-015 — the
+    ten-stage chain's requirement link traces through `claim_ids` instead
+    (`/proof`'s requirement stage, trace-only)."""
 
     id: str = Field(min_length=1)
     name: str = Field(min_length=1)
