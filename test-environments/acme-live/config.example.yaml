@@ -1,0 +1,43 @@
+# Acme Corp — configuration template (issue #123, Deliverable 1 of issue
+# #122). Copy to `config.yaml` (gitignored — see the note at the bottom)
+# and fill in real tenant identifiers. NEVER commit real values, tokens, or
+# secrets here or in any copy of this file.
+#
+# No code reads this file yet. Deliverable 4 (external source adapters) is
+# explicitly out of scope for issue #123; this documents the shape those
+# adapters will expect so the four external tenants can be provisioned
+# ahead of that work, per README.md's setup checklist.
+
+acme_live:
+  merge:
+    # Merge.dev unified HRIS API, test-mode account.
+    # Credential lives in $ACME_LIVE_MERGE_API_KEY / $ACME_LIVE_MERGE_ACCOUNT_TOKEN
+    # (test-account tokens, per Merge's linked-account model) — never in this file.
+    account_token_env: ACME_LIVE_MERGE_ACCOUNT_TOKEN
+    api_key_env: ACME_LIVE_MERGE_API_KEY
+    base_url: https://api.merge.dev/api/hris/v1
+
+  okta:
+    # Okta Integrator Free Plan org.
+    # Credential lives in $ACME_LIVE_OKTA_API_TOKEN — never in this file.
+    org_url: https://acme-live-test.okta.com # placeholder subdomain — replace with the real Integrator org
+    api_token_env: ACME_LIVE_OKTA_API_TOKEN
+
+  github:
+    # GitHub test organization, separate from this repo's own org.
+    # Credential lives in $ACME_LIVE_GITHUB_TOKEN — never in this file.
+    org: acme-live-test-org # placeholder — replace with the real test org name
+    token_env: ACME_LIVE_GITHUB_TOKEN
+
+  jira:
+    # Atlassian Cloud developer site, Jira test project.
+    # Credential lives in $ACME_LIVE_JIRA_API_TOKEN — never in this file.
+    site_url: https://acme-live-test.atlassian.net # placeholder — replace with the real dev site
+    project_key: ACME
+    email_env: ACME_LIVE_JIRA_EMAIL # Atlassian API tokens authenticate as (email, token)
+    api_token_env: ACME_LIVE_JIRA_API_TOKEN
+
+# Local-only: add `test-environments/acme-live/config.yaml` to .gitignore
+# before anyone fills this template in with real tenant identifiers — it is
+# not added by this issue because no code path reads it yet and an empty
+# gitignore entry for a file that doesn't exist would be untestable noise.

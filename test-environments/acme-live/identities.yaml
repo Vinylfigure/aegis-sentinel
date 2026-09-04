@@ -1,0 +1,194 @@
+# Acme Corp — identity roster (issue #123, Deliverable 1/2 of issue #122).
+#
+# Fictional test company, fictional people (@acme.example) — not the redacted
+# client, per docs/DECISIONS.md D-R1. Referenced by ground-truth.yaml (the
+# scored answer key) and scenarios.yaml (the per-scenario claim inputs).
+#
+# 14 identities, not the ~10 issue #122 sketched: each one is grounded in a
+# distinct assurance mechanism (D-7 join-failure family, DeltaBucket, or
+# VerdictState) that the validation run must exercise separately, the same
+# one-cause-per-fixture discipline tests/fixtures/poisons/README.md uses for
+# VAL02. Two identities (ivy, quinn) exist only because "incomplete evidence
+# history" and "unresolved identity join" are mechanically different from
+# "delayed termination" (temporal-history insufficiency and D-7
+# identity-fuzzy vs a plain TIMING FAIL) and would otherwise collide with
+# carol's scenario if forced onto one identity. leo exists because
+# "legitimate exclusion" must be shown as a general ratification mechanism,
+# not something the harness only ever demonstrates via break-glass/service
+# accounts.
+#
+# No live API calls are made building this file — every field below is what
+# a human operator will seed by hand into the four external test tenants per
+# README.md. Deliverable 4 (adapters), 5 (capability registry), 6 (manifest
+# enforcement), and 8 (validate-environment CLI) are explicitly deferred to
+# follow-on issues; this file has nothing for them to read yet.
+
+company: acme-corp
+
+identities:
+  # 1. Active employee — negative control, never enters the termination
+  #    population.
+  alice:
+    type: employee
+    display_name: "Alice Renwick"
+    email: alice.renwick@acme.example
+    merge_employment_status: active
+    okta_status: active
+    github_login: alice-renwick
+    category: active_employee
+
+  # 2. Properly terminated employee — clean revocation, the PASS control.
+  bob:
+    type: employee
+    display_name: "Bob Achterberg"
+    email: bob.achterberg@acme.example
+    merge_employment_status: terminated
+    okta_status: deactivated
+    github_login: bob-achterberg
+    category: properly_terminated
+
+  # 3. Improperly terminated employee — access revoked 9 business days
+  #    after termination, past the 5-business-day claim threshold.
+  carol:
+    type: employee
+    display_name: "Carol Iwueke"
+    email: carol.iwueke@acme.example
+    merge_employment_status: terminated
+    okta_status: deactivated
+    github_login: carol-iwueke
+    category: improperly_terminated
+
+  # 4. Contractor — end-dated in the offboarding tracker and Okta but has
+  #    no row in Merge HRIS at all (contractors are tracked, not employed).
+  dave:
+    type: contractor
+    display_name: "Dave Okonkwo"
+    email: dave.okonkwo@acme.example
+    merge_employment_status: null # absent from Merge by design
+    okta_status: deactivated
+    github_login: dave-okonkwo
+    category: contractor_absent_from_hris
+
+  # 5. Privileged administrator — terminated employee whose elevated
+  #    GitHub org-owner role is never removed.
+  erin:
+    type: employee
+    display_name: "Erin Vasquez-Halloran"
+    email: erin.vasquez-halloran@acme.example
+    merge_employment_status: terminated
+    okta_status: deactivated
+    github_login: erin-vasquez-halloran
+    github_role: org_owner
+    category: privileged_admin_access_never_removed
+
+  # 6. Service account — a machine identity, not a person; ratified out of
+  #    the termination population's scope.
+  svc_prod:
+    type: service_account
+    display_name: "svc-prod-deploy"
+    email: null
+    merge_employment_status: null
+    okta_status: active
+    github_login: svc-prod-deploy
+    category: service_account
+
+  # 7. Break-glass account — emergency admin credential, ratified boundary
+  #    exclusion (governed by a separate break-glass-usage control).
+  breakglass_admin:
+    type: break_glass
+    display_name: "breakglass-admin"
+    email: null
+    merge_employment_status: null
+    okta_status: active
+    github_login: breakglass-admin
+    category: break_glass_account
+
+  # 8. Rehire — terminated once, rehired, currently active. The population
+  #    must key off the later hire event, not flag the earlier termination.
+  frank:
+    type: employee
+    display_name: "Frank Delacroix-Muto"
+    email: frank.delacroix-muto@acme.example
+    merge_employment_status: active
+    merge_prior_termination_date: "2026-02-10"
+    merge_rehire_date: "2026-05-04"
+    okta_status: active
+    github_login: frank-delacroix-muto
+    category: rehire
+
+  # 9. Duplicate/alias identity — one HRIS person, two GitHub logins: the
+  #    SSO-linked login is properly removed, a pre-SSO legacy local login
+  #    is not.
+  grace:
+    type: employee
+    display_name: "Grace Oyelaran"
+    email: grace.oyelaran@acme.example
+    merge_employment_status: terminated
+    okta_status: deactivated
+    github_login: grace-oyelaran # SSO-linked, removed
+    github_login_alias: g-oyelaran-legacy # local, pre-SSO, not removed
+    category: duplicate_alias_identity
+
+  # 10. Orphan identity — GitHub org member added outside the standard
+  #     onboarding path; no email match in Merge HRIS or Okta at all.
+  henry:
+    type: unknown
+    display_name: null
+    email: null
+    merge_employment_status: null
+    okta_status: null
+    github_login: henry-vance
+    category: orphan_identity
+
+  # 11. Incomplete evidence history — terminated before the start of Okta's
+  #     reachable system-log retention window, so the removal timestamp
+  #     cannot actually be established (mirrors REC10's Surveyor-observed
+  #     retention gap, not a design assumption).
+  ivy:
+    type: employee
+    display_name: "Ivy Marchetti-Solano"
+    email: ivy.marchetti-solano@acme.example
+    merge_employment_status: terminated
+    okta_status: deactivated
+    okta_history_note: "deactivation predates the reachable system-log window"
+    github_login: ivy-marchetti-solano
+    category: incomplete_evidence_history
+
+  # 12. Unresolved identity join — HRIS termination is real, but Okta's own
+  #     deactivation event carries a malformed identifier (no "@") that
+  #     fails canonical-key derivation, same shape as the poison suite's
+  #     case 4 (quinn.ash%example.com).
+  quinn:
+    type: employee
+    display_name: "Quinn Abernathy-Solis"
+    email: quinn.abernathy-solis@acme.example
+    merge_employment_status: terminated
+    okta_status: deactivated
+    okta_event_alternate_id: "quinn.abernathy-solis%acme.example" # malformed
+    github_login: quinn-abernathy-solis
+    category: unresolved_identity_join
+
+  # 13. Legitimate exception — phased-offboarding, access revoked 21
+  #     business days late but covered by a ratified exception disposition
+  #     with an expiration.
+  kai:
+    type: employee
+    display_name: "Kai Njoroge-Falkenrath"
+    email: kai.njoroge-falkenrath@acme.example
+    merge_employment_status: terminated
+    okta_status: deactivated
+    github_login: kai-njoroge-falkenrath
+    category: legitimate_exception
+
+  # 14. Legitimate exclusion — an external board advisor with system
+  #     access, ratified out of the termination population's scope under a
+  #     separate board-access control (distinct mechanism from
+  #     break-glass/service-account exclusions above).
+  leo:
+    type: board_advisor
+    display_name: "Leo Whitfield-Nakashima"
+    email: leo.whitfield-nakashima@acme.example
+    merge_employment_status: null # never an Acme employee
+    okta_status: active
+    github_login: leo-whitfield-nakashima
+    category: legitimate_exclusion
