@@ -1,0 +1,170 @@
+# Acme Corp — ground truth (issue #123, Deliverable 2 of issue #122).
+#
+# The scored answer key for Lane A (terminated-user-access). Sentinel must
+# never read this file during compilation, collection, reconciliation, or
+# evaluation — a future `aegis validate-environment` command (Deliverable 8,
+# out of scope for this issue) is the only thing that may open it, and only
+# after Sentinel has already emitted its own verdict records, to compare.
+# Consuming this file from inside the trusted conclusion path is itself a
+# defect: it would let ground truth manufacture a PASS the evidence does not
+# support, which is exactly what invariant "no LLM/no shortcut authority to
+# manufacture PASS" (issue #122) forbids.
+#
+# Vocabulary is load-bearing, not descriptive: `expected_status` values are
+# exactly VerdictState (src/aegis_sentinel/schema/enums.py — PASS, FAIL,
+# UNKNOWN, EXCLUDED, EXCEPTION); `expected_why_code` values are exactly
+# UnknownWhy; `expected_bucket` values are exactly DeltaBucket. A future
+# scoring harness can compare these fields to a live verdict record's own
+# fields without a translation table.
+
+claim: terminated_access_revoked_within_5_business_days
+lane: termination
+
+identities:
+  alice:
+    expected_status: null # never enters the termination population
+    known_defect: null
+    note: >-
+      Active throughout the evaluation window; must not appear in the
+      termination-lane denominator at all. Present as a negative control —
+      an active identity leaking into the population is itself a defect.
+
+  bob:
+    expected_status: PASS
+    known_defect: null
+    note: >-
+      Terminated 2026-07-06 (Mon); Okta deactivation and GitHub removal both
+      land 2026-07-07 (Tue) — 1 business day.
+
+  carol:
+    expected_status: FAIL
+    known_defect: delayed_revocation
+    note: >-
+      Terminated 2026-07-13 (Mon); Okta deactivation lands 2026-07-24 (Fri)
+      — 9 business days, past the 5-business-day claim threshold.
+
+  dave:
+    expected_status: UNKNOWN
+    expected_why_code: UNKNOWN_POPULATION
+    expected_bucket: right_only
+    known_defect: contractor_absent_from_hris
+    note: >-
+      Present in Okta/GitHub and the offboarding tracker, absent from Merge
+      HRIS entirely. DISCOVERED->RECONCILED blocks on this delta until a
+      human disposition names it (mirrors VAL02 poison case 1, mira.chen).
+
+  erin:
+    expected_status: FAIL
+    known_defect: privileged_access_never_removed
+    note: >-
+      Terminated 2026-06-01; Okta deactivated 2026-06-02 (on time), but the
+      GitHub org-owner role is never removed as of the report date. Elevated
+      severity: the claim fails on the highest-privilege surface, not merely
+      the identity provider.
+
+  svc_prod:
+    expected_status: EXCLUDED
+    expected_ratification_required: true
+    known_defect: null
+    note: >-
+      Machine identity, not a person; ratified out of the termination
+      population's scope. A verdict here without a ratification_ref is
+      itself a defect (D-V1: EXCLUDED requires ratification_ref).
+
+  breakglass_admin:
+    expected_status: EXCLUDED
+    expected_ratification_required: true
+    known_defect: null
+    note: >-
+      Emergency admin credential, ratified boundary exclusion; usage is
+      governed by a separate break-glass control, not this claim.
+
+  frank:
+    expected_status: PASS
+    known_defect: null
+    note: >-
+      Terminated 2026-02-10, rehired 2026-05-04, active at report time. The
+      population must key off the later hire event — reading the 2026-02-10
+      termination as a live, unrevoked-access FAIL would itself be the
+      defect this identity is seeded to catch.
+
+  grace:
+    expected_status: UNKNOWN
+    expected_why_code: UNKNOWN_POPULATION
+    known_defect: duplicate_github_identity_unresolved
+    note: >-
+      Terminated 2026-07-08. The SSO-linked GitHub login is removed on time;
+      a pre-SSO legacy local login (g-oyelaran-legacy) is not, and has no
+      independent HRIS row of its own to key a separate verdict off — an
+      identity-fuzzy (D-7) join problem, not a plain delayed revocation.
+
+  henry:
+    expected_status: UNKNOWN
+    expected_why_code: UNKNOWN_POPULATION
+    expected_bucket: right_only
+    known_defect: orphan_github_account
+    note: >-
+      GitHub org member with no email match in Merge HRIS or Okta at all —
+      no basis anywhere (D-7 no-basis-anywhere), added outside the standard
+      onboarding path.
+
+  ivy:
+    expected_status: UNKNOWN
+    expected_why_code: UNKNOWN_EVIDENCE
+    known_defect: insufficient_temporal_history
+    note: >-
+      Terminated 2026-04-01, before the start of the Okta tenant's reachable
+      system-log retention window as of the report date — the removal
+      timestamp cannot actually be established from available evidence
+      (mirrors REC10's Surveyor-observed retention gap: an UNKNOWN_EVIDENCE
+      why-code, not a compile-time E204 refusal, because the claim itself
+      compiles — the live tenant's history just does not reach far enough
+      back for this specific case).
+
+  quinn:
+    expected_status: UNKNOWN
+    expected_why_code: UNKNOWN_EVIDENCE
+    expected_bucket: unresolvable
+    known_defect: garbled_identifier_unjoinable
+    note: >-
+      Terminated 2026-07-15; Okta's deactivation event carries a malformed
+      alternate_id ("quinn.abernathy-solis%acme.example", no "@") that fails
+      canonical-key derivation — revocation is unattributable to Quinn from
+      available evidence (mirrors VAL02 poison case 4).
+
+  kai:
+    expected_status: EXCEPTION
+    expected_disposition_required: true
+    known_defect: null
+    note: >-
+      Terminated 2026-06-15; phased-offboarding, access revoked 2026-07-15 —
+      22 business days late — but covered by a ratified exception
+      disposition naming an expiration. A FAIL here (ignoring the
+      disposition) or a silent PASS (ignoring the lateness) are both
+      defects this identity is seeded to catch.
+
+  leo:
+    expected_status: EXCLUDED
+    expected_ratification_required: true
+    known_defect: null
+    note: >-
+      External board advisor with system access, ratified out of the
+      termination population's scope under a separate board-access control
+      — proves the exclusion mechanism generalizes past the break-glass and
+      service-account cases above, rather than being hardcoded to those two
+      identity types.
+
+# Population-level expectations, scored independently of any single
+# identity above.
+population_defects:
+  - id: PD-01
+    description: "svc_prod and breakglass_admin must not silently vanish from the denominator — they must appear, dispositioned EXCLUDED, not be filtered out before population construction."
+  - id: PD-02
+    description: "alice (active) must not appear in the termination population at all."
+  - id: PD-03
+    description: "frank's 2026-02-10 termination event must not be double-counted as a second, currently-open population member alongside his active 2026-05-04 rehire record."
+
+# Severity note carried from issue #122 Deliverable 9: any live verdict of
+# PASS for an identity whose expected_status above is FAIL, UNKNOWN,
+# EXCLUDED, or EXCEPTION is a false PASS — the single metric a future
+# validation report (Deliverable 9, out of scope here) must treat as fatal.
