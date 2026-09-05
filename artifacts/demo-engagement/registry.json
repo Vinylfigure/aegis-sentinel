@@ -265,7 +265,7 @@
       "access_modes": [
         "direct-api"
       ],
-      "auth_scope": "API key (Authorization: Bearer <token>) plus X-Account-Token identifying the linked HRIS tenant -- confirmed via docs.merge.dev; Merge does not document a separate per-category permission scope beyond the account-level API key",
+      "auth_scope": "API key (Authorization: Bearer <token>) plus X-Account-Token identifying the linked HRIS tenant -- confirmed via docs.merge.dev/basics/authentication/; Merge does not document a separate per-category permission scope beyond the account-level API key",
       "history_caveats": [
         "DRAFT: exact endpoint path (assumed GET /api/hris/v1/employees, Merge's standard category-prefixed Unified API convention) and any filtering options beyond employment_status were not independently re-fetched this session -- docs.merge.dev's API-reference page renders via JS and returned no endpoint-path content through this session's proxy; verify against a reachable rendering before ratification",
         "Merge is an aggregator over the tenant's actual HRIS system -- employment_status/termination_date freshness depends on Merge's own sync cadence with the underlying HRIS, not a property of this capability entry"
@@ -296,7 +296,7 @@
         "citations": [
           "https://docs.merge.dev/hris/employees/",
           "https://docs.merge.dev/basics/pagination/",
-          "https://docs.merge.dev/hris/"
+          "https://docs.merge.dev/basics/authentication/"
         ],
         "doc_version": null,
         "researched_at": "2026-09-05T00:00:00Z",

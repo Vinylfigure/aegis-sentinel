@@ -31,7 +31,7 @@
     "employee_id",
     "email"
   ],
-  "auth_scope": "API key (Authorization: Bearer <token>) plus X-Account-Token identifying the linked HRIS tenant -- confirmed via docs.merge.dev; Merge does not document a separate per-category permission scope beyond the account-level API key",
+  "auth_scope": "API key (Authorization: Bearer <token>) plus X-Account-Token identifying the linked HRIS tenant -- confirmed via docs.merge.dev/basics/authentication/; Merge does not document a separate per-category permission scope beyond the account-level API key",
   "pagination": {
     "method": "cursor",
     "exhaustion_method": "pass the `next` field as the `cursor` query param until it is null (page_size default 30, max 100)"
@@ -42,7 +42,7 @@
     "citations": [
       "https://docs.merge.dev/hris/employees/",
       "https://docs.merge.dev/basics/pagination/",
-      "https://docs.merge.dev/hris/"
+      "https://docs.merge.dev/basics/authentication/"
     ],
     "doc_version": null
   }
