@@ -163,6 +163,159 @@
       "access_modes": [
         "direct-api"
       ],
+      "auth_scope": "read:jira-work (classic) or read:issue.changelog:jira (granular) -- verbatim from developer.atlassian.com's OAuth 2.0 scopes reference",
+      "history_caveats": [
+        "DRAFT: exact pagination behavior not independently re-fetched this session -- developer.atlassian.com's REST API-group reference page for this endpoint renders via JS and returned no endpoint-body content through this session's proxy. Surface/pagination written from corpus knowledge of the changelog endpoint's long-standing startAt/maxResults/isLast shape (not part of the search-API migration that replaced /rest/api/3/search) -- MUST be Surveyor- or doc-verified before ratification",
+        "field-change item shape (items.field/items.fromString/items.toString) is corpus-sourced; the specific field name the acme-live approval-ordering scenarios key off (e.g. a status-transition or approval custom field) is not yet identified"
+      ],
+      "id": "jira.issue_changelog",
+      "join_keys": [
+        "issue_key"
+      ],
+      "lifecycle": "draft",
+      "pagination": {
+        "exhaustion_method": "follow startAt/maxResults until isLast is true (unverified this session, see history_caveats)",
+        "method": "page"
+      },
+      "populations_yielded": [
+        {
+          "attributes": [
+            "created",
+            "author.emailAddress",
+            "items.field",
+            "items.fromString",
+            "items.toString"
+          ],
+          "description": "per-issue field-change history, used to determine approval/status-transition ordering",
+          "type": "event"
+        }
+      ],
+      "provenance": {
+        "citations": [
+          "https://developer.atlassian.com/cloud/jira/platform/scopes-for-oauth-2-3LO-and-forge-apps/",
+          "https://developer.atlassian.com/cloud/jira/platform/rest/v3/api-group-issues/#api-rest-api-3-issue-issueidorkey-changelog-get"
+        ],
+        "doc_version": null,
+        "researched_at": "2026-09-05T00:00:00Z",
+        "researched_by": "vinylfigure"
+      },
+      "rate_limits": null,
+      "ratified_by": null,
+      "surface": "Jira Cloud REST API v3 GET /rest/api/3/issue/{issueIdOrKey}/changelog",
+      "system": "jira",
+      "temporal": {
+        "cadence": null,
+        "kind": "full-history",
+        "window_days": null
+      }
+    },
+    {
+      "access_modes": [
+        "direct-api"
+      ],
+      "auth_scope": "read:jira-work (classic) or read:issue:jira (granular) -- verbatim from developer.atlassian.com's OAuth 2.0 scopes reference",
+      "history_caveats": [
+        "DRAFT: exact endpoint path/pagination-parameter names not independently re-fetched this session -- developer.atlassian.com's REST API-group reference pages render via JS and returned no endpoint-body content through this session's proxy. Surface is written as GET /rest/api/3/search/jql (the nextPageToken-based replacement for the deprecated startAt-based /rest/api/3/search) from corpus knowledge of Atlassian's 2024-2025 search-API migration -- MUST be Surveyor- or doc-verified before ratification",
+        "attributes listed are the standard Jira issue REST fields (id/key/fields.status.name/fields.created/fields.updated); any workflow-specific custom fields the acme-live change-approval scenarios need (e.g. an approver custom field) are not yet identified and require a tenant-specific field-ID lookup before use"
+      ],
+      "id": "jira.issues",
+      "join_keys": [
+        "key",
+        "fields.reporter.emailAddress"
+      ],
+      "lifecycle": "draft",
+      "pagination": {
+        "exhaustion_method": "follow nextPageToken until absent (new /search/jql endpoint; unverified this session, see history_caveats)",
+        "method": "cursor"
+      },
+      "populations_yielded": [
+        {
+          "attributes": [
+            "id",
+            "key",
+            "fields.status.name",
+            "fields.created",
+            "fields.updated",
+            "fields.reporter.emailAddress"
+          ],
+          "description": "change/approval tickets with status and reporter",
+          "type": "entity"
+        }
+      ],
+      "provenance": {
+        "citations": [
+          "https://developer.atlassian.com/cloud/jira/platform/scopes-for-oauth-2-3LO-and-forge-apps/",
+          "https://developer.atlassian.com/cloud/jira/platform/rest/v3/api-group-issue-search/"
+        ],
+        "doc_version": null,
+        "researched_at": "2026-09-05T00:00:00Z",
+        "researched_by": "vinylfigure"
+      },
+      "rate_limits": null,
+      "ratified_by": null,
+      "surface": "Jira Cloud REST API v3 GET /rest/api/3/search/jql",
+      "system": "jira",
+      "temporal": {
+        "cadence": null,
+        "kind": "state-only",
+        "window_days": null
+      }
+    },
+    {
+      "access_modes": [
+        "direct-api"
+      ],
+      "auth_scope": "API key (Authorization: Bearer <token>) plus X-Account-Token identifying the linked HRIS tenant -- confirmed via docs.merge.dev/basics/authentication/; Merge does not document a separate per-category permission scope beyond the account-level API key",
+      "history_caveats": [
+        "DRAFT: exact endpoint path (assumed GET /api/hris/v1/employees, Merge's standard category-prefixed Unified API convention) and any filtering options beyond employment_status were not independently re-fetched this session -- docs.merge.dev's API-reference page renders via JS and returned no endpoint-path content through this session's proxy; verify against a reachable rendering before ratification",
+        "Merge is an aggregator over the tenant's actual HRIS system -- employment_status/termination_date freshness depends on Merge's own sync cadence with the underlying HRIS, not a property of this capability entry"
+      ],
+      "id": "merge.hris.employees",
+      "join_keys": [
+        "employee_id",
+        "email"
+      ],
+      "lifecycle": "draft",
+      "pagination": {
+        "exhaustion_method": "pass the `next` field as the `cursor` query param until it is null (page_size default 30, max 100)",
+        "method": "cursor"
+      },
+      "populations_yielded": [
+        {
+          "attributes": [
+            "id",
+            "employment_status",
+            "termination_date",
+            "start_date"
+          ],
+          "description": "employee directory records with employment status and termination date",
+          "type": "entity"
+        }
+      ],
+      "provenance": {
+        "citations": [
+          "https://docs.merge.dev/hris/employees/",
+          "https://docs.merge.dev/basics/pagination/",
+          "https://docs.merge.dev/basics/authentication/"
+        ],
+        "doc_version": null,
+        "researched_at": "2026-09-05T00:00:00Z",
+        "researched_by": "vinylfigure"
+      },
+      "rate_limits": null,
+      "ratified_by": null,
+      "surface": "Merge Unified API GET /api/hris/v1/employees",
+      "system": "merge",
+      "temporal": {
+        "cadence": null,
+        "kind": "state-only",
+        "window_days": null
+      }
+    },
+    {
+      "access_modes": [
+        "direct-api"
+      ],
       "auth_scope": "okta.logs.read",
       "history_caveats": [
         "System Log retains 90 days \u2014 TIMING assertions beyond the window need an exported archive (E204 trap on the termination lane). The 90-day figure is corpus-asserted (SOC2 matrix prior art); the doc page read 2026-08-16 confirmed endpoint and cursor but not the retention number \u2014 Surveyor verification of actual depth required."

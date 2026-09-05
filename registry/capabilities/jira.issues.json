@@ -1,0 +1,50 @@
+{
+  "rate_limits": null,
+  "history_caveats": [
+    "DRAFT: exact endpoint path/pagination-parameter names not independently re-fetched this session -- developer.atlassian.com's REST API-group reference pages render via JS and returned no endpoint-body content through this session's proxy. Surface is written as GET /rest/api/3/search/jql (the nextPageToken-based replacement for the deprecated startAt-based /rest/api/3/search) from corpus knowledge of Atlassian's 2024-2025 search-API migration -- MUST be Surveyor- or doc-verified before ratification",
+    "attributes listed are the standard Jira issue REST fields (id/key/fields.status.name/fields.created/fields.updated); any workflow-specific custom fields the acme-live change-approval scenarios need (e.g. an approver custom field) are not yet identified and require a tenant-specific field-ID lookup before use"
+  ],
+  "ratified_by": null,
+  "lifecycle": "draft",
+  "id": "jira.issues",
+  "system": "jira",
+  "surface": "Jira Cloud REST API v3 GET /rest/api/3/search/jql",
+  "access_modes": [
+    "direct-api"
+  ],
+  "populations_yielded": [
+    {
+      "type": "entity",
+      "description": "change/approval tickets with status and reporter",
+      "attributes": [
+        "id",
+        "key",
+        "fields.status.name",
+        "fields.created",
+        "fields.updated",
+        "fields.reporter.emailAddress"
+      ]
+    }
+  ],
+  "temporal": {
+    "kind": "state-only"
+  },
+  "join_keys": [
+    "key",
+    "fields.reporter.emailAddress"
+  ],
+  "auth_scope": "read:jira-work (classic) or read:issue:jira (granular) -- verbatim from developer.atlassian.com's OAuth 2.0 scopes reference",
+  "pagination": {
+    "method": "cursor",
+    "exhaustion_method": "follow nextPageToken until absent (new /search/jql endpoint; unverified this session, see history_caveats)"
+  },
+  "provenance": {
+    "researched_by": "vinylfigure",
+    "researched_at": "2026-09-05T00:00:00Z",
+    "citations": [
+      "https://developer.atlassian.com/cloud/jira/platform/scopes-for-oauth-2-3LO-and-forge-apps/",
+      "https://developer.atlassian.com/cloud/jira/platform/rest/v3/api-group-issue-search/"
+    ],
+    "doc_version": null
+  }
+}
