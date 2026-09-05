@@ -7,6 +7,12 @@ E-codes:
 - E117 — a derivation-rule source references a system with no USABLE
   (FROZEN) capability entry. A draft entry exists but is unusable: that
   is the registry's mechanical-unusability doing its job at compile time.
+- E118 — a capability entry selected to serve a claim is registry-usable
+  (FROZEN) but the active manifest snapshot's `blocks.capabilities` does
+  not name it. Being usable is necessary but not sufficient: the ratified
+  manifest, not just the registry, must authorize every capability a
+  compile actually consumes — this is the boundary enforced structurally,
+  rather than left to whatever called the registry.
 - E204 — temporal insufficiency: a TIMING assertion must be provable
   over the population's whole period, and the serving capabilities'
   history cannot cover it. The error carries a satisfiable-via
@@ -22,6 +28,7 @@ from pydantic import Field
 
 from aegis_sentinel.capability.entry import CapabilityEntry, TemporalKind
 from aegis_sentinel.capability.registry import Registry
+from aegis_sentinel.manifest import ManifestSnapshot
 from aegis_sentinel.schema.enums import AssertionType, LifecycleState
 from aegis_sentinel.schema.models import Base, Claim, EvidenceQualityContract, Population
 
@@ -86,10 +93,12 @@ def compile_claims(
     claims: tuple[Claim, ...],
     populations: tuple[Population, ...],
     registry: Registry,
+    manifest: ManifestSnapshot,
     contracts: tuple[EvidenceQualityContract, ...] = (),
 ) -> CompileReport:
     populations_by_id = {p.id: p for p in populations}
     contracts_by_population = {c.population_ref: c for c in contracts}
+    granted_capabilities = set(manifest.blocks.capabilities)
     errors: list[CompileError] = []
     plans: list[CollectorPlan] = []
 
@@ -134,6 +143,20 @@ def compile_claims(
                     )
                 )
             serving.extend(usable)
+
+        for entry in serving:
+            if entry.id not in granted_capabilities:
+                claim_errors.append(
+                    CompileError(
+                        code="E118",
+                        claim_id=claim.id,
+                        message=(
+                            f"capability {entry.id} is usable (FROZEN) but manifest "
+                            f"v{manifest.version} does not grant it — add it to "
+                            "blocks.capabilities or drop the dependency"
+                        ),
+                    )
+                )
 
         required_days = _period_days(population)
         for assertion in claim.assertions:
