@@ -5,10 +5,12 @@ plus E117, E118, E302, and the zero-collectors-on-error rule."""
 from datetime import UTC, datetime
 from pathlib import Path
 
+import pytest
+
 from aegis_sentinel.capability import Registry
 from aegis_sentinel.compile import compile_claims
 from aegis_sentinel.lanes import instantiate, load_template
-from aegis_sentinel.manifest import ManifestBlocks, genesis
+from aegis_sentinel.manifest import ManifestBlocks, ManifestSnapshot, genesis
 from aegis_sentinel.schema import EvidenceQualityContract, LifecycleState, TimeWindow
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -163,6 +165,47 @@ def test_e118_absent_once_the_manifest_grants_the_capability():
     )
     assert not any(e.code == "E118" for e in report.errors), [e.message for e in report.errors]
     assert report.plans
+
+
+def test_compile_claims_refuses_a_draft_manifest():
+    """A hand-built DRAFT snapshot (never genesis()'d/ratify()'d, no
+    ratifier) must never be trusted as a grant — even one whose
+    capabilities block would otherwise satisfy E118 for every claim."""
+    instance = lane_instance()
+    github_claims = tuple(
+        c for c in instance.claims if c.id == "claim-cp-no-residual-access-github"
+    )
+    github_pop = tuple(p for p in instance.populations if "github" in p.id)
+    non_timing = tuple(
+        c.model_copy(update={"assertions": tuple(a for a in c.assertions if a.type != "TIMING")})
+        for c in github_claims
+    )
+    draft_manifest = ManifestSnapshot(
+        version=1,
+        blocks=ManifestBlocks(capabilities=tuple(sorted(e.id for e in REGISTRY.all()))),
+    )
+    assert draft_manifest.lifecycle is LifecycleState.DRAFT
+    with pytest.raises(ValueError, match="FROZEN"):
+        compile_claims(non_timing, github_pop, ratified_workday_registry(), draft_manifest)
+
+
+def test_compile_claims_refuses_a_superseded_manifest():
+    """A snapshot ratify() itself has already retired must never gate a
+    compile, even though it still carries a real ratifier/timestamp."""
+    instance = lane_instance()
+    github_claims = tuple(
+        c for c in instance.claims if c.id == "claim-cp-no-residual-access-github"
+    )
+    github_pop = tuple(p for p in instance.populations if "github" in p.id)
+    non_timing = tuple(
+        c.model_copy(update={"assertions": tuple(a for a in c.assertions if a.type != "TIMING")})
+        for c in github_claims
+    )
+    superseded_manifest = ALL_GRANTED_MANIFEST.model_copy(
+        update={"lifecycle": LifecycleState.SUPERSEDED}
+    )
+    with pytest.raises(ValueError, match="FROZEN"):
+        compile_claims(non_timing, github_pop, ratified_workday_registry(), superseded_manifest)
 
 
 def test_e302_on_schema_version_drift():

@@ -12,7 +12,11 @@ E-codes:
   not name it. Being usable is necessary but not sufficient: the ratified
   manifest, not just the registry, must authorize every capability a
   compile actually consumes — this is the boundary enforced structurally,
-  rather than left to whatever called the registry.
+  rather than left to whatever called the registry. `compile_claims`
+  refuses outright (raises, never a soft E-code) if the manifest itself
+  isn't FROZEN — a DRAFT or SUPERSEDED snapshot is not a ratified grant
+  and must never be trusted as one, the same asymmetry the registry side
+  already guards via per-entry FROZEN lifecycle.
 - E204 — temporal insufficiency: a TIMING assertion must be provable
   over the population's whole period, and the serving capabilities'
   history cannot cover it. The error carries a satisfiable-via
@@ -96,6 +100,11 @@ def compile_claims(
     manifest: ManifestSnapshot,
     contracts: tuple[EvidenceQualityContract, ...] = (),
 ) -> CompileReport:
+    if manifest.lifecycle is not LifecycleState.FROZEN:
+        raise ValueError(
+            "only a FROZEN (ratified) manifest snapshot may gate a compile — "
+            f"got {manifest.lifecycle.value}"
+        )
     populations_by_id = {p.id: p for p in populations}
     contracts_by_population = {c.population_ref: c for c in contracts}
     granted_capabilities = set(manifest.blocks.capabilities)
