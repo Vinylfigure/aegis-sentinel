@@ -458,7 +458,9 @@ def test_reconciliation_excluded_delta_is_born_dispositioned(regenerated):
 def test_registry_artifact_carries_lifecycles_and_the_e117(regenerated):
     registry = json.loads(regenerated["registry.json"])
     lifecycles = {e["id"]: e["lifecycle"] for e in registry["entries"]}
-    assert len(lifecycles) == 7
+    # The full on-disk registry, not just CAP01's original seven — grows as
+    # later work (e.g. #128's Merge/Jira acme-live entries) adds drafts.
+    assert len(lifecycles) == len(list((ROOT / "registry" / "capabilities").glob("*.json")))
     assert lifecycles["okta.system_log"] == "frozen"
     assert lifecycles["slack.scim_users"] == "draft"
     # The demo ratifies workday in memory only; the artifact says so, and

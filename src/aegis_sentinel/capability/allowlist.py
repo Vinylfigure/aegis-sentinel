@@ -14,11 +14,22 @@ SOURCE_UNREACHABLE = "source_unreachable"
 # 2) -- its documentation sits behind Community authentication a sandboxed
 # session cannot reach, so every Workday citation is treated as outside the
 # allowlist until the Owner supplies cited excerpts directly.
+#
+# `merge` and `jira` extend the table beyond D7's five originally-ruled
+# systems -- issue #122 (Owner) introduces both as new vendors for the
+# acme-live test environment. This is mechanical application of D7 rule 1's
+# general test ("the vendor's own first-party documentation domain"), not a
+# new interpretive ruling: docs.merge.dev and developer.atlassian.com are
+# each a single first-party developer-docs domain with no marketing/legal
+# content to path-scope away (unlike slack.com), so no Slack-style split
+# judgment is required.
 ALLOWED_DOC_SOURCES: dict[str, tuple[tuple[str, str], ...]] = {
     "github": (("docs.github.com", ""),),
     "gcp": (("cloud.google.com", ""),),
     "okta": (("help.okta.com", ""), ("developer.okta.com", "")),
     "slack": (("api.slack.com", ""), ("slack.com", "/help")),
+    "merge": (("docs.merge.dev", ""),),
+    "jira": (("developer.atlassian.com", ""),),
 }
 
 
