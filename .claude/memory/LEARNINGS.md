@@ -809,3 +809,10 @@ Rules for curators (`/evolve`):
 - Scope: project — the `question:` label and `docs/DECISIONS.md`/`EXECUTION-PLAN.md` "Resolved:" convention are this repo's; the general principle (a resolved-but-unclosed tracker item keeps costing every future reader who has to re-verify it's actually resolved) is likely portable but unproven elsewhere
 - Evidence: 1
 - Status: candidate
+
+## L-104 · 2026-09-07 · A prior firing's proposal to escalate out-of-band is not itself the escalation — act on it, don't just re-record it
+- Trigger: own observation, 2026-09-07 build-heartbeat firing (second same-day firing). Claim-check reproduced exactly the state the immediately prior firing (PR #148) had already fully diagnosed: six substantive/ledger PRs (#127, #130, #134, #140, #147, #148) all `mergeable_state: clean` with green CI and zero human review, no merge in this repo since PR #127 opened 2026-09-04 (3 days), and issue #139's Owner-merge-backlog escalation already refreshed by #148 itself. PR #148's own body records a candidate lesson (unmerged, would-be L-098) concluding this exact pattern "needs the Owner's out-of-band channel (this session's `PushNotification` tool), not just another refreshed in-repo comment" — but #148 only wrote that conclusion into the ledger; it never called the tool. This firing found the identical stalled state a third time (after #139's original filing and #148's refresh) with the escalation mechanism already identified and still sitting unused.
+- Rule: when claim-check reproduces a stalled/blocked state that a prior firing already fully diagnosed and already named a specific out-of-band escalation for (a tool call, a different channel), make that call this firing rather than re-diagnosing or re-recording the same conclusion a third time in another PR or issue comment. Writing "this needs X" into a ledger or issue is not doing X.
+- Scope: project — the specific `PushNotification` tool and this repo's build-heartbeat schedule are local, but the underlying principle (a diagnosed-but-unexecuted escalation stays undone no matter how many times it's re-recorded) is likely portable
+- Evidence: 1
+- Status: candidate
