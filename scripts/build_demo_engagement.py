@@ -50,7 +50,7 @@ from aegis_sentinel.compile import compile_claims
 from aegis_sentinel.evaluate.minimal import evaluate_existence
 from aegis_sentinel.evaluate.typed import MemberTimeline, evaluate_non_existence, evaluate_timing
 from aegis_sentinel.lanes import instantiate, load_template
-from aegis_sentinel.manifest import CollectorGrant, ManifestBlocks, genesis
+from aegis_sentinel.manifest import CollectorGrant, ManifestBlocks, ManifestSnapshot, genesis
 from aegis_sentinel.reconcile.engine import (
     BoundaryExclusion,
     SourceMember,
@@ -136,6 +136,27 @@ def demo_registry() -> Registry:
     return Registry(tuple(entries))
 
 
+def _compile_time_manifest(
+    registry: Registry, population_ids: tuple[str, ...], claim_ids: tuple[str, ...]
+) -> ManifestSnapshot:
+    """A manifest granting exactly what the on-disk registry can ever
+    serve, for the compile gates BELOW to check E118 against. It carries
+    only what a compile gate reads (populations/claims/capabilities) —
+    evidence_contracts and collectors are filled in only on the final,
+    artifact-bound snapshot built later in this same run once collection
+    has happened, using the identical `registry.all()` capability set, so
+    the two snapshots' capabilities block can never drift apart."""
+    return genesis(
+        ManifestBlocks(
+            populations=population_ids,
+            claims=claim_ids,
+            capabilities=tuple(sorted(e.id for e in registry.all())),
+        ),
+        SNAPSHOT_RATIFIER,
+        SNAPSHOT_RATIFIED_AT,
+    )
+
+
 def build() -> str:
     """Run the full pipeline over the fixtures; return the artifact text."""
     template = load_template(ROOT / "templates" / "lanes" / "termination.json")
@@ -165,10 +186,11 @@ def build() -> str:
     )
 
     registry = demo_registry()
+    manifest = _compile_time_manifest(registry, (population.id,), (claim.id,))
 
     # Compile gate #1 — BEFORE the collector runs: zero collectors are
     # executable for a claim with unresolved E-codes (TYP01 contract).
-    report = compile_claims((claim,), (population,), registry)
+    report = compile_claims((claim,), (population,), registry, manifest)
     if not report.ok:
         raise SystemExit(
             "compile gate failed before collection: "
@@ -185,7 +207,9 @@ def build() -> str:
 
     # Compile gate #2 — with the emitted evidence contract, so schema-version
     # drift (E302) is caught before any verdict is recorded.
-    report = compile_claims((claim,), (population,), registry, contracts=(collection.contract,))
+    report = compile_claims(
+        (claim,), (population,), registry, manifest, contracts=(collection.contract,)
+    )
     if not report.ok:
         raise SystemExit(
             "compile gate failed on the evidence contract: "
@@ -392,7 +416,7 @@ def _gcp_transport():
     return transport
 
 
-def _breakglass_case(registry: Registry):
+def _breakglass_case(registry: Registry, manifest: ManifestSnapshot):
     """Poison 3: the claim over 'everyone capable of modifying production'
     derives from a system with no capability entry at all
     (breakglass.config — the PRD §3 E117 example verbatim). The compile
@@ -434,7 +458,7 @@ def _breakglass_case(registry: Registry):
         ),
         framework_refs=("SOC2 AM-06",),
     )
-    return compile_claims((claim,), (population,), registry)
+    return compile_claims((claim,), (population,), registry, manifest)
 
 
 # Structured poison classification (README Q4, issue #87): replaces the
@@ -566,13 +590,17 @@ def build_poison_artifacts() -> dict[str, str]:
         framework_refs=("SOC2 AM-06",),
     )
 
+    evaluated_claims = (existence_claim, timing_claim, nonexistence_claim)
+    manifest = _compile_time_manifest(
+        registry, (event_pop.id,), tuple(sorted(c.id for c in evaluated_claims))
+    )
+
     # Poison 3 first: caught at compile, before any collection.
-    breakglass_report = _breakglass_case(registry)
+    breakglass_report = _breakglass_case(registry, manifest)
 
     # Compile gate #1 for the claims that WILL run — zero collectors are
     # executable for a claim with unresolved E-codes (TYP01 contract).
-    evaluated_claims = (existence_claim, timing_claim, nonexistence_claim)
-    report = compile_claims(evaluated_claims, (event_pop,), registry)
+    report = compile_claims(evaluated_claims, (event_pop,), registry, manifest)
     if not report.ok:
         raise SystemExit(
             "compile gate failed before collection: "
@@ -608,7 +636,9 @@ def build_poison_artifacts() -> dict[str, str]:
 
     # Compile gate #2 per emitted contract (the E302 schema-drift lane).
     for contract in (hris.contract, okta.contract):
-        report = compile_claims(evaluated_claims, (event_pop,), registry, contracts=(contract,))
+        report = compile_claims(
+            evaluated_claims, (event_pop,), registry, manifest, contracts=(contract,)
+        )
         if not report.ok:
             raise SystemExit(
                 "compile gate failed on an evidence contract: "
