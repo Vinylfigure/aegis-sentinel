@@ -67,6 +67,11 @@ def _github_audit_log_kwargs(
         ("slack", "https://slack.com", False),
         ("workday", "https://community.workday.com/anything", False),
         ("workday", "https://workday.com/en-us/products.html", False),
+        ("merge", "https://docs.merge.dev/hris/employees/", True),
+        ("merge", "https://docs.merge.dev.evil.example/phishing", False),
+        ("merge", "https://evil.example/docs.merge.dev", False),
+        ("jira", "https://developer.atlassian.com/cloud/jira/platform/rest/v3/", True),
+        ("jira", "https://atlassian.com/software/jira", False),
         ("made-up-system", "https://docs.github.com/x", False),
     ],
 )
