@@ -1,0 +1,165 @@
+# Acme Corp — validation scenarios (issue #123, Deliverable 7 of issue #122).
+#
+# 20 scenarios: 13 for Lane A (termination-access) exactly matching issue
+# #122 Deliverable 7's termination bullet list, 7 for Lane B (production
+# change approval) exactly matching its change-approval bullet list. Each
+# `expected_status` is exactly a VerdictState
+# (src/aegis_sentinel/schema/enums.py); `known_defect` is a scoring label
+# for the future validation report (Deliverable 9), not a Sentinel input.
+#
+# Lane A scenarios key off identities.yaml/ground-truth.yaml by id — the
+# per-identity `note` fields there are the source of truth for exact dates
+# and mechanism; this file does not repeat them. Lane B has no standing
+# identity roster (issue #122 Deliverable 2 scopes identities to Lane A), so
+# its scenarios carry the Jira/GitHub actors and references inline.
+#
+# No adapters exist yet to run any of this against a live tenant (Deliverable
+# 4, out of scope for issue #123) — these are the fixed inputs a future
+# `aegis validate-environment acme-live` run (Deliverable 8) will compare its
+# own output against.
+
+lane_a_termination:
+  claim: terminated_access_revoked_within_5_business_days
+
+  scenarios:
+    - id: TERM-001
+      identity: bob
+      description: "Clean, on-time revocation."
+      expected_status: PASS
+      known_defect: null
+
+    - id: TERM-002
+      identity: carol
+      description: "Revocation 9 business days after termination."
+      expected_status: FAIL
+      known_defect: delayed_revocation
+
+    - id: TERM-003
+      identity: erin
+      description: "Privileged GitHub org-owner role never removed."
+      expected_status: FAIL
+      known_defect: privileged_access_never_removed
+
+    - id: TERM-004
+      identity: henry
+      description: "GitHub org member with no HRIS/Okta match at all."
+      expected_status: UNKNOWN
+      known_defect: orphan_github_account
+
+    - id: TERM-005
+      identity: dave
+      description: "Contractor tracked in Okta/GitHub, absent from Merge HRIS."
+      expected_status: UNKNOWN
+      known_defect: contractor_absent_from_hris
+
+    - id: TERM-006
+      identity: grace
+      description: "SSO-linked login removed; pre-SSO legacy local login is not, and does not independently key to an HRIS row."
+      expected_status: UNKNOWN
+      known_defect: duplicate_github_identity_unresolved
+
+    - id: TERM-007
+      identity: frank
+      description: "Terminated once, rehired, currently active; the earlier termination must not read as a live violation."
+      expected_status: PASS
+      known_defect: null
+
+    - id: TERM-008
+      identity: svc_prod
+      description: "Machine identity, ratified out of the termination population."
+      expected_status: EXCLUDED
+      known_defect: null
+
+    - id: TERM-009
+      identity: breakglass_admin
+      description: "Emergency admin credential, ratified boundary exclusion."
+      expected_status: EXCLUDED
+      known_defect: null
+
+    - id: TERM-010
+      identity: ivy
+      description: "Terminated before the start of Okta's reachable system-log retention window."
+      expected_status: UNKNOWN
+      known_defect: insufficient_temporal_history
+
+    - id: TERM-011
+      identity: quinn
+      description: "Okta deactivation event carries a malformed, unjoinable identifier."
+      expected_status: UNKNOWN
+      known_defect: garbled_identifier_unjoinable
+
+    - id: TERM-012
+      identity: kai
+      description: "22 business days late, covered by a ratified phased-offboarding exception."
+      expected_status: EXCEPTION
+      known_defect: null
+
+    - id: TERM-013
+      identity: leo
+      description: "External board advisor, ratified out of scope under a separate board-access control."
+      expected_status: EXCLUDED
+      known_defect: null
+
+lane_b_change_approval:
+  claim: production_change_authorized_before_deployment
+
+  scenarios:
+    - id: CHG-001
+      description: "Jira approval transition logged before the correlated GitHub deployment event."
+      jira_issue: ACME-401
+      github_deployment_ref: "deploy-2026-07-01-a"
+      expected_status: PASS
+      known_defect: null
+
+    - id: CHG-002
+      description: "GitHub deployment event exists; the linked Jira ticket has no approval transition or field set at all."
+      jira_issue: ACME-402
+      github_deployment_ref: "deploy-2026-07-03-a"
+      expected_status: FAIL
+      known_defect: missing_approval
+
+    - id: CHG-003
+      description: "Jira approval transition timestamp is after the GitHub deployment event timestamp."
+      jira_issue: ACME-403
+      github_deployment_ref: "deploy-2026-07-05-a"
+      expected_status: FAIL
+      known_defect: late_approval
+
+    - id: CHG-004
+      description: "GitHub deployment event exists with no correlating Jira issue reference anywhere."
+      jira_issue: null
+      github_deployment_ref: "deploy-2026-07-08-a"
+      expected_status: UNKNOWN
+      known_defect: missing_change_ticket
+
+    - id: CHG-005
+      description: "Emergency-change ticket type, retroactive approval per the documented emergency-change policy, ratified exception disposition."
+      jira_issue: ACME-410
+      github_deployment_ref: "deploy-2026-07-10-a"
+      expected_status: EXCEPTION
+      known_defect: null
+
+    - id: CHG-006
+      description: "Jira ticket references a deployment ID that does not match the actual GitHub deployment event it was linked from."
+      jira_issue: ACME-411
+      github_deployment_ref: "deploy-2026-07-12-a"
+      jira_referenced_deployment_ref: "deploy-2026-07-11-a" # mismatch, deliberate
+      expected_status: UNKNOWN
+      known_defect: mismatched_deployment_reference
+
+    - id: CHG-007
+      description: "Jira issue's changelog history does not reach back far enough to establish the approval-transition timestamp needed for ordering."
+      jira_issue: ACME-412
+      github_deployment_ref: "deploy-2026-07-14-a"
+      expected_status: UNKNOWN
+      known_defect: insufficient_changelog_evidence
+
+# Deliverable 9 (out of scope here) will score against this file plus
+# ground-truth.yaml. Confusion-matrix counts across all 20 scenarios,
+# spelled out so a future scoring harness has a fixed expectation to diff
+# against:
+#   PASS: 3 (TERM-001, TERM-007, CHG-001)
+#   FAIL: 4 (TERM-002, TERM-003, CHG-002, CHG-003)
+#   UNKNOWN: 8 (TERM-004, TERM-005, TERM-006, TERM-010, TERM-011, CHG-004, CHG-006, CHG-007)
+#   EXCLUDED: 3 (TERM-008, TERM-009, TERM-013)
+#   EXCEPTION: 2 (TERM-012, CHG-005)

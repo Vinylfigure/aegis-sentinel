@@ -7,6 +7,7 @@ import pytest
 from pydantic import ValidationError
 
 from aegis_sentinel.capability import CapabilityEntry, Registry
+from aegis_sentinel.capability.allowlist import is_allowed_citation
 
 REGISTRY_DIR = Path(__file__).resolve().parent.parent / "registry" / "capabilities"
 
@@ -25,7 +26,10 @@ FROZEN_IDS = {"github.members", "okta.system_log", "gcp.service_accounts"}
 
 def test_on_disk_registry_loads_cap01_seven():
     registry = Registry.load(REGISTRY_DIR)
-    assert {e.id for e in registry.all()} == CAP01_IDS
+    # Superset, not equality: CAP01 was the walking-skeleton's original
+    # seven; later work (e.g. #128's Merge/Jira acme-live entries) grows
+    # the registry without displacing them.
+    assert CAP01_IDS <= {e.id for e in registry.all()}
 
 
 def test_unratified_entries_are_mechanically_unusable():
@@ -77,3 +81,20 @@ def test_duplicate_ids_rejected():
     entry = CapabilityEntry.model_validate_json((REGISTRY_DIR / "github.members.json").read_text())
     with pytest.raises(ValueError, match="duplicate"):
         Registry((entry, entry))
+
+
+ACME_LIVE_NEW_IDS = {"merge.hris.employees", "jira.issues", "jira.issue_changelog"}
+
+
+def test_acme_live_registry_entries_load_as_drafts_with_allowed_citations():
+    """#128 (acme-live Deliverable 5): the two new vendors' entries are
+    present, mechanically DRAFT/unratified, and every citation they carry
+    passes the same D7 allowlist test as the pre-existing entries."""
+    registry = Registry.load(REGISTRY_DIR)
+    entries = {e.id: e for e in registry.all() if e.id in ACME_LIVE_NEW_IDS}
+    assert entries.keys() == ACME_LIVE_NEW_IDS
+    for entry in entries.values():
+        assert entry.lifecycle.value == "draft", entry.id
+        assert entry.ratified_by is None, entry.id
+        for citation in entry.provenance.citations:
+            assert is_allowed_citation(entry.system, citation), (entry.id, citation)
