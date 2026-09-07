@@ -7,6 +7,10 @@
 /src/aegis_sentinel/schema/ @Vinylfigure
 /src/aegis_sentinel/capability/ @Vinylfigure
 /src/aegis_sentinel/manifest/ @Vinylfigure
+/src/aegis_sentinel/collectors/ @Vinylfigure
+/src/aegis_sentinel/reconcile/ @Vinylfigure
+/src/aegis_sentinel/evaluate/ @Vinylfigure
+/src/aegis_sentinel/compile/ @Vinylfigure
 /registry/ @Vinylfigure
 /tests/fixtures/seeded/ @Vinylfigure
 /tests/mutation/ @Vinylfigure
