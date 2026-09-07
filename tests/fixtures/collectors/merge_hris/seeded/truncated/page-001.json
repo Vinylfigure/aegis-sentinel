@@ -1,0 +1,49 @@
+{
+  "account_token": "acme-fixtures-account-token",
+  "captured_at": "2026-12-31T12:00:00Z",
+  "cursor": null,
+  "next": null,
+  "count": 6,
+  "results": [
+    {
+      "id": "emp-0001",
+      "employee_id": "E-1001",
+      "email": "priya.nair@example.com",
+      "employment_status": "active",
+      "termination_date": null,
+      "start_date": "2022-01-10T00:00:00Z"
+    },
+    {
+      "id": "emp-0002",
+      "employee_id": "E-1002",
+      "email": "marco.diaz@example.com",
+      "employment_status": "terminated",
+      "termination_date": "2026-11-02T00:00:00Z",
+      "start_date": "2020-03-01T00:00:00Z"
+    },
+    {
+      "id": "emp-0003",
+      "employee_id": "E-1003",
+      "email": "lena.faust@example.com",
+      "employment_status": "active",
+      "termination_date": null,
+      "start_date": "2021-07-15T00:00:00Z"
+    },
+    {
+      "id": "emp-0004",
+      "employee_id": null,
+      "email": "omar.saleh@example.com",
+      "employment_status": "terminated",
+      "termination_date": "2026-10-20T00:00:00Z",
+      "start_date": "2019-05-01T00:00:00Z"
+    },
+    {
+      "id": "emp-0005",
+      "employee_id": "E-1005",
+      "email": "yuki.abe@example.com",
+      "employment_status": "active",
+      "termination_date": null,
+      "start_date": "2023-02-01T00:00:00Z"
+    }
+  ]
+}
