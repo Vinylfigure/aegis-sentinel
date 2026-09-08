@@ -1,0 +1,12 @@
+{
+  "account_token": "acme-fixtures-jira-token",
+  "captured_at": "2026-12-31T12:00:00Z",
+  "cursor": "cur-0002",
+  "next_page_token": null,
+  "issue_count": 3,
+  "issues": [
+    { "id": "10005", "key": "CHG-105", "status": "Deployed", "created": "2026-11-08T09:00:00Z", "updated": "2026-11-09T10:00:00Z", "reporter_email": "omar.saleh@example.com" },
+    { "id": "10006", "key": "CHG-106", "status": "Approved", "created": "2026-11-10T09:00:00Z", "updated": "2026-11-11T10:00:00Z", "reporter_email": "yuki.abe@example.com" },
+    { "id": "10007", "key": "CHG-107", "status": "Deployed", "created": "2026-11-12T09:00:00Z", "updated": "2026-11-13T10:00:00Z", "reporter_email": "yuki.abe@example.com" }
+  ]
+}

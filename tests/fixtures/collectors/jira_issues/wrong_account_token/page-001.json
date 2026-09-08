@@ -1,0 +1,10 @@
+{
+  "account_token": "wrong-tenant-token",
+  "captured_at": "2026-12-31T12:00:00Z",
+  "cursor": null,
+  "next_page_token": null,
+  "issue_count": 1,
+  "issues": [
+    { "id": "99999", "key": "CHG-999", "status": "Approved", "created": "2026-11-01T09:00:00Z", "updated": "2026-11-03T14:00:00Z", "reporter_email": "someone@example.com" }
+  ]
+}
