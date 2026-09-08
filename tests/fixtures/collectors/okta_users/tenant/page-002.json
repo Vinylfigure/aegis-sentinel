@@ -1,0 +1,11 @@
+{
+  "tenant": "meridian-financial-fixtures",
+  "extracted_at": "2026-12-31T12:00:00Z",
+  "cursor": "cur-0002",
+  "after": null,
+  "row_count": 2,
+  "rows": [
+    { "id": "00u0004", "status": "ACTIVE", "email": "dev.rao@example.com", "login": "dev.rao@example.com", "status_changed": "2026-09-04T09:00:00Z" },
+    { "id": "00u0005", "status": "SUSPENDED", "email": "elif.kaya@example.com", "login": "elif.kaya@example.com", "status_changed": "2026-10-15T09:00:00Z" }
+  ]
+}
