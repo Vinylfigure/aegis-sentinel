@@ -1,0 +1,14 @@
+{
+  "account_token": "acme-fixtures-account-token",
+  "captured_at": "2026-12-31T12:00:00Z",
+  "cursor": "cur-0002",
+  "next": "cur-0003",
+  "count": 5,
+  "results": [
+    { "id": "emp-0006", "employee_id": "E-1006", "email": "tara.singh@example.com", "employment_status": "terminated", "termination_date": "2026-11-10T00:00:00Z", "start_date": "2018-09-01T00:00:00Z" },
+    { "id": "emp-0007", "employee_id": "E-1007", "email": null, "employment_status": "terminated", "termination_date": "2026-11-18T00:00:00Z", "start_date": "2017-06-01T00:00:00Z" },
+    { "id": "emp-0008", "employee_id": "E-1008", "email": "noah.becker@example.com", "employment_status": "active", "termination_date": null, "start_date": "2024-01-05T00:00:00Z" },
+    { "id": "emp-0009", "employee_id": "E-1009", "email": "sofia.lund@example.com", "employment_status": "terminated", "termination_date": "2026-12-01T00:00:00Z", "start_date": "2016-04-01T00:00:00Z" },
+    { "id": "emp-0010", "employee_id": "E-1010", "email": "diego.ruiz@example.com", "employment_status": "active", "termination_date": null, "start_date": "2025-03-10T00:00:00Z" }
+  ]
+}
