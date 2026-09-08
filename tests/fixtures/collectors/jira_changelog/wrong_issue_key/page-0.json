@@ -1,0 +1,18 @@
+{
+  "account_token": "acme-fixtures-jira-token",
+  "issue_key": "CHG-999",
+  "captured_at": "2026-12-31T12:00:00Z",
+  "start_at": 0,
+  "max_results": 2,
+  "is_last": true,
+  "values": [
+    {
+      "issue_key": "CHG-999",
+      "created": "2026-11-01T09:05:00Z",
+      "author_email": "priya.nair@example.com",
+      "items": [
+        { "field": "status", "from_string": null, "to_string": "In Review" }
+      ]
+    }
+  ]
+}

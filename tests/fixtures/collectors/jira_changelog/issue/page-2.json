@@ -1,0 +1,18 @@
+{
+  "account_token": "acme-fixtures-jira-token",
+  "issue_key": "CHG-101",
+  "captured_at": "2026-12-31T12:00:00Z",
+  "start_at": 2,
+  "max_results": 2,
+  "is_last": true,
+  "values": [
+    {
+      "issue_key": "CHG-101",
+      "created": "2026-11-03T14:00:00Z",
+      "author_email": null,
+      "items": [
+        { "field": "status", "from_string": "Approved", "to_string": "Deployed" }
+      ]
+    }
+  ]
+}
