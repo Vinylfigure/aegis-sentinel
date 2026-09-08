@@ -264,7 +264,7 @@ def collect_jira_issues(
         )
         if page.next_page_token is None:
             break
-        if False and page.next_page_token in seen_cursors:
+        if page.next_page_token in seen_cursors:
             raise ValueError(
                 f"cursor chain does not terminate: cursor {page.next_page_token!r} "
                 "repeats — refusing partial issue population (population)"
