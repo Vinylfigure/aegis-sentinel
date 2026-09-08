@@ -1,0 +1,73 @@
+name: auto-merge
+
+# The merge arm for this stream (overlord docs/MERGE-POLICY.md,
+# DL-2026-08-25-merge-boundary): task-tier work and reflect/ledger notes merge
+# themselves once green; a draft, a red or invisible check, a gating label, a
+# grant-widening or gate-loosening diff, or a read the engine could not
+# complete waits for the operator. Until this file existed aegis-sentinel had
+# NO merge arm at all — every green PR waited for a hand merge, the backlog
+# issue #139 recurred twice (2026-08-28, 2026-09-06), and 8 PRs were merged by
+# hand on 2026-09-07/08 alone.
+#
+# scripts/auto-merge.sh is the fleet engine body, byte-identical below its
+# config sentinel to Plutus's (the v2 body: bash, gh and jq only) and pinned
+# in docs/MERGE-POLICY.md; scripts/test-hooks.sh recomputes the pin. Every act
+# and every skip is a report line in the run log; the engine exits non-zero
+# only when a run-level read failed, so an outage is a red run, never
+# "nothing to do".
+#
+# The ready step runs first: a draft the engine would merge next — eligible
+# head, green, MERGEABLE, base is main, quiet for READY_QUIET_HOURS, no gating
+# label, no recorded ask or hold — is marked ready for review, so the engine
+# can act in this same firing. Dispatched runs open drafts first (L-097); this
+# is that draft's exit. The recorded ask is the hold signal, never the draft.
+#
+# `issues: read` is deliberate: the engine lists open `human-check:` issues
+# once per run, and a `permissions:` block that omits `issues` sets it to
+# none — overlord's arm held every PR on that 403 (overlord#288).
+#
+# Branch protection (issue #20) must NOT require an approving review — a
+# required approval on a single-owner repo deadlocks this arm (L-116) — and
+# must not require `web-verify` as-is: its `paths:` filter means a PR outside
+# web/ never reports it, and the engine holds a BLOCKED merge state forever.
+
+on:
+  schedule:
+    - cron: "37 */6 * * *"   # never :00 — GitHub cron delay peaks on the hour
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: read     # the open human-check: listing — a run-level read; 403 holds every PR
+  checks: read     # gh pr checks reads statusCheckRollup; without it the token sees no checks
+  statuses: read
+  actions: read    # gh pr checks also asks checkSuite.workflowRun; one denied field fails the whole query
+
+concurrency:
+  group: aegis-auto-merge
+
+jobs:
+  merge:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      # Capability canary: can this token see checks at all? Exits 1 with the
+      # reason when it cannot, so the failure is a red run instead of an
+      # inferred skip.
+      - name: Probe — can this token see checks?
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: ./scripts/auto-merge.sh --probe
+
+      - name: Mark green, unheld drafts ready for review
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: ./scripts/ready-drafts.sh
+
+      - name: Merge qualifying PRs, request rebases on conflicting ones
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: ./scripts/auto-merge.sh

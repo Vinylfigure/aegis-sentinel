@@ -26,8 +26,11 @@ pyproject.toml                Python ≥3.12 packaging; dev extras: ruff, pytest
 .github/ISSUE_TEMPLATE/       work-order form (objective, done-means, allowed-paths, effort-budget)
 scripts/
   verify.sh                   quick|full dispatcher; /bootstrap fills the case arms
-  test-hooks.sh               fixture suite for the scaffold plumbing — hooks + docs cross-refs (first step of verify.sh full)
+  test-hooks.sh               fixture suite for the scaffold plumbing — hooks + docs cross-refs + the merge-engine pin (first step of verify.sh full)
+  auto-merge.sh               the merge arm's engine body (the fleet v2 body, byte-identical below the sentinel to Plutus's; docs/MERGE-POLICY.md pins its sha) under this repo's janus:merge-config block: claude/ and fix/ heads, merge commits, linked issue optional
+  ready-drafts.sh             the ready step, run just before the engine in the same firing: a draft the engine would merge — eligible head read from auto-merge.sh's own config block, green, MERGEABLE, base main, quiet for READY_QUIET_HOURS, no gating label, no recorded ask or hold comment — is marked ready for review; every other draft is a reported skip. Dispatched runs open drafts first (L-097); this is the exit. Fixtured in test-hooks.sh under a stubbed gh
 .github/workflows/verify.yml  CI: runs verify.sh full on every push/PR
+.github/workflows/auto-merge.yml 6-hourly (37 */6): --probe canary, the ready step, then the merge pass under this repo's own token with checks/statuses/actions read; every act and skip is a report line
 ```
 
 Sentinel markers give skills deterministic edit targets:
