@@ -1,0 +1,11 @@
+{
+  "tenant": "meridian-financial-fixtures",
+  "extracted_at": "2026-12-31T12:00:00Z",
+  "cursor": null,
+  "after": "cur-0002",
+  "rows": [
+    { "id": "00u0001", "status": "ACTIVE", "email": "ada.grant@example.com", "login": "ada.grant@example.com", "status_changed": "2026-09-01T09:00:00Z" },
+    { "id": "00u0002", "status": "ACTIVE", "email": "ben.osei@example.com", "login": "ben.osei@example.com", "status_changed": "2026-09-02T09:00:00Z" },
+    { "id": "00u0003", "status": "DEPROVISIONED", "email": null, "login": "cleo.marsh@example.com", "status_changed": "2026-11-05T09:00:00Z" }
+  ]
+}
