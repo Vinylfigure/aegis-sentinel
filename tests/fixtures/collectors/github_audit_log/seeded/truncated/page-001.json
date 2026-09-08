@@ -2,8 +2,8 @@
   "org": "meridian-financial-fixtures",
   "extracted_at": "2026-12-31T12:00:00Z",
   "cursor": null,
-  "after": "cur-0002",
-  "event_count": 4,
+  "after": null,
+  "event_count": 5,
   "events": [
     { "action": "org.remove_member", "actor": "it-admin", "user": "ada-grant", "created_at": "2026-10-20T14:02:11Z" },
     { "action": "org.remove_member", "actor": "it-admin", "user": "ben-osei", "created_at": "2026-10-28T09:41:53Z" },

@@ -15,8 +15,10 @@ methods named.
 
 Refusal, never a silent partial population: a wrong-org page
 (provenance), a cursor chain that does not terminate or repeats
-(population), or an asserted period older than the capability's 180-day
-event-history window (E204 temporal insufficiency). No action filter —
+(population), a page whose own claimed event count exceeds the rows it
+actually carried (truncation), or an asserted period older than the
+capability's 180-day event-history window (E204 temporal
+insufficiency). No action filter —
 the registry's own population description ("org audit events incl.
 member removal") admits the whole audit stream, not just
 org.remove_member; narrowing to one action is reconciliation's job. A
@@ -69,12 +71,15 @@ class AuditEventRecord(Base):
 class AuditLogPage(Base):
     """One raw page envelope: the org identity every page must assert,
     the cursor it was served for, the 'after' cursor it claims comes next
-    (None = terminal), and the extract identity."""
+    (None = terminal), the extract identity, and the page's own claimed
+    event count — a mismatch against len(events) is a truncated page,
+    refused rather than silently accepted as a smaller population."""
 
     org: str = Field(min_length=1)
     extracted_at: datetime
     cursor: str | None
     after: str | None
+    event_count: int = Field(ge=0)
     events: tuple[AuditEventRecord, ...]
 
 
@@ -159,9 +164,11 @@ def _build_contract(
                 },
                 "population": {
                     "method": "cursor pagination; Link rel=next followed until absent; "
-                    "chain recorded page by page; a repeated cursor or a claimed next "
-                    "page the source cannot produce refuses the collection",
-                    "failure_mode": "broken or cyclic cursor chain — partial event history",
+                    "chain recorded page by page; a repeated cursor, a claimed next page "
+                    "the source cannot produce, or a page's own event count exceeding its "
+                    "actual rows refuses the collection",
+                    "failure_mode": "broken, cyclic, or truncated cursor chain — partial "
+                    "event history",
                 },
                 "semantics": {
                     "method": "closed-schema parse of every event into typed "
@@ -221,10 +228,11 @@ def collect_github_audit_log(
     Raises on anything that would silently weaken the population or
     timing claim: a wrong-org page (provenance), a cursor chain that does
     not terminate — a repeated cursor or a claimed next page the source
-    cannot produce (population) — or an asserted period start older than
-    the capability window relative to the extract timestamp (E204
-    temporal insufficiency): a partial event history is refused, never
-    returned.
+    cannot produce (population) — a page whose own claimed event count
+    exceeds the rows it actually carried (truncation), or an asserted
+    period start older than the capability window relative to the
+    extract timestamp (E204 temporal insufficiency): a partial event
+    history is refused, never returned.
     """
     pages: list[AuditLogPage] = []
     chain: list[PageEvidence] = []
@@ -249,6 +257,11 @@ def collect_github_audit_log(
         page_sha = hashlib.sha256(raw).hexdigest()
         if page.org != org:
             raise ValueError(f"page org {page.org!r} != engagement org {org!r} (provenance)")
+        if len(page.events) != page.event_count:
+            raise ValueError(
+                f"page {len(pages) + 1} claims event_count={page.event_count} but "
+                f"returned {len(page.events)} rows — truncated page (population)"
+            )
         if not pages:
             # Window honesty before fetching further: the extract timestamp
             # travels in the payload (D-P3 — no clocks), and the asserted

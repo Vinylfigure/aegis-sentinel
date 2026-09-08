@@ -1,9 +1,10 @@
 """GitHub audit-log collector acceptance (issue #152): deterministic
 collection, per-page raw hashing, cursor-chain exhaustion recorded page
 by page, refusal on a broken chain (seeded fixture detected), wrong-org
-refusal, window honesty (E204 refusal when the asserted period outruns
-the 180-day event-history window), null-user rows surfaced not dropped,
-and an EQC with all five quality property methods named."""
+refusal, a page's own claimed event count exceeding its actual rows
+(truncation), window honesty (E204 refusal when the asserted period
+outruns the 180-day event-history window), null-user rows surfaced not
+dropped, and an EQC with all five quality property methods named."""
 
 import hashlib
 import json
@@ -21,6 +22,7 @@ from aegis_sentinel.schema import TimeWindow
 FIXTURES = Path(__file__).resolve().parent / "fixtures" / "collectors" / "github_audit_log"
 TENANT_DIR = FIXTURES / "tenant"
 BROKEN_CHAIN_DIR = FIXTURES / "seeded" / "broken_chain"
+TRUNCATED_DIR = FIXTURES / "seeded" / "truncated"
 WRONG_ORG_DIR = FIXTURES / "wrong_org"
 # Within the 180-day window of the fixture extract time (2026-12-31T12:00:00Z,
 # floor 2026-07-04T12:00:00Z).
@@ -106,6 +108,13 @@ def test_page_answering_the_wrong_cursor_is_detected():
 def test_wrong_org_page_is_detected():
     with pytest.raises(ValueError, match="org"):
         collect(transport=transport_for(WRONG_ORG_DIR))
+
+
+def test_truncated_page_is_detected():
+    # page-001 claims event_count=5 but carries only 4 rows — refused as
+    # a truncated page, never silently accepted as 4 events.
+    with pytest.raises(ValueError, match="truncated page"):
+        collect(transport=transport_for(TRUNCATED_DIR))
 
 
 def test_window_honesty_refuses_period_older_than_capability_window():

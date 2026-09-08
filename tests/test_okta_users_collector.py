@@ -1,9 +1,10 @@
 """Okta users collector acceptance (issue #152): deterministic
 collection, per-page raw hashing, cursor-chain exhaustion recorded page
 by page, refusal on a broken chain (seeded fixture detected),
-wrong-tenant refusal, null-email rows surfaced not dropped, and an EQC
-with all five quality property methods named — STATE-only, so no TIMING
-support."""
+wrong-tenant refusal, a page's own claimed row count exceeding its
+actual rows (truncation), null-email rows surfaced not dropped, and an
+EQC with all five quality property methods named — STATE-only, so no
+TIMING support."""
 
 import hashlib
 import json
@@ -21,6 +22,7 @@ from aegis_sentinel.schema import TimeWindow
 FIXTURES = Path(__file__).resolve().parent / "fixtures" / "collectors" / "okta_users"
 TENANT_DIR = FIXTURES / "tenant"
 BROKEN_CHAIN_DIR = FIXTURES / "seeded" / "broken_chain"
+TRUNCATED_DIR = FIXTURES / "seeded" / "truncated"
 WRONG_TENANT_DIR = FIXTURES / "wrong_tenant"
 PERIOD = TimeWindow(
     start=datetime(2026, 10, 15, tzinfo=UTC), end=datetime(2026, 12, 31, tzinfo=UTC)
@@ -104,6 +106,13 @@ def test_page_answering_the_wrong_cursor_is_detected():
 def test_wrong_tenant_page_is_detected():
     with pytest.raises(ValueError, match="tenant"):
         collect(transport=transport_for(WRONG_TENANT_DIR))
+
+
+def test_truncated_page_is_detected():
+    # page-001 claims row_count=4 but carries only 3 rows — refused as a
+    # truncated page, never silently accepted as 3 users.
+    with pytest.raises(ValueError, match="truncated page"):
+        collect(transport=transport_for(TRUNCATED_DIR))
 
 
 def test_all_users_are_collected():

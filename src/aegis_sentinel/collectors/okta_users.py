@@ -15,8 +15,10 @@ records, and an EvidenceQualityContract is emitted with all five quality
 property methods named.
 
 Refusal, never a silent partial population: a wrong-tenant page
-(provenance), or a cursor chain that does not terminate or repeats
-(population). Okta is a STATE-only source (registry temporal.kind
+(provenance), a cursor chain that does not terminate or repeats
+(population), or a page whose own claimed row count exceeds the rows it
+actually carried (truncation). Okta is a STATE-only source (registry
+temporal.kind
 "state-only"): the contract supports no TIMING assertion by itself. A
 null email survives collection intact — identity resolution is the
 reconciler's job, and a fuzzy identity ends UNKNOWN_POPULATION per
@@ -60,12 +62,15 @@ class UserRecord(Base):
 class UsersPage(Base):
     """One raw page envelope: the tenant identity every page must assert,
     the cursor it was served for, the 'after' cursor it claims comes next
-    (None = terminal), and the extract identity."""
+    (None = terminal), the extract identity, and the page's own claimed
+    row count — a mismatch against len(rows) is a truncated page, refused
+    rather than silently accepted as a smaller population."""
 
     tenant: str = Field(min_length=1)
     extracted_at: datetime
     cursor: str | None
     after: str | None
+    row_count: int = Field(ge=0)
     rows: tuple[UserRecord, ...]
 
 
@@ -149,9 +154,11 @@ def _build_contract(
                 },
                 "population": {
                     "method": "cursor pagination followed via Link rel=next 'after' "
-                    "until absent; chain recorded page by page; a repeated cursor or a "
-                    "claimed next page the source cannot produce refuses the collection",
-                    "failure_mode": "broken or cyclic cursor chain — partial user population",
+                    "until absent; chain recorded page by page; a repeated cursor, a "
+                    "claimed next page the source cannot produce, or a page's own row "
+                    "count exceeding its actual rows refuses the collection",
+                    "failure_mode": "broken, cyclic, or truncated cursor chain — partial "
+                    "user population",
                 },
                 "semantics": {
                     "method": "closed-schema parse of every row into typed UserRecord "
@@ -207,10 +214,11 @@ def collect_okta_users(
     exists at that cursor).
 
     Raises on anything that would silently weaken the population or
-    provenance claim: a wrong-tenant page (provenance), or a cursor chain
+    provenance claim: a wrong-tenant page (provenance), a cursor chain
     that does not terminate — a repeated cursor or a claimed next page
-    the source cannot produce (population): a partial user population is
-    refused, never returned.
+    the source cannot produce (population) — or a page whose own claimed
+    row count exceeds the rows it actually carried (truncation): a
+    partial user population is refused, never returned.
     """
     pages: list[UsersPage] = []
     chain: list[PageEvidence] = []
@@ -236,6 +244,11 @@ def collect_okta_users(
         if page.tenant != tenant:
             raise ValueError(
                 f"page tenant {page.tenant!r} != engagement tenant {tenant!r} (provenance)"
+            )
+        if len(page.rows) != page.row_count:
+            raise ValueError(
+                f"page {len(pages) + 1} claims row_count={page.row_count} but "
+                f"returned {len(page.rows)} rows — truncated page (population)"
             )
         pages.append(page)
         combined.update(raw)
