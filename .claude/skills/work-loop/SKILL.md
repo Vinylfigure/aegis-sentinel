@@ -39,18 +39,24 @@ of reading it from a named file (issue #73).
    grounded proposal issues, then stop).
 5. If the chosen issue already carries a comment from a prior firing that
    found it tool-grant-blocked, re-verify the blocking condition before
-   redoing the work it already did. If the blocker is unchanged, treat this
-   arm as exhausted rather than repeating the same failed attempt — but
-   throttle the comment: if the issue's most recent comment already recorded
-   today's (UTC) date against this identical blocking condition, skip posting
-   another one this firing and note the re-check in this firing's own
-   `/reflect` entry instead of the issue thread. Post a new comment whenever
-   the blocker's substance changes (the branch gets deleted by someone else, a
-   repo-scope grant lands, any new evidence either way) — silence must never
-   be mistaken for "still blocked" going stale (issue #167).
+   redoing the work it already did — this re-verification runs every firing,
+   unconditionally. If the blocker is unchanged, treat this arm as exhausted
+   rather than repeating the same failed attempt, and throttle the *comment*
+   only: post the short status comment unless the issue's most recent
+   comment's own GitHub timestamp already falls on today's UTC date **and**
+   recorded this identical blocking condition — in that case skip posting and
+   instead report it under "Before finishing" below (issue, UTC date,
+   condition unchanged), which every firing states regardless of session
+   signals, so the throttle never degrades into total silence. Post a new
+   comment whenever the blocker's substance changes (the branch gets deleted
+   by someone else, a repo-scope grant lands, any new evidence either way),
+   even on a day already covered — silence must never be mistaken for "still
+   blocked" going stale (issue #167).
 
 ## Before finishing
 
 State which issue was picked (or that none were ready, and why each
-candidate was rejected), and name the done-means the resulting PR will be
-judged against.
+candidate was rejected), name the done-means the resulting PR will be judged
+against, and — if a tool-grant-blocked status comment was throttled this
+firing — name the issue, the UTC date, and the unchanged condition it
+matched.
