@@ -15,6 +15,17 @@ SIGNALS="$DIR/.claude/memory/.session-signals"
 prompt=$(jq -r '.prompt // empty' 2>/dev/null) || exit 0
 [ -n "$prompt" ] || exit 0
 
+# A background agent's own <task-notification> report arrives on this same
+# prompt-submit channel and can contain ordinary review prose ("wrong",
+# "undo that", ...) that trips the keyword regex below despite no human
+# having typed anything (L-079, 7 recurrences 2026-08-26..2026-09-08). Such a
+# report IS the whole prompt when it fires, so anchor to the start rather
+# than matching the tag anywhere — a human correction that merely quotes or
+# pastes a <task-notification> tag inside real corrective text must still log.
+if printf '%s' "$prompt" | grep -qE '^[[:space:]]*<task-notification'; then
+  exit 0
+fi
+
 PATTERN="(^|[^a-z])(no,|wrong|not what i|don'?t do|stop doing|you should have|that'?s incorrect|undo that)([^a-z]|$)"
 if printf '%s' "$prompt" | grep -qiE "$PATTERN"; then
   # First matched keyword, lowercased; excerpt = first 60 chars, one line,
