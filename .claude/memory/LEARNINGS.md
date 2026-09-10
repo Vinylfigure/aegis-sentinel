@@ -1008,3 +1008,11 @@ Rules for curators (`/evolve`):
 - Scope: portable — shallow-clone `git merge-base` failure is standard git behavior, not specific to this repo
 - Evidence: 1
 - Status: candidate
+
+## L-115 · 2026-09-10 · `git fetch origin` updates remote-tracking refs, not the local branch — reading files off a plain `git checkout main` can silently show a stale tree
+
+- Trigger: own observation, build heartbeat firing 2026-09-10 (claim-check). Ran `git fetch origin` (reported `main` moved `71de5ec..45d83bb`, 76 commits), then `git checkout main` to read `docs/EXECUTION-PLAN.md` and `.github/workflows/`. Git printed "Your branch is behind 'origin/main' by 76 commits" but checkout still succeeded and left local `main` at the old commit. `ls .github/workflows/` came back missing `auto-merge.yml`, which does exist on current `main` — nearly concluded the repo had no auto-merge mechanism before noticing the "behind" warning and running `git merge --ff-only origin/main`, after which the file appeared. A stale read here wouldn't fail loudly; it would just silently omit newer files/sections, the same failure shape L-005/L-007 warn about for aggregator claims, but from one's own git ref instead of another source.
+- Rule: after `git fetch origin`, never inspect repo state via a plain local branch checkout (`git checkout main`) — either fast-forward it first (`git merge --ff-only origin/main`, safe since it's a read-only inspection branch) or read/diff directly against `origin/<branch>` (`git show origin/main:path`, `git diff origin/main...`). Treat a "behind by N commits" message from `checkout`/`status` as a correctness blocker for any subsequent file read, not just informational.
+- Scope: portable — remote-tracking vs. local-branch divergence after fetch is standard git behavior, not specific to this repo
+- Evidence: 1
+- Status: candidate
