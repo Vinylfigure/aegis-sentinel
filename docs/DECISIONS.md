@@ -145,3 +145,25 @@ commitment lookup as the `commitment` stage, showing `framework_ref` +
 `claim_ids`); chain prose updated at `docs/PRD-v3.md`, `docs/HANDOFF.md`, and this
 module's doc comment; `src/aegis_sentinel/schema/models.py::Commitment`'s docstring
 records that no `Requirement` model was invented, consistent with this ruling.
+
+## D-W1 · 2026-09-12 · RATIFIED · Owner
+
+**web-flow-redesign (155a/155b/155c) ships as one combined PR, not three independent
+merges.** Ruled via issue #164, comment 2026-09-12 (posted through an operator-directed
+session), settling the sequencing question `web-verify` forced: its workflow and
+`scripts/verify-web.sh` both typecheck and build the whole `web/` tree, with no
+per-slice scoping, so 155a alone (per #161's own done-means, "does not need the full
+tree to compile yet") would leave `main` CI-red until 155b/155c arrived.
+
+1. 155a, 155b, and 155c are built and verified together on one shared branch; none of
+   the three merges to `main` on its own.
+2. The combined PR opens against `main` only once the whole `web/` tree passes
+   `web-verify` (`codegen:check`, `tsc --noEmit`, `build`).
+3. No parallel `web-next/` tree, and the `web-verify` gate is not relaxed: `main` keeps
+   its current, already-shipped frontend until the combined PR is green.
+
+Does not resolve whether the redesign is still wanted product-wise, nor 155b's own
+flagged question (does the flow canvas's proof-graph concept map onto `main`'s existing
+lineage model) — only the shipping mechanics. Unblocks #161/#162: the next firing that
+picks either up builds on the shared branch instead of attempting an independent merge
+to `main`.
