@@ -118,6 +118,19 @@ echo "{\"prompt\":\"$long\"}" | "$SANDBOX/.claude/hooks/prompt-signal.sh"
 line=$(grep '^correction:' "$SIGNALS" 2>/dev/null | tail -1)
 [ -n "$line" ] && [ "${#line}" -le 130 ] && pass "excerpt truncated to a bounded line" || fail "excerpt truncated to a bounded line (len ${#line})"
 [ "$(wc -l < "$SIGNALS")" -eq 1 ] && pass "multiline-safe: one signal = one line" || fail "multiline-safe: one signal = one line"
+rm -f "$SIGNALS"
+# L-079: a background agent's own completion report shares this channel and
+# can carry ordinary review prose ("wrong") that must not read as a correction.
+echo '{"prompt":"<task-notification>Green could still be wrong if the fixture is stale</task-notification>"}' | "$SANDBOX/.claude/hooks/prompt-signal.sh"
+[ ! -f "$SIGNALS" ] && pass "task-notification text logs nothing" || fail "task-notification text logs nothing"
+echo '{"prompt":"no, that'"'"'s wrong"}' | "$SANDBOX/.claude/hooks/prompt-signal.sh"
+grep -q '^correction:' "$SIGNALS" 2>/dev/null && pass "plain human correction still logs after task-notification guard" || fail "plain human correction still logs after task-notification guard"
+rm -f "$SIGNALS"
+# The guard must anchor to the start, not match anywhere: a genuine human
+# correction that happens to quote/paste a <task-notification> tag later in
+# the message must still log — an anywhere-match would silently drop it.
+echo '{"prompt":"no, that'"'"'s wrong, undo that. For context, the subagent said: <task-notification>done</task-notification>"}' | "$SANDBOX/.claude/hooks/prompt-signal.sh"
+grep -q '^correction:' "$SIGNALS" 2>/dev/null && pass "human correction quoting a task-notification tag still logs" || fail "human correction quoting a task-notification tag still logs"
 
 echo "== stop-reflect-nudge.sh =="
 out=$(echo '{"session_id":"t1"}' | "$SANDBOX/.claude/hooks/stop-reflect-nudge.sh")
