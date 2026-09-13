@@ -70,6 +70,13 @@ ratification is the freeze — draft → frozen(=ratified) → superseded).
 
 ## Frontend track (worktree; independent until Phase C)
 
+**Superseded 2026-09-13** — see "Frontend track v2" after C3 below. The
+`web/` tree this section describes (routes `/scope`, `/controls`,
+`/datasets`, `/overlord`, `/process`) was replaced wholesale by the
+web-flow-redesign; none of those routes exist on `main` anymore. Kept here
+as the audit trail of what actually shipped and when — do not use it to
+answer "what does the frontend look like today."
+
 - [x] **A1** — Next.js 15 scaffold in `web/` (CSS Modules + token sheet from the
   prototypes; fonts via next/font; AppShell + NavTabs + GaugesRail), Aegis branding,
   `.github/workflows/web-verify.yml` (npm ci, tsc, build, artifact-sync drift check),
@@ -185,6 +192,24 @@ ratification is the freeze — draft → frozen(=ratified) → superseded).
   would fail silently; TA-1's population href fails visibly). PRD §6
   acceptance walkthrough (criterion → screen → falsifier) appended to
   web/README.md.
+
+## Frontend track v2 — web-flow-redesign (supersedes A1–C3 above)
+
+- [x] **155/161/162** — `feat/web-flow-redesign`'s `web/` tree (React Flow
+  lane canvas, verdict-painted control-point gates, inspector drawer) landed
+  on `main` per Owner ruling D-W1 (`docs/DECISIONS.md`): 155a/155b/155c built
+  and verified together on one shared branch, one combined PR, no parallel
+  tree, no `web-verify` gate relaxation. 155a (#161) rewrote the type mirrors
+  against `schemas/ontology/*.schema.json` + `schemas/verdict-record.schema.json`;
+  155b (#162) derives the views that used to hand-carry `populations.json`/
+  `proof_graph.json` client-side from the real 7 `artifacts/demo-engagement/*.json`
+  files instead of committed stand-ins; 155c fixed the resulting component-layer
+  field mismatches. `web/src/app/page.tsx` now renders `FlowWorkbench`, not
+  `StubPage`. Current routes: `/`, `/program`, `/proof`, `/proof/[verdictId]`,
+  `/reconciliation`, `/reconciliation/[populationId]`, `/registry`, `/verdicts`.
+  `bash scripts/verify-web.sh` and `bash scripts/verify.sh full` green on `main`.
+  Landed via PR #174 (155a+155b+155c); #164's sequencing ruling landed via PR
+  #173. Closes #155, #161, #162, #164.
 
 ## Phase 1.5 / 2 — blocked until VAL02 passes
 
