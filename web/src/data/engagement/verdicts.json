@@ -1,172 +1,320 @@
-{
-  "compile_errors": [
-    {
-      "assertion_ref": "TERM-TIMING.a",
-      "capability_window_days": 90,
-      "claim_ref": "TERM.timely-revocation",
-      "code": "E204",
-      "message": "TIMING assertion \"identity-provider deactivation occurred no more than five business days after the termination date, tested across the full population\" (TERM-TIMING.a) requires historical transition timestamps covering 2026-01-01..2026-06-30 (181 days); capability okta.system_log.api_v1 (System Log API GET /api/v1/logs (deprovisioning events: user.lifecycle.deactivate, user.lifecycle.suspend, application.user_membership.remove)) yields event-history(window=90d) — 90 days short of 181. No usable capability combination covers the period.",
-      "rendered": "E204  TIMING assertion \"identity-provider deactivation occurred no more than five business days after the termination date, tested across the full population\" (TERM-TIMING.a) requires historical transition timestamps covering 2026-01-01..2026-06-30 (181 days); capability okta.system_log.api_v1 (System Log API GET /api/v1/logs (deprovisioning events: user.lifecycle.deactivate, user.lifecycle.suspend, application.user_membership.remove)) yields event-history(window=90d) — 90 days short of 181. No usable capability combination covers the period.",
-      "required_window": {
-        "end": "2026-06-30",
-        "start": "2026-01-01"
+[
+  {
+    "assertion_id": "am06-hris-existence-A",
+    "chain_prev": null,
+    "claim_id": "claim-am06-termination-existence",
+    "collected_at": "2026-12-31T23:59:59Z",
+    "completeness_ref": "reconciliations/pop-termination-events.json",
+    "control_id": "AM-06",
+    "evidence_refs": [
+      "tests/fixtures/collectors/hris_terminations.json#sha256=d5eeaf9ace0f0a9d2ea2ba00ae8889e73f10929c07d1f72cf60ef6d85b075ff6"
+    ],
+    "message": "assertion am06-hris-existence-A: all 12 canonical members have a termination record in the workday feed",
+    "population_count": 12,
+    "population_id": "pop-termination-events",
+    "record_hash": "49449e2ce726426f923ca36e89ede810f19a6060c37b939f3cfe6c150957e567",
+    "record_id": "vr-demo-engagement-0001",
+    "run_id": "run-demo-engagement-0001",
+    "schema_version": "0.1.0",
+    "severity": "high",
+    "source": "hris-termination-collector",
+    "source_version": "0.1.0",
+    "spec_hash": "6a1aad39a9f8bc4675d5177a030e33589356a60147f02997083e11e28dd47b09",
+    "spec_id": "spec-hris-terminations-v1",
+    "status": "PASS",
+    "test_function_version": "0.1.0"
+  },
+  {
+    "assertion_id": "poison-am06-existence-A",
+    "chain_prev": null,
+    "claim_id": "claim-poison-hris-existence",
+    "collected_at": "2026-12-31T23:59:59Z",
+    "completeness_ref": "artifacts/demo-engagement/reconciliation.json",
+    "control_id": "AM-06",
+    "evidence_refs": [
+      "tests/fixtures/poisons/hris_terminations.json#sha256=a963b000381065686bd1b29a6b22d40873d0d1deec2aaf2683a523596a9c9718"
+    ],
+    "message": "population pop-termination-events is DISCOVERED; no verdict against a denominator left of RECONCILED (assurance-state ladder)",
+    "population_count": 6,
+    "population_id": "pop-termination-events",
+    "record_hash": "5f810310d7382e894e539f640180e749d9172d71b84144f3397940f6b518ea2a",
+    "record_id": "vr-poison-existence-0001",
+    "run_id": "run-poison-engagement-0001",
+    "schema_version": "0.1.0",
+    "severity": "high",
+    "source": "hris-termination-collector",
+    "source_version": "0.1.0",
+    "spec_hash": "a826e0d585e4d6998b2dab4f0300606220481fdd7a179dbda2c4141765980a7b",
+    "spec_id": "spec-poison-hris-existence-v1",
+    "status": "UNKNOWN",
+    "support": {
+      "field_values": {
+        "population_state": "DISCOVERED"
       },
-      "satisfiable_via": []
+      "record_hashes": [
+        "a963b000381065686bd1b29a6b22d40873d0d1deec2aaf2683a523596a9c9718"
+      ]
     },
-    {
-      "assertion_ref": null,
-      "claim_ref": "TERM.gcp.no-residual-access",
-      "code": "E117",
-      "message": "Population \"TERM.gcp.accounts\" derivation rule references gcp-account-inventory + okta-group-assignments + breakglass.config; capability entry missing for breakglass.config.",
-      "missing_source": "breakglass.config",
-      "rendered": "E117  Population \"TERM.gcp.accounts\" derivation rule references gcp-account-inventory + okta-group-assignments + breakglass.config; capability entry missing for breakglass.config."
-    }
-  ],
-  "engagement": "demo-engagement",
-  "manifest_version": "v1-skeleton",
-  "verdicts": [
-    {
-      "assertion_ref": "TERM-FEED.a",
-      "claim_ref": "TERM.feed-completeness",
-      "contract_hash": "c647887108368337ecbef46e097f5cfd96ed8513c9fc458248114fdcb05fcb1f",
-      "d7_family": null,
-      "disposition_ref": null,
-      "evaluated_at": "2026-07-01T06:05:00Z",
-      "evidence_refs": [
-        "collection-snapshot:sha256:b597b7818069b9fff23403199f057edfa814499a0d1a6dd5451ba9bb7291973a",
-        "collection-snapshot:sha256:fd1bda04300c3b2d9c09e8eb59a6a77cbf313ce54821dda61b0b146fd194b9f0"
-      ],
-      "manifest_version": "v1-skeleton",
-      "message": "population of 15 reconciled with zero undispositioned deltas",
-      "population_ref": "TERM.terminations",
-      "ratification_ref": null,
-      "record_hash": "104b7b972e9090fb77633b80cd1ee65711a1c81f9bfa811993da388b68e852a1",
-      "snapshot_hash": "b73c1e5754b3091df4f79ae6ea435cd0b0f405e4566f357e4d50f93dad82b027",
-      "state": "PASS",
-      "why_code": null
+    "test_function_version": "0.1.0",
+    "unknown_cause": "UNKNOWN_POPULATION"
+  },
+  {
+    "assertion_id": "poison-am06-nonexistence-A",
+    "chain_prev": null,
+    "claim_id": "claim-poison-github-nonexistence",
+    "collected_at": "2026-12-31T23:59:59Z",
+    "completeness_ref": "artifacts/demo-engagement/reconciliation.json",
+    "control_id": "AM-06",
+    "evidence_refs": [
+      "tests/fixtures/poisons/github_members#sha256=900b5e314ff948a31b7769749e10211ec149f64e0bf8fc19bfa4a121a5afd443"
+    ],
+    "message": "1 terminated member(s) still hold access in github \u2014 residual access is a NON-EXISTENCE failure",
+    "population_count": 6,
+    "population_id": "pop-termination-events",
+    "record_hash": "78d7fe952c1204cc6436773928c2be56558bd797c9041e4aa962947ccee27801",
+    "record_id": "vr-poison-nonexistence-0001",
+    "run_id": "run-poison-engagement-0001",
+    "schema_version": "0.1.0",
+    "severity": "high",
+    "source": "github-members-collector",
+    "source_version": "0.1.0",
+    "spec_hash": "57a8be5a525eebb2f9905668fee93b9347b6cecca925539bee7aa440ff37793d",
+    "spec_id": "spec-poison-github-nonexistence-v1",
+    "status": "FAIL",
+    "support": {
+      "field_values": {
+        "residual_access_members": [
+          "rhea.bell@example.com"
+        ]
+      },
+      "record_hashes": [
+        "900b5e314ff948a31b7769749e10211ec149f64e0bf8fc19bfa4a121a5afd443"
+      ]
     },
-    {
-      "assertion_ref": "TERM-FEED.b",
-      "claim_ref": "TERM.feed-completeness",
-      "contract_hash": "c647887108368337ecbef46e097f5cfd96ed8513c9fc458248114fdcb05fcb1f",
-      "d7_family": "identity_fuzzy",
-      "disposition_ref": null,
-      "evaluated_at": "2026-07-01T06:05:00Z",
-      "evidence_refs": [
-        "collection-snapshot:sha256:b597b7818069b9fff23403199f057edfa814499a0d1a6dd5451ba9bb7291973a",
-        "collection-snapshot:sha256:fd1bda04300c3b2d9c09e8eb59a6a77cbf313ce54821dda61b0b146fd194b9f0"
-      ],
-      "manifest_version": "v1-skeleton",
-      "message": "1 terminated worker(s) whose identity join failed; deprovisioning events cannot be attributed to them (human resolution queue): E-1033",
-      "population_ref": "TERM.terminations",
-      "ratification_ref": null,
-      "record_hash": "d2f9cf23ab242098b36c779c798273d356b218fcf138fc81b02230298c5b3217",
-      "snapshot_hash": "b73c1e5754b3091df4f79ae6ea435cd0b0f405e4566f357e4d50f93dad82b027",
-      "state": "UNKNOWN",
-      "why_code": "UNKNOWN_POPULATION"
+    "test_function_version": "0.1.0"
+  },
+  {
+    "assertion_id": "cp-idp-deactivation-workday-B",
+    "chain_prev": null,
+    "claim_id": "claim-cp-idp-deactivation-workday",
+    "collected_at": "2026-12-31T23:59:59Z",
+    "completeness_ref": "artifacts/demo-engagement/reconciliation.json",
+    "control_id": "AM-06",
+    "evidence_refs": [
+      "tests/fixtures/poisons/okta_system_log#sha256=0b14301efcb756c9d51c15dd4a6342edc17bb1f2edd37ac336216869fbfc7e6c"
+    ],
+    "message": "breakglass-admin@meridian-prod-poisons.iam.gserviceaccount.com is outside the ratified boundary (boundary/poisons-v1#break-glass); no timing verdict owed (D-V1)",
+    "population_count": 8,
+    "population_id": "pop-termination-events",
+    "ratification_ref": "boundary/poisons-v1#break-glass",
+    "record_hash": "f878b019aedd5d92bb64b76108f67d61603f5526d37cc62e78568f2638a48d62",
+    "record_id": "vr-poison-timing-0001-breakglass-admin@meridian-prod-poisons.iam.gserviceaccount.com",
+    "run_id": "run-poison-engagement-0001",
+    "schema_version": "0.1.0",
+    "severity": "high",
+    "source": "okta-system-log-collector",
+    "source_version": "0.1.0",
+    "spec_hash": "5412c8131859f166ca0c16abf8a5f9d4d9a0a69aada7294a63d6e660df9727c1",
+    "spec_id": "spec-poison-idp-timing-v1",
+    "status": "EXCLUDED",
+    "test_function_version": "0.1.0"
+  },
+  {
+    "assertion_id": "cp-idp-deactivation-workday-B",
+    "chain_prev": "f878b019aedd5d92bb64b76108f67d61603f5526d37cc62e78568f2638a48d62",
+    "claim_id": "claim-cp-idp-deactivation-workday",
+    "collected_at": "2026-12-31T23:59:59Z",
+    "completeness_ref": "artifacts/demo-engagement/reconciliation.json",
+    "control_id": "AM-06",
+    "evidence_refs": [
+      "tests/fixtures/poisons/okta_system_log#sha256=0b14301efcb756c9d51c15dd4a6342edc17bb1f2edd37ac336216869fbfc7e6c"
+    ],
+    "message": "revocation for nia.park@example.com within 2 business days (constraint: 5, D-P4)",
+    "population_count": 8,
+    "population_id": "pop-termination-events",
+    "record_hash": "103942f8154af31b2849cbc270db326469b0760e0194a34a44befefcc38ae53e",
+    "record_id": "vr-poison-timing-0001-nia.park@example.com",
+    "run_id": "run-poison-engagement-0001",
+    "schema_version": "0.1.0",
+    "severity": "high",
+    "source": "okta-system-log-collector",
+    "source_version": "0.1.0",
+    "spec_hash": "5412c8131859f166ca0c16abf8a5f9d4d9a0a69aada7294a63d6e660df9727c1",
+    "spec_id": "spec-poison-idp-timing-v1",
+    "status": "PASS",
+    "test_function_version": "0.1.0"
+  },
+  {
+    "assertion_id": "cp-idp-deactivation-workday-B",
+    "chain_prev": "103942f8154af31b2849cbc270db326469b0760e0194a34a44befefcc38ae53e",
+    "claim_id": "claim-cp-idp-deactivation-workday",
+    "collected_at": "2026-12-31T23:59:59Z",
+    "completeness_ref": "artifacts/demo-engagement/reconciliation.json",
+    "control_id": "AM-06",
+    "evidence_refs": [
+      "tests/fixtures/poisons/okta_system_log#sha256=0b14301efcb756c9d51c15dd4a6342edc17bb1f2edd37ac336216869fbfc7e6c"
+    ],
+    "message": "revocation for omar.diaz@example.com took 9 business days, exceeding the 5-business-day constraint (D-P4)",
+    "population_count": 8,
+    "population_id": "pop-termination-events",
+    "record_hash": "d13ad41b53a2413d412f5ccc8e0b36a2d5be6038df4b1d4fa0c53186bb908058",
+    "record_id": "vr-poison-timing-0001-omar.diaz@example.com",
+    "run_id": "run-poison-engagement-0001",
+    "schema_version": "0.1.0",
+    "severity": "high",
+    "source": "okta-system-log-collector",
+    "source_version": "0.1.0",
+    "spec_hash": "5412c8131859f166ca0c16abf8a5f9d4d9a0a69aada7294a63d6e660df9727c1",
+    "spec_id": "spec-poison-idp-timing-v1",
+    "status": "FAIL",
+    "support": {
+      "field_values": {
+        "constraint_business_days": 5,
+        "elapsed_business_days": 9,
+        "member": "omar.diaz@example.com",
+        "revocation_date": "2026-11-06",
+        "termination_date": "2026-10-26"
+      },
+      "record_hashes": [
+        "0b14301efcb756c9d51c15dd4a6342edc17bb1f2edd37ac336216869fbfc7e6c"
+      ]
     },
-    {
-      "assertion_ref": "TERM-TIMING.a",
-      "claim_ref": "TERM.timely-revocation",
-      "contract_hash": "3bb0a3e1382aa8dfbaa37bea5f24dbb09afdc4529569f33263155c39f4feafab",
-      "d7_family": null,
-      "disposition_ref": null,
-      "evaluated_at": "2026-07-01T06:05:00Z",
-      "evidence_refs": [
-        "collection-snapshot:sha256:b597b7818069b9fff23403199f057edfa814499a0d1a6dd5451ba9bb7291973a",
-        "collection-snapshot:sha256:fd1bda04300c3b2d9c09e8eb59a6a77cbf313ce54821dda61b0b146fd194b9f0",
-        "collection-snapshot:sha256:23a3696a12b63f7601bf44ddf667e92ab307c3b6ddca2d9ae77d5b0d4655cab7"
-      ],
-      "manifest_version": "v1-skeleton",
-      "message": "4 termination(s) tested over 2026-02-01..2026-04-01 against the 5-business-day limit; marcus.webb@meridianfinancial.example: terminated 2026-02-13, IdP deactivation 2026-02-26 = 9 business day(s) (> 5); dana.whitfield@meridianfinancial.example: canonical identity join failed; revocation events cannot be attributed (human resolution queue); tomas.rivera@meridianfinancial.example: terminated 2026-03-06, IdP deactivation 2026-03-09 = 1 business day(s); ingrid.solberg@meridianfinancial.example: terminated 2026-03-20, IdP deactivation 2026-03-25 = 3 business day(s)",
-      "population_ref": "TERM.terminations",
-      "ratification_ref": null,
-      "record_hash": "e375bc0e3f94e1c8bed9a8d8e6d78b2a1d41ed05ef32cdf4ea3dd472967859af",
-      "snapshot_hash": "b73c1e5754b3091df4f79ae6ea435cd0b0f405e4566f357e4d50f93dad82b027",
-      "state": "FAIL",
-      "why_code": null
+    "test_function_version": "0.1.0"
+  },
+  {
+    "assertion_id": "cp-idp-deactivation-workday-B",
+    "chain_prev": "d13ad41b53a2413d412f5ccc8e0b36a2d5be6038df4b1d4fa0c53186bb908058",
+    "claim_id": "claim-cp-idp-deactivation-workday",
+    "collected_at": "2026-12-31T23:59:59Z",
+    "completeness_ref": "artifacts/demo-engagement/reconciliation.json",
+    "control_id": "AM-06",
+    "disposition_ref": "dispositions/poisons/pia-voss-phased-offboarding.json",
+    "evidence_refs": [
+      "tests/fixtures/poisons/okta_system_log#sha256=0b14301efcb756c9d51c15dd4a6342edc17bb1f2edd37ac336216869fbfc7e6c"
+    ],
+    "message": "pia.voss@example.com carries dispositioned exception dispositions/poisons/pia-voss-phased-offboarding.json (D-V1: EXCEPTION, never a silent PASS)",
+    "population_count": 8,
+    "population_id": "pop-termination-events",
+    "record_hash": "767222d752a2dff4aacff000e1f7ad73b536d23bc45272eda61d37e2c4efb4f7",
+    "record_id": "vr-poison-timing-0001-pia.voss@example.com",
+    "run_id": "run-poison-engagement-0001",
+    "schema_version": "0.1.0",
+    "severity": "high",
+    "source": "okta-system-log-collector",
+    "source_version": "0.1.0",
+    "spec_hash": "5412c8131859f166ca0c16abf8a5f9d4d9a0a69aada7294a63d6e660df9727c1",
+    "spec_id": "spec-poison-idp-timing-v1",
+    "status": "EXCEPTION",
+    "test_function_version": "0.1.0"
+  },
+  {
+    "assertion_id": "cp-idp-deactivation-workday-B",
+    "chain_prev": "767222d752a2dff4aacff000e1f7ad73b536d23bc45272eda61d37e2c4efb4f7",
+    "claim_id": "claim-cp-idp-deactivation-workday",
+    "collected_at": "2026-12-31T23:59:59Z",
+    "completeness_ref": "artifacts/demo-engagement/reconciliation.json",
+    "control_id": "AM-06",
+    "evidence_refs": [
+      "tests/fixtures/poisons/okta_system_log#sha256=0b14301efcb756c9d51c15dd4a6342edc17bb1f2edd37ac336216869fbfc7e6c"
+    ],
+    "message": "no revocation event for quinn.ash@example.com inside the covered window 2026-10-15T00:00:00+00:00..2026-12-31T00:00:00+00:00 \u2014 D-7 basis_missing \u2192 UNKNOWN_EVIDENCE (D-U1)",
+    "population_count": 8,
+    "population_id": "pop-termination-events",
+    "record_hash": "2d046ab3a80a611df746ba1e1ea1b483610363c2ee319c8a22ba4f0c7cd95b66",
+    "record_id": "vr-poison-timing-0001-quinn.ash@example.com",
+    "run_id": "run-poison-engagement-0001",
+    "schema_version": "0.1.0",
+    "severity": "high",
+    "source": "okta-system-log-collector",
+    "source_version": "0.1.0",
+    "spec_hash": "5412c8131859f166ca0c16abf8a5f9d4d9a0a69aada7294a63d6e660df9727c1",
+    "spec_id": "spec-poison-idp-timing-v1",
+    "status": "UNKNOWN",
+    "support": {
+      "field_values": {
+        "member": "quinn.ash@example.com",
+        "termination_date": "2026-11-09"
+      },
+      "record_hashes": [
+        "0b14301efcb756c9d51c15dd4a6342edc17bb1f2edd37ac336216869fbfc7e6c"
+      ]
     },
-    {
-      "assertion_ref": "TERM-JOIN.a",
-      "claim_ref": "TERM.attributability",
-      "contract_hash": "6a8555f37c072eac391750b093dd853895c5106d0fd41be8e20b01365d2381f2",
-      "d7_family": null,
-      "disposition_ref": null,
-      "evaluated_at": "2026-07-01T06:05:00Z",
-      "evidence_refs": [
-        "collection-snapshot:sha256:b597b7818069b9fff23403199f057edfa814499a0d1a6dd5451ba9bb7291973a",
-        "collection-snapshot:sha256:fd1bda04300c3b2d9c09e8eb59a6a77cbf313ce54821dda61b0b146fd194b9f0",
-        "collection-snapshot:sha256:d6c0575f1f0cd86cade116271f2f79a76bd3a6d33a5185e7e0cb40efa98e83ac",
-        "collection-snapshot:sha256:3ff304bd62e66b96216ba5373c4cb6220c53903610c4b644fb7c69701efe15f1",
-        "collection-snapshot:sha256:5b1bc4c9035195bbc577074330cfbb3eeed3ae9dbb51b734bb7076de8c3d22d9"
-      ],
-      "manifest_version": "v1-skeleton",
-      "message": "3 undispositioned identity-join delta(s) — the population cannot be shown complete: left_only: bm-legacy-bot (present in github-account-inventory; absent from hris-termination-feed); left_only: blake-morgan-vendor (present in github-account-inventory; absent from hris-termination-feed); unresolvable: dana.kowalski@meridianfinancial.example (present in okta-system-log; absent from hris-termination-feed)",
-      "population_ref": "TERM.identity-join",
-      "ratification_ref": null,
-      "record_hash": "d7c9707c7d5e4acc7e432479bdad8bace04d6aeae43b965314d4453f26a224a3",
-      "snapshot_hash": "b73c1e5754b3091df4f79ae6ea435cd0b0f405e4566f357e4d50f93dad82b027",
-      "state": "UNKNOWN",
-      "why_code": "UNKNOWN_POPULATION"
-    },
-    {
-      "assertion_ref": "TERM-GITHUB.a",
-      "claim_ref": "TERM.github.no-residual-access",
-      "contract_hash": "1778b7092950c6ad846f159cdeaa46d4189bfaebfaf9189577e2472fdb5b4dc5",
-      "d7_family": null,
-      "disposition_ref": null,
-      "evaluated_at": "2026-07-01T06:05:00Z",
-      "evidence_refs": [
-        "collection-snapshot:sha256:d6c0575f1f0cd86cade116271f2f79a76bd3a6d33a5185e7e0cb40efa98e83ac",
-        "collection-snapshot:sha256:b597b7818069b9fff23403199f057edfa814499a0d1a6dd5451ba9bb7291973a"
-      ],
-      "manifest_version": "v1-skeleton",
-      "message": "19 account(s) tested; 15 clean; blake-morgan-vendor: active account with a known identity the authoritative workforce source cannot account for (negative space — population question); bm-legacy-bot: active local account (dormant) joins to no identity in any source; non-existence cannot be asserted while an unaccountable account is live; kai-moreno: active despite termination, covered by ratified disposition DISP-2026-114; osprey-design-ext: active account outside the workforce join, covered by ratified disposition DISP-2026-102",
-      "population_ref": "TERM.github.accounts",
-      "ratification_ref": null,
-      "record_hash": "e46a6e2b41f92525548e54e99db02e9f6c237be3225e5ec5d95f4c5b86bedc9c",
-      "snapshot_hash": "b73c1e5754b3091df4f79ae6ea435cd0b0f405e4566f357e4d50f93dad82b027",
-      "state": "FAIL",
-      "why_code": null
-    },
-    {
-      "assertion_ref": "TERM-SLACK.a",
-      "claim_ref": "TERM.slack.no-residual-access",
-      "contract_hash": "3d9a346cbe21acb017fb11688a9cbaee57c5137b65a96ae8f316e1716eed99b4",
-      "d7_family": null,
-      "disposition_ref": "DISP-2026-114",
-      "evaluated_at": "2026-07-01T06:05:00Z",
-      "evidence_refs": [
-        "collection-snapshot:sha256:5b1bc4c9035195bbc577074330cfbb3eeed3ae9dbb51b734bb7076de8c3d22d9",
-        "collection-snapshot:sha256:b597b7818069b9fff23403199f057edfa814499a0d1a6dd5451ba9bb7291973a"
-      ],
-      "manifest_version": "v1-skeleton",
-      "message": "30 account(s) tested; 29 clean; kaimoreno: active despite termination, covered by ratified disposition DISP-2026-114",
-      "population_ref": "TERM.slack.accounts",
-      "ratification_ref": null,
-      "record_hash": "eae34174328815d845a7098169e435e4e70d890653c1c83d410cc2aa697cc466",
-      "snapshot_hash": "b73c1e5754b3091df4f79ae6ea435cd0b0f405e4566f357e4d50f93dad82b027",
-      "state": "EXCEPTION",
-      "why_code": null
-    },
-    {
-      "assertion_ref": "TERM-CORP-IT.a",
-      "claim_ref": "TERM.corp-it.no-residual-access",
-      "contract_hash": "3b829a14b704848bcf1c11abc2ba6bd8aa3626cfc68e51a6c16a816e7f5baa97",
-      "d7_family": null,
-      "disposition_ref": null,
-      "evaluated_at": "2026-07-01T06:05:00Z",
-      "evidence_refs": [
-        "ratification:RAT-2026-031"
-      ],
-      "manifest_version": "v1-skeleton",
-      "message": "system 'corp-it' excluded from scope by vinylfigure (Ratifier): corp-IT endpoint management is out of the termination lane's TA-3 scope for this engagement; device deprovisioning is covered by the endpoint lane",
-      "population_ref": "TERM.corp-it.accounts",
-      "ratification_ref": "RAT-2026-031",
-      "record_hash": "62a8009498d6d2620f4daea95c85bea1ce1bec7df25684a1ef7242e8749bb352",
-      "snapshot_hash": "b73c1e5754b3091df4f79ae6ea435cd0b0f405e4566f357e4d50f93dad82b027",
-      "state": "EXCLUDED",
-      "why_code": null
-    }
-  ]
-}
+    "test_function_version": "0.1.0",
+    "unknown_cause": "UNKNOWN_EVIDENCE"
+  },
+  {
+    "assertion_id": "cp-idp-deactivation-workday-B",
+    "chain_prev": "2d046ab3a80a611df746ba1e1ea1b483610363c2ee319c8a22ba4f0c7cd95b66",
+    "claim_id": "claim-cp-idp-deactivation-workday",
+    "collected_at": "2026-12-31T23:59:59Z",
+    "completeness_ref": "artifacts/demo-engagement/reconciliation.json",
+    "control_id": "AM-06",
+    "evidence_refs": [
+      "tests/fixtures/poisons/okta_system_log#sha256=0b14301efcb756c9d51c15dd4a6342edc17bb1f2edd37ac336216869fbfc7e6c"
+    ],
+    "message": "revocation for rhea.bell@example.com within 1 business days (constraint: 5, D-P4)",
+    "population_count": 8,
+    "population_id": "pop-termination-events",
+    "record_hash": "3daef8dbb10b108479173d421274bd6ff021ba24cd61381e55dc0c162062ef09",
+    "record_id": "vr-poison-timing-0001-rhea.bell@example.com",
+    "run_id": "run-poison-engagement-0001",
+    "schema_version": "0.1.0",
+    "severity": "high",
+    "source": "okta-system-log-collector",
+    "source_version": "0.1.0",
+    "spec_hash": "5412c8131859f166ca0c16abf8a5f9d4d9a0a69aada7294a63d6e660df9727c1",
+    "spec_id": "spec-poison-idp-timing-v1",
+    "status": "PASS",
+    "test_function_version": "0.1.0"
+  },
+  {
+    "assertion_id": "cp-idp-deactivation-workday-B",
+    "chain_prev": "3daef8dbb10b108479173d421274bd6ff021ba24cd61381e55dc0c162062ef09",
+    "claim_id": "claim-cp-idp-deactivation-workday",
+    "collected_at": "2026-12-31T23:59:59Z",
+    "completeness_ref": "artifacts/demo-engagement/reconciliation.json",
+    "control_id": "AM-06",
+    "evidence_refs": [
+      "tests/fixtures/poisons/okta_system_log#sha256=0b14301efcb756c9d51c15dd4a6342edc17bb1f2edd37ac336216869fbfc7e6c"
+    ],
+    "message": "revocation for sam.cole@example.com within 1 business days (constraint: 5, D-P4)",
+    "population_count": 8,
+    "population_id": "pop-termination-events",
+    "record_hash": "2fc31e2f93cecfd00964654daa8dc2dee0b873d07e331a83e3a32a1f2f6b9552",
+    "record_id": "vr-poison-timing-0001-sam.cole@example.com",
+    "run_id": "run-poison-engagement-0001",
+    "schema_version": "0.1.0",
+    "severity": "high",
+    "source": "okta-system-log-collector",
+    "source_version": "0.1.0",
+    "spec_hash": "5412c8131859f166ca0c16abf8a5f9d4d9a0a69aada7294a63d6e660df9727c1",
+    "spec_id": "spec-poison-idp-timing-v1",
+    "status": "PASS",
+    "test_function_version": "0.1.0"
+  },
+  {
+    "assertion_id": "cp-idp-deactivation-workday-B",
+    "chain_prev": "2fc31e2f93cecfd00964654daa8dc2dee0b873d07e331a83e3a32a1f2f6b9552",
+    "claim_id": "claim-cp-idp-deactivation-workday",
+    "collected_at": "2026-12-31T23:59:59Z",
+    "completeness_ref": "artifacts/demo-engagement/reconciliation.json",
+    "control_id": "AM-06",
+    "evidence_refs": [
+      "tests/fixtures/poisons/okta_system_log#sha256=0b14301efcb756c9d51c15dd4a6342edc17bb1f2edd37ac336216869fbfc7e6c"
+    ],
+    "message": "revocation for tess.umber@example.com within 1 business days (constraint: 5, D-P4)",
+    "population_count": 8,
+    "population_id": "pop-termination-events",
+    "record_hash": "fefd2cf08743f1c793bb0916e2c4c550366c3afd7b7f09fc4806bdd806c37902",
+    "record_id": "vr-poison-timing-0001-tess.umber@example.com",
+    "run_id": "run-poison-engagement-0001",
+    "schema_version": "0.1.0",
+    "severity": "high",
+    "source": "okta-system-log-collector",
+    "source_version": "0.1.0",
+    "spec_hash": "5412c8131859f166ca0c16abf8a5f9d4d9a0a69aada7294a63d6e660df9727c1",
+    "spec_id": "spec-poison-idp-timing-v1",
+    "status": "PASS",
+    "test_function_version": "0.1.0"
+  }
+]

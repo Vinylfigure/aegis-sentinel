@@ -20,6 +20,23 @@ You can start editing the page by modifying `app/page.tsx`. The page auto-update
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
+## Engagement data (155a/155b, issue #162)
+
+`src/data/engagement/*.json` is synced verbatim from `../artifacts/demo-engagement/`
+by `scripts/sync-artifacts.mjs` (`npm run build`'s `prebuild` hook re-runs it).
+Two views the UI needs — populations and proof-graph lineage — have no backend
+producer at all, so `src/lib/data/engagement.ts` derives them at load time
+instead of reading a committed stand-in file:
+
+| Derived view | Source of truth |
+| --- | --- |
+| `Population` | `reconciliation.json`'s own `population_*` fields, `ladder.after_dispositions` (state), `buckets` minus `intersection` (deltas — mirrors `reconcile/engine.py`'s own attachment rule), `boundary_exclusions` (exclusions) |
+| `ProofGraph` (per verdict) | `commitments.json` (commitment/requirement stage, via `claim_ids`), `reconciliation.json` (population/source/reconciliation stages), `contracts.json` (contract stage, keyed by `spec_hash`), `snapshot.json` (snapshot stage, when the population is in `blocks.populations`) |
+
+If a backend rename breaks one of these, `loadEngagement()`'s runtime guards
+(`check*` functions) flag it as artifact drift before the derivation runs on
+stale assumptions — see that file's header comment for the full mapping.
+
 ## Learn More
 
 To learn more about Next.js, take a look at the following resources:

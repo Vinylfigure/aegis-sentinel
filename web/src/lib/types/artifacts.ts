@@ -14,10 +14,14 @@
 
 import type {
   AssuranceState,
-  DispositionValue,
+  Delta,
+  DerivationRule,
+  Disposition,
   Period,
   Population,
   PopulationType,
+  SourceRef,
+  SourceRole,
   UnknownWhy,
   VerdictState,
 } from "@/lib/types/ontology";
@@ -106,31 +110,41 @@ export interface CapabilityEntry {
   history_caveats: string[];
 }
 
-export interface CapabilityRegistryFile {
+/** Registry file as emitted (`registry.json`): ratified/draft entries plus
+ * the compiler's own E-code findings against them (TYP01). */
+export interface RegistryFile {
   entries: CapabilityEntry[];
+  compile_errors: CompileError[];
+  note?: string;
 }
 
 /* ---------------- compile errors (TYP01 E-codes) ----------------
- * Compiler-output text, never a pydantic model — no backend schema exists
- * for this shape, so it stays local-only/unchecked in checks.ts. */
+ * Mirrored from compile/checker.py's CompileError — a pydantic model, but
+ * one that carries compiler text rather than a domain object, and one
+ * whose `code` is pattern-validated (`^E\d{3}$`) rather than a closed enum
+ * on the backend, so it stays a plain string here too. Known codes today:
+ * E117 (no usable capability for a derivation source), E118 (usable but
+ * not manifest-granted), E204 (temporal insufficiency), E302 (schema-
+ * version drift). No backend JSON Schema is generated for it (compiler
+ * output, not `schema/models.py`), so it stays local-only/unchecked in
+ * checks.ts. */
 
 export interface CompileError {
-  code: "E204" | "E117" | "E302";
+  code: string;
+  claim_id: string;
   message: string;
-  /** The exact compiler-output line — render verbatim. */
-  rendered: string;
-  claim_ref: string;
-  /** null for claim-level errors (E117/E302); set for E204. */
-  assertion_ref: string | null;
-  /* E204 extras */
-  capability_window_days?: number;
-  required_window?: Period;
-  satisfiable_via?: string[];
-  /* E117 extras */
-  missing_source?: string;
+  suggestion: string | null;
 }
 
-/* ---------------- reconciliation (REC01 DeltaObject) ---------------- */
+/* ---------------- reconciliation (REC01 SetReconcileResult) ----------------
+ * Mirrored from reconcile/engine.py's `reconcile_sets()` output as
+ * serialized into `reconciliation.json` by
+ * scripts/build_demo_engagement.py — one report per population (today's
+ * demo engagement emits exactly one, for pop-termination-events). This
+ * replaces an earlier, unverified shape (`ReconciliationResult`/
+ * `DeltaObject` with invented fields like `canonical_identity_keys`/
+ * `basis_complete`/`member_key`) that matched neither this wire artifact
+ * nor any backend schema — see issue #162. */
 
 export const DELTA_BUCKETS = [
   "intersection",
@@ -149,58 +163,70 @@ export type DeltaBucket = (typeof DELTA_BUCKETS)[number];
 export const D7_FAMILIES = ["basis-missing", "identity-fuzzy", "no-basis-anywhere"] as const;
 export type D7Family = (typeof D7_FAMILIES)[number];
 
-/** REI mechanized: justification + owner + review date (PRD-v3 §2). */
-export interface DeltaDisposition {
-  value: DispositionValue;
-  justification: string;
-  owner: string;
-  review_date: string;
+/** One source's raw member view before reconciliation (`SourceMember` in
+ * engine.py): a join-key email plus whatever attributes that source
+ * asserts, compared across sources for CONFLICT detection. */
+export interface ReconciliationSourceMember {
+  ref: string;
+  email: string;
+  attributes: Record<string, string>;
 }
 
-export interface DeltaObject {
-  delta_id: string;
+/** One named member-set with its source role (`SourceSet` in engine.py).
+ * `capability_id` is null for sources with no registry entry (e.g. a
+ * ticketing system used only as corroborating evidence). */
+export interface ReconciliationSource {
+  name: string;
+  role: SourceRole;
+  capability_id: string | null;
+  members: ReconciliationSourceMember[];
+}
+
+/** A ratified boundary exclusion (`BoundaryExclusion` in engine.py) — the
+ * human act happened upstream; this only records the ref (D-9). */
+export interface BoundaryExclusion {
+  member: string;
+  ref: string;
+  ratified_by: string;
+}
+
+/** One bucket entry naming a delta still blocking the ladder before its
+ * disposition, or having already been dispositioned. */
+export interface LadderBlockedDelta {
   bucket: DeltaBucket;
-  /** This delta's D-7 family, or null for conflict/intersection/excluded. */
   cause: D7Family | null;
-  /** Canonical member identity (join-key value, e.g. employee_id or login). */
-  member_key: string;
-  display_name: string;
-  /** Source ids where this member WAS observed. */
-  sources_present: string[];
-  /** Negative space: sources where this member was expected but absent. */
-  sources_absent: string[];
-  owner: string | null;
-  disposition: DeltaDisposition | null;
-  /** Ratified disposition record id (e.g. DISP-2026-102), human-issued. */
-  disposition_ref: string | null;
+  ref: string;
+  dispositioned: boolean;
 }
 
-export interface ReconciliationResult {
-  population_ref: string;
-  canonical_identity_keys: string[];
-  /** Diagnostic member counts per source — a smell test, not evidence. */
-  source_counts: Record<string, number>;
-  deltas: DeltaObject[];
-  /** Full bucket membership (canonical member keys), delta or not. */
-  buckets: Record<DeltaBucket, string[]>;
-  /** The reconciled population membership (canonical keys, sorted). */
-  members: string[];
-  /** Whether every declared source was collected to exhaustion. */
-  basis_complete: boolean;
-  basis_notes: string[];
-  /** Non-blocking observations (out-of-scope identities, bot principals…). */
-  diagnostics: string[];
-  ladder_state: AssuranceState;
+export interface ReconciliationLadder {
+  at_first_verdict: AssuranceState;
+  after_dispositions: AssuranceState;
+  blocked_by_open_deltas: LadderBlockedDelta[];
 }
 
-export interface ReconciliationFile {
-  engagement: string;
-  reconciliations: ReconciliationResult[];
-}
-
-export interface PopulationsFile {
-  engagement: string;
-  populations: Population[];
+/** One population's full reconciliation report, as `reconciliation.json`
+ * emits it. `buckets`/`counts` are keyed by every `DeltaBucket`; `deltas`
+ * inside `population.deltas` (ontology.ts) is the same objects minus
+ * `intersection` (engine.py only attaches open questions + EXCLUDED). */
+export interface ReconciliationReport {
+  population_id: string;
+  population_name: string;
+  population_type: PopulationType;
+  definition: string;
+  derivation_rule: DerivationRule | null;
+  authoritative_source: SourceRef | null;
+  period: Period;
+  tenant: string;
+  sources: ReconciliationSource[];
+  canonical_members: string[];
+  buckets: Record<DeltaBucket, Delta[]>;
+  /** Diagnostics only — never evidence (HANDOFF §2). */
+  counts: Record<DeltaBucket, number>;
+  counts_note: string;
+  dispositions: Record<string, Disposition>;
+  ladder: ReconciliationLadder;
+  boundary_exclusions: BoundaryExclusion[];
 }
 
 /* ---------------- verdicts bundle ---------------- */
@@ -260,12 +286,26 @@ export interface VerdictRecord {
   unknown_cause?: UnknownWhy;
 }
 
-export interface VerdictsFile {
-  engagement: string;
-  manifest_version: string;
-  verdicts: VerdictRecord[];
-  compile_errors: CompileError[];
+/** `verdicts.json` is a bare array on the wire — no envelope, no
+ * `compile_errors` alongside it (those live in `registry.json`, TYP01's
+ * own output). No `VerdictsFile` wrapper type exists for the same reason
+ * `PopulationsFile`/`ReconciliationFile` don't (issue #162): inventing an
+ * envelope the backend never emits is exactly the drift this file exists
+ * to catch, not reproduce. */
+
+/** A commitment as `commitments.json` emits it (keyed by id) — a real
+ * pydantic model (`schemas/ontology/commitment.schema.json`), not
+ * derived; included here rather than ontology.ts because it is only
+ * ever consumed as this wire bundle. */
+export interface Commitment {
+  id: string;
+  name: string;
+  source: string;
+  obligation: string;
+  claim_ids: string[];
 }
+
+export type CommitmentsFile = Record<string, Commitment>;
 
 /* ---------------- proof graph (P1 lineage view) ---------------- */
 
@@ -306,30 +346,40 @@ export interface ProofGraph {
 
 /* ---------------- manifest + bundle ---------------- */
 
-export interface ManifestSummary {
-  claims: number;
-  compile_error_codes: string[];
-  populations_by_state: Partial<Record<AssuranceState, number>>;
-  verdict_states_present: VerdictState[];
+/** Mirrored from `manifest.py::ManifestSnapshot` / `snapshot.json` — the
+ * ratified scope grant (D-L1: ratification IS the freeze), not the
+ * invented `manifest_version`/`snapshot_hash`/`boundary`/`summary` shape
+ * this replaces (issue #162; that shape matched no backend model or wire
+ * file). */
+export interface ManifestCollectorGrant {
+  id: string;
+  permissions: string[];
 }
 
-export interface EngagementManifest {
-  manifest_version: string;
-  snapshot_hash: string;
-  ratified_by: string;
-  ratified_at: string;
-  engagement: string;
-  period: Period;
-  boundary: string;
-  notes?: string;
-  summary: ManifestSummary;
+export interface ManifestBlocks {
+  boundary: string[];
+  capabilities: string[];
+  claims: string[];
+  collectors: ManifestCollectorGrant[];
+  evidence_contracts: string[];
+  populations: string[];
+  tests: string[];
+}
+
+export interface ManifestSnapshot {
+  version: number;
+  lifecycle: LifecycleState;
+  ratified_by: string | null;
+  ratified_at: string | null;
+  blocks: ManifestBlocks;
 }
 
 export interface EngagementArtifacts {
-  manifest: EngagementManifest;
+  manifest: ManifestSnapshot;
   capability_registry: CapabilityEntry[];
+  commitments: CommitmentsFile;
   populations: Population[];
-  reconciliations: ReconciliationResult[];
+  reconciliations: ReconciliationReport[];
   verdicts: VerdictRecord[];
   compile_errors: CompileError[];
   proof_graphs: ProofGraph[];
