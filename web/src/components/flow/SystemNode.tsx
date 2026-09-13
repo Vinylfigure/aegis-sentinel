@@ -75,8 +75,8 @@ export function SystemNode({ data }: NodeProps<SystemFlowNode>) {
         </div>
       </div>
 
-      {pop && (
-        <div className={styles.nodeBody}>
+      <div className={styles.nodeBody}>
+        {pop && (
           <div className={styles.nodeRow}>
             <span>
               {pop.size != null ? (
@@ -84,7 +84,7 @@ export function SystemNode({ data }: NodeProps<SystemFlowNode>) {
               ) : (
                 <span className={styles.nodeCountNull}>size unknown</span>
               )}{" "}
-              {pop.size != null && (pop.type === "EVENT" ? "events" : pop.type === "RELATIONSHIP" ? "joined" : "accounts")}
+              {pop.size != null && (pop.type === "event" ? "events" : pop.type === "relationship" ? "joined" : "accounts")}
             </span>
             <span
               className={`${styles.ladderChip} ${blocked ? styles.ladderChipBlocked : ""}`}
@@ -92,30 +92,28 @@ export function SystemNode({ data }: NodeProps<SystemFlowNode>) {
               {blocked ? `${pop.state} · E117` : pop.state}
             </span>
           </div>
-          <div className={`${styles.nodeRow} ${styles.capRow}`}>
-            {system.capabilities.length > 0 ? (
-              <span className={styles.capOk}>
-                {system.capabilities.length}{" "}
-                {system.capabilities.length === 1 ? "capability" : "capabilities"} ·{" "}
-                {system.capabilities[0].temporal.kind.toLowerCase().replace(/_/g, " ")}
-                {system.capabilities[0].temporal.window_days != null &&
-                  ` ${system.capabilities[0].temporal.window_days}d`}
-              </span>
-            ) : blocked ? (
-              <span className={styles.capMissing}>capability missing: breakglass.config</span>
-            ) : (
-              <span>no capability entries</span>
-            )}
-          </div>
+        )}
+        <div className={`${styles.nodeRow} ${styles.capRow}`}>
+          {system.capabilities.length > 0 ? (
+            <span className={styles.capOk}>
+              {system.capabilities.length}{" "}
+              {system.capabilities.length === 1 ? "capability" : "capabilities"} ·{" "}
+              {system.capabilities[0].temporal.kind.toLowerCase().replace(/_/g, " ")}
+              {system.capabilities[0].temporal.window_days != null &&
+                ` ${system.capabilities[0].temporal.window_days}d`}
+            </span>
+          ) : blocked ? (
+            <span className={styles.capMissing}>capability missing: breakglass.config</span>
+          ) : (
+            <span>no capability entries</span>
+          )}
         </div>
-      )}
-      {!pop && system.ghost && (
-        <div className={styles.nodeBody}>
-          <div className={`${styles.nodeRow} ${styles.capRow}`}>
-            <span>out of lane scope · RAT-2026-031</span>
+        {!pop && !blocked && (
+          <div className={styles.nodeRow}>
+            <span className={styles.nodeCountNull}>no population attached at this system</span>
           </div>
-        </div>
-      )}
+        )}
+      </div>
       <Handle type="source" position={Position.Right} className={styles.handle} />
     </div>
   );

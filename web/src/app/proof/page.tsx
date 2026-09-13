@@ -32,8 +32,8 @@ export default function ProofIndex() {
             className={styles.graphCard}
           >
             <div className={styles.graphHead}>
-              {v && <span className={`state-badge state-${v.state}`}>{v.state}</span>}
-              <span className={styles.graphAssertion}>{v?.assertion_ref}</span>
+              {v && <span className={`state-badge state-${v.status}`}>{v.status}</span>}
+              <span className={styles.graphAssertion}>{v?.assertion_id}</span>
               <span className={styles.graphStages}>
                 {g.nodes.length} stages · {g.edges.length} typed edges
               </span>

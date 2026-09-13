@@ -8,7 +8,8 @@
  * introduced. Any silent PASS is a build-stopping bug.
  */
 
-import type { VerdictRecord, VerdictState } from "@/lib/types/ontology";
+import type { VerdictState } from "@/lib/types/ontology";
+import type { VerdictRecord } from "@/lib/types/artifacts";
 import type { EngagementLoad } from "@/lib/data/engagement";
 import { loadEngagement, verdictSlug } from "@/lib/data/engagement";
 
@@ -88,7 +89,7 @@ function findVerdict(
   exp: VerdictExpectation
 ): VerdictRecord | undefined {
   return load.artifacts.verdicts.find(
-    (v) => v.claim_ref === exp.claim_ref && v.assertion_ref === exp.assertion_ref
+    (v) => v.claim_id === exp.claim_ref && v.assertion_id === exp.assertion_ref
   );
 }
 
@@ -100,13 +101,13 @@ export function mutationPoisons(load?: EngagementLoad): MutationPoison[] {
   for (const exp of VERDICT_EXPECTATIONS) {
     const v = findVerdict(l, exp);
     const detected =
-      !!v && v.state === exp.state && (v.message ?? "").includes(exp.evidence);
+      !!v && v.status === exp.state && (v.message ?? "").includes(exp.evidence);
     rows.push({
       id: exp.id,
       poison: exp.poison,
       detector:
         v && detected
-          ? { kind: "verdict", state: v.state, slug: verdictSlug(v), note: exp.note }
+          ? { kind: "verdict", state: v.status, slug: verdictSlug(v), note: exp.note }
           : {
               kind: "missing",
               note: `expected ${exp.state} on ${exp.assertion_ref} naming "${exp.evidence}" — not found in artifacts`,
@@ -124,7 +125,7 @@ export function mutationPoisons(load?: EngagementLoad): MutationPoison[] {
       ? {
           kind: "ecode",
           code: "E117",
-          note: `${e117.claim_ref} refuses to compile — ${e117.missing_source ?? "capability"} has no ratified capability entry`,
+          note: `${e117.claim_id} refuses to compile — ${e117.message}`,
         }
       : {
           kind: "missing",

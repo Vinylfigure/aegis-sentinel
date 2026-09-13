@@ -1,7 +1,8 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { loadEngagement, populationById, reconciliationFor } from "@/lib/data/engagement";
-import type { DeltaObject } from "@/lib/types/artifacts";
+import type { Delta } from "@/lib/types/ontology";
+import type { DeltaBucket } from "@/lib/types/artifacts";
 import Ladder from "@/components/ui/Ladder";
 import styles from "./PopulationDetail.module.css";
 
@@ -10,11 +11,36 @@ export const metadata: Metadata = { title: "Reconciliation board — Aegis" };
 export function generateStaticParams() {
   const load = loadEngagement();
   return load.artifacts.reconciliations.map((r) => ({
-    populationId: r.population_ref,
+    populationId: r.population_id,
   }));
 }
 
-function DeltaCard({ delta }: { delta: DeltaObject }) {
+/** Sources that have — and lack — a member sharing this delta's canonical
+ * email. Only meaningful for email-joined identities (D-8): an
+ * UNRESOLVABLE delta preserves its raw source ref instead (no canonical
+ * key was derivable), so there is nothing to compare across sources. */
+function presenceAcrossSources(
+  delta: Delta,
+  sources: { name: string; members: { email: string }[] }[]
+): { present: string[]; absent: string[] } | null {
+  if (!delta.member_ref.startsWith("email:")) return null;
+  const email = delta.member_ref.slice("email:".length);
+  const present: string[] = [];
+  const absent: string[] = [];
+  for (const s of sources) {
+    if (s.members.some((m) => m.email === email)) present.push(s.name);
+    else absent.push(s.name);
+  }
+  return { present, absent };
+}
+
+function DeltaCard({
+  delta,
+  sources,
+}: {
+  delta: Delta;
+  sources: { name: string; members: { email: string }[] }[];
+}) {
   const open = !delta.disposition;
   const bucketClass =
     delta.bucket === "excluded"
@@ -22,57 +48,62 @@ function DeltaCard({ delta }: { delta: DeltaObject }) {
       : delta.bucket === "unresolvable"
         ? styles.bucketTagUnresolvable
         : "";
+  const presence = presenceAcrossSources(delta, sources);
   return (
     <article className={`${styles.deltaCard} ${open ? styles.deltaCardOpen : ""}`}>
       <div className={styles.deltaHead}>
-        <span className={styles.deltaMember}>{delta.display_name}</span>
+        <span className={styles.deltaMember}>{delta.member_ref}</span>
         <span className={`${styles.bucketTag} ${bucketClass}`}>{delta.bucket}</span>
-        <span className={styles.deltaId}>{delta.delta_id}</span>
       </div>
 
-      <div className={styles.presence}>
-        <div className={styles.presCol}>
-          <div className={`${styles.presLabel} ${styles.presLabelGhost}`}>present in</div>
-          <div className={styles.presChips}>
-            {delta.sources_present.length ? (
-              delta.sources_present.map((s) => (
-                <span key={s} className={`${styles.presChip} ${styles.presChipGhost}`}>
-                  {s}
-                </span>
-              ))
-            ) : (
-              <span className={styles.presEmpty}>nowhere</span>
-            )}
+      {presence ? (
+        <div className={styles.presence}>
+          <div className={styles.presCol}>
+            <div className={`${styles.presLabel} ${styles.presLabelGhost}`}>present in</div>
+            <div className={styles.presChips}>
+              {presence.present.length ? (
+                presence.present.map((s) => (
+                  <span key={s} className={`${styles.presChip} ${styles.presChipGhost}`}>
+                    {s}
+                  </span>
+                ))
+              ) : (
+                <span className={styles.presEmpty}>nowhere</span>
+              )}
+            </div>
+          </div>
+          <div className={styles.presCol}>
+            <div className={`${styles.presLabel} ${styles.presLabelAbsent}`}>
+              absent from — the negative space
+            </div>
+            <div className={styles.presChips}>
+              {presence.absent.length ? (
+                presence.absent.map((s) => (
+                  <span key={s} className={`${styles.presChip} ${styles.presChipAbsent}`}>
+                    {s}
+                  </span>
+                ))
+              ) : (
+                <span className={styles.presEmpty}>present everywhere expected</span>
+              )}
+            </div>
           </div>
         </div>
-        <div className={styles.presCol}>
-          <div className={`${styles.presLabel} ${styles.presLabelAbsent}`}>
-            absent from — the negative space
-          </div>
-          <div className={styles.presChips}>
-            {delta.sources_absent.length ? (
-              delta.sources_absent.map((s) => (
-                <span key={s} className={`${styles.presChip} ${styles.presChipAbsent}`}>
-                  {s}
-                </span>
-              ))
-            ) : (
-              <span className={styles.presEmpty}>present everywhere expected</span>
-            )}
-          </div>
-        </div>
-      </div>
+      ) : (
+        <p className={styles.emptyBucket}>
+          no canonical email was derivable for this member — it cannot be joined
+          against the other sources (cause: identity-fuzzy or basis-missing)
+        </p>
+      )}
 
       <div className={styles.deltaFoot}>
         {delta.disposition ? (
           <>
             <span className={styles.dispRef}>
-              {delta.disposition_ref} · {delta.disposition.value}
+              {delta.member_ref} · {delta.disposition.value}
             </span>
-            <span className={styles.dispJust}>{delta.disposition.justification}</span>
-            <span className={styles.ownerTag}>
-              owner {delta.disposition.owner} · review {delta.disposition.review_date}
-            </span>
+            <span className={styles.dispJust}>{delta.disposition.rationale}</span>
+            <span className={styles.ownerTag}>owner {delta.disposition.owner}</span>
           </>
         ) : (
           <>
@@ -101,10 +132,15 @@ export default async function PopulationDetail({
   const pop = populationById(load, id);
   if (!rec) notFound();
 
-  const openDeltas = rec.deltas.filter((d) => !d.disposition);
-  const dispositioned = rec.deltas.filter((d) => d.disposition);
-  const blocked = openDeltas.length > 0;
-  const shownDiags = rec.diagnostics.slice(0, 4);
+  const openBuckets = (Object.keys(rec.buckets) as DeltaBucket[]).filter(
+    (b) => b !== "intersection"
+  );
+  const allDeltas = openBuckets.flatMap((b) => rec.buckets[b]);
+  const openDeltas = allDeltas.filter((d) => !d.disposition);
+  const dispositioned = allDeltas.filter((d) => d.disposition);
+  const blockedByOpen = rec.ladder.blocked_by_open_deltas.filter((d) => !d.dispositioned);
+  const blocked = blockedByOpen.length > 0;
+  const currentState = blocked ? rec.ladder.at_first_verdict : rec.ladder.after_dispositions;
 
   return (
     <main className="page">
@@ -114,21 +150,19 @@ export default async function PopulationDetail({
 
       <div className={styles.ladderWrap}>
         <Ladder
-          current={rec.ladder_state}
-          blockedAfter={blocked ? "DISCOVERED" : undefined}
-          blockedLabel={blocked ? `${openDeltas.length} open` : undefined}
+          current={currentState}
+          blockedAfter={blocked ? rec.ladder.at_first_verdict : undefined}
+          blockedLabel={blocked ? `${blockedByOpen.length} open` : undefined}
         />
       </div>
 
       <div className={styles.sourceStrip}>
-        {Object.entries(rec.source_counts).map(([src, n]) => (
-          <span key={src} className={styles.sourceChip}>
-            {src} <b>{n}</b>
+        {rec.sources.map((s) => (
+          <span key={s.name} className={styles.sourceChip}>
+            {s.name} <b>{s.members.length}</b>
           </span>
         ))}
-        <span className={styles.sourceChip}>
-          keys <b>{rec.canonical_identity_keys.join(" · ")}</b>
-        </span>
+        <span className={styles.sourceChip}>joined on canonical email (D-8)</span>
       </div>
 
       <div className={styles.layout}>
@@ -139,7 +173,7 @@ export default async function PopulationDetail({
                 open deltas · {openDeltas.length} — what the sources cannot account for
               </div>
               {openDeltas.map((d) => (
-                <DeltaCard key={d.delta_id} delta={d} />
+                <DeltaCard key={d.member_ref} delta={d} sources={rec.sources} />
               ))}
             </>
           )}
@@ -150,7 +184,7 @@ export default async function PopulationDetail({
                 dispositioned · {dispositioned.length} — owned, justified, dated
               </div>
               {dispositioned.map((d) => (
-                <DeltaCard key={d.delta_id} delta={d} />
+                <DeltaCard key={d.member_ref} delta={d} sources={rec.sources} />
               ))}
             </>
           )}
@@ -161,9 +195,9 @@ export default async function PopulationDetail({
           </div>
           {rec.buckets.intersection.length ? (
             <div className={styles.memberGrid}>
-              {rec.buckets.intersection.map((m) => (
-                <span key={m} className={styles.memberChip}>
-                  {m}
+              {rec.buckets.intersection.map((d) => (
+                <span key={d.member_ref} className={styles.memberChip}>
+                  {d.member_ref}
                 </span>
               ))}
             </div>
@@ -171,12 +205,12 @@ export default async function PopulationDetail({
             <p className={styles.emptyBucket}>empty</p>
           )}
 
-          <div className="section-label">conflicts · {rec.buckets.conflicts.length}</div>
-          {rec.buckets.conflicts.length ? (
+          <div className="section-label">conflict · {rec.buckets.conflict.length}</div>
+          {rec.buckets.conflict.length ? (
             <div className={styles.memberGrid}>
-              {rec.buckets.conflicts.map((m) => (
-                <span key={m} className={styles.memberChip}>
-                  {m}
+              {rec.buckets.conflict.map((d) => (
+                <span key={d.member_ref} className={styles.memberChip}>
+                  {d.member_ref}
                 </span>
               ))}
             </div>
@@ -187,29 +221,24 @@ export default async function PopulationDetail({
 
         <aside className={styles.why}>
           <div className={styles.whyTitle}>Why this board is complete</div>
-          {rec.basis_complete && (
-            <div className={styles.whyBasis}>basis complete</div>
-          )}
+          {!blocked && <div className={styles.whyBasis}>basis complete</div>}
           <p className={styles.whyText}>
             Every declared source was collected <b>to exhaustion</b> — pagination
             drained, counts checked — before a single member was compared. The board
             derives from{" "}
-            {Object.entries(rec.source_counts)
-              .map(([s, n]) => `${s} (${n})`)
-              .join(", ")}
-            , joined on{" "}
-            <span className="mono">{rec.canonical_identity_keys.join(", ")}</span>.
+            {rec.sources.map((s) => `${s.name} (${s.members.length})`).join(", ")}
+            , joined on <span className="mono">canonical email</span>.
           </p>
           <ul className={styles.whyList}>
             <li>
-              <b>{rec.members.length}</b> members resolved into the population
+              <b>{rec.canonical_members.length}</b> members resolved into the population
             </li>
             <li>
               <b>{rec.buckets.intersection.length}</b> corroborated by every expected
               source
             </li>
             <li>
-              <b>{rec.deltas.length}</b> delta{rec.deltas.length === 1 ? "" : "s"} —{" "}
+              <b>{allDeltas.length}</b> delta{allDeltas.length === 1 ? "" : "s"} —{" "}
               {openDeltas.length} open, {dispositioned.length} dispositioned; a delta
               is never silently dropped
             </li>
@@ -217,24 +246,15 @@ export default async function PopulationDetail({
               open deltas <b>block the ladder</b>: {blocked ? "this population holds at DISCOVERED until every delta is owned or ratified away" : "none — the board can advance"}
             </li>
           </ul>
-          {rec.diagnostics.length > 0 && (
-            <>
-              <div className="section-label">diagnostics · non-blocking</div>
-              <div className={styles.diagList}>
-                {shownDiags.map((d) => (
-                  <span key={d} className={styles.diagItem}>
-                    {d}
-                  </span>
-                ))}
-              </div>
-              {rec.diagnostics.length > shownDiags.length && (
-                <div className={styles.diagMore}>
-                  + {rec.diagnostics.length - shownDiags.length} more out-of-scope
-                  observations
-                </div>
-              )}
-            </>
-          )}
+          <div className="section-label">counts · diagnostics only</div>
+          <div className={styles.diagList}>
+            {(Object.entries(rec.counts) as [DeltaBucket, number][]).map(([bucket, n]) => (
+              <span key={bucket} className={styles.diagItem}>
+                {bucket}: {n}
+              </span>
+            ))}
+          </div>
+          <div className={styles.diagMore}>{rec.counts_note}</div>
         </aside>
       </div>
     </main>

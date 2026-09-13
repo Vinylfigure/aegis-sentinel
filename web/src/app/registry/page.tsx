@@ -17,7 +17,7 @@ export default function RegistryPage() {
   const entries = load.artifacts.capability_registry;
   const errors = load.artifacts.compile_errors;
   const e204 = errors.find((e) => e.code === "E204");
-  const okta = entries.find((e) => e.entry_id === "okta.system_log.api_v1");
+  const okta = entries.find((e) => e.id === "okta.system_log");
 
   return (
     <main className="page">
@@ -29,50 +29,48 @@ export default function RegistryPage() {
         against these physics, not against wishes.
       </p>
 
-      <div className="section-label">the 90-day wall · why the six-month ask refused to compile</div>
+      <div className="section-label">the retention wall · a capability&apos;s own physics</div>
       <div className={styles.exhibit}>
         <div className={styles.exhibitLeft}>
           <div className={styles.exhibitTitle}>
-            Okta System Log retains <b>90 days</b>. The assertion needed 181.
+            Okta System Log retains <b>{okta?.temporal.window_days ?? "?"} days</b> —
+            {okta ? " event-history, not full-history." : " capability not found in this engagement."}
           </div>
           <p className={styles.exhibitText}>
-            <span className="mono">{okta?.entry_id}</span> yields{" "}
+            <span className="mono">{okta?.id}</span> yields{" "}
             <span className="mono">
-              event-history(window={okta?.temporal.window_days}d)
+              {okta?.temporal.kind}(window={okta?.temporal.window_days}d)
             </span>
-            . The TIMING assertion asked for transition timestamps across the full
-            period {e204?.required_window?.start}..{e204?.required_window?.end}. No
-            usable capability combination covers it — so the claim was re-scoped to
-            an honest window, and the six-month ask stays on the books as the E204
-            exhibit below.
+            . A TIMING assertion asking for a window beyond that retention has no
+            usable capability combination to compile against — the compiler emits an
+            E204 finding rather than silently truncating the claim.
           </p>
-          <div className={styles.windowViz} aria-label="Required 181-day window vs available 90-day retention">
-            <div className={styles.windowTrack}>
-              <span className={styles.windowNeed} />
-              <span className={styles.windowHave} />
-            </div>
-            <div className={styles.windowLegend}>
-              <span>
-                required <b>181 days</b> (2026-01-01 → 2026-06-30)
-              </span>
-              <span>
-                available <b>90 days</b> of retention
-              </span>
-            </div>
-          </div>
         </div>
         <div className={styles.exhibitRight}>
-          <b>E204</b> {e204?.rendered.replace(/^E\d+\s+/, "")}
+          {e204 ? (
+            <>
+              <b>E204</b> {e204.message}
+              {e204.suggestion && (
+                <div className={styles.exhibitText}>suggestion: {e204.suggestion}</div>
+              )}
+            </>
+          ) : (
+            <p className={styles.exhibitText}>
+              No E204 (temporal insufficiency) finding in this engagement&apos;s
+              compile_errors — the wall above is illustrative of the capability&apos;s
+              retention physics, not a claim compiled against it this run.
+            </p>
+          )}
         </div>
       </div>
 
       <div className="section-label">ratified entries · {entries.length}</div>
       <div className={styles.entryGrid}>
         {entries.map((e) => (
-          <article key={e.entry_id} className={styles.entry}>
+          <article key={e.id} className={styles.entry}>
             <div className={styles.entryHead}>
               <span className={styles.entrySystem}>{SYSTEM_NAMES[e.system] ?? e.system}</span>
-              <span className={styles.entryId}>{e.entry_id}</span>
+              <span className={styles.entryId}>{e.id}</span>
               <span
                 className={`${styles.temporalChip} ${
                   e.temporal.window_days != null ? styles.temporalWindow : ""
@@ -87,7 +85,7 @@ export default function RegistryPage() {
               <div className={styles.metaRow}>
                 <span className={styles.metaKey}>yields</span>
                 <span className={styles.metaVal}>
-                  {e.populations_yielded.map((p) => `${p.name} (${p.type})`).join(" · ")}
+                  {e.populations_yielded.map((p) => `${p.description} (${p.type})`).join(" · ")}
                 </span>
               </div>
               <div className={styles.metaRow}>
@@ -115,12 +113,13 @@ export default function RegistryPage() {
               </div>
             ))}
             <div className={styles.provenance}>
-              {e.provenance.doc_version} · ratified by {e.provenance.ratified_by} ·{" "}
-              {e.provenance.source_citations.map((s, i) => (
-                <span key={s.url}>
+              {e.provenance.doc_version ?? "no doc version on record"} · ratified by{" "}
+              {e.ratified_by ?? "not yet ratified (draft)"} ·{" "}
+              {e.provenance.citations.map((url, i) => (
+                <span key={url}>
                   {i > 0 && " · "}
-                  <a href={s.url} target="_blank" rel="noreferrer">
-                    {s.title}
+                  <a href={url} target="_blank" rel="noreferrer">
+                    {url}
                   </a>
                 </span>
               ))}
@@ -131,7 +130,7 @@ export default function RegistryPage() {
 
       <div className="section-label">compile errors · the registry saying no</div>
       {errors.map((e) => (
-        <div key={e.code + e.claim_ref} className={styles.ecodeCard}>
+        <div key={e.code + e.claim_id} className={styles.ecodeCard}>
           <span className={styles.ecodeTag}>{e.code}</span>
           <div className={styles.ecodeBody}>
             <div className={styles.ecodeName}>
@@ -141,9 +140,10 @@ export default function RegistryPage() {
                   ? "Derivation source has no ratified capability entry"
                   : "Compile error"}
               {" · "}
-              {e.claim_ref}
+              {e.claim_id}
             </div>
-            <div className={styles.ecodeText}>{e.rendered.replace(/^E\d+\s+/, "")}</div>
+            <div className={styles.ecodeText}>{e.message}</div>
+            {e.suggestion && <div className={styles.ecodeText}>suggestion: {e.suggestion}</div>}
           </div>
         </div>
       ))}

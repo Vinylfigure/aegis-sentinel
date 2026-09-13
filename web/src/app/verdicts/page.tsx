@@ -18,7 +18,7 @@ export default function VerdictsPage() {
       <h1>Sealed verdicts</h1>
       <p className="page-sub">
         Every row is a deterministic verdict record sealed under manifest{" "}
-        {load.artifacts.manifest.manifest_version} — re-performable from the same
+        {load.artifacts.manifest.version} — re-performable from the same
         snapshot, same contract, same code. Nothing here was written by an agent.
       </p>
 
@@ -41,14 +41,13 @@ export default function VerdictsPage() {
               return (
                 <tr key={v.record_hash}>
                   <td>
-                    <span className={`state-badge state-${v.state}`}>{v.state}</span>
+                    <span className={`state-badge state-${v.status}`}>{v.status}</span>
                   </td>
                   <td>
-                    <div className={styles.assertion}>{v.assertion_ref}</div>
+                    <div className={styles.assertion}>{v.assertion_id}</div>
                     <div className={styles.claim}>
-                      {v.claim_ref}
-                      {v.why_code && <> · {v.why_code}</>}
-                      {v.d7_family && <> · D-7 {v.d7_family}</>}
+                      {v.claim_id}
+                      {v.unknown_cause && <> · {v.unknown_cause}</>}
                       {v.disposition_ref && <> · {v.disposition_ref}</>}
                       {v.ratification_ref && <> · {v.ratification_ref}</>}
                     </div>
@@ -58,7 +57,7 @@ export default function VerdictsPage() {
                       {v.message}
                     </div>
                   </td>
-                  <td className={styles.refCell}>{v.population_ref}</td>
+                  <td className={styles.refCell}>{v.population_id}</td>
                   <td className={styles.hashCell}>{v.record_hash.slice(0, 12)}…</td>
                   <td>
                     {proof ? (
@@ -78,9 +77,9 @@ export default function VerdictsPage() {
 
       <div className="section-label">compile errors · claims that refused to evaluate</div>
       {compile_errors.map((e) => (
-        <div key={e.code + e.claim_ref} className={styles.ecodeRow}>
+        <div key={e.code + e.claim_id} className={styles.ecodeRow}>
           <span className={styles.ecode}>{e.code}</span>
-          <span className={styles.ecodeText}>{e.rendered.replace(/^E\d+\s+/, "")}</span>
+          <span className={styles.ecodeText}>{e.message}</span>
         </div>
       ))}
 

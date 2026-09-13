@@ -1,6 +1,6 @@
 "use client";
 
-import type { EngagementManifest } from "@/lib/types/artifacts";
+import type { ManifestSnapshot } from "@/lib/types/artifacts";
 import { VERDICT_STATES } from "@/lib/types/ontology";
 import styles from "./flow.module.css";
 
@@ -19,7 +19,7 @@ export default function HeaderStrip({
   overlay,
   onToggleOverlay,
 }: {
-  manifest: EngagementManifest;
+  manifest: ManifestSnapshot;
   counts: Record<string, number>;
   detection: { detected: number; total: number; pct: number };
   overlay: boolean;
@@ -32,13 +32,20 @@ export default function HeaderStrip({
         <span className={styles.wordmarkLane}>termination lane</span>
       </div>
 
-      <span className={styles.manifestBadge} title={manifest.snapshot_hash}>
+      <span
+        className={styles.manifestBadge}
+        title={manifest.ratified_by ?? "not yet ratified"}
+      >
         <span className={styles.ratifiedDot} aria-hidden />
-        <b>{manifest.manifest_version}</b>
+        <b>v{manifest.version}</b>
         <span className={styles.sep}>·</span>
-        ratified
-        <span className={styles.sep}>·</span>
-        {manifest.snapshot_hash.slice(0, 12)}…
+        {manifest.lifecycle}
+        {manifest.ratified_at && (
+          <>
+            <span className={styles.sep}>·</span>
+            {manifest.ratified_at.slice(0, 10)}
+          </>
+        )}
       </span>
 
       <div className={styles.headerSpacer} />

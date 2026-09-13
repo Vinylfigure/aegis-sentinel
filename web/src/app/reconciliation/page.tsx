@@ -1,6 +1,6 @@
 import Link from "next/link";
 import type { Metadata } from "next";
-import { loadEngagement, ladderCounts } from "@/lib/data/engagement";
+import { loadEngagement, ladderCounts, openDeltaCount } from "@/lib/data/engagement";
 import { ASSURANCE_STATES } from "@/lib/types/ontology";
 import Ladder from "@/components/ui/Ladder";
 import styles from "./Reconciliation.module.css";
@@ -42,27 +42,27 @@ export default function ReconciliationIndex() {
       <div className="section-label">reconciled populations · {recs.length}</div>
       <div className={styles.grid}>
         {recs.map((r) => {
-          const pop = load.artifacts.populations.find(
-            (p) => p.population_id === r.population_ref
-          );
-          const open = r.deltas.filter((d) => !d.disposition).length;
+          const pop = load.artifacts.populations.find((p) => p.id === r.population_id);
+          const open = openDeltaCount(load, r.population_id);
+          const blocked = r.ladder.blocked_by_open_deltas.some((d) => !d.dispositioned);
+          const current = blocked ? r.ladder.at_first_verdict : r.ladder.after_dispositions;
           return (
             <Link
-              key={r.population_ref}
-              href={`/reconciliation/${encodeURIComponent(r.population_ref)}`}
+              key={r.population_id}
+              href={`/reconciliation/${encodeURIComponent(r.population_id)}`}
               className={styles.popCard}
             >
               <div className={styles.popHead}>
-                <span className={styles.popName}>{pop?.name ?? r.population_ref}</span>
-                <span className={styles.popId}>{r.population_ref}</span>
+                <span className={styles.popName}>{pop?.name ?? r.population_id}</span>
+                <span className={styles.popId}>{r.population_id}</span>
               </div>
-              <Ladder current={r.ladder_state} compact />
+              <Ladder current={current} compact />
               <div className={styles.popMeta}>
                 <span>
-                  <b>{r.members.length}</b> members
+                  <b>{r.canonical_members.length}</b> members
                 </span>
                 <span>
-                  <b>{Object.keys(r.source_counts).length}</b> sources
+                  <b>{r.sources.length}</b> sources
                 </span>
                 <span className={open > 0 ? styles.deltaWarn : styles.deltaClean}>
                   {open > 0 ? `${open} open delta${open > 1 ? "s" : ""}` : "zero open deltas"}

@@ -7,8 +7,7 @@ import {
   reconciliationFor,
   verdictSlug,
 } from "@/lib/data/engagement";
-import type { VerdictRecord } from "@/lib/types/ontology";
-import type { CapabilityEntry } from "@/lib/types/artifacts";
+import type { CapabilityEntry, VerdictRecord } from "@/lib/types/artifacts";
 import type { LaneEdgeModel, LaneGate, LaneModel, LaneSystem } from "@/components/flow/laneModel";
 import Ladder from "@/components/ui/Ladder";
 import { parseEvidence } from "./evidence";
@@ -32,20 +31,42 @@ function Seal({ v }: { v: VerdictRecord }) {
           <span className={`${styles.sealVal} ${styles.sealValStrong}`}>{v.record_hash}</span>
         </div>
         <div className={styles.sealRow}>
-          <span className={styles.sealKey}>manifest</span>
-          <span className={styles.sealVal}>{v.manifest_version}</span>
+          <span className={styles.sealKey}>chain_prev</span>
+          <span className={styles.sealVal}>{v.chain_prev ?? "— chain head —"}</span>
         </div>
         <div className={styles.sealRow}>
-          <span className={styles.sealKey}>snapshot</span>
-          <span className={styles.sealVal}>{v.snapshot_hash}</span>
+          <span className={styles.sealKey}>run_id</span>
+          <span className={styles.sealVal}>{v.run_id}</span>
         </div>
         <div className={styles.sealRow}>
-          <span className={styles.sealKey}>contract</span>
-          <span className={styles.sealVal}>{v.contract_hash}</span>
+          <span className={styles.sealKey}>spec</span>
+          <span className={styles.sealVal}>
+            {v.spec_id} · {v.spec_hash.slice(0, 16)}…
+          </span>
         </div>
         <div className={styles.sealRow}>
-          <span className={styles.sealKey}>evaluated_at</span>
-          <span className={styles.sealVal}>{v.evaluated_at}</span>
+          <span className={styles.sealKey}>source</span>
+          <span className={styles.sealVal}>
+            {v.source} @ {v.source_version}
+          </span>
+        </div>
+        <div className={styles.sealRow}>
+          <span className={styles.sealKey}>schema / test fn</span>
+          <span className={styles.sealVal}>
+            {v.schema_version} / {v.test_function_version}
+          </span>
+        </div>
+        <div className={styles.sealRow}>
+          <span className={styles.sealKey}>collected_at</span>
+          <span className={styles.sealVal}>{v.collected_at}</span>
+        </div>
+        <div className={styles.sealRow}>
+          <span className={styles.sealKey}>completeness_ref</span>
+          <span className={styles.sealVal}>{v.completeness_ref}</span>
+        </div>
+        <div className={styles.sealRow}>
+          <span className={styles.sealKey}>population_count</span>
+          <span className={styles.sealVal}>{v.population_count}</span>
         </div>
       </div>
     </>
@@ -84,17 +105,19 @@ function GatePanel({
         <div className={styles.compiler}>
           <b>{err.code}</b>
           {"  "}
-          {err.rendered.replace(/^E\d+\s+/, "")}
+          {err.message}
         </div>
         <div className={styles.why}>
-          <b>Why this cannot compile.</b> The population&apos;s derivation rule names{" "}
-          <b>{err.missing_source}</b> as a contributing source, but no ratified
-          capability entry exists for it — there is no researched, human-ratified
-          surface to collect it from. Aegis refuses to plan a collector against an
-          unratified surface, so the claim <b>{err.claim_ref}</b> never reaches
-          evaluation: no verdict record exists, and none will be fabricated. The fix
-          is an F-4 ratification task (draft the capability entry, ratify its hash),
-          not a code change.
+          <b>Why this cannot compile.</b> {err.message} Aegis refuses to plan a
+          collector against an unratified surface, so the claim{" "}
+          <b>{err.claim_id}</b> never reaches evaluation: no verdict record exists,
+          and none will be fabricated.
+          {err.suggestion && (
+            <>
+              {" "}
+              Suggested fix: {err.suggestion}
+            </>
+          )}
         </div>
         <div className={styles.actions}>
           <Link href="/registry" className={styles.action}>
@@ -109,20 +132,19 @@ function GatePanel({
   }
 
   const v = gate.verdict!;
-  const parsed = parseEvidence(v.message);
+  const parsed = parseEvidence(v.message ?? null);
   const proof = proofGraphFor(load, v.record_hash);
-  const rec = reconciliationFor(load, v.population_ref);
+  const rec = reconciliationFor(load, v.population_id);
 
   return (
     <>
       <div className={styles.verdictHead}>
-        <span className={`state-badge state-${v.state}`}>{v.state}</span>
-        <span className={styles.assertionId}>{v.assertion_ref}</span>
-        {v.why_code && <span className={styles.roleChip}>{v.why_code}</span>}
-        {v.d7_family && <span className={styles.roleChip}>D-7 {v.d7_family}</span>}
+        <span className={`state-badge state-${v.status}`}>{v.status}</span>
+        <span className={styles.assertionId}>{v.assertion_id}</span>
+        {v.unknown_cause && <span className={styles.roleChip}>{v.unknown_cause}</span>}
       </div>
       <div className={styles.claimRef}>
-        {v.claim_ref} · over {v.population_ref}
+        {v.claim_id} · over {v.population_id}
         {v.disposition_ref && <> · {v.disposition_ref}</>}
         {v.ratification_ref && <> · {v.ratification_ref}</>}
       </div>
@@ -154,9 +176,9 @@ function GatePanel({
           <div className={styles.sectionLabel}>sealed alongside</div>
           {gate.related.map((rv) => (
             <div key={rv.record_hash} className={styles.relatedCard}>
-              <span className={`state-badge state-${rv.state}`}>{rv.state}</span>
+              <span className={`state-badge state-${rv.status}`}>{rv.status}</span>
               <span className={styles.relatedText}>
-                <span className={styles.relatedAssertion}>{rv.assertion_ref}</span>
+                <span className={styles.relatedAssertion}>{rv.assertion_id}</span>
                 <span className={styles.relatedNote}>{rv.message}</span>
               </span>
             </div>
@@ -175,7 +197,7 @@ function GatePanel({
         )}
         {rec && (
           <Link
-            href={`/reconciliation/${encodeURIComponent(v.population_ref)}`}
+            href={`/reconciliation/${encodeURIComponent(v.population_id)}`}
             className={`${styles.action} ${styles.actionGhost}`}
           >
             Open reconciliation <span>→</span>
@@ -184,7 +206,7 @@ function GatePanel({
         <button
           type="button"
           className={`${styles.action} ${styles.actionGhost}`}
-          onClick={() => onSelect({ kind: "node", systemId: systemForPopulation(v.population_ref) })}
+          onClick={() => onSelect({ kind: "node", systemId: systemForPopulation(v.population_id) })}
         >
           Inspect population node <span>→</span>
         </button>
@@ -193,12 +215,12 @@ function GatePanel({
   );
 }
 
+/** Which lane node to jump to for a given population id. This engagement
+ * has exactly two: the reconciled termination-events population (shown at
+ * HRIS, where it's authoritative) and the uncompiled break-glass
+ * population named only in the E117 compile error's own message. */
 function systemForPopulation(popRef: string): string {
-  if (popRef.includes("github")) return "github";
-  if (popRef.includes("gcp")) return "gcp";
-  if (popRef.includes("slack")) return "slack";
-  if (popRef.includes("identity-join")) return "okta";
-  if (popRef.includes("corp-it")) return "corp-it";
+  if (popRef.includes("breakglass")) return "gcp";
   return "hris";
 }
 
@@ -213,26 +235,26 @@ function NodePanel({ system }: { system: LaneSystem }) {
     return (
       <>
         <p className={styles.defText}>
-          {system.name} is outside the termination lane&apos;s boundary for this
-          engagement — excluded by ratification <span className="mono">RAT-2026-031</span>:
-          device deprovisioning is covered by the endpoint lane, not TA-3.
+          {blocked
+            ? `${system.name} has no population data in this engagement — its derivation could not be compiled (E117: no ratified capability entry).`
+            : `${system.name} has no population attached directly to it in this engagement.`}
         </p>
         <div className={styles.actions}>
-          <Link href="/verdicts" className={`${styles.action} ${styles.actionGhost}`}>
-            See the EXCLUDED verdict in the ledger <span>→</span>
+          <Link href="/registry" className={`${styles.action} ${styles.actionGhost}`}>
+            See the capability registry <span>→</span>
           </Link>
         </div>
       </>
     );
   }
 
-  const openDeltas = pop.open_deltas;
+  const openDeltas = pop.deltas.filter((d) => !d.disposition);
 
   return (
     <>
       <p className={styles.defText}>{pop.definition}</p>
       <div className={styles.popId}>
-        {pop.population_id} · {pop.type} ·{" "}
+        {pop.id} · {pop.type} ·{" "}
         {pop.size != null ? `${pop.size} members` : "size unknown (uncompiled)"} ·{" "}
         {pop.period.start} → {pop.period.end}
       </div>
@@ -244,22 +266,22 @@ function NodePanel({ system }: { system: LaneSystem }) {
         blockedLabel={blocked ? "E117" : undefined}
       />
 
-      <div className={styles.sectionLabel}>sources</div>
-      {pop.sources.map((s) => (
-        <div key={s.source_id} className={styles.sourceRow}>
-          <span className={styles.sourceId}>{s.source_id}</span>
-          <span className={`${styles.roleChip} ${styles[`role${s.role}`] ?? ""}`}>
-            {s.role}
-          </span>
-        </div>
-      ))}
-
       {rec && (
         <>
+          <div className={styles.sectionLabel}>sources</div>
+          {rec.sources.map((s) => (
+            <div key={s.name} className={styles.sourceRow}>
+              <span className={styles.sourceId}>{s.name}</span>
+              <span className={`${styles.roleChip} ${styles[`role${s.role}`] ?? ""}`}>
+                {s.role}
+              </span>
+            </div>
+          ))}
+
           <div className={styles.sectionLabel}>reconciliation buckets</div>
           <div className={styles.bucketGrid}>
             {(
-              ["intersection", "left_only", "right_only", "conflicts", "unresolvable", "excluded"] as const
+              ["intersection", "left_only", "right_only", "conflict", "unresolvable", "excluded"] as const
             ).map((b) => (
               <div key={b} className={styles.bucketCell}>
                 <div
@@ -282,8 +304,11 @@ function NodePanel({ system }: { system: LaneSystem }) {
         <>
           <div className={styles.sectionLabel}>open deltas · owners</div>
           {openDeltas.map((d) => (
-            <div key={d.delta_id} className={styles.ownerRow}>
-              <b>{d.delta_id.split("#").slice(1).join(" · ")}</b> — {d.owner}
+            <div key={d.member_ref} className={styles.ownerRow}>
+              <b>
+                {d.bucket} · {d.member_ref}
+              </b>{" "}
+              — {d.owner ?? "unassigned"}
             </div>
           ))}
         </>
@@ -292,7 +317,7 @@ function NodePanel({ system }: { system: LaneSystem }) {
       <div className={styles.actions}>
         {rec && (
           <Link
-            href={`/reconciliation/${encodeURIComponent(pop.population_id)}`}
+            href={`/reconciliation/${encodeURIComponent(pop.id)}`}
             className={styles.action}
           >
             Open reconciliation <span>→</span>
@@ -313,8 +338,9 @@ const EQC_PROPS: {
     prop: "provenance",
     render: (c) => (
       <>
-        {c.provenance.doc_version} — researched {c.provenance.researched_at.slice(0, 10)},
-        ratified by {c.provenance.ratified_by ?? "— unratified —"}
+        {c.provenance.doc_version ?? "no doc version"} — researched{" "}
+        {c.provenance.researched_at.slice(0, 10)}, ratified by{" "}
+        {c.ratified_by ?? "— unratified —"}
       </>
     ),
   },
@@ -326,7 +352,7 @@ const EQC_PROPS: {
     prop: "population",
     render: (c) => (
       <>
-        yields {c.populations_yielded.map((p) => `${p.name} (${p.type})`).join(", ")} ·
+        yields {c.populations_yielded.map((p) => `${p.description} (${p.type})`).join(", ")} ·
         join keys <span className="mono">{c.join_keys.join(", ")}</span>
       </>
     ),
@@ -335,7 +361,7 @@ const EQC_PROPS: {
     prop: "semantics",
     render: (c) => (
       <span className="mono">
-        {c.attributes[0]?.fields_exposed.join(" · ") ?? "—"}
+        {c.populations_yielded[0]?.attributes.join(" · ") ?? "—"}
       </span>
     ),
   },
@@ -353,10 +379,11 @@ const EQC_PROPS: {
 
 function EdgePanel({ edge, load }: { edge: LaneEdgeModel; load: EngagementLoad }) {
   const pop = edge.populationRef
-    ? load.artifacts.populations.find((p) => p.population_id === edge.populationRef)
+    ? load.artifacts.populations.find((p) => p.id === edge.populationRef)
     : undefined;
   const cap = edge.capability;
-  const contractHash = edge.gate?.verdict?.contract_hash;
+  const proof = edge.gate?.verdict ? proofGraphFor(load, edge.gate.verdict.record_hash) : undefined;
+  const contractHash = proof?.nodes.find((n) => n.kind === "contract")?.ref;
 
   return (
     <>
@@ -445,10 +472,10 @@ export default function InspectorDrawer({
       title =
         gate.kind === "compile-error"
           ? "Did not compile"
-          : `${gate.verdict?.assertion_ref}`;
+          : `${gate.verdict?.assertion_id}`;
       subtitle =
         gate.kind === "compile-error"
-          ? `${gate.error?.code} · ${gate.error?.claim_ref}`
+          ? `${gate.error?.code} · ${gate.error?.claim_id}`
           : gate.summary;
       content = <GatePanel gate={gate} load={load} onSelect={onSelect} />;
     }

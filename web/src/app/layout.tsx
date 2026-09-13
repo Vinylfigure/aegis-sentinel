@@ -37,7 +37,7 @@ export default function RootLayout({
       className={`${grotesk.variable} ${inter.variable} ${plexMono.variable}`}
     >
       <body>
-        <RailNav manifestVersion={artifacts.manifest.manifest_version} />
+        <RailNav manifestVersion={String(artifacts.manifest.version)} />
         <div className="frame">{children}</div>
       </body>
     </html>

@@ -22,7 +22,7 @@ function bez(t: number, p0: number, p1: number, p2: number, p3: number): number 
 
 function gateStateOf(gate: LaneGate): string {
   if (gate.kind === "compile-error") return "E117";
-  return gate.verdict?.state ?? "";
+  return gate.verdict?.status ?? "";
 }
 
 const LAMP_GLYPH: Record<string, string> = {
@@ -174,7 +174,7 @@ export function LaneEdge({
               ) : (
                 <>
                   <span className={styles.gateId}>
-                    {gate.label} · {gate.verdict?.assertion_ref}
+                    {gate.label} · {gate.verdict?.assertion_id}
                   </span>
                   <span className={styles.gateState}>{state}</span>
                 </>
@@ -183,8 +183,8 @@ export function LaneEdge({
             <span className={styles.gateTip} role="tooltip">
               <span className={styles.gateTipHead}>
                 {broken
-                  ? `E117 · ${gate.error?.claim_ref}`
-                  : `${gate.verdict?.assertion_ref} · ${state}`}
+                  ? `E117 · ${gate.error?.claim_id}`
+                  : `${gate.verdict?.assertion_id} · ${state}`}
               </span>
               {gate.summary}
             </span>

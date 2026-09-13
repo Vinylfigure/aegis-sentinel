@@ -28,7 +28,7 @@ export default async function ProofDetail({
   return (
     <main className="page">
       <div className="page-kicker">proof lineage</div>
-      <h1>{verdict?.assertion_ref ?? graph.verdict_ref.slice(0, 12)}</h1>
+      <h1>{verdict?.assertion_id ?? graph.verdict_ref.slice(0, 12)}</h1>
       <p className="page-sub">
         {graph.nodes.length} stages, every edge typed — walk the sealed verdict back
         to the commitment that demanded it. Same canvas language as the lane: this{" "}
@@ -38,8 +38,8 @@ export default async function ProofDetail({
       <div className={styles.verdictStrip}>
         {verdict && (
           <>
-            <span className={`state-badge state-${verdict.state}`}>{verdict.state}</span>
-            <span className={styles.stripAssertion}>{verdict.assertion_ref}</span>
+            <span className={`state-badge state-${verdict.status}`}>{verdict.status}</span>
+            <span className={styles.stripAssertion}>{verdict.assertion_id}</span>
             <span className={styles.stripHash}>record {verdict.record_hash.slice(0, 16)}…</span>
             <Link href="/verdicts" className={styles.backLink}>
               open in ledger →
