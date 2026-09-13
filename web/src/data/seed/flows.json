@@ -1,0 +1,146 @@
+[
+  {
+    "id": "LA",
+    "name": "Logical access — JIT grant",
+    "sub": "provision → time-bound → auto-revoke",
+    "seq": [
+      { "node": { "key": "user", "label": "Requester", "sub": "engineer", "tier": 3 } },
+      {
+        "cp": {
+          "id": "LA-1", "name": "Access request approved", "nat": "auto", "fn": "prev",
+          "what": "OIG request requires manager approval before any grant is executed — the deny-by-default gate.",
+          "el": "Okta OIG request object: requester, approver, target, timestamps",
+          "api": "GET /api/v1/iam/requests/{id}",
+          "ev": "Population export of all OIG requests · hash raw response",
+          "ca": "Two-source reconciliation: OIG requests vs. GitHub grant events",
+          "gap": "Approver ≠ requester enforced in policy config — evidence the config, not just the tickets."
+        }
+      },
+      { "node": { "key": "okta", "label": "Okta OIG", "sub": "identity governance", "tier": 2 } },
+      {
+        "cp": {
+          "id": "LA-2", "name": "Grant matches approval", "nat": "auto", "fn": "det",
+          "what": "Provisioning bot executes exactly the approved scope — grant compared to request, deltas flagged.",
+          "el": "Bot execution log: approved scope vs. granted scope",
+          "api": "bot audit log → SIEM query",
+          "ev": "Log query per grant · hash",
+          "ca": "Bidirectional trace: grant→request and request→grant",
+          "gap": "The bot is a trusted actor — its own service account and code path need CM controls (see CM lane)."
+        }
+      },
+      { "node": { "key": "bot", "label": "Provisioning bot", "sub": "automation", "tier": 2 } },
+      {
+        "cp": {
+          "id": "LA-3", "name": "Time-bound · auto-revoke", "nat": "cfg", "fn": "prev",
+          "what": "Grant carries an expiry; revocation fires without human action. The control is the configuration.",
+          "el": "Grant TTL config + revoke events",
+          "api": "GET /orgs/{org}/outside_collaborators + expiry policy",
+          "ev": "Config snapshot (hashed) + revoke event log",
+          "ca": "Hash raw config · alert if TTL policy absent",
+          "gap": ""
+        }
+      },
+      { "node": { "key": "gh", "label": "GitHub", "sub": "repos · T2 secrets risk", "tier": 2 } }
+    ]
+  },
+  {
+    "id": "CM",
+    "name": "Change management — code to production",
+    "sub": "the path to prod is the control surface",
+    "seq": [
+      { "node": { "key": "dev", "label": "Developer", "sub": "author", "tier": 3 } },
+      {
+        "cp": {
+          "id": "CM-1", "name": "Branch protection · SoD", "nat": "cfg", "fn": "prev",
+          "what": "Approver ≠ author required before merge; enforced by ruleset, not by process.",
+          "el": "Branch protection ruleset per in-scope repo",
+          "api": "GET /repos/{o}/{r}/branches/{b}/protection",
+          "ev": "Config snapshot per repo, hashed, diffed daily",
+          "ca": "Population = in-scope repo list from product mapping; drift alerts",
+          "gap": "Admin bypass is the residual — evidence the bypass log and the org-level allowance."
+        }
+      },
+      { "node": { "key": "gh2", "label": "GitHub PR", "sub": "review gate", "tier": 2 } },
+      {
+        "cp": {
+          "id": "CM-2", "name": "Required checks pass", "nat": "cfg", "fn": "prev",
+          "what": "Security + functional CI checks are required statuses — a failed check mechanically blocks merge.",
+          "el": "Required status checks config + check-run results",
+          "api": "GET /repos/{o}/{r}/commits/{ref}/check-runs",
+          "ev": "Config snapshot + per-merge check-run record",
+          "ca": "Hash raw responses · classify checks security vs functional",
+          "gap": ""
+        }
+      },
+      { "node": { "key": "ci", "label": "CI / Actions", "sub": "build + test", "tier": 3 } },
+      {
+        "cp": {
+          "id": "CM-3", "name": "Apply bound to reviewed commit", "nat": "cfg", "fn": "prev",
+          "what": "Terraform applies only from the merged commit via the pipeline — execution moved off laptops, credentials centralized, provenance preserved.",
+          "el": "Pipeline run: source SHA vs. applied SHA",
+          "api": "Actions run log + Terraform plan/apply record",
+          "ev": "Run record per apply, hashed",
+          "ca": "Reconcile applied SHA to merged PR population",
+          "gap": "The value here is provenance and separation of duties — not cryptographic integrity in transit. Say it that way."
+        }
+      },
+      { "node": { "key": "tf", "label": "Terraform", "sub": "via CI/CD", "tier": 3 } },
+      {
+        "cp": {
+          "id": "CM-4", "name": "Drift detection", "nat": "auto", "fn": "det",
+          "what": "Live state vs. IaC state compared on schedule; out-of-band change surfaces as an alert, not at audit.",
+          "el": "CAI live state vs. Terraform state delta",
+          "api": "Cloud Asset Inventory export + state file compare",
+          "ev": "Delta report per run · alert population",
+          "ca": "Two-source: live inventory vs. declared state",
+          "gap": ""
+        }
+      },
+      { "node": { "key": "gcp", "label": "GCP", "sub": "prod · T1 data", "tier": 1 } }
+    ]
+  },
+  {
+    "id": "TA",
+    "name": "Termination — access revocation",
+    "sub": "HRIS event to verified deprovisioning",
+    "seq": [
+      { "node": { "key": "hris", "label": "HRIS", "sub": "termination event", "tier": 2 } },
+      {
+        "cp": {
+          "id": "TA-1", "name": "Term feed completeness", "nat": "auto", "fn": "det",
+          "what": "Every termination in the HRIS appears in the deprovisioning queue — the population control everything downstream depends on.",
+          "el": "Termination feed: worker, type, term date",
+          "api": "HRIS API export (daily)",
+          "ev": "Population export · row-count reconciliation vs. HR report",
+          "ca": "Two-source reconciliation",
+          "gap": "Contractors and collaborators often live outside the HRIS — that population needs its own source."
+        }
+      },
+      { "node": { "key": "okta2", "label": "Okta", "sub": "deprovision", "tier": 2 } },
+      {
+        "cp": {
+          "id": "TA-2", "name": "Revoked ≤ 5 business days", "nat": "auto", "fn": "det",
+          "what": "Deprovision timestamp vs. termination date, tested across the full population — no sampling.",
+          "el": "Deactivation events joined to term feed",
+          "api": "Okta system log query",
+          "ev": "Per-termination delta record, hashed",
+          "ca": "Full-population test; exceptions alert",
+          "gap": ""
+        }
+      },
+      { "node": { "key": "down", "label": "Downstream systems", "sub": "GitHub · GCP · tools", "tier": 2 } },
+      {
+        "cp": {
+          "id": "TA-3", "name": "Downstream revocation verified", "nat": "auto", "fn": "det",
+          "what": "SSO revocation ≠ local account revocation — verify per system where local accounts exist.",
+          "el": "Per-system account status for terminated users",
+          "api": "per-system API / SIEM auth log",
+          "ev": "Log query per system · exceptions to review",
+          "ca": "Trace: term feed → per-system status",
+          "gap": "This is where most programs quietly fail — SCIM coverage map determines which systems need it."
+        }
+      },
+      { "node": { "key": "siem", "label": "SIEM", "sub": "verification layer", "tier": 3 } }
+    ]
+  }
+]

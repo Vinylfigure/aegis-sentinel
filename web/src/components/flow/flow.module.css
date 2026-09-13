@@ -1,0 +1,483 @@
+/* The lane canvas — nodes, gate-interrupted edges, header strip. */
+
+.canvasHost {
+  position: relative;
+  height: 100vh;
+  background: var(--bg0);
+  overflow: hidden;
+}
+
+/* ================= system nodes ================= */
+
+.node {
+  width: 240px;
+  background: linear-gradient(180deg, var(--surface2), var(--surface1));
+  border: 1px solid var(--node-tint, var(--line));
+  border-radius: var(--radius-l);
+  box-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.25),
+    0 0 26px -8px var(--node-glow, transparent),
+    var(--shadow-card);
+  padding: 14px 16px 13px;
+  cursor: pointer;
+  transition: border-color 140ms ease, box-shadow 140ms ease, transform 140ms ease;
+}
+.node:hover { transform: translateY(-1px); }
+.nodeSelected {
+  border-color: var(--brand);
+  box-shadow: 0 0 0 1px var(--brand), 0 0 34px -6px var(--brand-soft), var(--shadow-card);
+}
+
+.nodeHead { display: flex; align-items: center; gap: 11px; }
+.nodeGlyph {
+  width: 34px;
+  height: 34px;
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  border-radius: 9px;
+  background: var(--surface3);
+  border: 1px solid var(--line-soft);
+  color: var(--dim);
+}
+.nodeName { font: 700 15px/1.1 var(--font-display); letter-spacing: 0.01em; }
+.nodeDescriptor { font: 400 10.5px/1.3 var(--font-sans); color: var(--faint); margin-top: 3px; }
+
+.nodeBody { margin-top: 12px; display: flex; flex-direction: column; gap: 7px; }
+.nodeRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  font: 400 11px/1.2 var(--font-sans);
+  color: var(--dim);
+}
+.nodeCount { font: 500 12px/1 var(--font-mono-stack); color: var(--ink); }
+.nodeCountNull { color: var(--faint); font-style: italic; font-family: var(--font-sans); }
+
+.ladderChip {
+  font: 500 9.5px/1 var(--font-mono-stack);
+  letter-spacing: 0.08em;
+  color: var(--brand);
+  background: var(--brand-soft);
+  border: 1px solid color-mix(in srgb, var(--brand) 30%, transparent);
+  border-radius: 999px;
+  padding: 3.5px 7px;
+}
+.ladderChipBlocked {
+  color: var(--v-fail);
+  background: var(--v-fail-soft);
+  border-color: color-mix(in srgb, var(--v-fail) 30%, transparent);
+}
+
+.capRow { font: 400 10.5px/1.3 var(--font-mono-stack); color: var(--faint); }
+.capOk { color: var(--dim); }
+.capMissing { color: var(--v-fail); }
+
+/* worst-verdict tint variables */
+.tintPASS      { --node-tint: color-mix(in srgb, var(--v-pass) 55%, var(--line));      --node-glow: rgba(111, 191, 143, 0.35); }
+.tintFAIL      { --node-tint: color-mix(in srgb, var(--v-fail) 60%, var(--line));      --node-glow: rgba(224, 113, 111, 0.4); }
+.tintUNKNOWN   { --node-tint: color-mix(in srgb, var(--v-unknown) 55%, var(--line));   --node-glow: rgba(232, 179, 75, 0.35); }
+.tintEXCEPTION { --node-tint: color-mix(in srgb, var(--v-exception) 55%, var(--line)); --node-glow: rgba(192, 132, 252, 0.35); }
+.tintEXCLUDED  { --node-tint: var(--line); --node-glow: transparent; }
+.tintUNCOMPILED {
+  --node-tint: color-mix(in srgb, var(--v-fail) 60%, var(--line));
+  --node-glow: rgba(224, 113, 111, 0.3);
+}
+.tintUNCOMPILED.node { border-style: dashed; }
+
+.nodeGhost {
+  opacity: 0.62;
+  border-style: dashed;
+  background: transparent;
+  box-shadow: none;
+  width: 208px;
+  padding: 11px 14px;
+}
+.nodeGhost .nodeGlyph { background: transparent; }
+
+/* handles: invisible, edges attach flush */
+.handle {
+  width: 1px !important;
+  height: 1px !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+  border: 0 !important;
+  background: transparent !important;
+  pointer-events: none !important;
+}
+
+/* junction dot */
+.junction {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--surface3);
+  border: 2px solid var(--faint);
+}
+
+/* ================= edges + gates ================= */
+
+.edgeBase {
+  stroke: var(--edge-tint, #343a52);
+  fill: none;
+  opacity: 0.6;
+  transition: stroke-width 220ms ease;
+}
+.edgeDash {
+  stroke: var(--edge-tint, #4a5170);
+  fill: none;
+  stroke-dasharray: 3 11;
+  stroke-linecap: round;
+  animation: dashflow 1.1s linear infinite;
+  opacity: 0.9;
+}
+@keyframes dashflow {
+  to { stroke-dashoffset: -14; }
+}
+.edgeExcluded {
+  stroke: var(--v-excluded);
+  opacity: 0.4;
+  stroke-dasharray: 2 8;
+  animation: none;
+}
+
+.edgeKind {
+  position: absolute;
+  transform: translate(-50%, -140%);
+  font: 400 9.5px/1 var(--font-mono-stack);
+  letter-spacing: 0.1em;
+  color: var(--faint);
+  background: color-mix(in srgb, var(--bg0) 82%, transparent);
+  padding: 2px 6px;
+  border-radius: 4px;
+  pointer-events: none;
+}
+
+.cohortPill {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  font: 500 10px/1 var(--font-mono-stack);
+  color: var(--ink);
+  background: color-mix(in srgb, var(--surface3) 88%, transparent);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 4px 9px;
+  pointer-events: none;
+  white-space: nowrap;
+  animation: pillIn 200ms ease;
+}
+@keyframes pillIn {
+  from { opacity: 0; transform: translate(-50%, -10%); }
+  to { opacity: 1; transform: translate(-50%, -50%); }
+}
+
+/* ---- the gate motif ---- */
+
+.gate {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  pointer-events: all;
+  cursor: pointer;
+  background: none;
+  border: 0;
+  padding: 6px;
+}
+.gateBar {
+  position: relative;
+  width: 5px;
+  height: 52px;
+  border-radius: 3px;
+  background: var(--gate-color, var(--faint));
+  box-shadow: 0 0 14px -2px var(--gate-glow, transparent);
+  transition: box-shadow 300ms ease;
+}
+.gateLamp {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 23px;
+  height: 23px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: var(--bg0);
+  border: 2px solid var(--gate-color, var(--faint));
+  color: var(--gate-color, var(--faint));
+  font: 700 11px/1 var(--font-mono-stack);
+  box-shadow: 0 0 16px -2px var(--gate-glow, transparent);
+  transition: box-shadow 300ms ease, background 300ms ease;
+}
+.gate:hover .gateLamp { background: var(--surface3); }
+.gateSelected .gateBar { box-shadow: 0 0 0 3px var(--brand-soft), 0 0 18px -2px var(--gate-glow, transparent); }
+.gateSelected .gateLamp { box-shadow: 0 0 0 3px var(--brand-soft), 0 0 18px -2px var(--gate-glow, transparent); }
+
+.gateLabel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  background: color-mix(in srgb, var(--bg0) 82%, transparent);
+  padding: 3px 8px;
+  border-radius: 5px;
+}
+.gateId { font: 500 10px/1 var(--font-mono-stack); letter-spacing: 0.1em; color: var(--dim); }
+.gateState {
+  font: 600 9px/1 var(--font-mono-stack);
+  letter-spacing: 0.12em;
+  color: var(--gate-color, var(--faint));
+}
+
+.gatePASS      { --gate-color: var(--v-pass);      --gate-glow: rgba(111, 191, 143, 0.55); }
+.gateFAIL      { --gate-color: var(--v-fail);      --gate-glow: rgba(224, 113, 111, 0.6); }
+.gateUNKNOWN   { --gate-color: var(--v-unknown);   --gate-glow: rgba(232, 179, 75, 0.55); }
+.gateEXCEPTION { --gate-color: var(--v-exception); --gate-glow: rgba(192, 132, 252, 0.55); }
+.gateEXCLUDED  { --gate-color: var(--v-excluded);  --gate-glow: transparent; }
+
+/* broken gate — the claim that did not compile */
+.gateBroken .gateBar {
+  background: none;
+  box-shadow: none;
+}
+.gateBroken .gateBar::before,
+.gateBroken .gateBar::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  width: 5px;
+  height: 17px;
+  border-radius: 3px;
+  border: 1.5px dashed var(--v-fail);
+}
+.gateBroken .gateBar::before { top: -3px; transform: translateX(-4px) rotate(-14deg); }
+.gateBroken .gateBar::after { bottom: -3px; transform: translateX(4px) rotate(-14deg); }
+.gateBroken .gateLamp {
+  border-style: dashed;
+  border-color: var(--v-fail);
+  color: var(--v-fail);
+  animation: brokenPulse 2.4s ease-in-out infinite;
+}
+@keyframes brokenPulse {
+  0%, 100% { box-shadow: 0 0 10px -2px rgba(224, 113, 111, 0.5); }
+  50% { box-shadow: 0 0 22px 0 rgba(224, 113, 111, 0.75); }
+}
+.ecodeTag {
+  font: 600 9.5px/1 var(--font-mono-stack);
+  letter-spacing: 0.1em;
+  color: var(--v-fail);
+  background: var(--v-fail-soft);
+  border: 1px dashed color-mix(in srgb, var(--v-fail) 55%, transparent);
+  border-radius: 4px;
+  padding: 3px 6px;
+}
+
+/* gate hover tooltip */
+.gateTip {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%) translateY(3px);
+  width: 264px;
+  background: var(--surface3);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-s);
+  box-shadow: 0 14px 40px rgba(4, 5, 9, 0.6);
+  padding: 10px 12px;
+  font: 400 11px/1.5 var(--font-sans);
+  color: var(--dim);
+  text-align: left;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 130ms ease, transform 130ms ease;
+  z-index: 30;
+}
+.gate:hover .gateTip, .gate:focus-visible .gateTip {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+.gateTipHead {
+  display: block;
+  font: 500 10px/1 var(--font-mono-stack);
+  letter-spacing: 0.08em;
+  color: var(--ink);
+  margin-bottom: 5px;
+}
+.gateTip { display: block; }
+
+/* ================= header strip ================= */
+
+.header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 14px 22px;
+  background: linear-gradient(180deg, rgba(10, 11, 16, 0.92), rgba(10, 11, 16, 0.75) 70%, transparent);
+  pointer-events: none;
+}
+.header > * { pointer-events: auto; }
+
+.wordmark { display: flex; align-items: baseline; gap: 10px; }
+.wordmarkName { font: 700 17px/1 var(--font-display); letter-spacing: 0.01em; }
+.wordmarkLane { font: 400 12px/1 var(--font-sans); color: var(--dim); }
+
+.manifestBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font: 400 10.5px/1 var(--font-mono-stack);
+  color: var(--dim);
+  background: var(--surface1);
+  border: 1px solid var(--line-soft);
+  border-radius: 999px;
+  padding: 6px 11px;
+}
+.manifestBadge b { color: var(--ink); font-weight: 500; }
+.manifestBadge .sep { color: var(--faint); }
+.ratifiedDot { width: 6px; height: 6px; border-radius: 50%; background: var(--v-pass); }
+
+.headerSpacer { flex: 1; }
+
+.stateChips { display: flex; gap: 6px; }
+.stateChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font: 500 10px/1 var(--font-mono-stack);
+  letter-spacing: 0.06em;
+  padding: 6px 9px;
+  border-radius: 999px;
+  border: 1px solid var(--line-soft);
+  background: var(--surface1);
+  color: var(--dim);
+}
+.stateChip i { font-style: normal; font-weight: 600; color: var(--chip-color); }
+.stateChip::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--chip-color); }
+.stateChipZero { opacity: 0.5; }
+
+.detectStat {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font: 500 10.5px/1 var(--font-mono-stack);
+  color: var(--dim);
+  background: var(--surface1);
+  border: 1px solid var(--line-soft);
+  border-radius: 999px;
+  padding: 6px 11px;
+}
+.detectStat b { color: var(--ink); font-weight: 500; }
+.detectMeter { display: flex; gap: 2.5px; }
+.detectSeg { width: 7px; height: 9px; border-radius: 2px; background: var(--ladder-pending); }
+.detectSegOn { background: var(--brand); }
+
+.overlayToggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font: 500 11px/1 var(--font-sans);
+  color: var(--dim);
+  background: var(--surface1);
+  border: 1px solid var(--line-soft);
+  border-radius: 999px;
+  padding: 6px 11px 6px 8px;
+  transition: color 140ms ease, border-color 140ms ease;
+}
+.overlayToggle:hover { color: var(--ink); }
+.overlayToggleOn { color: var(--brand); border-color: color-mix(in srgb, var(--brand) 40%, transparent); }
+.toggleTrack {
+  width: 26px;
+  height: 15px;
+  border-radius: 999px;
+  background: var(--surface3);
+  border: 1px solid var(--line);
+  position: relative;
+  transition: background 160ms ease;
+}
+.overlayToggleOn .toggleTrack { background: var(--brand-soft); border-color: var(--brand); }
+.toggleThumb {
+  position: absolute;
+  top: 1.5px;
+  left: 2px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--dim);
+  transition: transform 160ms ease, background 160ms ease;
+}
+.overlayToggleOn .toggleThumb { transform: translateX(10px); background: var(--brand); }
+
+.driftStrip {
+  position: absolute;
+  top: 62px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 40;
+  font: 500 11px/1.4 var(--font-mono-stack);
+  color: var(--v-fail);
+  background: var(--v-fail-soft);
+  border: 1px solid color-mix(in srgb, var(--v-fail) 45%, transparent);
+  border-radius: var(--radius-s);
+  padding: 8px 14px;
+  max-width: 720px;
+}
+
+/* footer hint */
+.canvasHint {
+  position: absolute;
+  bottom: 14px;
+  left: 22px;
+  z-index: 30;
+  font: 400 10.5px/1 var(--font-mono-stack);
+  color: var(--faint);
+  pointer-events: none;
+}
+
+/* ================= proof lineage reuses the same system ================= */
+
+.proofNode {
+  width: 232px;
+  background: linear-gradient(180deg, var(--surface2), var(--surface1));
+  border: 1px solid var(--line);
+  border-radius: var(--radius-m);
+  box-shadow: var(--shadow-card);
+  padding: 11px 13px;
+  cursor: default;
+}
+.proofKind {
+  font: 500 9px/1 var(--font-mono-stack);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--brand);
+  margin-bottom: 6px;
+}
+.proofLabel { font: 400 11.5px/1.45 var(--font-sans); color: var(--ink); }
+.proofRef {
+  margin-top: 7px;
+  font: 400 9.5px/1.3 var(--font-mono-stack);
+  color: var(--faint);
+  word-break: break-all;
+}
+.proofVerdictNode { border-color: color-mix(in srgb, var(--v-fail) 60%, var(--line)); box-shadow: 0 0 26px -8px rgba(224, 113, 111, 0.4), var(--shadow-card); }
+.proofVerdictNode .proofKind { color: var(--v-fail); }
+
+.relationLabel {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  font: 400 9px/1 var(--font-mono-stack);
+  letter-spacing: 0.08em;
+  color: var(--faint);
+  background: var(--bg0);
+  padding: 2px 6px;
+  border-radius: 4px;
+  pointer-events: none;
+}

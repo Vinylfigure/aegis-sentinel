@@ -1,0 +1,12 @@
+{
+  "commitment-soc2-am-06": {
+    "claim_ids": [
+      "claim-poison-github-nonexistence",
+      "claim-poison-hris-existence"
+    ],
+    "id": "commitment-soc2-am-06",
+    "name": "SOC2 AM-06",
+    "obligation": "Logical access to systems for employees and contractors is revoked as part of the termination process within 5 business days of the individual's termination date.",
+    "source": "audit"
+  }
+}

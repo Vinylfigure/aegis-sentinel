@@ -1,0 +1,142 @@
+{
+  "5412c8131859f166ca0c16abf8a5f9d4d9a0a69aada7294a63d6e660df9727c1": {
+    "auth_context": "API token scoped to okta.logs.read only",
+    "collector_version": "0.1.0",
+    "contract_hash": "5412c8131859f166ca0c16abf8a5f9d4d9a0a69aada7294a63d6e660df9727c1",
+    "endpoint": "System Log API GET /api/v1/logs",
+    "id": "eqc-okta-system-log-deactivations-v1",
+    "parameters": {
+      "filter": "eventType eq \"user.lifecycle.deactivate\"",
+      "pagination": "cursor ('after')"
+    },
+    "population_ref": "pop-termination-events",
+    "quality": {
+      "integrity": {
+        "failure_mode": "hash mismatch against a stored raw page",
+        "method": "SHA-256 of each raw page recorded at intake in the cursor chain; collection hash over the ordered page bytes, WORM-stored"
+      },
+      "population": {
+        "failure_mode": "broken or cyclic cursor chain \u2014 partial event history",
+        "method": "cursor pagination followed via 'after' until absent; chain recorded page by page; a repeated cursor or a claimed next page the source cannot produce refuses the collection"
+      },
+      "provenance": {
+        "failure_mode": "page from an unauthenticated or wrong-tenant origin",
+        "method": "tenant identity asserted in every page envelope and matched against the engagement tenant per page"
+      },
+      "semantics": {
+        "failure_mode": "System Log schema drift or eventType meaning change",
+        "method": "closed-schema parse of every event into typed LogEvent fields; unknown fields rejected; only user.lifecycle.deactivate events admitted as records"
+      },
+      "temporal_validity": {
+        "failure_mode": "asserted period reaching beyond retained history \u2014 silently partial TIMING evidence",
+        "method": "asserted period checked against the 90-day event-history window relative to the extract timestamp in the payload; an older period start refuses (E204)"
+      }
+    },
+    "schema_version": "okta.system_log/v1",
+    "source": "okta",
+    "supported_assertion_types": [
+      "EVENT",
+      "EXISTENCE",
+      "NON-EXISTENCE",
+      "TIMING"
+    ],
+    "tenant": "meridian-financial-poisons",
+    "time_window": {
+      "end": "2026-12-31T00:00:00Z",
+      "start": "2026-10-15T00:00:00Z"
+    }
+  },
+  "57a8be5a525eebb2f9905668fee93b9347b6cecca925539bee7aa440ff37793d": {
+    "auth_context": "read:org (GitHub App: Organization members, read-only)",
+    "collector_version": "0.1.0",
+    "contract_hash": "57a8be5a525eebb2f9905668fee93b9347b6cecca925539bee7aa440ff37793d",
+    "endpoint": "REST v3 GET /orgs/meridian-financial-poisons/members",
+    "id": "eqc-github-members-v1",
+    "parameters": {
+      "capability": "github.members",
+      "format": "json"
+    },
+    "population_ref": "pop-termination-github-access",
+    "quality": {
+      "integrity": {
+        "failure_mode": "hash mismatch against a stored raw page payload",
+        "method": "SHA-256 of each raw page payload recorded at intake plus a chain hash over the pages in fetch order, WORM-stored"
+      },
+      "population": {
+        "failure_mode": "truncated or skipped page \u2014 partial member population",
+        "method": "page pagination; Link rel=next followed until absent with page count recorded; every mid-chain page asserted to carry exactly its claimed per_page rows and page numbers asserted contiguous"
+      },
+      "provenance": {
+        "failure_mode": "page served from an unauthenticated or wrong-org origin",
+        "method": "org identity asserted in every page envelope and matched against the engagement org per page"
+      },
+      "semantics": {
+        "failure_mode": "API schema drift or field meaning change",
+        "method": "closed-schema parse of every row into typed MemberRecord fields; unknown fields rejected"
+      },
+      "temporal_validity": {
+        "failure_mode": "snapshot captured outside the asserted window, or the current-state list mistaken for membership history",
+        "method": "state-only snapshot (registry github.members): capture time recorded in every page envelope and compared against the asserted period; supports no TIMING assertion by itself"
+      }
+    },
+    "schema_version": "2022-11-28",
+    "source": "github",
+    "supported_assertion_types": [
+      "STATE",
+      "EXISTENCE",
+      "NON-EXISTENCE"
+    ],
+    "tenant": "meridian-financial-poisons",
+    "time_window": {
+      "end": "2026-12-31T00:00:00Z",
+      "start": "2026-10-15T00:00:00Z"
+    }
+  },
+  "a826e0d585e4d6998b2dab4f0300606220481fdd7a179dbda2c4141765980a7b": {
+    "auth_context": "ISU account scoped to the terminations report only",
+    "collector_version": "0.1.0",
+    "contract_hash": "a826e0d585e4d6998b2dab4f0300606220481fdd7a179dbda2c4141765980a7b",
+    "endpoint": "RaaS terminated_workers report extract",
+    "id": "eqc-workday-terminations-v1",
+    "parameters": {
+      "format": "json",
+      "report": "terminated_workers"
+    },
+    "population_ref": "pop-termination-events",
+    "quality": {
+      "integrity": {
+        "failure_mode": "hash mismatch against the stored raw payload",
+        "method": "SHA-256 of the raw payload recorded at intake, WORM-stored"
+      },
+      "population": {
+        "failure_mode": "truncated extract \u2014 partial termination population",
+        "method": "single report extract; row count asserted against report metadata row_count and page/total_pages"
+      },
+      "provenance": {
+        "failure_mode": "extract from an unauthenticated or wrong-tenant origin",
+        "method": "tenant identity asserted in the extract envelope and matched against the engagement tenant per collection"
+      },
+      "semantics": {
+        "failure_mode": "report schema drift or field meaning change",
+        "method": "closed-schema parse of every row into typed TerminationRecord fields; unknown fields rejected"
+      },
+      "temporal_validity": {
+        "failure_mode": "extract generated outside the asserted window",
+        "method": "extract generation time recorded in the envelope and compared against the asserted period"
+      }
+    },
+    "schema_version": "2026R2",
+    "source": "workday",
+    "supported_assertion_types": [
+      "EVENT",
+      "EXISTENCE",
+      "NON-EXISTENCE",
+      "TIMING"
+    ],
+    "tenant": "meridian-financial-poisons",
+    "time_window": {
+      "end": "2026-12-31T00:00:00Z",
+      "start": "2026-10-15T00:00:00Z"
+    }
+  }
+}

@@ -1,0 +1,8 @@
+[
+  { "id": "fcra", "name": "FCRA — furnisher obligations", "why": "Accuracy, dispute handling, audit trail on what was furnished when", "on": ["tradeline"] },
+  { "id": "glba", "name": "GLBA Safeguards Rule", "why": "Written program, access controls, encryption, vendor oversight", "on": ["npi", "bank", "chd"] },
+  { "id": "pci", "name": "PCI DSS", "why": "SAQ level or ROC falls out of verified CHD flows and volume", "on": ["chd"] },
+  { "id": "soc2", "name": "SOC 2 (Security TSC)", "why": "Customer commitment — confirm the system description covers this product", "on": ["tradeline", "npi", "chd", "bank", "pii"] },
+  { "id": "iso", "name": "ISO 27001", "why": "Same control set, mapped out — ISMS governance is the delta", "on": ["tradeline", "npi", "chd", "bank", "pii"] },
+  { "id": "106", "name": "Reg S-K Item 106", "why": "Materiality determination with legal; 4 business days to the 8-K", "on": ["tradeline", "npi", "chd", "bank", "pii", "auth"] }
+]

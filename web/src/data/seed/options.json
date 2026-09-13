@@ -1,0 +1,14 @@
+{
+  "ART_RET": {
+    "api": "API / MCP",
+    "shot": "Playwright snapshot",
+    "log": "Log query",
+    "man": "Manual attestation"
+  },
+  "CA": {
+    "recon": "Two-source reconciliation",
+    "hash": "Hash raw response",
+    "trace": "Bidirectional 1-sample trace",
+    "agent": "Independent verifier agent"
+  }
+}

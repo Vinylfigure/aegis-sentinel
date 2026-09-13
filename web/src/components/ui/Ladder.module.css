@@ -1,0 +1,66 @@
+.ladder {
+  display: flex;
+  align-items: flex-start;
+  width: 100%;
+}
+
+.stepCol {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 7px;
+  flex-shrink: 0;
+}
+
+.dot {
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  border: 2px solid var(--ladder-pending);
+  background: transparent;
+  transition: background 160ms ease, border-color 160ms ease;
+}
+.dotDone { border-color: var(--ladder-done); background: color-mix(in srgb, var(--ladder-done) 35%, transparent); }
+.dotCurrent { background: var(--ladder-done); box-shadow: 0 0 12px -2px var(--ladder-done); }
+
+.label {
+  font: 500 9px/1 var(--font-mono-stack);
+  letter-spacing: 0.09em;
+  color: var(--faint);
+  white-space: nowrap;
+}
+.labelDone { color: var(--dim); }
+.labelCurrent { color: var(--brand); }
+
+.rung {
+  position: relative;
+  flex: 1;
+  min-width: 18px;
+  height: 2px;
+  margin-top: 4.5px;
+  background: var(--ladder-pending);
+  border-radius: 1px;
+}
+.rungDone { background: var(--ladder-done); }
+.rungBlocked {
+  background: repeating-linear-gradient(
+    90deg,
+    var(--v-fail) 0 5px,
+    transparent 5px 10px
+  );
+}
+.blockedNote {
+  position: absolute;
+  top: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  font: 600 8.5px/1 var(--font-mono-stack);
+  letter-spacing: 0.08em;
+  font-style: normal;
+  color: var(--v-fail);
+  white-space: nowrap;
+}
+
+.compact .label { font-size: 8px; }
+.compact .dot { width: 9px; height: 9px; }
+.compact .rung { min-width: 10px; margin-top: 3.5px; }
