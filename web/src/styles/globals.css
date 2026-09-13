@@ -1,33 +1,95 @@
-@import "./tokens.css";
+/* Global resets + the small shared vocabulary of the new visual system. */
 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
+* { margin: 0; padding: 0; box-sizing: border-box; }
 
-html,
+html, body { height: 100%; }
+
 body {
-  background: var(--bg);
+  background: var(--bg1);
   color: var(--ink);
-  font: var(--fs-body) / 1.5 var(--font-body);
+  font: 400 14px/1.55 var(--font-sans);
+  -webkit-font-smoothing: antialiased;
 }
 
-a {
-  color: var(--accent);
-  text-decoration: none;
+a { color: inherit; text-decoration: none; }
+button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
+
+::selection { background: var(--brand-soft); }
+
+.mono { font-family: var(--font-mono-stack); }
+
+/* ---- app frame: fixed icon rail + content ---- */
+.frame { min-height: 100vh; padding-left: var(--rail-w); }
+
+/* ---- page scaffolding for drill-in routes ---- */
+.page {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 40px 44px 96px;
+}
+.page-kicker {
+  font: 500 11px/1 var(--font-mono-stack);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--brand);
+  margin-bottom: 10px;
+}
+.page h1 {
+  font: 700 26px/1.2 var(--font-display);
+  letter-spacing: -0.01em;
+}
+.page-sub { color: var(--dim); margin: 8px 0 0; max-width: 76ch; }
+
+.section-label {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 40px 0 16px;
+  font: 500 11px/1 var(--font-mono-stack);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--faint);
+}
+.section-label::after { content: ""; flex: 1; height: 1px; background: var(--line-soft); }
+
+/* ---- verdict state badge (always text + color, never color alone) ---- */
+.state-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font: 600 11px/1 var(--font-mono-stack);
+  letter-spacing: 0.08em;
+  padding: 5px 9px;
+  border-radius: 999px;
+  border: 1px solid;
+}
+.state-badge::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+.state-PASS      { color: var(--v-pass);      border-color: color-mix(in srgb, var(--v-pass) 45%, transparent);      background: var(--v-pass-soft); }
+.state-FAIL      { color: var(--v-fail);      border-color: color-mix(in srgb, var(--v-fail) 45%, transparent);      background: var(--v-fail-soft); }
+.state-UNKNOWN   { color: var(--v-unknown);   border-color: color-mix(in srgb, var(--v-unknown) 45%, transparent);   background: var(--v-unknown-soft); }
+.state-EXCEPTION { color: var(--v-exception); border-color: color-mix(in srgb, var(--v-exception) 45%, transparent); background: var(--v-exception-soft); }
+.state-EXCLUDED  { color: var(--v-excluded);  border-color: color-mix(in srgb, var(--v-excluded) 45%, transparent);  background: var(--v-excluded-soft); }
+
+/* ---- hash chip ---- */
+.hash {
+  font: 400 11px/1 var(--font-mono-stack);
+  color: var(--dim);
+  background: var(--surface1);
+  border: 1px solid var(--line-soft);
+  border-radius: var(--radius-s);
+  padding: 4px 7px;
+  white-space: nowrap;
 }
 
-a:hover {
-  text-decoration: underline;
+/* ---- generic card ---- */
+.card {
+  background: var(--surface1);
+  border: 1px solid var(--line-soft);
+  border-radius: var(--radius-m);
+  box-shadow: var(--shadow-card);
 }
 
-:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 2px;
-}
-
-code {
-  font-family: var(--font-mono);
-  font-size: 0.9em;
+/* ---- restrained motion ---- */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
 }

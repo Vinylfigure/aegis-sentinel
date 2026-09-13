@@ -1,0 +1,128 @@
+/* Program — deliberately quiet authoring surface. */
+
+.subnav {
+  display: flex;
+  gap: 4px;
+  margin-top: 26px;
+  border-bottom: 1px solid var(--line-soft);
+}
+.tab {
+  padding: 9px 16px;
+  font: 500 12.5px/1 var(--font-sans);
+  color: var(--faint);
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+}
+.tab:hover { color: var(--dim); }
+.tabActive { color: var(--ink); border-bottom-color: var(--brand); }
+
+.section { padding-top: 26px; }
+
+.quietCard {
+  background: var(--surface1);
+  border: 1px solid var(--line-soft);
+  border-radius: var(--radius-m);
+  padding: 16px 18px;
+}
+.quietCard + .quietCard { margin-top: 10px; }
+
+.rowHead { display: flex; align-items: center; gap: 12px; }
+.rowTitle { display: block; font: 600 13px/1.3 var(--font-sans); color: var(--ink); }
+.rowSub { display: block; font-size: 11.5px; color: var(--faint); margin-top: 3px; line-height: 1.5; }
+.missionCard .rowTitle, .missionCard .rowSub { display: inline; }
+.spacer { flex: 1; }
+
+.check {
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  border: 1.5px solid var(--line);
+  border-radius: 4px;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+.check:checked { background: var(--brand); border-color: var(--brand); }
+.check:checked::after { content: "✓"; font: 700 10px/1 var(--font-sans); color: var(--brand-ink); }
+
+.chipRow { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+.chip {
+  font: 400 10.5px/1 var(--font-mono-stack);
+  color: var(--dim);
+  border: 1px solid var(--line-soft);
+  border-radius: 999px;
+  padding: 5px 9px;
+  cursor: pointer;
+}
+.chipOn { color: var(--brand); border-color: color-mix(in srgb, var(--brand) 45%, transparent); background: var(--brand-soft); }
+
+.tally {
+  display: flex;
+  gap: 18px;
+  padding: 14px 18px;
+  background: var(--surface1);
+  border: 1px solid var(--line-soft);
+  border-radius: var(--radius-m);
+  font: 400 12px/1.4 var(--font-sans);
+  color: var(--dim);
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+}
+.tally b { color: var(--ink); font-weight: 600; }
+.tallyNote { flex: 1 1 100%; font-size: 11.5px; color: var(--faint); line-height: 1.55; }
+.tallyBlocked { color: var(--v-unknown); }
+.tallyClear { color: var(--v-pass); }
+
+.regime { display: flex; align-items: baseline; gap: 10px; padding: 9px 0; border-bottom: 1px solid var(--line-soft); }
+.regime:last-child { border-bottom: 0; }
+.regimeDot { width: 7px; height: 7px; border-radius: 50%; background: var(--ladder-pending); flex-shrink: 0; align-self: center; }
+.regimeDotLit { background: var(--brand); }
+.regimeName { font-size: 12.5px; color: var(--dim); }
+.regimeLit { color: var(--ink); }
+.regimeWhy { font-size: 11px; color: var(--faint); }
+
+.domHead {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 12px 14px;
+  text-align: left;
+  font: 600 12.5px/1 var(--font-sans);
+  color: var(--ink);
+  background: var(--surface1);
+  border: 1px solid var(--line-soft);
+  border-radius: var(--radius-s);
+  margin-top: 8px;
+}
+.domCount { font: 400 10.5px/1 var(--font-mono-stack); color: var(--faint); margin-left: auto; }
+.ctl { display: flex; align-items: center; gap: 12px; padding: 11px 14px; border: 1px solid var(--line-soft); border-top: 0; background: color-mix(in srgb, var(--surface1) 55%, transparent); flex-wrap: wrap; }
+.ctlCode { font: 500 11px/1 var(--font-mono-stack); color: var(--brand); width: 52px; flex-shrink: 0; }
+.ctlName { font-size: 12.5px; color: var(--dim); flex: 1; min-width: 200px; }
+.select {
+  font: 400 11px/1 var(--font-mono-stack);
+  color: var(--dim);
+  background: var(--bg1);
+  border: 1px solid var(--line);
+  border-radius: 5px;
+  padding: 6px 8px;
+}
+
+.table { width: 100%; border-collapse: collapse; }
+.table th {
+  text-align: left;
+  font: 500 9.5px/1 var(--font-mono-stack);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--faint);
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--line);
+}
+.table td { padding: 10px 12px; border-bottom: 1px solid var(--line-soft); font-size: 12px; color: var(--dim); }
+.tableWrap { overflow-x: auto; border: 1px solid var(--line-soft); border-radius: var(--radius-m); background: var(--surface1); }
+
+.missionCard { display: flex; gap: 14px; align-items: baseline; flex-wrap: wrap; }
+.missionId { font: 500 11px/1 var(--font-mono-stack); color: var(--brand); }
+.missionMeta { font: 400 10.5px/1.5 var(--font-mono-stack); color: var(--faint); flex: 1 1 100%; }
+.warn { color: var(--v-unknown); }

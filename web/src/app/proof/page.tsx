@@ -1,68 +1,56 @@
-import type { Metadata } from "next";
 import Link from "next/link";
-import {
-  VERDICT_STATES,
-  engagementVerdictRecords,
-  recordsByState,
-} from "@/data";
-import styles from "./proof.module.css";
+import type { Metadata } from "next";
+import { loadEngagement } from "@/lib/data/engagement";
+import styles from "./Proof.module.css";
 
-export const metadata: Metadata = { title: "Proof" };
+export const metadata: Metadata = { title: "Proof lineage — Aegis" };
 
-/**
- * B4 — /proof: index of every verdict record's lineage page, grouped by the
- * five states (VERDICT_STATES is exhaustive — a sixth state fails tsc, so a
- * record can never silently miss the index).
- */
-export default function ProofIndexPage() {
-  const records = engagementVerdictRecords;
+export default function ProofIndex() {
+  const load = loadEngagement();
+  const graphs = load.artifacts.proof_graphs;
+  const { verdicts } = load.artifacts;
 
   return (
-    <div className={styles.main}>
-      <h1 className={styles.h1}>
-        Proof <span className={styles.h1Dot}>·</span> per-verdict lineage
-      </h1>
-      <p className={styles.sub}>
-        Every verdict record, traced through the ten-stage chain from commitment
-        to verdict. Stages the wire does not yet carry are labelled, not faked.
+    <main className="page">
+      <div className="page-kicker">lineage</div>
+      <h1>Proof graphs</h1>
+      <p className="page-sub">
+        A verdict you cannot walk backwards is an opinion. Each lineage traces a
+        sealed verdict through every artifact that produced it — commitment to
+        requirement to claim, population to sources to reconciliation, contract to
+        snapshot to assertion.
       </p>
 
-      {records.length === 0 ? (
-        <p className={styles.empty}>No verdict records in the data layer.</p>
-      ) : (
-        VERDICT_STATES.map((meta) => {
-          const inState = recordsByState(records, meta.state);
-          if (inState.length === 0) return null;
-          return (
-            <section
-              key={meta.state}
-              aria-labelledby={`proof-${meta.state}`}
-              className={styles.indexSection}
-            >
-              <h2 id={`proof-${meta.state}`} className={styles.indexTitle}>
-                {meta.state}
-                <span className={styles.indexCount}>
-                  {inState.length} {inState.length === 1 ? "record" : "records"}
-                  <span className={styles.diagnostic}> · diagnostic</span>
-                </span>
-              </h2>
-              <ul className={styles.indexList}>
-                {inState.map((record) => (
-                  <li key={record.record_id}>
-                    <Link
-                      className={styles.jumpLink}
-                      href={`/proof/${encodeURIComponent(record.record_id)}`}
-                    >
-                      <code className={styles.mono}>{record.record_id}</code>
-                    </Link>
-                    <p className={styles.indexMessage}>{record.message ?? "(no message on the record)"}</p>
-                  </li>
-                ))}
-              </ul>
-            </section>
-          );
-        })
-      )}
-    </div>
+      <div className="section-label">emitted lineages · {graphs.length}</div>
+      {graphs.map((g) => {
+        const v = verdicts.find((x) => x.record_hash === g.verdict_ref);
+        const verdictNode = g.nodes.find((n) => n.kind === "verdict");
+        return (
+          <Link
+            key={g.verdict_ref}
+            href={`/proof/${g.verdict_ref.slice(0, 12)}`}
+            className={styles.graphCard}
+          >
+            <div className={styles.graphHead}>
+              {v && <span className={`state-badge state-${v.state}`}>{v.state}</span>}
+              <span className={styles.graphAssertion}>{v?.assertion_ref}</span>
+              <span className={styles.graphStages}>
+                {g.nodes.length} stages · {g.edges.length} typed edges
+              </span>
+            </div>
+            <div className={styles.graphLabel}>{verdictNode?.label}</div>
+            <div className={styles.graphRef}>verdict {g.verdict_ref.slice(0, 16)}…</div>
+          </Link>
+        );
+      })}
+
+      <div className="section-label">not yet emitted</div>
+      <p className={styles.honest}>
+        The other {verdicts.length - graphs.length} sealed verdicts have no lineage
+        graph in this engagement&apos;s artifacts yet — the pipeline emits P1 lineage
+        for the TIMING exhibit first. Nothing is synthesized here: no artifact, no
+        graph.
+      </p>
+    </main>
   );
 }
