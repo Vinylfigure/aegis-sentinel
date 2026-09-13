@@ -1,0 +1,77 @@
+[
+  {
+    "n": "Data stores",
+    "items": [
+      { "name": "Primary transactional databases", "note": "Which instances, which regions?" },
+      { "name": "Read replicas & caches", "note": "Do replicas carry the same class of data?" },
+      { "name": "Data warehouse / analytics", "note": "Analytics copies are the most commonly missed store" },
+      { "name": "Object storage & file shares", "note": "Exports, statements, document uploads" },
+      { "name": "Backups & snapshots", "note": "Same classification as the source — and same retention?" },
+      { "name": "Logs & SIEM", "note": "Do logs contain the data itself, or references to it?" }
+    ]
+  },
+  {
+    "n": "Applications & services",
+    "items": [
+      { "name": "Customer-facing application", "note": "Web and mobile surfaces" },
+      { "name": "Internal admin / back-office tooling", "note": "Support consoles usually have the broadest read" },
+      { "name": "APIs & integrations", "note": "Partner-facing and internal" },
+      { "name": "Batch & scheduled jobs", "note": "The furnishing job is a control point, not plumbing" },
+      { "name": "Reporting & decisioning logic", "note": "Underwriting, eligibility, scoring" }
+    ]
+  },
+  {
+    "n": "Compute & platform",
+    "items": [
+      { "name": "Kubernetes clusters / node pools", "note": "Which clusters host in-scope workloads?" },
+      { "name": "Serverless & managed runtimes", "note": "Functions, managed jobs" },
+      { "name": "CI/CD pipelines & runners", "note": "The path to production is in scope even if it holds no data" },
+      { "name": "Infrastructure-as-code state", "note": "State files contain the topology — and sometimes secrets" }
+    ]
+  },
+  {
+    "n": "Network & boundary",
+    "items": [
+      { "name": "VPCs and segmentation", "note": "Segmentation is the primary scope-reduction lever" },
+      { "name": "Ingress / egress paths", "note": "Public endpoints, load balancers, egress controls" },
+      { "name": "Partner connections", "note": "Bureau links, bank partner, processor connectivity" },
+      { "name": "Remote access paths", "note": "VPN, bastion, admin access to production" }
+    ]
+  },
+  {
+    "n": "Identity, access & keys",
+    "items": [
+      { "name": "Identity provider & SSO", "note": "The source of the access population" },
+      { "name": "Service accounts & machine identities", "note": "Usually the largest ungoverned population" },
+      { "name": "Privileged & break-glass access", "note": "Elevation path, time-bound, logged" },
+      { "name": "KMS keys & secrets management", "note": "Generation, use, rotation, retention, destruction" },
+      { "name": "Certificates & signing material", "note": "Code signing, TLS, artifact signing" }
+    ]
+  },
+  {
+    "n": "Third parties & subservice orgs",
+    "items": [
+      { "name": "Cloud provider", "note": "Carve-out or inclusive method — decide deliberately" },
+      { "name": "Bureaus & data recipients", "note": "Contractual security requirements flow down" },
+      { "name": "Bank partner / processor", "note": "Their exam expectations become your control requirements" },
+      { "name": "KYC / identity verification vendors", "note": "They hold the same Tier 1 data" },
+      { "name": "Subprocessors with production access", "note": "Support vendors, offshore contractors" }
+    ]
+  },
+  {
+    "n": "Non-production environments",
+    "items": [
+      { "name": "Staging & QA", "note": "In scope the moment production data reaches it" },
+      { "name": "Test data provenance", "note": "Synthetic, masked, or a copy of production?" },
+      { "name": "Developer sandboxes", "note": "Where does the data come from, and who can reach it?" }
+    ]
+  },
+  {
+    "n": "People & endpoints",
+    "items": [
+      { "name": "Personnel with production access", "note": "The population your access reviews must reconcile to" },
+      { "name": "Endpoints reaching production", "note": "Managed devices, posture requirements" },
+      { "name": "Support & operations tooling", "note": "Screen sharing, session recording, ticket attachments" }
+    ]
+  }
+]

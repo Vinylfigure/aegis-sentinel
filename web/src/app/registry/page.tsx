@@ -1,228 +1,152 @@
 import type { Metadata } from "next";
-import {
-  draftCaveats,
-  engagementRegistry,
-  groupedCompileErrors,
-  historyCaveats,
-  registryHealth,
-  usability,
-  type RegistryEntry,
-} from "@/data";
-import { RailLayout } from "@/components/RailLayout/RailLayout";
-import styles from "./registry.module.css";
+import { loadEngagement } from "@/lib/data/engagement";
+import styles from "./Registry.module.css";
 
-export const metadata: Metadata = { title: "Registry" };
+export const metadata: Metadata = { title: "Capability registry — Aegis" };
 
-/**
- * B3 — /registry: capability entries with their ratification state, and
- * E-codes rendered as compiler errors rather than warnings.
- *
- * Deliberately a server component with no state: nothing here needs
- * selection, and a page that renders its whole argument without interaction
- * is one fewer thing to get wrong.
- *
- * Two hard requirements, both from web/README.md:
- *   1. The artifact's top-level `note` renders VERBATIM.
- *   2. Every DRAFT caveat renders VERBATIM beside the lifecycle badge.
- * A page showing DRAFT entries as usable without their caveats
- * misrepresents ratification state — a demo-correctness bug, not styling.
- * Usability is therefore derived (SCH02: unratified entries are
- * mechanically unusable), never asserted.
- */
+const SYSTEM_NAMES: Record<string, string> = {
+  gcp: "GCP",
+  hris: "HRIS",
+  github: "GitHub",
+  okta: "Okta",
+  slack: "Slack",
+};
+
 export default function RegistryPage() {
-  const artifact = engagementRegistry;
-  const health = registryHealth(artifact);
-  const errorGroups = groupedCompileErrors(artifact);
-
-  const rail = (
-    <div>
-      <h2 className={styles.railTitle}>Registry health</h2>
-      <ul className={styles.healthList}>
-        <li>
-          {health.usable} of {health.total} entries usable by the compiler
-          <span className={styles.diagnostic}> diagnostic</span>
-        </li>
-        <li>{health.draft} draft (mechanically excluded — SCH02)</li>
-        <li>{health.withDraftCaveats} carrying DRAFT caveats</li>
-        <li>{health.compileErrors} unresolved compile errors</li>
-      </ul>
-
-      <section className={styles.railSection}>
-        <h3 className={styles.railSectionTitle}>E-codes as compiler errors</h3>
-        <p className={styles.railMeta}>
-          An E-code is a refusal, not a warning: zero collectors execute for a
-          claim carrying an unresolved one (TYP01).
-        </p>
-        {errorGroups.length === 0 ? (
-          <p className={styles.empty}>No unresolved compile errors.</p>
-        ) : (
-          <ul className={styles.errorList}>
-            {errorGroups.map((group) => (
-              <li key={group.meta.code} className={styles.errorGroup}>
-                <p className={styles.errorHead}>
-                  <span className={styles.code}>{group.meta.code}</span>
-                  <span className={styles.errorTitle}>{group.meta.title}</span>
-                </p>
-                <p className={styles.railMeta}>{group.meta.consequence}</p>
-                <ul className={styles.railList}>
-                  {group.errors.map((error) => (
-                    <li key={`${error.claim_id}-${error.code}`}>
-                      <code className={styles.ref}>{error.claim_id}</code>
-                      <p className={styles.errorMessage}>{error.message}</p>
-                      <p className={styles.suggestion}>
-                        {error.suggestion
-                          ? `satisfiable via: ${error.suggestion}`
-                          : "no satisfying combination suggested"}
-                      </p>
-                    </li>
-                  ))}
-                </ul>
-              </li>
-            ))}
-          </ul>
-        )}
-      </section>
-    </div>
-  );
+  const load = loadEngagement();
+  const entries = load.artifacts.capability_registry;
+  const errors = load.artifacts.compile_errors;
+  const e204 = errors.find((e) => e.code === "E204");
+  const okta = entries.find((e) => e.entry_id === "okta.system_log.api_v1");
 
   return (
-    <RailLayout rail={rail} railLabel="Registry health and compile errors">
-      <div className={styles.main}>
-        <h1 className={styles.h1}>
-          Capability registry <span className={styles.h1Dot}>·</span> what the
-          compiler may use
-        </h1>
-        <p className={styles.sub}>
-          Cartographer proposes from vendor docs with citations, a human
-          ratifies, and only then may the compiler use an entry. Ratification is
-          the freeze (D-L1).
-        </p>
+    <main className="page">
+      <div className="page-kicker">capability registry</div>
+      <h1>What can actually be collected</h1>
+      <p className="page-sub">
+        Every entry is a researched, human-ratified description of a real API
+        surface — its temporal shape, its pagination, its caveats. Claims compile
+        against these physics, not against wishes.
+      </p>
 
-        {/* README hard requirement 1: the DEMO-ONLY note, verbatim. */}
-        <p className={styles.note}>{artifact.note}</p>
-
-        <ul className={styles.entries}>
-          {artifact.entries.map((entry) => (
-            <li key={entry.id}>
-              <EntryCard entry={entry} />
-            </li>
-          ))}
-        </ul>
-        {artifact.entries.length === 0 && (
-          <p className={styles.empty}>No capability entries in the registry.</p>
-        )}
+      <div className="section-label">the 90-day wall · why the six-month ask refused to compile</div>
+      <div className={styles.exhibit}>
+        <div className={styles.exhibitLeft}>
+          <div className={styles.exhibitTitle}>
+            Okta System Log retains <b>90 days</b>. The assertion needed 181.
+          </div>
+          <p className={styles.exhibitText}>
+            <span className="mono">{okta?.entry_id}</span> yields{" "}
+            <span className="mono">
+              event-history(window={okta?.temporal.window_days}d)
+            </span>
+            . The TIMING assertion asked for transition timestamps across the full
+            period {e204?.required_window?.start}..{e204?.required_window?.end}. No
+            usable capability combination covers it — so the claim was re-scoped to
+            an honest window, and the six-month ask stays on the books as the E204
+            exhibit below.
+          </p>
+          <div className={styles.windowViz} aria-label="Required 181-day window vs available 90-day retention">
+            <div className={styles.windowTrack}>
+              <span className={styles.windowNeed} />
+              <span className={styles.windowHave} />
+            </div>
+            <div className={styles.windowLegend}>
+              <span>
+                required <b>181 days</b> (2026-01-01 → 2026-06-30)
+              </span>
+              <span>
+                available <b>90 days</b> of retention
+              </span>
+            </div>
+          </div>
+        </div>
+        <div className={styles.exhibitRight}>
+          <b>E204</b> {e204?.rendered.replace(/^E\d+\s+/, "")}
+        </div>
       </div>
-    </RailLayout>
-  );
-}
 
-function EntryCard({ entry }: { entry: RegistryEntry }) {
-  const status = usability(entry);
-  const drafts = draftCaveats(entry);
-  const history = historyCaveats(entry);
-
-  return (
-    <article
-      className={status.usable ? styles.entry : `${styles.entry} ${styles.entryBlocked}`}
-    >
-      <h2 className={styles.entryTitle}>
-        <code className={styles.entryId}>{entry.id}</code>
-        <span className={styles.lifecycle}>{entry.lifecycle}</span>
-        <span className={status.usable ? styles.usable : styles.unusable}>
-          {status.usable ? "usable" : "NOT usable"}
-        </span>
-      </h2>
-      <p className={styles.reason}>{status.reason}</p>
-
-      {/* README hard requirement 2: DRAFT caveats, verbatim, beside the badge. */}
-      {drafts.length > 0 && (
-        <ul className={styles.draftCaveats}>
-          {drafts.map((caveat) => (
-            <li key={caveat}>{caveat}</li>
-          ))}
-        </ul>
-      )}
-
-      <dl className={styles.facts}>
-        <div className={styles.fact}>
-          <dt>System</dt>
-          <dd>
-            {entry.system} · {entry.surface}
-          </dd>
-        </div>
-        <div className={styles.fact}>
-          <dt>Auth scope</dt>
-          <dd>{entry.auth_scope}</dd>
-        </div>
-        <div className={styles.fact}>
-          <dt>Access</dt>
-          <dd>{entry.access_modes.join(", ")}</dd>
-        </div>
-        <div className={styles.fact}>
-          <dt>Join keys</dt>
-          <dd>{entry.join_keys.join(", ")}</dd>
-        </div>
-        <div className={styles.fact}>
-          <dt>Pagination</dt>
-          <dd>
-            {entry.pagination.method} — {entry.pagination.exhaustion_method}
-          </dd>
-        </div>
-        <div className={styles.fact}>
-          <dt>Temporal</dt>
-          <dd>
-            {entry.temporal.kind}
-            {entry.temporal.cadence ? ` · ${entry.temporal.cadence}` : ""}
-            {entry.temporal.window_days === null
-              ? " · no window limit recorded"
-              : ` · ${entry.temporal.window_days}-day window`}
-          </dd>
-        </div>
-        <div className={styles.fact}>
-          <dt>Rate limits</dt>
-          <dd>{entry.rate_limits ?? "none recorded"}</dd>
-        </div>
-      </dl>
-
-      {history.length > 0 && (
-        <div className={styles.caveats}>
-          <h3 className={styles.caveatTitle}>History caveats</h3>
-          <ul className={styles.caveatList}>
-            {history.map((caveat) => (
-              <li key={caveat}>{caveat}</li>
+      <div className="section-label">ratified entries · {entries.length}</div>
+      <div className={styles.entryGrid}>
+        {entries.map((e) => (
+          <article key={e.entry_id} className={styles.entry}>
+            <div className={styles.entryHead}>
+              <span className={styles.entrySystem}>{SYSTEM_NAMES[e.system] ?? e.system}</span>
+              <span className={styles.entryId}>{e.entry_id}</span>
+              <span
+                className={`${styles.temporalChip} ${
+                  e.temporal.window_days != null ? styles.temporalWindow : ""
+                }`}
+              >
+                {e.temporal.kind}
+                {e.temporal.window_days != null && ` · ${e.temporal.window_days}d`}
+              </span>
+            </div>
+            <div className={styles.entrySurface}>{e.surface}</div>
+            <div className={styles.entryMeta}>
+              <div className={styles.metaRow}>
+                <span className={styles.metaKey}>yields</span>
+                <span className={styles.metaVal}>
+                  {e.populations_yielded.map((p) => `${p.name} (${p.type})`).join(" · ")}
+                </span>
+              </div>
+              <div className={styles.metaRow}>
+                <span className={styles.metaKey}>join keys</span>
+                <span className={`${styles.metaVal} mono`}>{e.join_keys.join(", ")}</span>
+              </div>
+              <div className={styles.metaRow}>
+                <span className={styles.metaKey}>auth</span>
+                <span className={styles.metaVal}>{e.auth_scope}</span>
+              </div>
+              <div className={styles.metaRow}>
+                <span className={styles.metaKey}>pagination</span>
+                <span className={styles.metaVal}>
+                  {e.pagination.method} — {e.pagination.exhaustion_method}
+                </span>
+              </div>
+              <div className={styles.metaRow}>
+                <span className={styles.metaKey}>rate limits</span>
+                <span className={styles.metaVal}>{e.rate_limits}</span>
+              </div>
+            </div>
+            {e.history_caveats.map((c) => (
+              <div key={c} className={styles.caveat}>
+                {c}
+              </div>
             ))}
-          </ul>
+            <div className={styles.provenance}>
+              {e.provenance.doc_version} · ratified by {e.provenance.ratified_by} ·{" "}
+              {e.provenance.source_citations.map((s, i) => (
+                <span key={s.url}>
+                  {i > 0 && " · "}
+                  <a href={s.url} target="_blank" rel="noreferrer">
+                    {s.title}
+                  </a>
+                </span>
+              ))}
+            </div>
+          </article>
+        ))}
+      </div>
+
+      <div className="section-label">compile errors · the registry saying no</div>
+      {errors.map((e) => (
+        <div key={e.code + e.claim_ref} className={styles.ecodeCard}>
+          <span className={styles.ecodeTag}>{e.code}</span>
+          <div className={styles.ecodeBody}>
+            <div className={styles.ecodeName}>
+              {e.code === "E204"
+                ? "Assertion window exceeds capability retention"
+                : e.code === "E117"
+                  ? "Derivation source has no ratified capability entry"
+                  : "Compile error"}
+              {" · "}
+              {e.claim_ref}
+            </div>
+            <div className={styles.ecodeText}>{e.rendered.replace(/^E\d+\s+/, "")}</div>
+          </div>
         </div>
-      )}
-
-      <div className={styles.yields}>
-        <h3 className={styles.caveatTitle}>Populations yielded</h3>
-        <ul className={styles.caveatList}>
-          {entry.populations_yielded.map((pop) => (
-            <li key={pop.description}>
-              <span className={styles.popType}>{pop.type}</span> {pop.description}
-              <span className={styles.attrs}> ({pop.attributes.join(", ")})</span>
-            </li>
-          ))}
-        </ul>
-      </div>
-
-      <div className={styles.provenance}>
-        <h3 className={styles.caveatTitle}>Provenance</h3>
-        <p className={styles.railMeta}>
-          researched by {entry.provenance.researched_by} on{" "}
-          {entry.provenance.researched_at} · doc version{" "}
-          {entry.provenance.doc_version}
-        </p>
-        <ul className={styles.citations}>
-          {entry.provenance.citations.map((citation) => (
-            <li key={citation}>{citation}</li>
-          ))}
-        </ul>
-        <p className={styles.railMeta}>
-          ratified by {entry.ratified_by ?? "— not ratified"}
-        </p>
-      </div>
-    </article>
+      ))}
+    </main>
   );
 }

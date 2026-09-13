@@ -1,43 +1,44 @@
 import type { Metadata } from "next";
-import type { ReactNode } from "react";
 import { IBM_Plex_Mono, Inter, Space_Grotesk } from "next/font/google";
-import { AppShell } from "@/components/AppShell/AppShell";
+import "@/styles/tokens.css";
 import "@/styles/globals.css";
+import RailNav from "@/components/shell/RailNav";
+import { loadEngagement } from "@/lib/data/engagement";
 
+const grotesk = Space_Grotesk({
+  subsets: ["latin"],
+  weight: ["500", "700"],
+  variable: "--font-grotesk",
+});
 const inter = Inter({
   subsets: ["latin"],
   weight: ["400", "500", "600"],
   variable: "--font-inter",
 });
-
-const spaceGrotesk = Space_Grotesk({
-  subsets: ["latin"],
-  weight: ["500", "700"],
-  variable: "--font-space-grotesk",
-});
-
 const plexMono = IBM_Plex_Mono({
   subsets: ["latin"],
   weight: ["400", "500"],
-  variable: "--font-plex-mono",
+  variable: "--font-mono",
 });
 
 export const metadata: Metadata = {
-  title: {
-    default: "Aegis",
-    template: "%s · Aegis",
-  },
-  description: "Aegis assurance compiler — demo engagement surface",
+  title: "Aegis — Termination Lane",
+  description:
+    "Aegis · the lane is the product — compiled proof painted onto the process flow",
 };
 
-export default function RootLayout({ children }: { children: ReactNode }) {
+export default function RootLayout({
+  children,
+}: Readonly<{ children: React.ReactNode }>) {
+  const { artifacts } = loadEngagement();
   return (
     <html
       lang="en"
-      className={`${inter.variable} ${spaceGrotesk.variable} ${plexMono.variable}`}
+      className={`${grotesk.variable} ${inter.variable} ${plexMono.variable}`}
     >
       <body>
-        <AppShell>{children}</AppShell>
+        <RailNav manifestVersion={artifacts.manifest.manifest_version} />
+        <div className="frame">{children}</div>
       </body>
     </html>
   );

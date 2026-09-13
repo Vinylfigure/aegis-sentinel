@@ -1,0 +1,7 @@
+[
+  { "id": "cb", "name": "Core subscription product", "desc": "furnishes tradelines to the bureaus", "cls": ["tradeline", "pii", "bank"], "on": true },
+  { "id": "card", "name": "Card product", "desc": "the PCI scope question lives here", "cls": ["chd", "pii"], "on": true },
+  { "id": "cash", "name": "Advance product", "desc": "boundary question — confirm whether it is inside the existing boundary", "cls": ["bank", "pii"], "on": true },
+  { "id": "corp", "name": "Corporate IT", "desc": "supports the service without being the service", "cls": ["emp"], "on": false },
+  { "id": "mkt", "name": "Marketing site", "desc": "candidate for exclusion — prove it holds no production data", "cls": [], "on": false }
+]

@@ -1,0 +1,446 @@
+{
+  "engagement": "demo-engagement",
+  "reconciliations": [
+    {
+      "basis_complete": true,
+      "basis_notes": [],
+      "buckets": {
+        "conflicts": [],
+        "excluded": [
+          "osprey-design-ext"
+        ],
+        "intersection": [
+          "amara.diallo@meridianfinancial.example",
+          "bianca.rossi@meridianfinancial.example",
+          "chloe.marchand@meridianfinancial.example",
+          "ctr.blake.morgan@example-vendor.com",
+          "ethan.macleod@meridianfinancial.example",
+          "grace.lindqvist@meridianfinancial.example",
+          "isla.donovan@meridianfinancial.example",
+          "kai.moreno@meridianfinancial.example",
+          "liam.hutchins@meridianfinancial.example",
+          "lucas.ferraro@meridianfinancial.example",
+          "mei.tanaka@meridianfinancial.example",
+          "nora.okafor@meridianfinancial.example",
+          "rafael.ortiz@meridianfinancial.example",
+          "ravi.menon@meridianfinancial.example",
+          "samuel.adeyemi@meridianfinancial.example",
+          "viktor.petrov@meridianfinancial.example",
+          "zoe.sandoval@meridianfinancial.example"
+        ],
+        "left_only": [],
+        "right_only": [
+          "bm-legacy-bot"
+        ],
+        "unresolvable": []
+      },
+      "canonical_identity_keys": [
+        "employee_id",
+        "email",
+        "login"
+      ],
+      "deltas": [
+        {
+          "bucket": "excluded",
+          "delta_id": "TERM.github.accounts#excluded#osprey-design-ext",
+          "display_name": "osprey-design-ext",
+          "disposition": {
+            "justification": "contracted design vendor's outside collaborator; access governed by the vendor-access review, not the termination lane",
+            "owner": "vinylfigure",
+            "review_date": "2026-12-31",
+            "value": "VENDOR_MANAGED"
+          },
+          "disposition_ref": "DISP-2026-102",
+          "member_key": "osprey-design-ext",
+          "owner": "vinylfigure",
+          "sources_absent": [
+            "okta-group-assignments"
+          ],
+          "sources_present": [
+            "github-account-inventory"
+          ]
+        },
+        {
+          "bucket": "right_only",
+          "delta_id": "TERM.github.accounts#right_only#bm-legacy-bot",
+          "display_name": "bm-legacy-bot",
+          "disposition": null,
+          "disposition_ref": null,
+          "member_key": "bm-legacy-bot",
+          "owner": null,
+          "sources_absent": [
+            "okta-group-assignments"
+          ],
+          "sources_present": [
+            "github-account-inventory"
+          ]
+        }
+      ],
+      "diagnostics": [],
+      "ladder_state": "DISCOVERED",
+      "members": [
+        "amara.diallo@meridianfinancial.example",
+        "bianca.rossi@meridianfinancial.example",
+        "bm-legacy-bot",
+        "chloe.marchand@meridianfinancial.example",
+        "ctr.blake.morgan@example-vendor.com",
+        "ethan.macleod@meridianfinancial.example",
+        "grace.lindqvist@meridianfinancial.example",
+        "isla.donovan@meridianfinancial.example",
+        "kai.moreno@meridianfinancial.example",
+        "liam.hutchins@meridianfinancial.example",
+        "lucas.ferraro@meridianfinancial.example",
+        "mei.tanaka@meridianfinancial.example",
+        "nora.okafor@meridianfinancial.example",
+        "osprey-design-ext",
+        "rafael.ortiz@meridianfinancial.example",
+        "ravi.menon@meridianfinancial.example",
+        "samuel.adeyemi@meridianfinancial.example",
+        "viktor.petrov@meridianfinancial.example",
+        "zoe.sandoval@meridianfinancial.example"
+      ],
+      "population_ref": "TERM.github.accounts",
+      "source_counts": {
+        "github-account-inventory": 19,
+        "okta-group-assignments": 17
+      }
+    },
+    {
+      "basis_complete": true,
+      "basis_notes": [],
+      "buckets": {
+        "conflicts": [],
+        "excluded": [
+          "CT-2044",
+          "osprey-design-ext"
+        ],
+        "intersection": [
+          "E-1004",
+          "E-1019",
+          "E-1027",
+          "E-1033",
+          "E-1041",
+          "E-1048",
+          "E-1052",
+          "E-1060",
+          "E-1066",
+          "E-1073",
+          "E-1080",
+          "E-1088",
+          "E-1091",
+          "E-1095"
+        ],
+        "left_only": [
+          "bm-legacy-bot",
+          "ctr.blake.morgan@example-vendor.com"
+        ],
+        "right_only": [],
+        "unresolvable": [
+          "dana.kowalski@meridianfinancial.example"
+        ]
+      },
+      "canonical_identity_keys": [
+        "employee_id",
+        "email",
+        "login"
+      ],
+      "deltas": [
+        {
+          "bucket": "excluded",
+          "delta_id": "TERM.identity-join#excluded#CT-2044",
+          "display_name": "kai.moreno@meridianfinancial.example",
+          "disposition": {
+            "justification": "contractor-to-advisor conversion effective 2026-06-19: retains Okta, GitHub, and Slack access under the ratified advisory agreement; revocation expectation does not apply for the review window",
+            "owner": "vinylfigure",
+            "review_date": "2026-09-30",
+            "value": "NA_WITH_RATIONALE"
+          },
+          "disposition_ref": "DISP-2026-114",
+          "member_key": "CT-2044",
+          "owner": "vinylfigure",
+          "sources_absent": [],
+          "sources_present": [
+            "github-account-inventory",
+            "hris-termination-feed",
+            "slack-account-inventory"
+          ]
+        },
+        {
+          "bucket": "excluded",
+          "delta_id": "TERM.identity-join#excluded#osprey-design-ext",
+          "display_name": "osprey-design-ext",
+          "disposition": {
+            "justification": "contracted design vendor's outside collaborator; access governed by the vendor-access review, not the termination lane",
+            "owner": "vinylfigure",
+            "review_date": "2026-12-31",
+            "value": "VENDOR_MANAGED"
+          },
+          "disposition_ref": "DISP-2026-102",
+          "member_key": "osprey-design-ext",
+          "owner": "vinylfigure",
+          "sources_absent": [
+            "hris-termination-feed"
+          ],
+          "sources_present": [
+            "github-account-inventory"
+          ]
+        },
+        {
+          "bucket": "left_only",
+          "delta_id": "TERM.identity-join#left_only#bm-legacy-bot",
+          "display_name": "bm-legacy-bot",
+          "disposition": null,
+          "disposition_ref": null,
+          "member_key": "bm-legacy-bot",
+          "owner": null,
+          "sources_absent": [
+            "hris-termination-feed"
+          ],
+          "sources_present": [
+            "github-account-inventory"
+          ]
+        },
+        {
+          "bucket": "left_only",
+          "delta_id": "TERM.identity-join#left_only#ctr.blake.morgan@example-vendor.com",
+          "display_name": "blake-morgan-vendor",
+          "disposition": null,
+          "disposition_ref": null,
+          "member_key": "ctr.blake.morgan@example-vendor.com",
+          "owner": null,
+          "sources_absent": [
+            "hris-termination-feed"
+          ],
+          "sources_present": [
+            "github-account-inventory"
+          ]
+        },
+        {
+          "bucket": "unresolvable",
+          "delta_id": "TERM.identity-join#unresolvable#dana.kowalski@meridianfinancial.example",
+          "display_name": "dana.kowalski@meridianfinancial.example",
+          "disposition": null,
+          "disposition_ref": null,
+          "member_key": "dana.kowalski@meridianfinancial.example",
+          "owner": null,
+          "sources_absent": [
+            "hris-termination-feed"
+          ],
+          "sources_present": [
+            "okta-system-log"
+          ]
+        }
+      ],
+      "diagnostics": [
+        "in-domain active workforce identity outside population scope: amara.diallo@meridianfinancial.example",
+        "in-domain active workforce identity outside population scope: bianca.rossi@meridianfinancial.example",
+        "in-domain active workforce identity outside population scope: chloe.marchand@meridianfinancial.example",
+        "in-domain active workforce identity outside population scope: ethan.macleod@meridianfinancial.example",
+        "in-domain active workforce identity outside population scope: grace.lindqvist@meridianfinancial.example",
+        "in-domain active workforce identity outside population scope: isla.donovan@meridianfinancial.example",
+        "in-domain active workforce identity outside population scope: liam.hutchins@meridianfinancial.example",
+        "in-domain active workforce identity outside population scope: lucas.ferraro@meridianfinancial.example",
+        "in-domain active workforce identity outside population scope: mei.tanaka@meridianfinancial.example",
+        "in-domain active workforce identity outside population scope: nora.okafor@meridianfinancial.example",
+        "in-domain active workforce identity outside population scope: rafael.ortiz@meridianfinancial.example",
+        "in-domain active workforce identity outside population scope: ravi.menon@meridianfinancial.example",
+        "in-domain active workforce identity outside population scope: samuel.adeyemi@meridianfinancial.example",
+        "in-domain active workforce identity outside population scope: viktor.petrov@meridianfinancial.example",
+        "in-domain active workforce identity outside population scope: zoe.sandoval@meridianfinancial.example",
+        "non-workforce principals outside the identity universe (bot/service-account/group; governance is a separate lane): analytics@meridianfinancial.example, breakglass-admin@example-prod.iam.gserviceaccount.com, ci-deployer@mf-staging.iam.gserviceaccount.com, mf-deploybot"
+      ],
+      "ladder_state": "DISCOVERED",
+      "members": [
+        "CT-2044",
+        "E-1004",
+        "E-1019",
+        "E-1027",
+        "E-1033",
+        "E-1041",
+        "E-1048",
+        "E-1052",
+        "E-1060",
+        "E-1066",
+        "E-1073",
+        "E-1080",
+        "E-1088",
+        "E-1091",
+        "E-1095"
+      ],
+      "population_ref": "TERM.identity-join",
+      "source_counts": {
+        "gcp-account-inventory": 11,
+        "github-account-inventory": 19,
+        "hris-termination-feed": 15,
+        "okta-system-log": 14,
+        "slack-account-inventory": 31
+      }
+    },
+    {
+      "basis_complete": true,
+      "basis_notes": [],
+      "buckets": {
+        "conflicts": [],
+        "excluded": [],
+        "intersection": [
+          "amara.diallo@meridianfinancial.example",
+          "avery.chen@meridianfinancial.example",
+          "bianca.rossi@meridianfinancial.example",
+          "chloe.marchand@meridianfinancial.example",
+          "colin.drexler@meridianfinancial.example",
+          "dana.whitfield@meridianfinancial.example",
+          "devon.ellis@meridianfinancial.example",
+          "ethan.macleod@meridianfinancial.example",
+          "fatima.noor@meridianfinancial.example",
+          "grace.lindqvist@meridianfinancial.example",
+          "hannah.beck@meridianfinancial.example",
+          "ingrid.solberg@meridianfinancial.example",
+          "isla.donovan@meridianfinancial.example",
+          "jae.park@meridianfinancial.example",
+          "kai.moreno@meridianfinancial.example",
+          "liam.hutchins@meridianfinancial.example",
+          "lucas.ferraro@meridianfinancial.example",
+          "marcus.webb@meridianfinancial.example",
+          "mei.tanaka@meridianfinancial.example",
+          "nora.okafor@meridianfinancial.example",
+          "oliver.grant@meridianfinancial.example",
+          "priya.natarajan@meridianfinancial.example",
+          "rafael.ortiz@meridianfinancial.example",
+          "ravi.menon@meridianfinancial.example",
+          "renata.vasquez@meridianfinancial.example",
+          "samuel.adeyemi@meridianfinancial.example",
+          "sofia.marino@meridianfinancial.example",
+          "tomas.rivera@meridianfinancial.example",
+          "viktor.petrov@meridianfinancial.example",
+          "zoe.sandoval@meridianfinancial.example"
+        ],
+        "left_only": [
+          "ctr.blake.morgan@example-vendor.com"
+        ],
+        "right_only": [],
+        "unresolvable": []
+      },
+      "canonical_identity_keys": [
+        "employee_id",
+        "email",
+        "login"
+      ],
+      "deltas": [
+        {
+          "bucket": "left_only",
+          "delta_id": "TERM.slack.accounts#left_only#ctr.blake.morgan@example-vendor.com",
+          "display_name": "ctr.blake.morgan@example-vendor.com",
+          "disposition": null,
+          "disposition_ref": null,
+          "member_key": "ctr.blake.morgan@example-vendor.com",
+          "owner": null,
+          "sources_absent": [
+            "slack-account-inventory"
+          ],
+          "sources_present": [
+            "okta-group-assignments"
+          ]
+        }
+      ],
+      "diagnostics": [
+        "non-workforce principals outside the identity universe (bot/service-account/group; governance is a separate lane): mf-deploybot"
+      ],
+      "ladder_state": "DISCOVERED",
+      "members": [
+        "amara.diallo@meridianfinancial.example",
+        "avery.chen@meridianfinancial.example",
+        "bianca.rossi@meridianfinancial.example",
+        "chloe.marchand@meridianfinancial.example",
+        "colin.drexler@meridianfinancial.example",
+        "ctr.blake.morgan@example-vendor.com",
+        "dana.whitfield@meridianfinancial.example",
+        "devon.ellis@meridianfinancial.example",
+        "ethan.macleod@meridianfinancial.example",
+        "fatima.noor@meridianfinancial.example",
+        "grace.lindqvist@meridianfinancial.example",
+        "hannah.beck@meridianfinancial.example",
+        "ingrid.solberg@meridianfinancial.example",
+        "isla.donovan@meridianfinancial.example",
+        "jae.park@meridianfinancial.example",
+        "kai.moreno@meridianfinancial.example",
+        "liam.hutchins@meridianfinancial.example",
+        "lucas.ferraro@meridianfinancial.example",
+        "marcus.webb@meridianfinancial.example",
+        "mei.tanaka@meridianfinancial.example",
+        "nora.okafor@meridianfinancial.example",
+        "oliver.grant@meridianfinancial.example",
+        "priya.natarajan@meridianfinancial.example",
+        "rafael.ortiz@meridianfinancial.example",
+        "ravi.menon@meridianfinancial.example",
+        "renata.vasquez@meridianfinancial.example",
+        "samuel.adeyemi@meridianfinancial.example",
+        "sofia.marino@meridianfinancial.example",
+        "tomas.rivera@meridianfinancial.example",
+        "viktor.petrov@meridianfinancial.example",
+        "zoe.sandoval@meridianfinancial.example"
+      ],
+      "population_ref": "TERM.slack.accounts",
+      "source_counts": {
+        "okta-group-assignments": 17,
+        "slack-account-inventory": 31
+      }
+    },
+    {
+      "basis_complete": true,
+      "basis_notes": [],
+      "buckets": {
+        "conflicts": [],
+        "excluded": [],
+        "intersection": [
+          "CT-2044",
+          "E-1004",
+          "E-1019",
+          "E-1027",
+          "E-1033",
+          "E-1041",
+          "E-1048",
+          "E-1052",
+          "E-1060",
+          "E-1066",
+          "E-1073",
+          "E-1080",
+          "E-1088",
+          "E-1091",
+          "E-1095"
+        ],
+        "left_only": [],
+        "right_only": [],
+        "unresolvable": []
+      },
+      "canonical_identity_keys": [
+        "employee_id",
+        "email",
+        "login"
+      ],
+      "deltas": [],
+      "diagnostics": [],
+      "ladder_state": "RATIFIED",
+      "members": [
+        "CT-2044",
+        "E-1004",
+        "E-1019",
+        "E-1027",
+        "E-1033",
+        "E-1041",
+        "E-1048",
+        "E-1052",
+        "E-1060",
+        "E-1066",
+        "E-1073",
+        "E-1080",
+        "E-1088",
+        "E-1091",
+        "E-1095"
+      ],
+      "population_ref": "TERM.terminations",
+      "source_counts": {
+        "hris-termination-feed": 15
+      }
+    }
+  ]
+}

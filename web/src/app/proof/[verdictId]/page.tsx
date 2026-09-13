@@ -1,71 +1,55 @@
-import type { Metadata } from "next";
+import Link from "next/link";
 import { notFound } from "next/navigation";
-import {
-  engagementCommitments,
-  engagementContracts,
-  engagementPoisons,
-  engagementReconciliations,
-  engagementSnapshot,
-  engagementVerdictRecords,
-} from "@/data";
-import { ProofLineage } from "./ProofLineage";
+import type { Metadata } from "next";
+import { loadEngagement, proofGraphFor, verdictBySlug } from "@/lib/data/engagement";
+import ProofCanvas from "@/components/flow/ProofCanvas";
+import styles from "../Proof.module.css";
 
-/** Unknown verdict ids 404 at the route level. */
-export const dynamicParams = false;
+export const metadata: Metadata = { title: "Proof lineage — Aegis" };
 
 export function generateStaticParams() {
-  // Raw record ids — Next percent-encodes when emitting routes; `@` and `.`
-  // are legal pchars. Links elsewhere use encodeURIComponent; findRecord
-  // below tolerates either form.
-  return engagementVerdictRecords.map((record) => ({
-    verdictId: record.record_id,
+  const load = loadEngagement();
+  return load.artifacts.proof_graphs.map((g) => ({
+    verdictId: g.verdict_ref.slice(0, 12),
   }));
 }
 
-function findRecord(param: string) {
-  const decoded = (() => {
-    try {
-      return decodeURIComponent(param);
-    } catch {
-      return param;
-    }
-  })();
-  return engagementVerdictRecords.find(
-    (r) => r.record_id === decoded || r.record_id === param,
-  );
-}
-
-export async function generateMetadata({
-  params,
-}: {
-  params: Promise<{ verdictId: string }>;
-}): Promise<Metadata> {
-  const { verdictId } = await params;
-  const record = findRecord(verdictId);
-  return { title: record ? `Proof · ${record.record_id}` : "Proof" };
-}
-
-/**
- * B4 — /proof/[verdictId]: UI01's proof-graph lineage view. Ten stages,
- * typed arrows, node inspector; the population node links into the
- * why-complete rail.
- */
-export default async function ProofDetailPage({
+export default async function ProofDetail({
   params,
 }: {
   params: Promise<{ verdictId: string }>;
 }) {
   const { verdictId } = await params;
-  const record = findRecord(verdictId);
-  if (!record) notFound();
+  const load = loadEngagement();
+  const graph = proofGraphFor(load, verdictId);
+  if (!graph) notFound();
+  const verdict = verdictBySlug(load, verdictId);
+
   return (
-    <ProofLineage
-      record={record}
-      reconciliations={engagementReconciliations}
-      poisons={engagementPoisons}
-      contracts={engagementContracts}
-      snapshot={engagementSnapshot}
-      commitments={engagementCommitments}
-    />
+    <main className="page">
+      <div className="page-kicker">proof lineage</div>
+      <h1>{verdict?.assertion_ref ?? graph.verdict_ref.slice(0, 12)}</h1>
+      <p className="page-sub">
+        {graph.nodes.length} stages, every edge typed — walk the sealed verdict back
+        to the commitment that demanded it. Same canvas language as the lane: this{" "}
+        <em>is</em> the flow, zoomed into one verdict.
+      </p>
+
+      <div className={styles.verdictStrip}>
+        {verdict && (
+          <>
+            <span className={`state-badge state-${verdict.state}`}>{verdict.state}</span>
+            <span className={styles.stripAssertion}>{verdict.assertion_ref}</span>
+            <span className={styles.stripHash}>record {verdict.record_hash.slice(0, 16)}…</span>
+            <Link href="/verdicts" className={styles.backLink}>
+              open in ledger →
+            </Link>
+            <span className={styles.stripMsg}>{verdict.message}</span>
+          </>
+        )}
+      </div>
+
+      <ProofCanvas graph={graph} />
+    </main>
   );
 }
