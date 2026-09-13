@@ -22,10 +22,13 @@
 #   heartbeat-blocker-state.sh update      <issues.json> <prs.json>
 #
 # <issues.json> — a JSON array of open issues, each carrying at least
-#   number, labels (array of strings), updated_at, comments (count).
-#   Only entries labeled task:/task/question:/question are fingerprinted;
-#   everything else is ignored so unrelated issue traffic never forces the
-#   full path.
+#   number, labels, updated_at, comments (count). labels may be plain
+#   strings (the GitHub MCP tools' shape) or {"name": "..."} objects (the
+#   raw GitHub REST/gh-CLI shape used elsewhere in this repo, e.g.
+#   scripts/auto-merge.sh's ghj().labels[]?.name) — both are normalized
+#   before matching. Only entries labeled task:/task/question:/question are
+#   fingerprinted; everything else is ignored so unrelated issue traffic
+#   never forces the full path.
 # <prs.json> — a JSON array of open PRs, each carrying at least number,
 #   mergeable_state, head sha, and CI conclusion. Every PR in the array
 #   counts (the caller passes only the open ones).
@@ -55,12 +58,18 @@ sha256() {
 
 # Canonical, order-independent JSON for one input: filter (issues only),
 # sort by number, sort object keys, compact — so re-fetching the same GitHub
-# state in a different page order never reads as "changed".
+# state in a different page order never reads as "changed". label_name
+# normalizes both label shapes this repo's tooling actually produces
+# (plain strings from the MCP tools; {"name": ...} objects from raw
+# GitHub REST/gh-CLI) so a shape mismatch fails loudly (jq error, nonzero
+# exit) rather than silently miscategorizing or crashing on a bare
+# startswith() over a non-string.
 canon_issues() {
   jq -Sc '
+    def label_name: if type == "string" then . elif type == "object" then (.name // "") else (tostring) end;
     map(select(
-      (.labels // []) as $l
-      | any($l[]; . == "task" or . == "task:" or . == "question" or . == "question:" or (startswith("task:")) or (startswith("question:")))
+      ((.labels // []) | map(label_name)) as $l
+      | any($l[]; . == "task" or . == "task:" or . == "question" or . == "question:" or startswith("task:") or startswith("question:"))
     )) | sort_by(.number)
   ' "$1"
 }
@@ -68,10 +77,18 @@ canon_prs() {
   jq -Sc 'sort_by(.number)' "$1"
 }
 
+# Computes the fingerprint or fails loudly. Never returns a blank/partial
+# fingerprint on a jq error: canon_issues/canon_prs run in this same
+# process (not a nested subshell) so a failure here reaches the caller's
+# $? — but because the *caller* invokes this via `fp=$(fingerprint ...)`,
+# a command substitution, callers MUST check $? themselves; a swallowed
+# failure previously meant `update` could write an empty "" fingerprint to
+# the git-tracked baseline while reporting success.
 fingerprint() {
-  local issues=$1 prs=$2 blob
-  blob=$(canon_issues "$issues") || exit 1
-  blob="$blob"$'\n'"$(canon_prs "$prs")" || exit 1
+  local issues=$1 prs=$2 blob issues_canon prs_canon
+  issues_canon=$(canon_issues "$issues") || return 1
+  prs_canon=$(canon_prs "$prs") || return 1
+  blob="$issues_canon"$'\n'"$prs_canon"
   printf '%s' "$blob" | sha256
 }
 
@@ -82,11 +99,19 @@ CMD=$1; ISSUES=$2; PRS=$3
 
 case "$CMD" in
   fingerprint)
-    fingerprint "$ISSUES" "$PRS"
-    echo
+    fp=$(fingerprint "$ISSUES" "$PRS")
+    if [ $? -ne 0 ] || [ -z "$fp" ]; then
+      echo "heartbeat-blocker-state: could not compute a fingerprint from $ISSUES / $PRS (malformed input?)" >&2
+      exit 1
+    fi
+    echo "$fp"
     ;;
   check)
     fp=$(fingerprint "$ISSUES" "$PRS")
+    if [ $? -ne 0 ] || [ -z "$fp" ]; then
+      echo "heartbeat-blocker-state: could not compute a fingerprint from $ISSUES / $PRS (malformed input?)" >&2
+      exit 1
+    fi
     if [ ! -f "$STATE_FILE" ]; then
       echo "changed: no baseline recorded yet at $STATE_FILE"
       exit 1
@@ -106,6 +131,10 @@ case "$CMD" in
     ;;
   update)
     fp=$(fingerprint "$ISSUES" "$PRS")
+    if [ $? -ne 0 ] || [ -z "$fp" ]; then
+      echo "heartbeat-blocker-state: could not compute a fingerprint from $ISSUES / $PRS (malformed input?) — baseline left untouched" >&2
+      exit 1
+    fi
     tmp=$(mktemp)
     jq -n --arg fp "$fp" --arg ts "$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
       '{fingerprint: $fp, updated_at_utc: $ts}' >"$tmp"

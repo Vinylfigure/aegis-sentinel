@@ -429,6 +429,33 @@ bash "$ROOT/scripts/heartbeat-blocker-state.sh" bogus "$HB/issues_a.json" "$HB/p
 rc=$?
 [ "$rc" -eq 64 ] && pass "heartbeat-state: unknown subcommand -> exit 64" || fail "heartbeat-state: unknown subcommand -> exit 64 (got $rc)"
 
+# Real GitHub REST/gh-CLI label shape ({"name": ...} objects, not bare
+# strings — the shape scripts/auto-merge.sh and scripts/ready-drafts.sh
+# already handle via .labels[]?.name) must fingerprint, not crash.
+cat > "$HB/issues_objlabels.json" <<'EOF'
+[
+  {"number":65,"labels":[{"id":1,"name":"task","color":"abcabc"}],"updated_at":"2026-08-23T12:50:49Z","comments":19}
+]
+EOF
+out=$(bash "$ROOT/scripts/heartbeat-blocker-state.sh" fingerprint "$HB/issues_objlabels.json" "$HB/prs_a.json" 2>&1); rc=$?
+[ "$rc" -eq 0 ] && [ -n "$out" ] && pass "heartbeat-state: object-shaped ({name:...}) labels fingerprint without crashing" || fail "heartbeat-state: object-shaped labels (rc $rc, got: $out)"
+cat > "$HB/issues_objlabels_other.json" <<'EOF'
+[
+  {"number":65,"labels":[{"id":2,"name":"bug","color":"abcabc"}],"updated_at":"2026-08-23T12:50:49Z","comments":19}
+]
+EOF
+out2=$(bash "$ROOT/scripts/heartbeat-blocker-state.sh" fingerprint "$HB/issues_objlabels_other.json" "$HB/prs_a.json" 2>&1)
+[ "$out" != "$out2" ] && pass "heartbeat-state: object-shaped label filter actually discriminates (task vs bug -> different fingerprint)" || fail "heartbeat-state: object-shaped label filter discriminates (got same fingerprint for both)"
+
+# A jq-crashing input to update must fail loudly (nonzero exit) and must
+# never overwrite an existing valid baseline with a corrupted one.
+printf '{not valid json' > "$HB/issues_malformed.json"
+out=$(bash "$ROOT/scripts/heartbeat-blocker-state.sh" update "$HB/issues_malformed.json" "$HB/prs_a.json" 2>&1); rc=$?
+before=$(jq -r '.fingerprint' "$HB/state.json")
+[ "$rc" -ne 0 ] && pass "heartbeat-state: malformed issues.json into update -> nonzero exit (never silent success)" || fail "heartbeat-state: malformed update input must fail (rc $rc, got: $out)"
+after=$(jq -r '.fingerprint' "$HB/state.json")
+[ "$before" = "$after" ] && [ -n "$after" ] && pass "heartbeat-state: a failed update leaves the existing baseline untouched" || fail "heartbeat-state: failed update must not clobber the baseline (before=$before after=$after)"
+
 unset HEARTBEAT_STATE_FILE
 
 echo

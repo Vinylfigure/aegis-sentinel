@@ -165,13 +165,19 @@ makes that re-derivation cheap to skip when nothing moved:
   runs it), and exits 0 ("unchanged") only when nothing in that set moved. Any
   single field changing — a new comment, a CI flip, a new PR — exits 1
   ("changed"). No baseline yet also reads as changed; it is never permission
-  to skip.
+  to skip. A malformed or unparseable input file is also "changed" (a loud
+  nonzero exit, never a silent partial fingerprint).
 - `update <issues.json> <prs.json>` records the current fingerprint as the
-  new baseline.
+  new baseline, or fails loudly (nonzero exit) and leaves the existing
+  baseline untouched on malformed input — it never persists a corrupted
+  fingerprint.
 - The script never talks to GitHub itself (per L-015, it encodes only the
   fingerprint discipline, not a second way to fetch what MCP tools already
   fetch) — `issues.json`/`prs.json` are whatever the calling session already
-  has.
+  has. Issue `labels` may be plain strings (the GitHub MCP tools' shape) or
+  `{"name": ...}` objects (the raw GitHub REST/`gh`-CLI shape this repo's
+  other automation already handles, e.g. `scripts/auto-merge.sh`'s
+  `.labels[]?.name`) — both are accepted.
 
 **Not yet wired in.** The scheduled prompt's own step 0 does not call this
 script yet — no session tool can edit its own scheduled-task prompt text, so
