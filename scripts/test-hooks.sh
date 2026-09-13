@@ -364,6 +364,73 @@ out=$(GITHUB_REPOSITORY=example/rd READY_DRAFTS_ENGINE="$RD/no-such-engine.sh" P
 grep -q 'ready-drafts.sh' "$ROOT/.github/workflows/auto-merge.yml" && pass "auto-merge.yml runs the ready step" || fail "auto-merge.yml must run scripts/ready-drafts.sh before the engine"
 awk '/ready-drafts.sh/{r=NR} /run: \.\/scripts\/auto-merge.sh$/{m=NR} END{exit !(r && m && r < m)}' "$ROOT/.github/workflows/auto-merge.yml" && pass "auto-merge.yml runs the ready step BEFORE the merge pass" || fail "auto-merge.yml: the ready step must precede the armed merge pass"
 
+echo "== heartbeat-blocker-state.sh (issue #172: blocker-set fingerprint fast-path) =="
+HB="$SANDBOX/hb"; mkdir -p "$HB"
+cat > "$HB/issues_a.json" <<'EOF'
+[
+  {"number":65,"labels":["task"],"updated_at":"2026-08-23T12:50:49Z","comments":19},
+  {"number":125,"labels":["task:"],"updated_at":"2026-09-02T06:26:54Z","comments":7},
+  {"number":42,"labels":[],"updated_at":"2026-08-20T07:43:06Z","comments":1}
+]
+EOF
+# Same facts, different array order and object key order — must fingerprint identically.
+cat > "$HB/issues_a_reordered.json" <<'EOF'
+[
+  {"comments":1,"updated_at":"2026-08-20T07:43:06Z","labels":[],"number":42},
+  {"number":125,"comments":7,"labels":["task:"],"updated_at":"2026-09-02T06:26:54Z"},
+  {"labels":["task"],"number":65,"comments":19,"updated_at":"2026-08-23T12:50:49Z"}
+]
+EOF
+cat > "$HB/prs_a.json" <<'EOF'
+[
+  {"number":177,"mergeable_state":"clean","head_sha":"abc123","ci_conclusion":"success"}
+]
+EOF
+export HEARTBEAT_STATE_FILE="$HB/state.json"
+
+fp_a=$(bash "$ROOT/scripts/heartbeat-blocker-state.sh" fingerprint "$HB/issues_a.json" "$HB/prs_a.json")
+fp_a_reordered=$(bash "$ROOT/scripts/heartbeat-blocker-state.sh" fingerprint "$HB/issues_a_reordered.json" "$HB/prs_a.json")
+[ -n "$fp_a" ] && pass "heartbeat-state: fingerprint produces output" || fail "heartbeat-state: fingerprint produces output"
+[ "$fp_a" = "$fp_a_reordered" ] && pass "heartbeat-state: fingerprint is order-independent (array + key order)" || fail "heartbeat-state: fingerprint order-independent (got $fp_a vs $fp_a_reordered)"
+
+out=$(bash "$ROOT/scripts/heartbeat-blocker-state.sh" check "$HB/issues_a.json" "$HB/prs_a.json" 2>&1); rc=$?
+[ "$rc" -eq 1 ] && echo "$out" | grep -q "no baseline recorded" && pass "heartbeat-state: check with no baseline -> changed (never silently skips)" || fail "heartbeat-state: no-baseline check (rc $rc, got: $out)"
+
+out=$(bash "$ROOT/scripts/heartbeat-blocker-state.sh" update "$HB/issues_a.json" "$HB/prs_a.json" 2>&1); rc=$?
+[ "$rc" -eq 0 ] && [ -f "$HB/state.json" ] && pass "heartbeat-state: update writes a baseline" || fail "heartbeat-state: update writes a baseline (rc $rc, got: $out)"
+jq -e '.fingerprint and .updated_at_utc' "$HB/state.json" >/dev/null 2>&1 && pass "heartbeat-state: baseline carries fingerprint + updated_at_utc" || fail "heartbeat-state: baseline shape"
+
+out=$(bash "$ROOT/scripts/heartbeat-blocker-state.sh" check "$HB/issues_a.json" "$HB/prs_a.json" 2>&1); rc=$?
+[ "$rc" -eq 0 ] && echo "$out" | grep -q "^unchanged:" && pass "heartbeat-state: unchanged input -> exit 0" || fail "heartbeat-state: unchanged input -> exit 0 (rc $rc, got: $out)"
+
+out=$(bash "$ROOT/scripts/heartbeat-blocker-state.sh" check "$HB/issues_a_reordered.json" "$HB/prs_a.json" 2>&1); rc=$?
+[ "$rc" -eq 0 ] && pass "heartbeat-state: re-fetched-but-reordered input still reads unchanged" || fail "heartbeat-state: reordered input still unchanged (rc $rc, got: $out)"
+
+# repeat: re-running check against an unmoved baseline is a no-op every time (idempotent).
+out2=$(bash "$ROOT/scripts/heartbeat-blocker-state.sh" check "$HB/issues_a.json" "$HB/prs_a.json" 2>&1); rc2=$?
+[ "$rc2" -eq 0 ] && pass "heartbeat-state: repeat check against an unmoved baseline stays unchanged" || fail "heartbeat-state: repeat check (rc $rc2)"
+
+# A single field changing on one already-tracked issue (a new comment) must flip it.
+jq '(.[] | select(.number == 65) | .comments) |= . + 1' "$HB/issues_a.json" > "$HB/issues_b.json"
+out=$(bash "$ROOT/scripts/heartbeat-blocker-state.sh" check "$HB/issues_b.json" "$HB/prs_a.json" 2>&1); rc=$?
+[ "$rc" -eq 1 ] && echo "$out" | grep -q "^changed:" && pass "heartbeat-state: a single issue field change (new comment) flips to changed" || fail "heartbeat-state: single-field issue change (rc $rc, got: $out)"
+
+# A PR's mergeable_state flipping must also flip it.
+jq '(.[0].mergeable_state) = "dirty"' "$HB/prs_a.json" > "$HB/prs_b.json"
+out=$(bash "$ROOT/scripts/heartbeat-blocker-state.sh" check "$HB/issues_a.json" "$HB/prs_b.json" 2>&1); rc=$?
+[ "$rc" -eq 1 ] && echo "$out" | grep -q "^changed:" && pass "heartbeat-state: a PR mergeable_state flip flips to changed" || fail "heartbeat-state: PR field change (rc $rc, got: $out)"
+
+# Churn on an issue that carries neither a task: nor question: label must never force the full path.
+jq '(.[] | select(.number == 42) | .comments) |= . + 5' "$HB/issues_a.json" > "$HB/issues_c.json"
+out=$(bash "$ROOT/scripts/heartbeat-blocker-state.sh" check "$HB/issues_c.json" "$HB/prs_a.json" 2>&1); rc=$?
+[ "$rc" -eq 0 ] && pass "heartbeat-state: churn on an unlabeled (non-blocker) issue never forces the full path" || fail "heartbeat-state: unlabeled-issue churn ignored (rc $rc, got: $out)"
+
+bash "$ROOT/scripts/heartbeat-blocker-state.sh" bogus "$HB/issues_a.json" "$HB/prs_a.json" >/dev/null 2>&1
+rc=$?
+[ "$rc" -eq 64 ] && pass "heartbeat-state: unknown subcommand -> exit 64" || fail "heartbeat-state: unknown subcommand -> exit 64 (got $rc)"
+
+unset HEARTBEAT_STATE_FILE
+
 echo
 if [ "$FAILS" -eq 0 ]; then
   echo "ALL SCAFFOLD TESTS PASSED"
