@@ -151,6 +151,41 @@ Two design points make this safe:
   The heartbeat only decides *when* — what "verified" and "promotable" mean
   live in the skills, same as in interactive sessions.
 
+**Blocker-set fast path (issue #172).** This repo's build-heartbeat (a
+separate, product-specific scheduled prompt that drives `docs/EXECUTION-PLAN.md`
+— distinct from the generic recalibrate/evolve routine above) re-derives "is
+there ready work" every firing: every plan box, every open `task:`/`question:`
+issue, every open PR's CI/mergeable state. `scripts/heartbeat-blocker-state.sh`
+makes that re-derivation cheap to skip when nothing moved:
+
+- `check <issues.json> <prs.json>` fingerprints the open `task:`/`question:`-
+  labeled issues and open PRs a firing already fetched through its own GitHub
+  MCP tools, compares it against the baseline in `.claude/heartbeat-state.json`
+  (git-tracked, so it survives to the next firing regardless of which machine
+  runs it), and exits 0 ("unchanged") only when nothing in that set moved. Any
+  single field changing — a new comment, a CI flip, a new PR — exits 1
+  ("changed"). No baseline yet also reads as changed; it is never permission
+  to skip. A malformed or unparseable input file is also "changed" (a loud
+  nonzero exit, never a silent partial fingerprint).
+- `update <issues.json> <prs.json>` records the current fingerprint as the
+  new baseline, or fails loudly (nonzero exit) and leaves the existing
+  baseline untouched on malformed input — it never persists a corrupted
+  fingerprint.
+- The script never talks to GitHub itself (per L-015, it encodes only the
+  fingerprint discipline, not a second way to fetch what MCP tools already
+  fetch) — `issues.json`/`prs.json` are whatever the calling session already
+  has. Issue `labels` may be plain strings (the GitHub MCP tools' shape) or
+  `{"name": ...}` objects (the raw GitHub REST/`gh`-CLI shape this repo's
+  other automation already handles, e.g. `scripts/auto-merge.sh`'s
+  `.labels[]?.name`) — both are accepted.
+
+**Not yet wired in.** The scheduled prompt's own step 0 does not call this
+script yet — no session tool can edit its own scheduled-task prompt text, so
+splicing "run `heartbeat-blocker-state.sh check` first, and skip the full
+verify + exhaustive re-read on an unchanged fingerprint" into the live prompt
+is an Owner action, as is remembering to run `update` after every full check.
+Until the Owner makes that edit, the mechanism is built and tested but inert.
+
 ## Scaling up
 
 - **Parallel workstreams**: `/worktree-parallel` splits a task into
