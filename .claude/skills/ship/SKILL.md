@@ -26,7 +26,7 @@ it's delivered when the PR merges with green checks.
    - **CLI sessions**: `gh pr checks <url> --watch`, and re-check reviews when they land. A later session resumes the babysit with `claude --from-pr <number>` — PR-linked sessions survive the terminal closing.
    - On CI failure: read the failing job's log, state the diagnosis in one sentence, fix, push. Each failure is also a `/reflect` signal if it reveals a gap in `verify.sh`.
    - On review comments: apply clear fixes directly; for ambiguous or architectural asks, check with the user before acting.
-6. Terminal: merged or closed. If several fix rounds go nowhere or a failure is out of scope, stop and report where it's stuck instead of going quiet.
+6. Terminal: merged or closed. Once merged, re-check every issue the PR body said it closes — this repo's GitHub Actions merges (`.github/workflows/auto-merge.yml`) ran with `issues: read` for a stretch and closing keywords silently no-opped (#176); don't assume a merge closed its issues, confirm with `issue_read`/`gh issue view` and close by hand (`issue_write`/`gh issue close`) if one is still open. If several fix rounds go nowhere or a failure is out of scope, stop and report where it's stuck instead of going quiet.
 
 ## Before finishing
 

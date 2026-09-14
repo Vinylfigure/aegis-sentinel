@@ -22,9 +22,15 @@ name: auto-merge
 # can act in this same firing. Dispatched runs open drafts first (L-097); this
 # is that draft's exit. The recorded ask is the hold signal, never the draft.
 #
-# `issues: read` is deliberate: the engine lists open `human-check:` issues
-# once per run, and a `permissions:` block that omits `issues` sets it to
-# none — overlord's arm held every PR on that 403 (overlord#288).
+# `issues: write` (not `read`): the engine lists open `human-check:` issues
+# once per run (needs at least read — a `permissions:` block that omits
+# `issues` sets it to none, and overlord's arm held every PR on that 403,
+# overlord#288) AND merges PRs whose body says "Closes #N" via `gh pr
+# merge`. GitHub only fires closing keywords for the merging actor if that
+# actor has write access to Issues; with `issues: read` the merge succeeded
+# but the close silently never happened (aegis-sentinel#176 — #155/#161/
+# #162/#164 sat open for days after merging via this workflow). `write`
+# is a superset of `read`, so the human-check listing is unaffected.
 #
 # Branch protection (issue #20) must NOT require an approving review — a
 # required approval on a single-owner repo deadlocks this arm (L-116) — and
@@ -39,7 +45,7 @@ on:
 permissions:
   contents: write
   pull-requests: write
-  issues: read     # the open human-check: listing — a run-level read; 403 holds every PR
+  issues: write    # human-check: listing (needs read) + closing-keyword merges (needs write, #176)
   checks: read     # gh pr checks reads statusCheckRollup; without it the token sees no checks
   statuses: read
   actions: read    # gh pr checks also asks checkSuite.workflowRun; one denied field fails the whole query
