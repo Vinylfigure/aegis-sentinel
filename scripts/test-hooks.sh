@@ -195,6 +195,38 @@ for m in quick:start quick:end full:start full:end; do
   grep -q "janus:bootstrap:$m" "$ROOT/scripts/verify.sh" && pass "sentinel janus:bootstrap:$m present" || fail "sentinel janus:bootstrap:$m present"
 done
 
+echo "== check-redaction.sh (issue #183: git-tracked files only, not grep -r .) =="
+# Runs in its own throwaway git repo (not $SANDBOX) since check-redaction.sh
+# needs `git ls-files` to resolve against a real tree/index.
+RG=$(mktemp -d)
+git init -q "$RG"
+git -C "$RG" config user.email test@example.com
+git -C "$RG" config user.name test
+mkdir -p "$RG/scripts"
+cp "$ROOT/scripts/check-redaction.sh" "$RG/scripts/check-redaction.sh"
+# Same base64-encoding technique as the gate itself, so this fixture's own
+# planted hit never trips the real gate when scanning this tracked file.
+pat=$(printf '%s' "bHlvbg==" | base64 -d)
+echo "nothing sensitive" > "$RG/clean.txt"
+git -C "$RG" add scripts/check-redaction.sh clean.txt
+git -C "$RG" commit -q -m init
+"$RG/scripts/check-redaction.sh" >/dev/null 2>&1 && pass "check-redaction.sh: clean tracked tree passes" || fail "check-redaction.sh: clean tracked tree passes"
+
+echo "hit ${pat}son" > "$RG/tracked-hit.txt"
+git -C "$RG" add tracked-hit.txt
+git -C "$RG" commit -q -m "add tracked hit"
+"$RG/scripts/check-redaction.sh" >/dev/null 2>&1 && fail "check-redaction.sh: forbidden pattern in a tracked file must fail the gate" || pass "check-redaction.sh: forbidden pattern in a tracked file fails the gate"
+git -C "$RG" rm -q tracked-hit.txt
+git -C "$RG" commit -q -m "remove tracked hit"
+
+# The actual bug: an untracked dir with ANY name (not just the ones a
+# maintained --exclude-dir list happens to cover) must never be scanned.
+mkdir -p "$RG/.some-other-venv-name/lib"
+echo "hit ${pat}son" > "$RG/.some-other-venv-name/lib/AUTHORS.txt"
+"$RG/scripts/check-redaction.sh" >/dev/null 2>&1 && pass "check-redaction.sh: untracked dir with any name is excluded automatically" || fail "check-redaction.sh: forbidden pattern in an untracked dir (non-.venv name) must not fail the gate"
+rm -rf "$RG/.some-other-venv-name"
+rm -rf "$RG"
+
 echo "== session-start.sh =="
 # Seed controlled CLAUDE.md state (L-009): these fixtures must pass in bootstrapped
 # children too, so never depend on the live repo's facts block.
