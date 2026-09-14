@@ -58,3 +58,25 @@ concurrency:
 
 jobs:
   merge:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      # Capability canary: can this token see checks at all? Exits 1 with the
+      # reason when it cannot, so the failure is a red run instead of an
+      # inferred skip.
+      - name: Probe — can this token see checks?
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: ./scripts/auto-merge.sh --probe
+
+      - name: Mark green, unheld drafts ready for review
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: ./scripts/ready-drafts.sh
+
+      - name: Merge qualifying PRs, request rebases on conflicting ones
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: ./scripts/auto-merge.sh
