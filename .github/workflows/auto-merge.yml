@@ -22,9 +22,18 @@ name: auto-merge
 # can act in this same firing. Dispatched runs open drafts first (L-097); this
 # is that draft's exit. The recorded ask is the hold signal, never the draft.
 #
-# `issues: read` is deliberate: the engine lists open `human-check:` issues
-# once per run, and a `permissions:` block that omits `issues` sets it to
-# none — overlord's arm held every PR on that 403 (overlord#288).
+# `issues: write` is deliberate (raised from `read` 2026-09-14, issue #176):
+# the engine lists open `human-check:` issues once per run (a `permissions:`
+# block that omits `issues` sets it to none — overlord's arm held every PR on
+# that 403, overlord#288), and this repo's own merge history (#144/#152/#153/
+# #155/#161/#162/#164/#167 all merged via this workflow's `gh pr merge` but
+# stayed `state: open` despite "Closes #N" bodies) is strong circumstantial
+# evidence that `issues: read` lets the merge succeed while GitHub's
+# closing-keyword auto-close silently no-ops for lack of write access — not a
+# documented platform guarantee, but the simplest fix available (L-125). If a
+# future merge still doesn't auto-close, the `ship` skill's own fallback
+# (explicit `issue_write`/`gh issue close` after confirming the merge) is the
+# safety net regardless of whether this hypothesis holds.
 #
 # Branch protection (issue #20) must NOT require an approving review — a
 # required approval on a single-owner repo deadlocks this arm (L-116) — and
@@ -39,7 +48,7 @@ on:
 permissions:
   contents: write
   pull-requests: write
-  issues: read     # the open human-check: listing — a run-level read; 403 holds every PR
+  issues: write    # the open human-check: listing (a run-level read) + closing-keyword auto-close (#176); 403 on read holds every PR
   checks: read     # gh pr checks reads statusCheckRollup; without it the token sees no checks
   statuses: read
   actions: read    # gh pr checks also asks checkSuite.workflowRun; one denied field fails the whole query
@@ -49,25 +58,3 @@ concurrency:
 
 jobs:
   merge:
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    steps:
-      - uses: actions/checkout@v4
-
-      # Capability canary: can this token see checks at all? Exits 1 with the
-      # reason when it cannot, so the failure is a red run instead of an
-      # inferred skip.
-      - name: Probe — can this token see checks?
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: ./scripts/auto-merge.sh --probe
-
-      - name: Mark green, unheld drafts ready for review
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: ./scripts/ready-drafts.sh
-
-      - name: Merge qualifying PRs, request rebases on conflicting ones
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: ./scripts/auto-merge.sh
