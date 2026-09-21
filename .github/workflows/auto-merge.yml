@@ -10,7 +10,7 @@ name: auto-merge
 # hand on 2026-09-07/08 alone.
 #
 # scripts/auto-merge.sh is the fleet engine body, byte-identical below its
-# config sentinel to Plutus's (the v2 body: bash, gh and jq only) and pinned
+# config sentinel to a private sibling's (the v2 body: bash, gh and jq only) and pinned
 # in docs/MERGE-POLICY.md; scripts/test-hooks.sh recomputes the pin. Every act
 # and every skip is a report line in the run log; the engine exits non-zero
 # only when a run-level read failed, so an outage is a red run, never
